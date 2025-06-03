@@ -159,9 +159,9 @@ export default function Billing() {
       credits: 10,
       features: [
         "10 SWMS per month",
-        "Basic templates",
+        "Project-specific SWMS",
         "Email support",
-        "Standard compliance"
+        "Basic compliance checking"
       ],
       popular: false
     },
@@ -171,11 +171,12 @@ export default function Billing() {
       credits: 25,
       features: [
         "25 SWMS per month",
-        "Premium templates",
+        "Project-specific SWMS",
         "Priority support",
         "Advanced compliance",
         "AI enhancements",
-        "Custom branding"
+        "Custom branding",
+        "Standard practice guide access"
       ],
       popular: true
     },
@@ -185,12 +186,12 @@ export default function Billing() {
       credits: 60,
       features: [
         "60 SWMS per month",
-        "Unlimited templates",
+        "All professional features",
         "24/7 phone support",
         "Full compliance suite",
-        "Team collaboration",
-        "API access",
-        "Custom integrations"
+        "Team collaboration tools",
+        "Multi-user management",
+        "Advanced reporting"
       ],
       popular: false
     }

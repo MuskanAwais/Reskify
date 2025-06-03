@@ -221,30 +221,42 @@ export default function AiAssistant() {
           {/* AI Capabilities */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">AI Capabilities</CardTitle>
+              <CardTitle className="text-lg flex items-center">
+                <span className="bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
+                  AI Capabilities
+                </span>
+              </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="flex items-start space-x-2">
-                <Shield className="w-4 h-4 mt-1 text-primary" />
-                <div>
-                  <p className="font-medium text-sm">Risk Analysis</p>
-                  <p className="text-xs text-muted-foreground">Identify and assess workplace hazards</p>
+            <CardContent>
+              <div className="grid grid-cols-1 gap-4">
+                <div className="flex items-center space-x-3 p-3 rounded-lg bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800">
+                  <div className="flex-shrink-0">
+                    <Shield className="w-5 h-5 text-blue-600" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-medium text-sm text-blue-900 dark:text-blue-100">Risk Analysis</p>
+                    <p className="text-xs text-blue-700 dark:text-blue-300">Identify and assess workplace hazards</p>
+                  </div>
                 </div>
-              </div>
-              <Separator />
-              <div className="flex items-start space-x-2">
-                <FileText className="w-4 h-4 mt-1 text-primary" />
-                <div>
-                  <p className="font-medium text-sm">Compliance Check</p>
-                  <p className="text-xs text-muted-foreground">Ensure Australian safety standards</p>
+                
+                <div className="flex items-center space-x-3 p-3 rounded-lg bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800">
+                  <div className="flex-shrink-0">
+                    <FileText className="w-5 h-5 text-green-600" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-medium text-sm text-green-900 dark:text-green-100">Compliance Check</p>
+                    <p className="text-xs text-green-700 dark:text-green-300">Ensure Australian safety standards</p>
+                  </div>
                 </div>
-              </div>
-              <Separator />
-              <div className="flex items-start space-x-2">
-                <AlertTriangle className="w-4 h-4 mt-1 text-primary" />
-                <div>
-                  <p className="font-medium text-sm">Control Measures</p>
-                  <p className="text-xs text-muted-foreground">Suggest effective safety controls</p>
+                
+                <div className="flex items-center space-x-3 p-3 rounded-lg bg-orange-50 dark:bg-orange-950/20 border border-orange-200 dark:border-orange-800">
+                  <div className="flex-shrink-0">
+                    <AlertTriangle className="w-5 h-5 text-orange-600" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-medium text-sm text-orange-900 dark:text-orange-100">Control Measures</p>
+                    <p className="text-xs text-orange-700 dark:text-orange-300">Suggest effective safety controls</p>
+                  </div>
                 </div>
               </div>
             </CardContent>
