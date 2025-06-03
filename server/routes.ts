@@ -203,7 +203,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { tradeName } = req.params;
       const { category } = req.query;
       
-      const { getCategoriesForTrade } = await import('./comprehensive-trades-data');
+      const { getCategoriesForTrade } = await import('./massive-tasks-database');
       const categories = getCategoriesForTrade(tradeName);
       
       if (category) {

@@ -30,7 +30,7 @@ export default function SwmsBuilder() {
     complianceCodes: []
   });
 
-  const progress = (currentStep / STEPS.length) * 100;
+  const progress = ((currentStep - 1) / (STEPS.length - 1)) * 100;
 
   const handleNext = () => {
     if (currentStep < STEPS.length) {
