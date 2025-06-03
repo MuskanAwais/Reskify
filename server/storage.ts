@@ -247,4 +247,135 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+import { users, swmsDocuments, safetyLibrary, aiInteractions, type User, type InsertUser, type SwmsDocument, type InsertSwmsDocument, type SafetyLibraryItem, type InsertSafetyLibraryItem, type AiInteraction, type InsertAiInteraction } from "@shared/schema";
+import { db } from "./db";
+import { eq } from "drizzle-orm";
+
+export class DatabaseStorage implements IStorage {
+  async getUser(id: number): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user || undefined;
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const [user] = await db
+      .insert(users)
+      .values({
+        ...insertUser,
+        address: insertUser.address || null,
+        abn: insertUser.abn || null,
+        phone: insertUser.phone || null,
+        licenseNumber: insertUser.licenseNumber || null
+      })
+      .returning();
+    return user;
+  }
+
+  async updateUser(id: number, updates: Partial<InsertUser>): Promise<User | undefined> {
+    const [user] = await db
+      .update(users)
+      .set({
+        ...updates,
+        address: updates.address || null,
+        abn: updates.abn || null,
+        phone: updates.phone || null,
+        licenseNumber: updates.licenseNumber || null
+      })
+      .where(eq(users.id, id))
+      .returning();
+    return user || undefined;
+  }
+
+  async getSwmsDocument(id: number): Promise<SwmsDocument | undefined> {
+    const [document] = await db.select().from(swmsDocuments).where(eq(swmsDocuments.id, id));
+    return document || undefined;
+  }
+
+  async getSwmsDocumentsByUser(userId: number): Promise<SwmsDocument[]> {
+    return await db.select().from(swmsDocuments).where(eq(swmsDocuments.userId, userId));
+  }
+
+  async createSwmsDocument(insertSwms: InsertSwmsDocument): Promise<SwmsDocument> {
+    const [document] = await db
+      .insert(swmsDocuments)
+      .values({
+        ...insertSwms,
+        status: insertSwms.status || 'draft',
+        aiEnhanced: insertSwms.aiEnhanced || false,
+        documentHash: insertSwms.documentHash || null
+      })
+      .returning();
+    return document;
+  }
+
+  async updateSwmsDocument(id: number, updates: Partial<InsertSwmsDocument>): Promise<SwmsDocument | undefined> {
+    const [document] = await db
+      .update(swmsDocuments)
+      .set({
+        ...updates,
+        status: updates.status || 'draft',
+        aiEnhanced: updates.aiEnhanced || false,
+        documentHash: updates.documentHash || null
+      })
+      .where(eq(swmsDocuments.id, id))
+      .returning();
+    return document || undefined;
+  }
+
+  async deleteSwmsDocument(id: number): Promise<boolean> {
+    const result = await db.delete(swmsDocuments).where(eq(swmsDocuments.id, id));
+    return result.rowCount > 0;
+  }
+
+  async getSafetyLibraryItems(): Promise<SafetyLibraryItem[]> {
+    return await db.select().from(safetyLibrary);
+  }
+
+  async searchSafetyLibrary(query: string, category?: string): Promise<SafetyLibraryItem[]> {
+    // Implement search logic here
+    return await db.select().from(safetyLibrary);
+  }
+
+  async getSafetyLibraryItem(id: number): Promise<SafetyLibraryItem | undefined> {
+    const [item] = await db.select().from(safetyLibrary).where(eq(safetyLibrary.id, id));
+    return item || undefined;
+  }
+
+  async createSafetyLibraryItem(insertItem: InsertSafetyLibraryItem): Promise<SafetyLibraryItem> {
+    const [item] = await db
+      .insert(safetyLibrary)
+      .values({
+        ...insertItem,
+        url: insertItem.url || null,
+        effectiveDate: insertItem.effectiveDate || null
+      })
+      .returning();
+    return item;
+  }
+
+  async getAiInteractionsByUser(userId: number): Promise<AiInteraction[]> {
+    return await db.select().from(aiInteractions).where(eq(aiInteractions.userId, userId));
+  }
+
+  async getAiInteractionsBySwms(swmsId: number): Promise<AiInteraction[]> {
+    return await db.select().from(aiInteractions).where(eq(aiInteractions.swmsId, swmsId));
+  }
+
+  async createAiInteraction(insertInteraction: InsertAiInteraction): Promise<AiInteraction> {
+    const [interaction] = await db
+      .insert(aiInteractions)
+      .values({
+        ...insertInteraction,
+        swmsId: insertInteraction.swmsId || null
+      })
+      .returning();
+    return interaction;
+  }
+}
+
+export const storage = new DatabaseStorage();
