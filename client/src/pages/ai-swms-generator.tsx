@@ -82,7 +82,8 @@ export default function AISwmsGenerator() {
     queryKey: ["/api/user/subscription"],
   });
 
-  const hasAccess = subscription?.plan === "pro" || subscription?.plan === "enterprise" || isAdmin;
+  // Admin mode bypasses subscription check, otherwise require pro/enterprise
+  const hasAccess = isAdmin || subscription?.plan === "pro" || subscription?.plan === "enterprise";
 
   const generateSWMS = useMutation({
     mutationFn: async (data: {
