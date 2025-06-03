@@ -207,9 +207,13 @@ export default function DocumentPreview({ formData }: DocumentPreviewProps) {
                       </h1>
                       <p className="text-lg text-gray-600">{documentToDisplay.title}</p>
                       
-                      {/* Watermark - Safety Samurai */}
-                      <div className="absolute top-0 right-0 opacity-10 text-6xl font-bold text-blue-600 transform rotate-12 pointer-events-none">
-                        Safety Samurai
+                      {/* Watermark - Safety Samurai with Project Details */}
+                      <div className="absolute top-0 right-0 opacity-10 text-3xl font-bold text-blue-600 transform rotate-12 pointer-events-none">
+                        <div className="text-center">
+                          <div className="text-2xl">Safety Samurai</div>
+                          <div className="text-sm mt-1">{documentToDisplay.jobName || documentToDisplay.projectDetails?.jobName || "Project Name Required"}</div>
+                          <div className="text-xs mt-1">Job: {documentToDisplay.jobNumber || documentToDisplay.projectDetails?.jobNumber || "Job Number Required"}</div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -505,9 +509,32 @@ export default function DocumentPreview({ formData }: DocumentPreviewProps) {
                       <span>Document ID: SWM-{documentToDisplay.id}</span>
                       <br />
                       <span>Generated: {new Date().toLocaleDateString('en-AU')} | Safety Samurai Platform</span>
+                      <div className="text-xs text-gray-500 mt-1">
+                        {documentToDisplay.jobName || documentToDisplay.projectDetails?.jobName || "Project Name Required"}
+                        {` - Job: ${documentToDisplay.jobNumber || documentToDisplay.projectDetails?.jobNumber || "Job Number Required"}`}
+                      </div>
                     </div>
                     <div className="flex items-center opacity-30">
                       <span className="text-xs font-bold text-blue-600">Safety Samurai</span>
+                    </div>
+                  </div>
+
+                  {/* Additional Document Protection Watermarks */}
+                  <div className="absolute inset-0 pointer-events-none opacity-5 overflow-hidden">
+                    <div className="absolute top-1/4 left-1/4 transform -rotate-45 text-2xl font-bold text-blue-600">
+                      Safety Samurai
+                      {documentToDisplay.projectDetails?.jobNumber && (
+                        <div className="text-sm">Job: {documentToDisplay.projectDetails.jobNumber}</div>
+                      )}
+                    </div>
+                    <div className="absolute top-3/4 right-1/4 transform rotate-45 text-2xl font-bold text-blue-600">
+                      Safety Samurai
+                      {documentToDisplay.projectDetails?.jobName && (
+                        <div className="text-sm">{documentToDisplay.projectDetails.jobName}</div>
+                      )}
+                    </div>
+                    <div className="absolute bottom-1/4 left-1/2 transform -translate-x-1/2 rotate-12 text-xl font-bold text-blue-600">
+                      © Safety Samurai {new Date().getFullYear()}
                     </div>
                   </div>
                 </CardContent>

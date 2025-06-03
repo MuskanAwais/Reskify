@@ -169,6 +169,36 @@ export default function SwmsForm({ step, data, onDataChange }: SwmsFormProps) {
             </div>
           </div>
 
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label htmlFor="jobName" className="flex items-center">
+                <Briefcase className="mr-2 h-4 w-4" />
+                Job Name <span className="text-red-500 ml-1">*</span>
+              </Label>
+              <Input
+                id="jobName"
+                value={formData.jobName || ""}
+                onChange={(e) => updateFormData({ jobName: e.target.value })}
+                placeholder="e.g., Office Tower Construction"
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="jobNumber" className="flex items-center">
+                <FileText className="mr-2 h-4 w-4" />
+                Job Number <span className="text-red-500 ml-1">*</span>
+              </Label>
+              <Input
+                id="jobNumber"
+                value={formData.jobNumber || ""}
+                onChange={(e) => updateFormData({ jobNumber: e.target.value })}
+                placeholder="e.g., JOB-2025-001"
+                required
+              />
+            </div>
+          </div>
+
           <div className="space-y-2">
             <Label htmlFor="projectLocation" className="flex items-center">
               <MapPin className="mr-2 h-4 w-4" />

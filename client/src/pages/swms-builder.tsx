@@ -21,6 +21,8 @@ export default function SwmsBuilder() {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
     title: "",
+    jobName: "",
+    jobNumber: "",
     projectLocation: "",
     tradeType: "",
     activities: [],

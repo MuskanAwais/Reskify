@@ -56,7 +56,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auto-generate SWMS based on selected activities
   app.post("/api/auto-generate-swms", async (req, res) => {
     try {
-      const { activities, tradeType, projectLocation, title } = req.body;
+      const { activities, tradeType, projectLocation, title, jobName, jobNumber } = req.body;
       
       if (!activities || !Array.isArray(activities) || activities.length === 0) {
         return res.status(400).json({ message: 'Activities array is required' });
