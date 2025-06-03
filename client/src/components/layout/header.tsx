@@ -3,6 +3,8 @@ import { useUser } from "@/App";
 import { Link, useLocation } from "wouter";
 import { HardHat, Plus, Bell, Settings, LogOut } from "lucide-react";
 import CreditCounter from "@/components/ui/credit-counter";
+import VoiceAssistant from "@/components/ui/voice-assistant";
+import LanguageSwitcher from "@/components/ui/language-switcher";
 
 import {
   DropdownMenu,
@@ -52,6 +54,12 @@ export default function Header() {
 
           {/* Actions and User Menu */}
           <div className="flex items-center space-x-3">
+            {/* Voice Assistant */}
+            <VoiceAssistant />
+            
+            {/* Language Switcher */}
+            <LanguageSwitcher />
+            
             {/* Credit Counter */}
             <div className="hidden md:block">
               <CreditCounter className="compact" />

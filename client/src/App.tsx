@@ -14,6 +14,7 @@ import MySwms from "@/pages/my-swms";
 import Analytics from "@/pages/analytics";
 import AiAssistant from "@/pages/ai-assistant";
 import Settings from "@/pages/settings";
+import Billing from "@/pages/billing";
 import NotFound from "@/pages/not-found";
 
 // User context for demo purposes
