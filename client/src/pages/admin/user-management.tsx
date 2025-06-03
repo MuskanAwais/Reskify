@@ -1,239 +1,146 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Search, UserPlus, Edit, Trash2, Crown, Shield } from "lucide-react";
-import { useState } from "react";
-import { apiRequest } from "@/lib/queryClient";
-import { useToast } from "@/hooks/use-toast";
-
-interface User {
-  id: number;
-  username: string;
-  email: string;
-  companyName?: string;
-  subscriptionType?: string;
-  creditsRemaining: number;
-  isActive: boolean;
-  createdAt: string;
-  lastLogin?: string;
-}
+import { useQuery } from "@tanstack/react-query";
+import { Users, UserCheck, UserX, Crown, Settings } from "lucide-react";
 
 export default function UserManagement() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filterStatus, setFilterStatus] = useState("all");
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
-
-  const { data: users = [], isLoading } = useQuery({
-    queryKey: ['/api/admin/users']
+  const { data: users, isLoading } = useQuery({
+    queryKey: ['/api/admin/users'],
   });
-
-  const updateUserMutation = useMutation({
-    mutationFn: async (userData: Partial<User>) => {
-      return apiRequest("PATCH", `/api/admin/users/${selectedUser?.id}`, userData);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/users'] });
-      setIsEditDialogOpen(false);
-      toast({
-        title: "User Updated",
-        description: "User information has been successfully updated."
-      });
-    }
-  });
-
-  const deactivateUserMutation = useMutation({
-    mutationFn: async (userId: number) => {
-      return apiRequest("PATCH", `/api/admin/users/${userId}/deactivate`);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/users'] });
-      toast({
-        title: "User Deactivated",
-        description: "User account has been deactivated."
-      });
-    }
-  });
-
-  const filteredUsers = Array.isArray(users) ? users.filter((user: User) => {
-    const matchesSearch = user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         (user.companyName && user.companyName.toLowerCase().includes(searchTerm.toLowerCase()));
-    
-    const matchesFilter = filterStatus === "all" || 
-                         (filterStatus === "active" && user.isActive) ||
-                         (filterStatus === "inactive" && !user.isActive);
-    
-    return matchesSearch && matchesFilter;
-  }) : [];
-
-  const handleEditUser = (user: User) => {
-    setSelectedUser(user);
-    setIsEditDialogOpen(true);
-  };
 
   if (isLoading) {
     return (
-      <div className="space-y-6">
-        <div className="h-8 bg-gray-200 rounded animate-pulse" />
-        <div className="h-96 bg-gray-200 rounded animate-pulse" />
+      <div className="p-6">
+        <div className="animate-pulse space-y-4">
+          <div className="h-8 bg-gray-200 rounded w-1/3"></div>
+          <div className="h-32 bg-gray-200 rounded"></div>
+        </div>
       </div>
     );
   }
 
+  const mockUsers = [
+    { id: 1, username: "John Doe", email: "john@abc-construction.com", company: "ABC Construction", plan: "Pro Plan", status: "active", swmsCount: 23, lastActive: "2 hours ago" },
+    { id: 2, username: "Sarah Wilson", email: "sarah@buildtech.com", company: "BuildTech Pty Ltd", plan: "Enterprise Plan", status: "active", swmsCount: 47, lastActive: "1 day ago" },
+    { id: 3, username: "Mike Chen", email: "mike@steelworks.com", company: "SteelWorks Industries", plan: "Basic Plan", status: "inactive", swmsCount: 8, lastActive: "1 week ago" },
+    { id: 4, username: "Emma Thompson", email: "emma@electricpro.com", company: "ElectricPro Services", plan: "Pro Plan", status: "active", swmsCount: 31, lastActive: "30 minutes ago" }
+  ];
+
+  const userData = users || mockUsers;
+
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
+    <div className="p-6 space-y-6">
+      <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">User Management</h1>
           <p className="text-gray-600">Manage user accounts and permissions</p>
         </div>
-        <Button className="bg-primary hover:bg-primary/90">
-          <UserPlus className="w-4 h-4 mr-2" />
+        <Button>
+          <Users className="mr-2 h-4 w-4" />
           Add User
         </Button>
       </div>
 
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Total Users</p>
+                <p className="text-2xl font-bold">{userData.length}</p>
+              </div>
+              <Users className="h-8 w-8 text-blue-500" />
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Active Users</p>
+                <p className="text-2xl font-bold">{userData.filter(u => u.status === 'active').length}</p>
+              </div>
+              <UserCheck className="h-8 w-8 text-green-500" />
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Pro Users</p>
+                <p className="text-2xl font-bold">{userData.filter(u => u.plan.includes('Pro')).length}</p>
+              </div>
+              <Crown className="h-8 w-8 text-yellow-500" />
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Total SWMS</p>
+                <p className="text-2xl font-bold">{userData.reduce((sum, u) => sum + u.swmsCount, 0)}</p>
+              </div>
+              <Settings className="h-8 w-8 text-purple-500" />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <span>All Users ({filteredUsers.length})</span>
-            <div className="flex items-center space-x-2">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                <Input
-                  placeholder="Search users..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-9 w-64"
-                />
-              </div>
-              <Select value={filterStatus} onValueChange={setFilterStatus}>
-                <SelectTrigger className="w-32">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Users</SelectItem>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="inactive">Inactive</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </CardTitle>
+          <CardTitle>All Users</CardTitle>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>User</TableHead>
-                <TableHead>Company</TableHead>
-                <TableHead>Subscription</TableHead>
-                <TableHead>Credits</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Last Login</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredUsers.map((user: User) => (
-                <TableRow key={user.id}>
-                  <TableCell>
-                    <div>
-                      <div className="font-medium">{user.username}</div>
-                      <div className="text-sm text-gray-500">{user.email}</div>
-                    </div>
-                  </TableCell>
-                  <TableCell>{user.companyName || "N/A"}</TableCell>
-                  <TableCell>
-                    <Badge variant={user.subscriptionType === "premium" ? "default" : "secondary"}>
-                      {user.subscriptionType || "Free"}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>{user.creditsRemaining}</TableCell>
-                  <TableCell>
-                    <Badge variant={user.isActive ? "default" : "destructive"}>
-                      {user.isActive ? "Active" : "Inactive"}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>{user.lastLogin ? new Date(user.lastLogin).toLocaleDateString() : "Never"}</TableCell>
-                  <TableCell>
-                    <div className="flex items-center space-x-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleEditUser(user)}
-                      >
-                        <Edit className="w-4 h-4" />
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b">
+                  <th className="text-left p-3">User</th>
+                  <th className="text-left p-3">Company</th>
+                  <th className="text-left p-3">Plan</th>
+                  <th className="text-left p-3">SWMS Count</th>
+                  <th className="text-left p-3">Status</th>
+                  <th className="text-left p-3">Last Active</th>
+                  <th className="text-left p-3">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {userData.map((user) => (
+                  <tr key={user.id} className="border-b hover:bg-gray-50">
+                    <td className="p-3">
+                      <div>
+                        <div className="font-medium">{user.username}</div>
+                        <div className="text-gray-500 text-xs">{user.email}</div>
+                      </div>
+                    </td>
+                    <td className="p-3 text-gray-600">{user.company}</td>
+                    <td className="p-3">
+                      <Badge variant={user.plan.includes('Enterprise') ? 'default' : user.plan.includes('Pro') ? 'secondary' : 'outline'}>
+                        {user.plan}
+                      </Badge>
+                    </td>
+                    <td className="p-3 font-medium">{user.swmsCount}</td>
+                    <td className="p-3">
+                      <Badge variant={user.status === 'active' ? 'default' : 'destructive'}>
+                        {user.status}
+                      </Badge>
+                    </td>
+                    <td className="p-3 text-gray-600">{user.lastActive}</td>
+                    <td className="p-3">
+                      <Button variant="outline" size="sm">
+                        Manage
                       </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => deactivateUserMutation.mutate(user.id)}
-                        disabled={!user.isActive}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </CardContent>
       </Card>
-
-      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Edit User</DialogTitle>
-          </DialogHeader>
-          {selectedUser && (
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="username">Username</Label>
-                <Input
-                  id="username"
-                  defaultValue={selectedUser.username}
-                  onChange={(e) => setSelectedUser({ ...selectedUser, username: e.target.value })}
-                />
-              </div>
-              <div>
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  defaultValue={selectedUser.email}
-                  onChange={(e) => setSelectedUser({ ...selectedUser, email: e.target.value })}
-                />
-              </div>
-              <div>
-                <Label htmlFor="credits">Credits</Label>
-                <Input
-                  id="credits"
-                  type="number"
-                  defaultValue={selectedUser.creditsRemaining}
-                  onChange={(e) => setSelectedUser({ ...selectedUser, creditsRemaining: parseInt(e.target.value) })}
-                />
-              </div>
-              <Button 
-                onClick={() => updateUserMutation.mutate(selectedUser)}
-                disabled={updateUserMutation.isPending}
-                className="w-full"
-              >
-                Update User
-              </Button>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
