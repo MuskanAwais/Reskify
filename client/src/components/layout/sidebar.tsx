@@ -33,13 +33,13 @@ const quickActions = [
     title: "Create SWMS",
     icon: FileText,
     href: "/swms-builder",
-    className: "bg-primary text-white hover:bg-primary/90"
+    className: "bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 hover:border-blue-300"
   },
   {
     title: "AI SWMS Generator",
     icon: Bot,
     href: "/ai-swms-generator",
-    className: "bg-gradient-to-r from-purple-500 to-blue-500 text-white hover:from-purple-600 hover:to-blue-600"
+    className: "bg-purple-50 text-purple-700 border border-purple-200 hover:bg-purple-100 hover:border-purple-300"
   }
 ];
 

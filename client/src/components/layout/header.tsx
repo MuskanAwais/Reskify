@@ -6,6 +6,7 @@ import CreditCounter from "@/components/ui/credit-counter";
 import VoiceAssistant from "@/components/ui/voice-assistant";
 import ComprehensiveLanguageSwitcher from "@/components/ui/comprehensive-language-switcher";
 import ContactForm from "@/components/ui/contact-form";
+import logoImage from "@assets/Untitled design-2.png";
 
 import {
   DropdownMenu,
@@ -38,12 +39,21 @@ export default function Header() {
         <div className="flex justify-between items-center">
           {/* Logo and Title */}
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
               <img 
-                src="/attached_assets/Untitled%20design-2.png" 
+                src={logoImage} 
                 alt="Safety Sensei Logo" 
-                className="w-10 h-10 object-contain"
+                className="w-8 h-8 object-contain"
+                onError={(e) => {
+                  console.log("Logo failed to load, showing fallback");
+                  e.currentTarget.style.display = 'none';
+                  const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+                  if (fallback) {
+                    fallback.style.display = 'flex';
+                  }
+                }}
               />
+              <HardHat className="w-6 h-6 text-blue-600 hidden" />
             </div>
             <div>
               <h1 className="text-xl font-bold tracking-tight text-foreground">Safety Sensei</h1>
