@@ -121,11 +121,7 @@ export default function Sidebar() {
               {adminMode ? 'ON' : 'OFF'}
             </Button>
           </div>
-          {adminMode && (
-            <Badge variant="destructive" className="mt-2 text-xs">
-              Administrative Access
-            </Badge>
-          )}
+
         </div>
 
         <Separator className="mb-6" />
