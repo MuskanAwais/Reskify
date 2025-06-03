@@ -48,7 +48,6 @@ export default function Sidebar() {
 
   const navigationItems = [
     { icon: Home, label: "Dashboard", href: "/dashboard" },
-    { icon: User, label: "Profile", href: "/profile" },
     { icon: FileText, label: "My SWMS", href: "/my-swms" },
     { icon: Book, label: "Safety Library", href: "/safety-library" },
     { 
@@ -59,7 +58,7 @@ export default function Sidebar() {
       hasAccess: subscription?.features?.standardPracticeGuide
     },
     { icon: BarChart3, label: "Analytics", href: "/analytics" },
-    { icon: CreditCard, label: "Billing", href: "/billing" },
+    { icon: CreditCard, label: "Billing & Profile", href: "/billing" },
     { icon: Settings, label: "Settings", href: "/settings" }
   ];
 
@@ -96,6 +95,24 @@ export default function Sidebar() {
             const Icon = item.icon;
             const isActive = location === item.href || 
               (item.href === "/dashboard" && location === "/");
+            
+            const isLocked = item.requiresAccess && !item.hasAccess;
+            
+            if (isLocked) {
+              return (
+                <div key={item.href} className="relative">
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start text-gray-400 cursor-not-allowed opacity-60"
+                    disabled
+                  >
+                    <Icon className="mr-3 h-4 w-4" />
+                    {item.label}
+                    <Lock className="ml-auto h-3 w-3" />
+                  </Button>
+                </div>
+              );
+            }
             
             return (
               <Link key={item.href} href={item.href}>
