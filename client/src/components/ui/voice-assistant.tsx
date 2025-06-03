@@ -13,6 +13,7 @@ export default function VoiceAssistant({ onVoiceCommand, language = "en-US" }: V
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [transcript, setTranscript] = useState("");
+  const [isSupported, setIsSupported] = useState(true);
   const recognition = useRef<SpeechRecognition | null>(null);
   const synthesis = useRef<SpeechSynthesis | null>(null);
   const { toast } = useToast();

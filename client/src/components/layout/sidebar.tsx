@@ -58,8 +58,7 @@ export default function Sidebar() {
       hasAccess: subscription?.features?.standardPracticeGuide
     },
     { icon: BarChart3, label: "Analytics", href: "/analytics" },
-    { icon: CreditCard, label: "Billing & Profile", href: "/billing" },
-    { icon: Settings, label: "Settings", href: "/settings" }
+    { icon: User, label: "Account", href: "/billing" }
   ];
 
   return (
