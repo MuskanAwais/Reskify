@@ -24,6 +24,7 @@ import {
   Search
 } from "lucide-react";
 import VisualTableEditor from "./visual-table-editor";
+import SmartTooltip from "@/components/ui/smart-tooltip";
 
 interface SwmsFormProps {
   step: number;
