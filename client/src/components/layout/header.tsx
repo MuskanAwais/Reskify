@@ -35,6 +35,7 @@ export default function Header() {
   ];
 
   return (
+    <>
     <header className="bg-gradient-to-r from-green-800 to-green-900 text-white shadow-lg border-b border-green-700">
       <div className="container mx-auto px-6 py-3">
         <div className="flex justify-between items-center">
@@ -124,5 +125,12 @@ export default function Header() {
         </div>
       </div>
     </header>
+    
+    {/* AI Assistant Popup */}
+    <AiAssistantPopup 
+      isOpen={isAiAssistantOpen} 
+      onClose={() => setIsAiAssistantOpen(false)} 
+    />
+    </>
   );
 }
