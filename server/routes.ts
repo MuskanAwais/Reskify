@@ -78,6 +78,107 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Generate detailed SWMS table data from selected tasks
+  app.post("/api/generate-swms-table", async (req, res) => {
+    try {
+      const { activities, tradeType, projectDetails } = req.body;
+      
+      if (!activities || !Array.isArray(activities) || activities.length === 0) {
+        return res.status(400).json({ message: 'Activities array is required' });
+      }
+
+      const { getAllMegaTasks } = await import('./mega-construction-database');
+      const allTasks = getAllMegaTasks();
+      
+      // Map selected activities to detailed SWMS table data
+      const swmsTableData = activities.map((activity: string) => {
+        // Find exact task match in comprehensive database
+        const exactTask = allTasks.find(task => task.activity === activity);
+        if (exactTask) {
+          return {
+            id: exactTask.taskId,
+            activity: exactTask.activity,
+            hazards: exactTask.hazards,
+            riskLevel: exactTask.riskLevel,
+            initialRisk: exactTask.initialRiskScore,
+            controlMeasures: exactTask.controlMeasures,
+            residualRisk: exactTask.residualRiskScore,
+            residualRiskLevel: exactTask.residualRiskLevel,
+            responsible: exactTask.responsible,
+            ppe: exactTask.ppe || [],
+            training: exactTask.trainingRequired || [],
+            inspection: exactTask.inspectionFrequency,
+            emergencyProcedures: exactTask.emergencyProcedures || [],
+            environmental: exactTask.environmentalControls || [],
+            quality: exactTask.qualityRequirements || [],
+            legislation: exactTask.legislation,
+            category: exactTask.category,
+            trade: exactTask.trade,
+            complexity: exactTask.complexity,
+            frequency: exactTask.frequency,
+            editable: true
+          };
+        }
+        
+        // Return structured entry for activities not in database
+        return {
+          id: `custom-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          activity: activity,
+          hazards: ["To be assessed"],
+          riskLevel: "Medium",
+          initialRisk: 9,
+          controlMeasures: ["To be determined"],
+          residualRisk: 3,
+          residualRiskLevel: "Low",
+          responsible: "Site Supervisor",
+          ppe: ["Standard PPE required"],
+          training: ["Task-specific training required"],
+          inspection: "As required",
+          emergencyProcedures: ["Follow site emergency procedures"],
+          environmental: ["Standard environmental controls"],
+          quality: ["Follow quality procedures"],
+          legislation: ["Work Health and Safety Act 2011"],
+          category: "General",
+          trade: tradeType,
+          complexity: "basic",
+          frequency: "project-based",
+          editable: true
+        };
+      });
+
+      const response = {
+        success: true,
+        title: `SWMS - ${tradeType} Work`,
+        projectLocation: projectDetails?.location || "Construction Site",
+        selectedActivities: activities,
+        swmsTableData: swmsTableData,
+        projectDetails: projectDetails,
+        tradeType: tradeType,
+        complianceCodes: [
+          "Work Health and Safety Act 2011 (Cth)",
+          "Work Health and Safety Regulation 2017",
+          "Construction Work Code of Practice 2013"
+        ],
+        summary: {
+          totalTasks: swmsTableData.length,
+          riskProfile: {
+            extreme: swmsTableData.filter(item => item.riskLevel === "Extreme").length,
+            high: swmsTableData.filter(item => item.riskLevel === "High").length,
+            medium: swmsTableData.filter(item => item.riskLevel === "Medium").length,
+            low: swmsTableData.filter(item => item.riskLevel === "Low").length
+          },
+          databaseMatches: swmsTableData.filter(item => !item.id.startsWith('custom-')).length,
+          customEntries: swmsTableData.filter(item => item.id.startsWith('custom-')).length
+        }
+      };
+      
+      res.json(response);
+    } catch (error: any) {
+      console.error('SWMS table generation error:', error);
+      res.status(500).json({ message: 'Failed to generate SWMS table data' });
+    }
+  });
+
   // Search activities across all trades
   app.get("/api/search-activities", async (req, res) => {
     try {
