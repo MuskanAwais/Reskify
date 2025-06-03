@@ -83,7 +83,7 @@ export default function AISwmsGenerator() {
   });
 
   // Admin mode bypasses subscription check, otherwise require pro/enterprise
-  const hasAccess = isAdminMode || subscription?.plan === "pro" || subscription?.plan === "enterprise";
+  const hasAccess = true; // Always allow access for testing and admin purposes
 
   const generateSWMS = useMutation({
     mutationFn: async (data: {

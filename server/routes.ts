@@ -968,6 +968,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // AI SWMS generation route
+  app.post("/api/ai/generate-swms", async (req, res) => {
+    try {
+      const { jobDescription, trade, projectType, location, duration, requirements } = req.body;
+      
+      if (!jobDescription || !trade) {
+        return res.status(400).json({ message: 'Job description and trade are required' });
+      }
+      
+      const { generateComprehensiveAISwms } = require('./comprehensive-ai-swms-generator');
+      
+      const aiSwmsData = await generateComprehensiveAISwms({
+        jobDescription,
+        trade,
+        projectType: projectType || 'General Construction',
+        location: location || 'Australia',
+        duration: duration || 'Standard duration',
+        requirements: requirements || ''
+      });
+      
+      res.json(aiSwmsData);
+    } catch (error: any) {
+      console.error('AI SWMS generation error:', error);
+      res.status(500).json({ message: 'Failed to generate AI SWMS: ' + error.message });
+    }
+  });
+
   // AI enhancement routes
   app.post("/api/ai/enhance-swms", async (req, res) => {
     try {

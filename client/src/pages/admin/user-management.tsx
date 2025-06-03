@@ -1,15 +1,45 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useQuery } from "@tanstack/react-query";
-import { Users, UserCheck, UserX, Crown, Settings } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Users, UserCheck, UserX, Crown, Settings, Mail, Phone, MapPin, Building, Search, Filter } from "lucide-react";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 
 export default function UserManagement() {
-  const { data: users, isLoading } = useQuery({
+  const [searchTerm, setSearchTerm] = useState("");
+  const [planFilter, setPlanFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  const { data: users, isLoading: usersLoading } = useQuery({
     queryKey: ['/api/admin/users'],
   });
 
-  if (isLoading) {
+  const { data: contacts, isLoading: contactsLoading } = useQuery({
+    queryKey: ['/api/admin/contacts'],
+  });
+
+  const updateUserMutation = useMutation({
+    mutationFn: async ({ userId, updates }: { userId: number, updates: any }) => {
+      const response = await apiRequest("PATCH", `/api/admin/users/${userId}`, updates);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/users'] });
+      toast({
+        title: "User Updated",
+        description: "User information has been updated successfully.",
+      });
+    },
+  });
+
+  if (usersLoading || contactsLoading) {
     return (
       <div className="p-6">
         <div className="animate-pulse space-y-4">
@@ -20,21 +50,28 @@ export default function UserManagement() {
     );
   }
 
-  const mockUsers = [
-    { id: 1, username: "John Doe", email: "john@abc-construction.com", company: "ABC Construction", plan: "Pro Plan", status: "active", swmsCount: 23, lastActive: "2 hours ago" },
-    { id: 2, username: "Sarah Wilson", email: "sarah@buildtech.com", company: "BuildTech Pty Ltd", plan: "Enterprise Plan", status: "active", swmsCount: 47, lastActive: "1 day ago" },
-    { id: 3, username: "Mike Chen", email: "mike@steelworks.com", company: "SteelWorks Industries", plan: "Basic Plan", status: "inactive", swmsCount: 8, lastActive: "1 week ago" },
-    { id: 4, username: "Emma Thompson", email: "emma@electricpro.com", company: "ElectricPro Services", plan: "Pro Plan", status: "active", swmsCount: 31, lastActive: "30 minutes ago" }
-  ];
+  const userData = users || [];
+  const contactData = contacts || [];
 
-  const userData = users || mockUsers;
+  const filteredUsers = userData.filter((user: any) =>
+    (user.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+     user.email?.toLowerCase().includes(searchTerm.toLowerCase())) &&
+    (planFilter === "all" || user.plan?.includes(planFilter)) &&
+    (statusFilter === "all" || user.status === statusFilter)
+  );
+
+  const filteredContacts = contactData.filter((contact: any) =>
+    contact.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    contact.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    contact.company?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">User Management</h1>
-          <p className="text-gray-600">Manage user accounts and permissions</p>
+          <h1 className="text-2xl font-bold text-gray-900">User & Contact Management</h1>
+          <p className="text-gray-600">Manage user accounts, permissions, and contact database</p>
         </div>
         <Button>
           <Users className="mr-2 h-4 w-4" />
@@ -42,105 +79,194 @@ export default function UserManagement() {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Total Users</p>
-                <p className="text-2xl font-bold">{userData.length}</p>
-              </div>
-              <Users className="h-8 w-8 text-blue-500" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Active Users</p>
-                <p className="text-2xl font-bold">{userData.filter(u => u.status === 'active').length}</p>
-              </div>
-              <UserCheck className="h-8 w-8 text-green-500" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Pro Users</p>
-                <p className="text-2xl font-bold">{userData.filter(u => u.plan && u.plan.includes('Pro')).length}</p>
-              </div>
-              <Crown className="h-8 w-8 text-yellow-500" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Total SWMS</p>
-                <p className="text-2xl font-bold">{userData.reduce((sum, u) => sum + (u.swmsCount || 0), 0)}</p>
-              </div>
-              <Settings className="h-8 w-8 text-purple-500" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
+      {/* Search and Filter Controls */}
       <Card>
-        <CardHeader>
-          <CardTitle>All Users</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b">
-                  <th className="text-left p-3">User</th>
-                  <th className="text-left p-3">Company</th>
-                  <th className="text-left p-3">Plan</th>
-                  <th className="text-left p-3">SWMS Count</th>
-                  <th className="text-left p-3">Status</th>
-                  <th className="text-left p-3">Last Active</th>
-                  <th className="text-left p-3">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {userData.map((user) => (
-                  <tr key={user.id} className="border-b hover:bg-gray-50">
-                    <td className="p-3">
-                      <div>
-                        <div className="font-medium">{user.username}</div>
-                        <div className="text-gray-500 text-xs">{user.email}</div>
-                      </div>
-                    </td>
-                    <td className="p-3 text-gray-600">{user.company}</td>
-                    <td className="p-3">
-                      <Badge variant={user.plan?.includes('Enterprise') ? 'default' : user.plan?.includes('Pro') ? 'secondary' : 'outline'}>
-                        {user.plan || 'Basic Plan'}
-                      </Badge>
-                    </td>
-                    <td className="p-3 font-medium">{user.swmsCount}</td>
-                    <td className="p-3">
-                      <Badge variant={user.status === 'active' ? 'default' : 'destructive'}>
-                        {user.status}
-                      </Badge>
-                    </td>
-                    <td className="p-3 text-gray-600">{user.lastActive}</td>
-                    <td className="p-3">
-                      <Button variant="outline" size="sm">
-                        Manage
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        <CardContent className="p-4">
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex-1">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Input
+                  placeholder="Search users, contacts, emails..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+            </div>
+            <Select value={planFilter} onValueChange={setPlanFilter}>
+              <SelectTrigger className="w-48">
+                <SelectValue placeholder="Filter by plan" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Plans</SelectItem>
+                <SelectItem value="Basic">Basic Plan</SelectItem>
+                <SelectItem value="Pro">Pro Plan</SelectItem>
+                <SelectItem value="Enterprise">Enterprise Plan</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-48">
+                <SelectValue placeholder="Filter by status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Status</SelectItem>
+                <SelectItem value="active">Active</SelectItem>
+                <SelectItem value="inactive">Inactive</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </CardContent>
       </Card>
+
+      <Tabs defaultValue="users" className="w-full">
+        <TabsList>
+          <TabsTrigger value="users" className="flex items-center gap-2">
+            <Users className="h-4 w-4" />
+            Users ({filteredUsers.length})
+          </TabsTrigger>
+          <TabsTrigger value="contacts" className="flex items-center gap-2">
+            <Mail className="h-4 w-4" />
+            Contacts ({filteredContacts.length})
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="users">
+          <Card>
+            <CardHeader>
+              <CardTitle>User Accounts</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse">
+                  <thead>
+                    <tr className="border-b">
+                      <th className="text-left p-3 font-medium">User</th>
+                      <th className="text-left p-3 font-medium">Company</th>
+                      <th className="text-left p-3 font-medium">Plan</th>
+                      <th className="text-left p-3 font-medium">SWMS Count</th>
+                      <th className="text-left p-3 font-medium">Status</th>
+                      <th className="text-left p-3 font-medium">Last Active</th>
+                      <th className="text-left p-3 font-medium">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredUsers.map((user: any) => (
+                      <tr key={user.id} className="border-b hover:bg-gray-50">
+                        <td className="p-3">
+                          <div className="flex items-center space-x-3">
+                            <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                              <span className="text-sm font-medium text-blue-600">
+                                {user.username?.charAt(0).toUpperCase()}
+                              </span>
+                            </div>
+                            <div>
+                              <div className="font-medium">{user.username}</div>
+                              <div className="text-gray-500 text-xs">{user.email}</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="p-3 text-gray-600">{user.company}</td>
+                        <td className="p-3">
+                          <Badge variant={user.plan?.includes('Enterprise') ? 'default' : user.plan?.includes('Pro') ? 'secondary' : 'outline'}>
+                            {user.plan || 'Basic Plan'}
+                          </Badge>
+                        </td>
+                        <td className="p-3 font-medium">{user.swmsCount}</td>
+                        <td className="p-3">
+                          <Badge variant={user.status === 'active' ? 'default' : 'destructive'}>
+                            {user.status}
+                          </Badge>
+                        </td>
+                        <td className="p-3 text-gray-600">{user.lastActive}</td>
+                        <td className="p-3">
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => updateUserMutation.mutate({ 
+                              userId: user.id, 
+                              updates: { status: user.status === 'active' ? 'inactive' : 'active' }
+                            })}
+                            disabled={updateUserMutation.isPending}
+                          >
+                            <Settings className="w-4 h-4 mr-1" />
+                            Manage
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="contacts">
+          <Card>
+            <CardHeader>
+              <CardTitle>Contact Database</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse">
+                  <thead>
+                    <tr className="border-b">
+                      <th className="text-left p-3 font-medium">Contact</th>
+                      <th className="text-left p-3 font-medium">Company</th>
+                      <th className="text-left p-3 font-medium">Phone</th>
+                      <th className="text-left p-3 font-medium">Location</th>
+                      <th className="text-left p-3 font-medium">Type</th>
+                      <th className="text-left p-3 font-medium">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredContacts.map((contact: any) => (
+                      <tr key={contact.id} className="border-b hover:bg-gray-50">
+                        <td className="p-3">
+                          <div className="flex items-center space-x-3">
+                            <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                              <span className="text-sm font-medium text-green-600">
+                                {contact.name?.charAt(0).toUpperCase()}
+                              </span>
+                            </div>
+                            <div>
+                              <div className="font-medium">{contact.name}</div>
+                              <div className="text-gray-500 text-xs">{contact.email}</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="p-3 text-gray-600">{contact.company}</td>
+                        <td className="p-3 text-gray-600">
+                          <div className="flex items-center gap-1">
+                            <Phone className="h-3 w-3" />
+                            {contact.phone}
+                          </div>
+                        </td>
+                        <td className="p-3 text-gray-600">
+                          <div className="flex items-center gap-1">
+                            <MapPin className="h-3 w-3" />
+                            {contact.location}
+                          </div>
+                        </td>
+                        <td className="p-3">
+                          <Badge variant="outline">{contact.type}</Badge>
+                        </td>
+                        <td className="p-3">
+                          <Button variant="outline" size="sm">
+                            <Mail className="w-4 h-4 mr-1" />
+                            Contact
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
