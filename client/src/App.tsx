@@ -132,10 +132,14 @@ function Router() {
         <Route path="/ai-swms-generator" component={AISwmsGenerator} />
         
         {/* Admin Routes */}
+        <Route path="/admin/dashboard" component={AdminDashboard} />
         <Route path="/admin/user-management" component={UserManagement} />
         <Route path="/admin/billing-analytics" component={BillingAnalytics} />
         <Route path="/admin/usage-analytics" component={UsageAnalytics} />
         <Route path="/admin/all-swms" component={AllSwms} />
+        <Route path="/admin/data" component={DataManagement} />
+        <Route path="/admin/contacts" component={ContactLists} />
+        <Route path="/admin/health" component={SystemHealth} />
         
         <Route component={NotFound} />
       </Switch>

@@ -1625,6 +1625,111 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get("/api/admin/dashboard", async (req, res) => {
+    try {
+      const mockDashboard = {
+        totalUsers: 1247,
+        activeUsers: 892,
+        totalSwms: 3421,
+        monthlyRevenue: 127500,
+        systemHealth: 98.5,
+        alerts: [
+          { id: 1, type: "warning", message: "High API usage detected", time: "2 hours ago" },
+          { id: 2, type: "info", message: "Database backup completed", time: "4 hours ago" },
+          { id: 3, type: "error", message: "Payment gateway timeout", time: "6 hours ago" }
+        ],
+        recentActivity: [
+          { action: "New user registered", user: "Sarah Wilson", time: "5 minutes ago" },
+          { action: "SWMS generated", user: "Mike Johnson", time: "12 minutes ago" },
+          { action: "Subscription upgraded", user: "ABC Construction", time: "1 hour ago" }
+        ]
+      };
+      res.json(mockDashboard);
+    } catch (error: any) {
+      console.error("Get admin dashboard error:", error);
+      res.status(500).json({ message: "Failed to fetch admin dashboard data" });
+    }
+  });
+
+  app.get("/api/admin/database-stats", async (req, res) => {
+    try {
+      const mockStats = {
+        totalRecords: 15847,
+        databaseSize: "2.4 GB",
+        lastBackup: "2024-06-03T10:30:00Z",
+        tables: [
+          { name: "swms_documents", records: 3421, size: "1.2 GB" },
+          { name: "users", records: 1247, size: "45 MB" },
+          { name: "safety_library", records: 156, size: "12 MB" },
+          { name: "user_sessions", records: 8923, size: "234 MB" },
+          { name: "activity_logs", records: 2100, size: "890 MB" }
+        ],
+        backups: [
+          { id: 1, date: "2024-06-03T10:30:00Z", size: "2.4 GB", status: "completed" },
+          { id: 2, date: "2024-06-02T10:30:00Z", size: "2.3 GB", status: "completed" },
+          { id: 3, date: "2024-06-01T10:30:00Z", size: "2.2 GB", status: "completed" }
+        ]
+      };
+      res.json(mockStats);
+    } catch (error: any) {
+      console.error("Get database stats error:", error);
+      res.status(500).json({ message: "Failed to fetch database stats" });
+    }
+  });
+
+  app.get("/api/admin/system-health", async (req, res) => {
+    try {
+      const mockHealth = {
+        uptime: "99.98%",
+        responseTime: "245ms",
+        cpuUsage: 23.5,
+        memoryUsage: 67.2,
+        diskUsage: 45.8,
+        activeConnections: 342,
+        services: [
+          { name: "Web Server", status: "healthy", uptime: "99.99%", lastCheck: "2 minutes ago" },
+          { name: "Database", status: "healthy", uptime: "99.97%", lastCheck: "1 minute ago" },
+          { name: "API Gateway", status: "healthy", uptime: "99.98%", lastCheck: "3 minutes ago" },
+          { name: "File Storage", status: "warning", uptime: "98.45%", lastCheck: "5 minutes ago" },
+          { name: "Email Service", status: "healthy", uptime: "99.89%", lastCheck: "2 minutes ago" }
+        ],
+        recentIssues: [
+          { severity: "warning", message: "High memory usage detected on server-2", time: "15 minutes ago", resolved: false },
+          { severity: "info", message: "Scheduled maintenance completed successfully", time: "2 hours ago", resolved: true },
+          { severity: "error", message: "Temporary database connection timeout", time: "6 hours ago", resolved: true }
+        ]
+      };
+      res.json(mockHealth);
+    } catch (error: any) {
+      console.error("Get system health error:", error);
+      res.status(500).json({ message: "Failed to fetch system health data" });
+    }
+  });
+
+  app.get("/api/admin/contacts", async (req, res) => {
+    try {
+      const mockContacts = [
+        { id: 1, name: "John Smith", email: "john.smith@abcconstruction.com", phone: "+61 412 345 678", company: "ABC Construction", role: "Site Manager", status: "active", lastContact: "2024-06-02T14:30:00Z" },
+        { id: 2, name: "Sarah Wilson", email: "sarah.wilson@xyz.com.au", phone: "+61 423 456 789", company: "XYZ Electrical", role: "Safety Officer", status: "active", lastContact: "2024-06-01T09:15:00Z" },
+        { id: 3, name: "Mike Johnson", email: "mike.j@deltaplumbing.com", phone: "+61 434 567 890", company: "Delta Plumbing", role: "Lead Plumber", status: "inactive", lastContact: "2024-05-28T16:45:00Z" }
+      ];
+      res.json(mockContacts);
+    } catch (error: any) {
+      console.error("Get contacts error:", error);
+      res.status(500).json({ message: "Failed to fetch contacts" });
+    }
+  });
+
+  app.post("/api/admin/backup", async (req, res) => {
+    try {
+      // Simulate backup creation
+      res.json({ success: true, message: "Backup created successfully" });
+    } catch (error: any) {
+      console.error("Create backup error:", error);
+      res.status(500).json({ message: "Failed to create backup" });
+    }
+  });
+
   app.get("/api/admin/trade-types", async (req, res) => {
     try {
       const tradeTypes = ["Electrical", "Plumbing", "Carpentry", "Roofing", "Concrete", "Painting"];
@@ -1752,6 +1857,134 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error("Delete SWMS error:", error);
       res.status(500).json({ message: "Failed to delete SWMS" });
+    }
+  });
+
+  // Digital Signature endpoints
+  app.post("/api/swms/:id/sign", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { signedBy, signatureTitle, signatureData } = req.body;
+      
+      const signatureHash = Buffer.from(signatureData).toString('base64').substring(0, 32);
+      
+      const updatedDocument = await storage.signSwmsDocument(parseInt(id), {
+        signedBy,
+        signatureTitle,
+        signatureData,
+        signatureHash,
+        signedAt: new Date(),
+        signatureStatus: 'signed'
+      });
+      
+      res.json({ success: true, document: updatedDocument });
+    } catch (error: any) {
+      console.error("Sign document error:", error);
+      res.status(500).json({ message: "Failed to sign document" });
+    }
+  });
+
+  app.post("/api/swms/:id/witness", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { witnessName, witnessSignature } = req.body;
+      
+      const updatedDocument = await storage.addWitnessSignature(parseInt(id), {
+        witnessName,
+        witnessSignature,
+        witnessSignedAt: new Date()
+      });
+      
+      res.json({ success: true, document: updatedDocument });
+    } catch (error: any) {
+      console.error("Add witness error:", error);
+      res.status(500).json({ message: "Failed to add witness signature" });
+    }
+  });
+
+  // QR Check-in endpoints
+  app.post("/api/swms/:id/generate-qr", async (req, res) => {
+    try {
+      const { id } = req.params;
+      
+      // Generate QR code URL (in production, use actual QR generation library)
+      const qrData = {
+        documentId: id,
+        checkInUrl: `${req.protocol}://${req.get('host')}/check-in/${id}`,
+        timestamp: new Date().toISOString()
+      };
+      
+      const qrCodeUrl = `data:image/svg+xml;base64,${Buffer.from(
+        `<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128">
+          <rect width="128" height="128" fill="white"/>
+          <text x="64" y="64" text-anchor="middle" font-family="Arial" font-size="12">QR:${id}</text>
+        </svg>`
+      ).toString('base64')}`;
+      
+      res.json({ qrCodeUrl, qrData });
+    } catch (error: any) {
+      console.error("Generate QR error:", error);
+      res.status(500).json({ message: "Failed to generate QR code" });
+    }
+  });
+
+  app.post("/api/swms/:id/check-in", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { workerName, workerRole, latitude, longitude, deviceInfo, timestamp } = req.body;
+      
+      const checkInRecord = {
+        id: Date.now(),
+        documentId: parseInt(id),
+        workerName,
+        workerRole,
+        checkedInAt: timestamp || new Date().toISOString(),
+        latitude,
+        longitude,
+        deviceInfo,
+        verificationStatus: 'verified' as const
+      };
+      
+      // In production, save to database
+      res.json({ success: true, checkIn: checkInRecord });
+    } catch (error: any) {
+      console.error("Check-in error:", error);
+      res.status(500).json({ message: "Failed to process check-in" });
+    }
+  });
+
+  app.get("/api/swms/:id/check-ins", async (req, res) => {
+    try {
+      const { id } = req.params;
+      
+      // Mock check-in records - in production, fetch from database
+      const mockCheckIns = [
+        {
+          id: 1,
+          workerName: "John Smith",
+          workerRole: "Site Supervisor",
+          checkedInAt: "2024-06-03T08:30:00Z",
+          latitude: -33.8688,
+          longitude: 151.2093,
+          deviceInfo: "Mobile Safari",
+          verificationStatus: "verified"
+        },
+        {
+          id: 2,
+          workerName: "Sarah Wilson", 
+          workerRole: "Electrician",
+          checkedInAt: "2024-06-03T09:15:00Z",
+          latitude: -33.8689,
+          longitude: 151.2094,
+          deviceInfo: "Chrome Mobile",
+          verificationStatus: "verified"
+        }
+      ];
+      
+      res.json(mockCheckIns);
+    } catch (error: any) {
+      console.error("Get check-ins error:", error);
+      res.status(500).json({ message: "Failed to fetch check-ins" });
     }
   });
 

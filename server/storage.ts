@@ -46,6 +46,10 @@ export interface IStorage {
   getAiInteractionsBySwms(swmsId: number): Promise<AiInteraction[]>;
   createAiInteraction(interaction: InsertAiInteraction): Promise<AiInteraction>;
 
+  // Digital signatures
+  signSwmsDocument(id: number, signatureData: any): Promise<SwmsDocument | undefined>;
+  addWitnessSignature(id: number, witnessData: any): Promise<SwmsDocument | undefined>;
+
   // Analytics and admin methods
   getSwmsCount(): Promise<number>;
   getGeneralSwmsCount(): Promise<number>;
