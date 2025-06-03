@@ -92,22 +92,17 @@ export default function Sidebar() {
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium">Admin Mode</span>
             <Button
-              variant="outline"
+              variant={isAdmin ? "default" : "outline"}
               size="sm"
               onClick={() => {
-                const newState = !isAdmin;
-                console.log('Admin button clicked, changing from', isAdmin, 'to', newState);
-                setIsAdmin(newState);
-                // Force immediate re-render
-                window.location.hash = Date.now().toString();
-                setTimeout(() => { window.location.hash = ''; }, 0);
+                setIsAdmin(!isAdmin);
+                window.location.reload();
               }}
-              className={`px-3 py-1 text-xs transition-all duration-200 ${
+              className={`px-3 py-1 text-xs ${
                 isAdmin 
-                  ? 'bg-green-50 border-green-300 text-green-800 hover:bg-green-100' 
-                  : 'bg-gray-50 border-gray-300 text-gray-600 hover:bg-gray-100'
+                  ? 'bg-green-600 text-white hover:bg-green-700' 
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
-              key={`admin-${isAdmin}`}
             >
               <Shield className="mr-1 h-3 w-3" />
               {isAdmin ? 'ON' : 'OFF'}

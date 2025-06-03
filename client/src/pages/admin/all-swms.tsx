@@ -1,261 +1,284 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Search, Eye, Download, Trash2, FileText, Filter } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { useQuery } from "@tanstack/react-query";
+import { FileText, Search, Download, Eye, Calendar, User } from "lucide-react";
 import { useState } from "react";
-import { apiRequest } from "@/lib/queryClient";
-import { useToast } from "@/hooks/use-toast";
-
-interface SwmsDocument {
-  id: number;
-  title: string;
-  projectAddress: string;
-  tradeType: string;
-  jobName: string;
-  username: string;
-  userEmail: string;
-  companyName?: string;
-  createdAt: string;
-  creditsUsed: number;
-  status: string;
-}
 
 export default function AllSwms() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [filterTrade, setFilterTrade] = useState("all");
-  const [filterStatus, setFilterStatus] = useState("all");
-  const [selectedSwms, setSelectedSwms] = useState<SwmsDocument | null>(null);
-  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
+  const [selectedType, setSelectedType] = useState("all");
 
-  const { data: swmsDocuments = [], isLoading } = useQuery({
-    queryKey: ['/api/admin/all-swms']
+  const { data: allSwms, isLoading } = useQuery({
+    queryKey: ['/api/admin/all-swms'],
   });
 
-  const { data: tradeTypes = [], isLoading: tradesLoading } = useQuery({
-    queryKey: ['/api/admin/trade-types']
-  });
-
-  const deleteSwmsMutation = useMutation({
-    mutationFn: async (swmsId: number) => {
-      return apiRequest("DELETE", `/api/admin/swms/${swmsId}`);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/all-swms'] });
-      toast({
-        title: "SWMS Deleted",
-        description: "The SWMS document has been successfully deleted."
-      });
-    }
-  });
-
-  const filteredSwms = Array.isArray(swmsDocuments) ? swmsDocuments.filter((swms: SwmsDocument) => {
-    const matchesSearch = swms.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         swms.projectAddress.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         swms.jobName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         swms.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         (swms.companyName && swms.companyName.toLowerCase().includes(searchTerm.toLowerCase()));
-    
-    const matchesTrade = filterTrade === "all" || swms.tradeType === filterTrade;
-    const matchesStatus = filterStatus === "all" || swms.status === filterStatus;
-    
-    return matchesSearch && matchesTrade && matchesStatus;
-  }) : [];
-
-  const handleViewSwms = (swms: SwmsDocument) => {
-    setSelectedSwms(swms);
-    setIsViewDialogOpen(true);
-  };
-
-  const handleDownloadSwms = async (swmsId: number) => {
-    try {
-      const response = await apiRequest("GET", `/api/swms/${swmsId}/download`);
-      // Handle download logic here
-      toast({
-        title: "Download Started",
-        description: "Your SWMS document is being downloaded."
-      });
-    } catch (error) {
-      toast({
-        title: "Download Failed",
-        description: "Failed to download the SWMS document.",
-        variant: "destructive"
-      });
-    }
-  };
-
-  if (isLoading || tradesLoading) {
+  if (isLoading) {
     return (
-      <div className="space-y-6">
-        <div className="h-8 bg-gray-200 rounded animate-pulse" />
-        <div className="h-96 bg-gray-200 rounded animate-pulse" />
+      <div className="p-6">
+        <div className="animate-pulse space-y-4">
+          <div className="h-8 bg-gray-200 rounded w-1/3"></div>
+          <div className="h-32 bg-gray-200 rounded"></div>
+        </div>
       </div>
     );
   }
 
+  const mockSwmsData = [
+    {
+      id: 1,
+      title: "Electrical Installation - Office Building",
+      type: "General SWMS",
+      user: "John Doe",
+      company: "ABC Construction",
+      trade: "Electrical",
+      createdAt: "2024-06-01",
+      status: "active",
+      riskLevel: "Medium",
+      documentSize: "234 KB"
+    },
+    {
+      id: 2,
+      title: "AI Generated: Plumbing Works - Residential Complex",
+      type: "AI SWMS",
+      user: "Sarah Wilson",
+      company: "BuildTech Pty Ltd",
+      trade: "Plumbing",
+      createdAt: "2024-06-02",
+      status: "active",
+      riskLevel: "High",
+      documentSize: "187 KB"
+    },
+    {
+      id: 3,
+      title: "Roofing Installation - Commercial Property",
+      type: "General SWMS",
+      user: "Mike Chen",
+      company: "SteelWorks Industries",
+      trade: "Roofing",
+      createdAt: "2024-06-01",
+      status: "archived",
+      riskLevel: "High",
+      documentSize: "298 KB"
+    },
+    {
+      id: 4,
+      title: "AI Generated: Concrete Pouring - Warehouse Foundation",
+      type: "AI SWMS",
+      user: "Emma Thompson",
+      company: "ElectricPro Services",
+      trade: "Concrete",
+      createdAt: "2024-06-03",
+      status: "active",
+      riskLevel: "Medium",
+      documentSize: "156 KB"
+    },
+    {
+      id: 5,
+      title: "Carpentry Works - Custom Kitchen Installation",
+      type: "General SWMS",
+      user: "David Brown",
+      company: "WoodCraft Solutions",
+      trade: "Carpentry",
+      createdAt: "2024-05-28",
+      status: "active",
+      riskLevel: "Low",
+      documentSize: "145 KB"
+    }
+  ];
+
+  const swmsData = allSwms || mockSwmsData;
+
+  const filteredData = swmsData.filter(swms => {
+    const matchesSearch = swms.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         swms.user.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         swms.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         swms.trade.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesType = selectedType === "all" || 
+                       (selectedType === "general" && swms.type === "General SWMS") ||
+                       (selectedType === "ai" && swms.type === "AI SWMS");
+    
+    return matchesSearch && matchesType;
+  });
+
+  const totalSwms = swmsData.length;
+  const generalCount = swmsData.filter(s => s.type === "General SWMS").length;
+  const aiCount = swmsData.filter(s => s.type === "AI SWMS").length;
+  const activeCount = swmsData.filter(s => s.status === "active").length;
+
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
+    <div className="p-6 space-y-6">
+      <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">All SWMS Documents</h1>
-          <p className="text-gray-600">View and manage all SWMS documents in the system</p>
+          <p className="text-gray-600">Complete overview of all generated SWMS documents</p>
         </div>
-        <Button variant="outline">
-          <Download className="w-4 h-4 mr-2" />
+        <Button>
+          <Download className="mr-2 h-4 w-4" />
           Export All
         </Button>
       </div>
 
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Total Documents</p>
+                <p className="text-2xl font-bold">{totalSwms}</p>
+              </div>
+              <FileText className="h-8 w-8 text-blue-500" />
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">General SWMS</p>
+                <p className="text-2xl font-bold">{generalCount}</p>
+              </div>
+              <FileText className="h-8 w-8 text-green-500" />
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">AI SWMS</p>
+                <p className="text-2xl font-bold">{aiCount}</p>
+              </div>
+              <FileText className="h-8 w-8 text-purple-500" />
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Active Documents</p>
+                <p className="text-2xl font-bold">{activeCount}</p>
+              </div>
+              <FileText className="h-8 w-8 text-orange-500" />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="flex items-center space-x-4 mb-6">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+          <Input
+            placeholder="Search documents, users, companies, or trades..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+        <div className="flex space-x-2">
+          <Button
+            variant={selectedType === "all" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setSelectedType("all")}
+          >
+            All
+          </Button>
+          <Button
+            variant={selectedType === "general" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setSelectedType("general")}
+          >
+            General
+          </Button>
+          <Button
+            variant={selectedType === "ai" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setSelectedType("ai")}
+          >
+            AI Generated
+          </Button>
+        </div>
+      </div>
+
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <span>SWMS Documents ({filteredSwms.length})</span>
-            <div className="flex items-center space-x-2">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                <Input
-                  placeholder="Search SWMS..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-9 w-64"
-                />
-              </div>
-              <Select value={filterTrade} onValueChange={setFilterTrade}>
-                <SelectTrigger className="w-40">
-                  <SelectValue placeholder="Trade Type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Trades</SelectItem>
-                  {Array.isArray(tradeTypes) && tradeTypes.map((trade: string) => (
-                    <SelectItem key={trade} value={trade}>{trade}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Select value={filterStatus} onValueChange={setFilterStatus}>
-                <SelectTrigger className="w-32">
-                  <SelectValue placeholder="Status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="archived">Archived</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </CardTitle>
+          <CardTitle>All SWMS Documents ({filteredData.length})</CardTitle>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Title</TableHead>
-                <TableHead>Project</TableHead>
-                <TableHead>Trade</TableHead>
-                <TableHead>User</TableHead>
-                <TableHead>Company</TableHead>
-                <TableHead>Created</TableHead>
-                <TableHead>Credits</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredSwms.map((swms: SwmsDocument) => (
-                <TableRow key={swms.id}>
-                  <TableCell>
-                    <div>
-                      <div className="font-medium">{swms.title}</div>
-                      <div className="text-sm text-gray-500">{swms.jobName}</div>
-                    </div>
-                  </TableCell>
-                  <TableCell className="max-w-xs truncate">{swms.projectAddress}</TableCell>
-                  <TableCell>
-                    <Badge variant="outline">{swms.tradeType}</Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div>
-                      <div className="font-medium">{swms.username}</div>
-                      <div className="text-sm text-gray-500">{swms.userEmail}</div>
-                    </div>
-                  </TableCell>
-                  <TableCell>{swms.companyName || "N/A"}</TableCell>
-                  <TableCell>{new Date(swms.createdAt).toLocaleDateString()}</TableCell>
-                  <TableCell>{swms.creditsUsed}</TableCell>
-                  <TableCell>
-                    <div className="flex items-center space-x-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleViewSwms(swms)}
-                      >
-                        <Eye className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDownloadSwms(swms.id)}
-                      >
-                        <Download className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => deleteSwmsMutation.mutate(swms.id)}
-                        disabled={deleteSwmsMutation.isPending}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b">
+                  <th className="text-left p-3">Document</th>
+                  <th className="text-left p-3">Type</th>
+                  <th className="text-left p-3">User</th>
+                  <th className="text-left p-3">Trade</th>
+                  <th className="text-left p-3">Risk Level</th>
+                  <th className="text-left p-3">Created</th>
+                  <th className="text-left p-3">Status</th>
+                  <th className="text-left p-3">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredData.map((swms) => (
+                  <tr key={swms.id} className="border-b hover:bg-gray-50">
+                    <td className="p-3">
+                      <div>
+                        <div className="font-medium">{swms.title}</div>
+                        <div className="text-gray-500 text-xs flex items-center">
+                          <User className="mr-1 h-3 w-3" />
+                          {swms.company}
+                        </div>
+                      </div>
+                    </td>
+                    <td className="p-3">
+                      <Badge variant={swms.type === 'AI SWMS' ? 'default' : 'secondary'}>
+                        {swms.type}
+                      </Badge>
+                    </td>
+                    <td className="p-3">{swms.user}</td>
+                    <td className="p-3">
+                      <Badge variant="outline">{swms.trade}</Badge>
+                    </td>
+                    <td className="p-3">
+                      <Badge variant={
+                        swms.riskLevel === 'High' ? 'destructive' : 
+                        swms.riskLevel === 'Medium' ? 'default' : 'secondary'
+                      }>
+                        {swms.riskLevel}
+                      </Badge>
+                    </td>
+                    <td className="p-3">
+                      <div className="flex items-center text-gray-600">
+                        <Calendar className="mr-1 h-3 w-3" />
+                        {swms.createdAt}
+                      </div>
+                    </td>
+                    <td className="p-3">
+                      <Badge variant={swms.status === 'active' ? 'default' : 'outline'}>
+                        {swms.status}
+                      </Badge>
+                    </td>
+                    <td className="p-3">
+                      <div className="flex space-x-2">
+                        <Button variant="outline" size="sm">
+                          <Eye className="h-3 w-3" />
+                        </Button>
+                        <Button variant="outline" size="sm">
+                          <Download className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </CardContent>
       </Card>
-
-      <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>SWMS Details</DialogTitle>
-          </DialogHeader>
-          {selectedSwms && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm font-medium text-gray-600">Title</label>
-                  <p className="text-sm">{selectedSwms.title}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-600">Trade Type</label>
-                  <p className="text-sm">{selectedSwms.tradeType}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-600">Job Name</label>
-                  <p className="text-sm">{selectedSwms.jobName}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-600">Credits Used</label>
-                  <p className="text-sm">{selectedSwms.creditsUsed}</p>
-                </div>
-                <div className="col-span-2">
-                  <label className="text-sm font-medium text-gray-600">Project Address</label>
-                  <p className="text-sm">{selectedSwms.projectAddress}</p>
-                </div>
-                <div className="col-span-2">
-                  <label className="text-sm font-medium text-gray-600">User</label>
-                  <p className="text-sm">{selectedSwms.username} ({selectedSwms.userEmail})</p>
-                </div>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

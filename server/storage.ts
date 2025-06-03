@@ -43,6 +43,17 @@ export interface IStorage {
   getAiInteractionsByUser(userId: number): Promise<AiInteraction[]>;
   getAiInteractionsBySwms(swmsId: number): Promise<AiInteraction[]>;
   createAiInteraction(interaction: InsertAiInteraction): Promise<AiInteraction>;
+
+  // Analytics and admin methods
+  getSwmsCount(): Promise<number>;
+  getGeneralSwmsCount(): Promise<number>;
+  getAiSwmsCount(): Promise<number>;
+  getAllUsers(): Promise<User[]>;
+  getUserCount(): Promise<number>;
+  getDailySwmsStats(): Promise<any[]>;
+  getTradeUsageStats(): Promise<any[]>;
+  getSubscriptionStats(): Promise<any>;
+  getAllSwmsWithUserInfo(): Promise<any[]>;
 }
 
 export class MemStorage implements IStorage {
