@@ -250,33 +250,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Trade types and comprehensive activities
   app.get("/api/trades", async (req, res) => {
     try {
-      // Use the massive task database
-      const { MASSIVE_TASKS_DATABASE, getCategoriesForTrade, getTaskCountByTrade, getTotalTaskCount } = await import('./massive-tasks-database');
+      // Use the mega construction database with 10,000+ tasks
+      const { getAllMegaTasks, getTasksByTrade } = await import('./mega-construction-database');
       
-      const taskCounts = getTaskCountByTrade();
-      const totalTasks = getTotalTaskCount();
+      const allTasks = getAllMegaTasks();
+      const tradeNames = Array.from(new Set(allTasks.map(task => task.trade)));
       
-      const trades = Object.keys(MASSIVE_TASKS_DATABASE).map(tradeName => {
-        const categories = getCategoriesForTrade(tradeName);
+      const trades = tradeNames.map(tradeName => {
+        const tradeTasks = getTasksByTrade(tradeName);
+        
+        // Group tasks by category
+        const categories = tradeTasks.reduce((acc, task) => {
+          if (!acc[task.category]) {
+            acc[task.category] = {
+              name: task.category,
+              isPrimary: task.complexity === 'basic' || task.frequency === 'daily',
+              tasks: []
+            };
+          }
+          acc[task.category].tasks.push(task.activity);
+          return acc;
+        }, {} as Record<string, any>);
+        
+        const categoryArray = Object.values(categories).map((cat: any) => ({
+          name: cat.name,
+          isPrimary: cat.isPrimary,
+          activities: cat.tasks.slice(0, 50), // Show more activities from mega database
+          totalActivities: cat.tasks.length,
+          hasMore: cat.tasks.length > 50
+        }));
         
         return {
           name: tradeName,
-          categories: categories.map(cat => ({
-            name: cat.name,
-            isPrimary: cat.isPrimary,
-            activities: cat.tasks.slice(0, 20), // Show first 20 activities
-            totalActivities: cat.totalTasks,
-            hasMore: cat.totalTasks > 20
-          })),
-          totalTasks: taskCounts[tradeName],
-          primaryTasks: categories.find(c => c.isPrimary)?.tasks.slice(0, 10) || [],
-          allTasks: categories.flatMap(c => c.tasks)
+          categories: categoryArray,
+          totalTasks: tradeTasks.length,
+          primaryTasks: tradeTasks.filter(t => t.complexity === 'basic').map(t => t.activity).slice(0, 20),
+          allTasks: tradeTasks.map(t => t.activity)
         };
       });
       
       res.json(trades);
     } catch (error: any) {
-      console.error('Massive trades database error:', error);
+      console.error('Mega construction database error:', error);
       
       // Fallback to basic structure
       const trades = [

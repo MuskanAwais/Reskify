@@ -61,7 +61,7 @@ export default function Header() {
           <div className="flex items-center space-x-3">
             {/* New SWMS Button */}
             <Link href="/swms-builder">
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 font-medium shadow-sm">
+              <Button className="bg-primary hover:bg-primary/90 text-white text-sm px-4 py-2 font-medium shadow-sm">
                 <Plus className="mr-2 h-4 w-4" />
                 New SWMS
               </Button>
@@ -87,7 +87,7 @@ export default function Header() {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative h-9 w-9 rounded-full p-0 hover:bg-slate-700">
                   <Avatar className="h-9 w-9">
-                    <AvatarFallback className="bg-blue-600 text-white text-sm font-semibold">
+                    <AvatarFallback className="bg-primary text-white text-sm font-semibold">
                       {user ? getInitials(user.username) : 'U'}
                     </AvatarFallback>
                   </Avatar>

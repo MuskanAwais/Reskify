@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import SwmsForm from "@/components/swms/swms-form";
-import AiAssistant from "@/components/swms/ai-assistant";
 import DocumentPreview from "@/components/swms/document-preview";
 import { ArrowLeft, ArrowRight, FileText, Shield, CheckCircle } from "lucide-react";
 import { Link } from "wouter";
@@ -108,55 +107,43 @@ export default function SwmsBuilder() {
       </Card>
 
       {/* Main Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* SWMS Form */}
-        <div className="lg:col-span-2">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <FileText className="mr-2 h-5 w-5" />
-                {STEPS[currentStep - 1].title}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <SwmsForm 
-                step={currentStep}
-                data={formData}
-                onDataChange={handleFormDataChange}
-              />
+      <div className="max-w-5xl mx-auto">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <FileText className="mr-2 h-5 w-5" />
+              {STEPS[currentStep - 1].title}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <SwmsForm 
+              step={currentStep}
+              data={formData}
+              onDataChange={handleFormDataChange}
+            />
+            
+            {/* Navigation */}
+            <div className="flex justify-between mt-8">
+              <Button 
+                variant="outline" 
+                onClick={handlePrevious}
+                disabled={currentStep === 1}
+              >
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Previous
+              </Button>
               
-              {/* Navigation */}
-              <div className="flex justify-between mt-8">
-                <Button 
-                  variant="outline" 
-                  onClick={handlePrevious}
-                  disabled={currentStep === 1}
-                >
-                  <ArrowLeft className="mr-2 h-4 w-4" />
-                  Previous
+              {currentStep < STEPS.length ? (
+                <Button onClick={handleNext} className="bg-primary hover:bg-primary/90">
+                  Continue
+                  <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
-                
-                {currentStep < STEPS.length ? (
-                  <Button onClick={handleNext} className="bg-primary hover:bg-primary/90">
-                    Continue
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                ) : (
-                  <DocumentPreview formData={formData} />
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* AI Assistant */}
-        <div className="lg:col-span-1">
-          <AiAssistant 
-            tradeType={formData.tradeType}
-            activities={formData.activities}
-            currentStep={currentStep}
-          />
-        </div>
+              ) : (
+                <DocumentPreview formData={formData} />
+              )}
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
