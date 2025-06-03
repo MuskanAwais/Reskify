@@ -582,6 +582,92 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Task search API for comprehensive database
+  app.get("/api/tasks/search", async (req, res) => {
+    try {
+      const { q: searchTerm, trade, category, complexity, riskLevel } = req.query;
+      const { searchAllTasks } = await import('./enhanced-trades-api');
+      
+      if (!searchTerm || typeof searchTerm !== 'string') {
+        return res.status(400).json({ error: "Search term is required" });
+      }
+      
+      const results = searchAllTasks(searchTerm, trade as string);
+      
+      // Apply additional filters
+      let filteredResults = results;
+      
+      if (category && category !== "all") {
+        filteredResults = filteredResults.filter(task => 
+          task.category.toLowerCase() === (category as string).toLowerCase()
+        );
+      }
+      
+      if (complexity && complexity !== "all") {
+        filteredResults = filteredResults.filter(task => 
+          task.complexity === complexity
+        );
+      }
+      
+      if (riskLevel && riskLevel !== "all") {
+        const minRisk = parseInt(riskLevel as string);
+        filteredResults = filteredResults.filter(task => 
+          task.riskScore >= minRisk
+        );
+      }
+      
+      res.json({
+        results: filteredResults.slice(0, 100), // Limit to 100 results for performance
+        total: filteredResults.length,
+        searchTerm
+      });
+    } catch (error: any) {
+      console.error('Task search error:', error);
+      res.status(500).json({ error: "Failed to search tasks" });
+    }
+  });
+
+  // Get task details
+  app.get("/api/tasks/:activity", async (req, res) => {
+    try {
+      const { getTaskDetails } = await import('./enhanced-trades-api');
+      const taskDetails = getTaskDetails(decodeURIComponent(req.params.activity));
+      
+      if (!taskDetails) {
+        return res.status(404).json({ error: "Task not found" });
+      }
+      
+      res.json(taskDetails);
+    } catch (error: any) {
+      console.error('Task details error:', error);
+      res.status(500).json({ error: "Failed to get task details" });
+    }
+  });
+
+  // Get frequently used tasks
+  app.get("/api/tasks/frequent", async (req, res) => {
+    try {
+      const { getFrequentlyUsedTasks } = await import('./enhanced-trades-api');
+      const frequentTasks = getFrequentlyUsedTasks();
+      res.json(frequentTasks);
+    } catch (error: any) {
+      console.error('Frequent tasks error:', error);
+      res.status(500).json({ error: "Failed to get frequent tasks" });
+    }
+  });
+
+  // Enhanced trades API with comprehensive tasks
+  app.get("/api/trades/enhanced", async (req, res) => {
+    try {
+      const { generateEnhancedTradesData } = await import('./enhanced-trades-api');
+      const enhancedTrades = generateEnhancedTradesData();
+      res.json(enhancedTrades);
+    } catch (error: any) {
+      console.error('Enhanced trades error:', error);
+      res.status(500).json({ error: "Failed to get enhanced trades data" });
+    }
+  });
+
   const server = createServer(app);
   return server;
 }

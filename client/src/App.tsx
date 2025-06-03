@@ -12,6 +12,7 @@ import Profile from "@/pages/profile";
 import SafetyLibrary from "@/pages/safety-library";
 import MySwms from "@/pages/my-swms";
 import Analytics from "@/pages/analytics";
+import Settings from "@/pages/settings";
 import NotFound from "@/pages/not-found";
 
 // User context for demo purposes
@@ -58,6 +59,7 @@ function Router() {
         <Route path="/analytics" component={Analytics} />
         <Route path="/profile" component={Profile} />
         <Route path="/safety-library" component={SafetyLibrary} />
+        <Route path="/settings" component={Settings} />
         <Route component={NotFound} />
       </Switch>
     </Layout>
