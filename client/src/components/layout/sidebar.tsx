@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Link, useLocation } from "wouter";
+import { useQuery } from "@tanstack/react-query";
 import { 
   FileText, 
   Search, 
@@ -11,7 +12,9 @@ import {
   Book, 
   Settings, 
   Home,
-  CreditCard
+  CreditCard,
+  BookOpen,
+  Lock
 } from "lucide-react";
 
 const quickActions = [
@@ -35,18 +38,30 @@ const quickActions = [
   }
 ];
 
-const navigationItems = [
-  { icon: Home, label: "Dashboard", href: "/dashboard" },
-  { icon: User, label: "Profile", href: "/profile" },
-  { icon: FileText, label: "My SWMS", href: "/my-swms" },
-  { icon: Book, label: "Safety Library", href: "/safety-library" },
-  { icon: BarChart3, label: "Analytics", href: "/analytics" },
-  { icon: CreditCard, label: "Billing", href: "/billing" },
-  { icon: Settings, label: "Settings", href: "/settings" }
-];
-
 export default function Sidebar() {
   const [location] = useLocation();
+  
+  // Fetch user subscription data
+  const { data: subscription } = useQuery({
+    queryKey: ["/api/user/subscription"],
+  });
+
+  const navigationItems = [
+    { icon: Home, label: "Dashboard", href: "/dashboard" },
+    { icon: User, label: "Profile", href: "/profile" },
+    { icon: FileText, label: "My SWMS", href: "/my-swms" },
+    { icon: Book, label: "Safety Library", href: "/safety-library" },
+    { 
+      icon: BookOpen, 
+      label: "Standard Practice Guide", 
+      href: "/standard-practice-guide",
+      requiresAccess: true,
+      hasAccess: subscription?.features?.standardPracticeGuide
+    },
+    { icon: BarChart3, label: "Analytics", href: "/analytics" },
+    { icon: CreditCard, label: "Billing", href: "/billing" },
+    { icon: Settings, label: "Settings", href: "/settings" }
+  ];
 
   return (
     <aside className="w-64 bg-card shadow-md border-r">

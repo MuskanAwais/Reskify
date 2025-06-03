@@ -5,6 +5,7 @@ import { HardHat, Plus, Bell, Settings, LogOut } from "lucide-react";
 import CreditCounter from "@/components/ui/credit-counter";
 import VoiceAssistant from "@/components/ui/voice-assistant";
 import LanguageSwitcher from "@/components/ui/language-switcher";
+import ContactForm from "@/components/ui/contact-form";
 
 import {
   DropdownMenu,
@@ -53,24 +54,17 @@ export default function Header() {
 
 
           {/* Actions and User Menu */}
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-4">
+            {/* Credit Counter */}
+            <div className="hidden md:block">
+              <CreditCounter className="compact" />
+            </div>
+            
             {/* Voice Assistant */}
             <VoiceAssistant />
             
             {/* Language Switcher */}
             <LanguageSwitcher />
-            
-            {/* Credit Counter */}
-            <div className="hidden md:block">
-              <CreditCounter className="compact" />
-            </div>
-            {/* New SWMS Button */}
-            <Link href="/swms-builder">
-              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground text-sm px-4 py-2 font-medium shadow-sm">
-                <Plus className="mr-2 h-4 w-4" />
-                New SWMS
-              </Button>
-            </Link>
 
             {/* Notifications */}
             <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground hover:bg-accent p-2">
@@ -97,6 +91,8 @@ export default function Header() {
                     </p>
                   </div>
                 </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <ContactForm />
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
                   <Settings className="mr-2 h-4 w-4" />

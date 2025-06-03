@@ -1200,7 +1200,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "User not found" });
       }
 
-      const subscriptionType = user.subscriptionType || "basic";
+      const subscriptionType = user.subscriptionType || "professional";
       const hasAccess = subscriptionType === "professional" || subscriptionType === "enterprise";
 
       res.json({
@@ -1216,6 +1216,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error('Get user subscription error:', error);
       res.status(500).json({ message: 'Failed to fetch subscription details' });
+    }
+  });
+
+  // Contact form endpoint
+  app.post("/api/contact", async (req, res) => {
+    try {
+      const { name, email, subject, message } = req.body;
+      
+      if (!name || !email || !subject || !message) {
+        return res.status(400).json({ message: "All fields are required" });
+      }
+
+      // For now, we'll just log the contact form submission
+      // In production, this would send an email to michael@creatorcapitalmgmt.com
+      console.log('Contact form submission:', {
+        name,
+        email,
+        subject,
+        message,
+        timestamp: new Date().toISOString(),
+        recipientEmail: 'michael@creatorcapitalmgmt.com'
+      });
+
+      res.json({ 
+        success: true, 
+        message: "Thank you for your message. We'll get back to you soon!" 
+      });
+    } catch (error: any) {
+      console.error('Contact form error:', error);
+      res.status(500).json({ message: 'Failed to send message' });
     }
   });
 
