@@ -85,6 +85,20 @@ export default function SafetyLibrary() {
     );
   }
 
+  // Filter data based on search and category
+  const filteredLibrary = safetyLibrary.filter((item: any) => {
+    const matchesSearch = !searchTerm || 
+      item.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.code?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.description?.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesCategory = !selectedCategory || item.category === selectedCategory;
+    
+    return matchesSearch && matchesCategory;
+  });
+
+  const categories = Array.from(new Set(safetyLibrary.map((item: any) => item.category)));
+
   // If user has access, show full Safety Library interface
   return (
     <div className="space-y-6">
@@ -95,8 +109,158 @@ export default function SafetyLibrary() {
             Access comprehensive Australian safety standards and practice guides
           </p>
         </div>
+        
+        {adminUnlocked && (
+          <Badge variant="outline" className="bg-orange-50 text-orange-600 border-orange-200">
+            Admin Mode Active
+          </Badge>
+        )}
       </div>
-      {/* Full interface would go here for users with access */}
+
+      {/* Search and Filter Controls */}
+      <Card>
+        <CardContent className="p-6">
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex-1">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Input
+                  placeholder="Search safety codes, standards, or descriptions..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+            </div>
+            
+            <div className="sm:w-48">
+              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                <SelectTrigger>
+                  <Filter className="h-4 w-4 mr-2" />
+                  <SelectValue placeholder="All Categories" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">All Categories</SelectItem>
+                  {categories.map((category) => (
+                    <SelectItem key={category} value={category}>
+                      {category}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          
+          <div className="mt-4 flex items-center justify-between text-sm text-gray-600">
+            <span>
+              Showing {filteredLibrary.length} of {safetyLibrary.length} safety standards
+            </span>
+            {(searchTerm || selectedCategory) && (
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => {
+                  setSearchTerm("");
+                  setSelectedCategory("");
+                }}
+                className="text-primary hover:text-primary/80"
+              >
+                Clear Filters
+              </Button>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Safety Standards Grid */}
+      <div className="grid gap-4">
+        {filteredLibrary.length === 0 ? (
+          <Card>
+            <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+              <Search className="h-12 w-12 text-gray-400 mb-4" />
+              <h3 className="text-lg font-semibold text-gray-700 mb-2">No Results Found</h3>
+              <p className="text-gray-500 mb-4">
+                Try adjusting your search terms or filters
+              </p>
+              <Button 
+                variant="outline"
+                onClick={() => {
+                  setSearchTerm("");
+                  setSelectedCategory("");
+                }}
+              >
+                Clear All Filters
+              </Button>
+            </CardContent>
+          </Card>
+        ) : (
+          filteredLibrary.map((item: any) => (
+            <Card key={item.id} className="hover:shadow-md transition-shadow">
+              <CardContent className="p-6">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-3">
+                      <Badge variant="outline" className="font-mono text-xs">
+                        {item.code}
+                      </Badge>
+                      <Badge variant="secondary" className="text-xs">
+                        {item.category}
+                      </Badge>
+                    </div>
+                    
+                    <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                      {item.title}
+                    </h3>
+                    
+                    <p className="text-gray-600 mb-4 line-clamp-2">
+                      {item.description}
+                    </p>
+                    
+                    <div className="flex items-center gap-4 text-sm text-gray-500">
+                      <span className="flex items-center gap-1">
+                        <span className="font-medium">Authority:</span>
+                        {item.authority}
+                      </span>
+                      {item.effectiveDate && (
+                        <span className="flex items-center gap-1">
+                          <span className="font-medium">Effective:</span>
+                          {new Date(item.effectiveDate).toLocaleDateString()}
+                        </span>
+                      )}
+                    </div>
+                    
+                    {item.tags && item.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mt-3">
+                        {item.tags.slice(0, 3).map((tag: string, index: number) => (
+                          <Badge key={index} variant="outline" className="text-xs">
+                            {tag}
+                          </Badge>
+                        ))}
+                        {item.tags.length > 3 && (
+                          <Badge variant="outline" className="text-xs">
+                            +{item.tags.length - 3} more
+                          </Badge>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="flex flex-col gap-2 ml-4">
+                    {item.url && (
+                      <Button variant="outline" size="sm" asChild>
+                        <a href={item.url} target="_blank" rel="noopener noreferrer">
+                          <ExternalLink className="h-4 w-4 mr-2" />
+                          View Document
+                        </a>
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))
+        )}
+      </div>
     </div>
   );
 }

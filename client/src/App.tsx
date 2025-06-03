@@ -35,7 +35,17 @@ const UserContext = createContext<{
   setUser: () => {}
 });
 
+// Admin context for admin features
+const AdminContext = createContext<{
+  isAdmin: boolean;
+  setIsAdmin: (isAdmin: boolean) => void;
+}>({
+  isAdmin: false,
+  setIsAdmin: () => {}
+});
+
 export const useUser = () => useContext(UserContext);
+export const useAdmin = () => useContext(AdminContext);
 
 function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -82,13 +92,18 @@ function App() {
     primaryTrade: "Electrical"
   });
 
+  // Admin state for temporary admin features
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
+
   return (
     <QueryClientProvider client={queryClient}>
       <UserContext.Provider value={{ user, setUser }}>
-        <TooltipProvider>
-          <Toaster />
-          <Router />
-        </TooltipProvider>
+        <AdminContext.Provider value={{ isAdmin, setIsAdmin }}>
+          <TooltipProvider>
+            <Toaster />
+            <Router />
+          </TooltipProvider>
+        </AdminContext.Provider>
       </UserContext.Provider>
     </QueryClientProvider>
   );
