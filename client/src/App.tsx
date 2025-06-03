@@ -18,6 +18,7 @@ import AiAssistant from "@/pages/ai-assistant";
 import Settings from "@/pages/settings";
 import Billing from "@/pages/billing";
 import NotFound from "@/pages/not-found";
+import Landing from "@/pages/landing";
 
 // Admin pages
 import AdminDashboard from "@/pages/admin/admin-dashboard";
@@ -115,7 +116,8 @@ function Router() {
   return (
     <Layout>
       <Switch>
-        <Route path="/" component={Dashboard} />
+        <Route path="/" component={Landing} />
+        <Route path="/landing" component={Landing} />
         <Route path="/dashboard" component={Dashboard} />
         <Route path="/swms-builder" component={SwmsBuilder} />
         <Route path="/my-swms" component={MySwms} />
