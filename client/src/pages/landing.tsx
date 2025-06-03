@@ -158,8 +158,76 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
+      {/* Floating Background Safety Sensei Logo */}
+      <motion.div
+        className="fixed inset-0 pointer-events-none z-0 overflow-hidden"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 2 }}
+      >
+        <motion.img
+          src={logoImage}
+          alt="Safety Sensei Background"
+          className="absolute w-96 h-96 object-contain opacity-5"
+          animate={{
+            x: [100, -100, 100],
+            y: [50, -50, 50],
+            rotate: [0, 5, -5, 0],
+          }}
+          transition={{
+            duration: 20,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+          style={{
+            top: "20%",
+            left: "10%",
+          }}
+        />
+        <motion.img
+          src={logoImage}
+          alt="Safety Sensei Background"
+          className="absolute w-80 h-80 object-contain opacity-3"
+          animate={{
+            x: [-80, 80, -80],
+            y: [-30, 30, -30],
+            rotate: [0, -3, 3, 0],
+          }}
+          transition={{
+            duration: 25,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 5
+          }}
+          style={{
+            top: "60%",
+            right: "15%",
+          }}
+        />
+        <motion.img
+          src={logoImage}
+          alt="Safety Sensei Background"
+          className="absolute w-72 h-72 object-contain opacity-4"
+          animate={{
+            x: [60, -60, 60],
+            y: [40, -40, 40],
+            rotate: [0, 8, -8, 0],
+          }}
+          transition={{
+            duration: 30,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 10
+          }}
+          style={{
+            bottom: "10%",
+            left: "20%",
+          }}
+        />
+      </motion.div>
+
       {/* Hero Section with 3D Effects */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden z-10">
         <motion.div 
           style={{ y, opacity }}
           className="absolute inset-0 bg-gradient-to-br from-blue-600/10 via-transparent to-blue-800/10"
@@ -171,16 +239,8 @@ export default function Landing() {
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ duration: 1, ease: "easeOut" }}
-              className="mb-16"
+              className="mb-12"
             >
-              {/* Big Safety Sensei Logo */}
-              <div className="flex justify-center items-center mb-8">
-                <img 
-                  src={logoImage} 
-                  alt="Safety Sensei" 
-                  className="w-80 h-80 object-contain drop-shadow-2xl"
-                />
-              </div>
               <Logo size="xl" className="justify-center" />
             </motion.div>
           </AnimatedSection>
