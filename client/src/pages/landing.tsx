@@ -157,9 +157,28 @@ export default function Landing() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 relative">
+      {/* Background Safety Sensei Watermark */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div className="absolute top-1/4 left-1/4 transform -rotate-45 text-6xl font-bold text-blue-600/5">
+          Safety Sensei
+        </div>
+        <div className="absolute top-3/4 right-1/4 transform rotate-45 text-6xl font-bold text-blue-600/5">
+          Safety Sensei
+        </div>
+        <div className="absolute bottom-1/4 left-1/2 transform -translate-x-1/2 rotate-12 text-5xl font-bold text-blue-600/5">
+          SWMS Builder
+        </div>
+        <div className="absolute top-1/2 right-1/6 transform -rotate-12 text-4xl font-bold text-blue-600/5">
+          Australia
+        </div>
+        <div className="absolute bottom-1/3 left-1/6 transform rotate-45 text-4xl font-bold text-blue-600/5">
+          Professional
+        </div>
+      </div>
+
       {/* Hero Section with 3D Effects */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden z-10">
         <motion.div 
           style={{ y, opacity }}
           className="absolute inset-0 bg-gradient-to-br from-blue-600/10 via-transparent to-blue-800/10"
