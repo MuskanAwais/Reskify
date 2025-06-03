@@ -90,13 +90,13 @@ export default function Sidebar() {
   ];
 
   const adminNavigationItems = [
-    { icon: Shield, label: "Admin Dashboard", href: "/admin/dashboard" },
-    { icon: Users, label: "User Management", href: "/admin/users" },
-    { icon: DollarSign, label: "Billing Analytics", href: "/admin/billing" },
-    { icon: TrendingUp, label: "Usage Analytics", href: "/admin/analytics" },
+    { icon: Shield, label: "Admin Dashboard", href: "/dashboard" },
+    { icon: Users, label: "User Management", href: "/admin/user-management" },
+    { icon: DollarSign, label: "Billing Analytics", href: "/admin/billing-analytics" },
+    { icon: TrendingUp, label: "Usage Analytics", href: "/admin/usage-analytics" },
     { icon: Database, label: "Data Management", href: "/admin/data" },
     { icon: Contact, label: "Contact Lists", href: "/admin/contacts" },
-    { icon: Archive, label: "All SWMS", href: "/admin/swms" },
+    { icon: Archive, label: "All SWMS", href: "/admin/all-swms" },
     { icon: Activity, label: "System Health", href: "/admin/health" }
   ];
 
