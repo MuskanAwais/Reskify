@@ -586,7 +586,7 @@ const allTradeActivities: Record<string, string[]> = {
   "Fencing": fencingActivities,
   "Waterproofing": waterproofingActivities,
   "Insulation": insulationActivities,
-  "Drywall": drywallActivities,
+  "Plasterboard": drywallActivities,
   "HVAC": hvacActivities
 };
 

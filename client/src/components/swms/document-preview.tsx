@@ -18,6 +18,7 @@ import {
   AlertTriangle,
   CheckCircle,
   Calendar,
+  Target,
   MapPin,
   User,
   Building
@@ -278,6 +279,91 @@ export default function DocumentPreview({ formData }: DocumentPreviewProps) {
                           {activity}
                         </Badge>
                       ))}
+                    </div>
+                  </div>
+
+                  {/* Risk Matrices Reference */}
+                  <div className="mb-6">
+                    <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                      <Target className="mr-2 h-5 w-5" />
+                      Risk Assessment Reference Matrices
+                    </h3>
+                    
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      {/* Risk Matrix */}
+                      <div className="border rounded-lg p-4">
+                        <h4 className="font-semibold mb-3 text-center">Construction Control Risk Matrix</h4>
+                        <div className="text-xs">
+                          <table className="w-full border-collapse">
+                            <thead>
+                              <tr>
+                                <th className="border p-1 bg-gray-100">Consequence</th>
+                                <th className="border p-1 bg-green-200">Likely</th>
+                                <th className="border p-1 bg-yellow-200">Possible</th>
+                                <th className="border p-1 bg-orange-200">Unlikely</th>
+                                <th className="border p-1 bg-red-200">Very Rare</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td className="border p-1 bg-red-100 font-medium">Extreme</td>
+                                <td className="border p-1 bg-red-500 text-white text-center">16</td>
+                                <td className="border p-1 bg-red-400 text-white text-center">14</td>
+                                <td className="border p-1 bg-orange-400 text-white text-center">11</td>
+                                <td className="border p-1 bg-yellow-400 text-center">7</td>
+                              </tr>
+                              <tr>
+                                <td className="border p-1 bg-orange-100 font-medium">High</td>
+                                <td className="border p-1 bg-red-400 text-white text-center">15</td>
+                                <td className="border p-1 bg-orange-400 text-white text-center">12</td>
+                                <td className="border p-1 bg-yellow-400 text-center">8</td>
+                                <td className="border p-1 bg-green-400 text-center">4</td>
+                              </tr>
+                              <tr>
+                                <td className="border p-1 bg-yellow-100 font-medium">Medium</td>
+                                <td className="border p-1 bg-orange-400 text-white text-center">13</td>
+                                <td className="border p-1 bg-yellow-400 text-center">9</td>
+                                <td className="border p-1 bg-green-400 text-center">5</td>
+                                <td className="border p-1 bg-green-500 text-white text-center">2</td>
+                              </tr>
+                              <tr>
+                                <td className="border p-1 bg-green-100 font-medium">Low</td>
+                                <td className="border p-1 bg-yellow-400 text-center">10</td>
+                                <td className="border p-1 bg-green-400 text-center">6</td>
+                                <td className="border p-1 bg-green-500 text-white text-center">3</td>
+                                <td className="border p-1 bg-green-600 text-white text-center">1</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+
+                      {/* Hierarchy of Controls */}
+                      <div className="border rounded-lg p-4">
+                        <h4 className="font-semibold mb-3 text-center">Hierarchy of Controls</h4>
+                        <div className="space-y-2 text-xs">
+                          <div className="flex items-center bg-green-600 text-white p-2 rounded">
+                            <span className="font-medium w-20">1. Elimination</span>
+                            <span className="ml-2 text-xs">Physically remove the hazard</span>
+                          </div>
+                          <div className="flex items-center bg-green-500 text-white p-2 rounded">
+                            <span className="font-medium w-20">2. Substitution</span>
+                            <span className="ml-2 text-xs">Replace the hazard</span>
+                          </div>
+                          <div className="flex items-center bg-yellow-500 text-white p-2 rounded">
+                            <span className="font-medium w-20">3. Engineering</span>
+                            <span className="ml-2 text-xs">Isolate people from hazard</span>
+                          </div>
+                          <div className="flex items-center bg-orange-500 text-white p-2 rounded">
+                            <span className="font-medium w-20">4. Administrative</span>
+                            <span className="ml-2 text-xs">Change work practices</span>
+                          </div>
+                          <div className="flex items-center bg-red-500 text-white p-2 rounded">
+                            <span className="font-medium w-20">5. PPE</span>
+                            <span className="ml-2 text-xs">Personal protective equipment</span>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
 
