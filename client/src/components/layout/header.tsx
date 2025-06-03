@@ -39,11 +39,11 @@ export default function Header() {
         <div className="flex justify-between items-center">
           {/* Logo and Title */}
           <div className="flex items-center space-x-3">
-            <div className="w-16 h-16 rounded-lg flex items-center justify-center">
+            <div className="w-20 h-20 rounded-lg flex items-center justify-center">
               <img 
                 src={logoImage} 
                 alt="Safety Sensei Logo" 
-                className="w-16 h-16 object-contain"
+                className="w-20 h-20 object-contain"
                 onError={(e) => {
                   console.log("Logo failed to load, showing fallback");
                   e.currentTarget.style.display = 'none';
