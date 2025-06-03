@@ -61,7 +61,7 @@ export default function Sidebar() {
       label: "Safety Library", 
       href: "/safety-library",
       requiresAccess: true,
-      hasAccess: subscription?.features?.safetyLibrary || isAdmin
+      hasAccess: subscription?.features?.safetyLibrary || isAdminMode
     },
     { icon: BarChart3, label: "Analytics", href: "/analytics" },
     { icon: User, label: "Account", href: "/billing" }
@@ -92,23 +92,23 @@ export default function Sidebar() {
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium">Admin Mode</span>
             <Button
-              variant={isAdmin ? "default" : "outline"}
+              variant={isAdminMode ? "default" : "outline"}
               size="sm"
               onClick={() => {
-                setIsAdmin(!isAdmin);
+                setIsAdminMode(!isAdminMode);
                 window.location.reload();
               }}
               className={`px-3 py-1 text-xs ${
-                isAdmin 
+                isAdminMode 
                   ? 'bg-green-600 text-white hover:bg-green-700' 
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
               <Shield className="mr-1 h-3 w-3" />
-              {isAdmin ? 'ON' : 'OFF'}
+              {isAdminMode ? 'ON' : 'OFF'}
             </Button>
           </div>
-          {isAdmin && (
+          {isAdminMode && (
             <Badge variant="destructive" className="mt-2 text-xs">
               Administrative Access
             </Badge>
