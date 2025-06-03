@@ -57,12 +57,9 @@ export default function SwmsForm({ step, data, onDataChange }: SwmsFormProps) {
 
   // Auto-generate SWMS from selected activities
   const autoGenerateSwms = async () => {
+    // Check if activities exist
     if (!formData.activities || formData.activities.length === 0) {
-      toast({
-        title: "No Activities Selected",
-        description: "Please select activities before auto-generating SWMS",
-        variant: "destructive"
-      });
+      console.log("No activities found in formData:", formData.activities);
       return;
     }
 
@@ -392,8 +389,15 @@ export default function SwmsForm({ step, data, onDataChange }: SwmsFormProps) {
                                       onCheckedChange={async (checked) => {
                                         if (checked) {
                                           addArrayItem('activities', activity);
-                                          // Auto-generate SWMS when activities are selected
-                                          setTimeout(() => autoGenerateSwms(), 500);
+                                          // Auto-generate SWMS when activities are selected with updated state
+                                          setTimeout(() => {
+                                            setFormData((currentData) => {
+                                              if (currentData.activities && currentData.activities.length > 0) {
+                                                autoGenerateSwms();
+                                              }
+                                              return currentData;
+                                            });
+                                          }, 100);
                                         } else {
                                           const index = formData.activities.indexOf(activity);
                                           if (index > -1) removeArrayItem('activities', index);

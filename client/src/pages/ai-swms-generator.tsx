@@ -849,64 +849,129 @@ function SwmsEditorModal({ swms, isOpen, onClose, onSave }: {
             </div>
           </div>
 
-          {/* Tasks Editor */}
+          {/* Tasks Editor with Enhanced Controls */}
           <div>
             <h3 className="text-lg font-semibold mb-3">Project Tasks</h3>
-            <div className="space-y-2">
+            <div className="space-y-3">
               {editedSwms.suggestedTasks.map((task, index) => (
-                <div key={index} className="flex gap-2 items-center">
-                  <Input 
-                    value={task.activity}
-                    onChange={(e) => {
-                      const newTasks = [...editedSwms.suggestedTasks];
-                      newTasks[index] = { ...task, activity: e.target.value };
-                      setEditedSwms({ ...editedSwms, suggestedTasks: newTasks });
-                    }}
-                    className="flex-1"
-                  />
-                  <Select 
-                    value={task.priority} 
-                    onValueChange={(value: "high" | "medium" | "low") => {
-                      const newTasks = [...editedSwms.suggestedTasks];
-                      newTasks[index] = { ...task, priority: value };
-                      setEditedSwms({ ...editedSwms, suggestedTasks: newTasks });
-                    }}
-                  >
-                    <SelectTrigger className="w-32">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="high">High</SelectItem>
-                      <SelectItem value="medium">Medium</SelectItem>
-                      <SelectItem value="low">Low</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => {
-                      const newTasks = editedSwms.suggestedTasks.filter((_, i) => i !== index);
-                      setEditedSwms({ ...editedSwms, suggestedTasks: newTasks });
-                    }}
-                  >
-                    Remove
-                  </Button>
+                <div key={index} className="border rounded-lg p-3 bg-gray-50">
+                  <div className="flex gap-2 items-start mb-2">
+                    <Input 
+                      value={task.activity}
+                      onChange={(e) => {
+                        const newTasks = [...editedSwms.suggestedTasks];
+                        newTasks[index] = { ...task, activity: e.target.value };
+                        setEditedSwms({ ...editedSwms, suggestedTasks: newTasks });
+                      }}
+                      className="flex-1"
+                      placeholder="Task description"
+                    />
+                    <Select 
+                      value={task.priority} 
+                      onValueChange={(value: "high" | "medium" | "low") => {
+                        const newTasks = [...editedSwms.suggestedTasks];
+                        newTasks[index] = { ...task, priority: value };
+                        setEditedSwms({ ...editedSwms, suggestedTasks: newTasks });
+                      }}
+                    >
+                      <SelectTrigger className="w-32">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="high">High</SelectItem>
+                        <SelectItem value="medium">Medium</SelectItem>
+                        <SelectItem value="low">Low</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Button 
+                      variant="destructive" 
+                      size="sm"
+                      onClick={() => {
+                        const newTasks = editedSwms.suggestedTasks.filter((_, i) => i !== index);
+                        setEditedSwms({ ...editedSwms, suggestedTasks: newTasks });
+                      }}
+                    >
+                      Delete
+                    </Button>
+                  </div>
+                  <div className="flex gap-2">
+                    <Input 
+                      value={task.category}
+                      onChange={(e) => {
+                        const newTasks = [...editedSwms.suggestedTasks];
+                        newTasks[index] = { ...task, category: e.target.value };
+                        setEditedSwms({ ...editedSwms, suggestedTasks: newTasks });
+                      }}
+                      className="w-40"
+                      placeholder="Category"
+                    />
+                    <Input 
+                      value={task.reasoning}
+                      onChange={(e) => {
+                        const newTasks = [...editedSwms.suggestedTasks];
+                        newTasks[index] = { ...task, reasoning: e.target.value };
+                        setEditedSwms({ ...editedSwms, suggestedTasks: newTasks });
+                      }}
+                      className="flex-1"
+                      placeholder="Reasoning for this task"
+                    />
+                  </div>
                 </div>
               ))}
-              <Button 
-                variant="outline"
-                onClick={() => {
-                  setEditedSwms({
-                    ...editedSwms,
-                    suggestedTasks: [
-                      ...editedSwms.suggestedTasks,
-                      { activity: "New Task", category: "General", priority: "medium", reasoning: "Added manually" }
-                    ]
-                  });
-                }}
-              >
-                Add Task
-              </Button>
+              
+              <div className="flex gap-2">
+                <Button 
+                  variant="outline"
+                  onClick={() => {
+                    setEditedSwms({
+                      ...editedSwms,
+                      suggestedTasks: [
+                        ...editedSwms.suggestedTasks,
+                        { activity: "New Task", category: "General", priority: "medium", reasoning: "Added manually" }
+                      ]
+                    });
+                  }}
+                >
+                  Add Task
+                </Button>
+                
+                <Button 
+                  variant="secondary"
+                  onClick={() => {
+                    const commonTasks = [
+                      { activity: "Site setup and access control", category: "Preparation", priority: "high", reasoning: "Essential for safe site operations" },
+                      { activity: "Material handling and storage", category: "Logistics", priority: "medium", reasoning: "Required for project materials" },
+                      { activity: "Waste management and disposal", category: "Environmental", priority: "medium", reasoning: "Environmental compliance" },
+                      { activity: "Emergency evacuation procedures", category: "Safety", priority: "high", reasoning: "Critical safety requirement" }
+                    ];
+                    
+                    const tasksToAdd = commonTasks.filter(newTask => 
+                      !editedSwms.suggestedTasks.some(existing => 
+                        existing.activity.toLowerCase().includes(newTask.activity.toLowerCase())
+                      )
+                    );
+                    
+                    if (tasksToAdd.length > 0) {
+                      setEditedSwms({
+                        ...editedSwms,
+                        suggestedTasks: [...editedSwms.suggestedTasks, ...tasksToAdd]
+                      });
+                    }
+                  }}
+                >
+                  Add Common Tasks
+                </Button>
+                
+                <Button 
+                  variant="outline"
+                  onClick={() => {
+                    const selectedTasks = editedSwms.suggestedTasks.filter(task => task.priority === "high");
+                    setEditedSwms({ ...editedSwms, suggestedTasks: selectedTasks });
+                  }}
+                >
+                  Keep Only High Priority
+                </Button>
+              </div>
             </div>
           </div>
 

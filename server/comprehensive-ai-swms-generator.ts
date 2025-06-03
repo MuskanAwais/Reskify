@@ -67,14 +67,17 @@ DURATION: ${input.duration || 'Not specified'}
 SPECIAL REQUIREMENTS: ${input.requirements || 'None specified'}
 
 AVAILABLE TASKS FOR THIS TRADE (use as reference):
-${tradeTasks.slice(0, 20).map(task => `- ${task.activity}: ${task.hazards.slice(0, 3).join(', ')}`).join('\n')}
+${tradeTasks.slice(0, 50).map(task => `- ${task.activity}: ${task.hazards.slice(0, 3).join(', ')}`).join('\n')}
 
 REQUIREMENTS:
-1. Suggest 8-15 specific construction tasks relevant to this job
-2. For each task, provide comprehensive risk assessment with Australian legislation references
-3. Include detailed safety measures, PPE requirements, and training needs
-4. Provide emergency procedures and compliance codes
-5. Be extremely detailed and extensive for maximum safety coverage
+1. Suggest 15-25 specific construction tasks relevant to this job (be comprehensive)
+2. Consider ALL phases: setup, preparation, execution, cleanup, and site management
+3. Include general construction activities like site access, material handling, waste management
+4. For each task, provide comprehensive risk assessment with Australian legislation references
+5. Include detailed safety measures, PPE requirements, and training needs
+6. Provide emergency procedures and compliance codes
+7. Be extremely detailed and extensive for maximum safety coverage
+8. Prioritize tasks by safety criticality and project phase
 
 Respond with a JSON object matching this structure:
 {
