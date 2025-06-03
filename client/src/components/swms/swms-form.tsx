@@ -284,96 +284,166 @@ export default function SwmsForm({ step, data, onDataChange }: SwmsFormProps) {
     case 2:
       return (
         <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <CheckSquare className="mr-2 h-5 w-5" />
-                Selected Activities
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {formData.activities.length === 0 ? (
-                <p className="text-gray-500 text-sm">No activities selected. Please go back and select activities.</p>
-              ) : (
-                <div className="flex flex-wrap gap-2">
-                  {formData.activities.map((activity: string, index: number) => (
-                    <Badge key={index} variant="secondary" className="flex items-center">
-                      {activity}
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="ml-2 h-4 w-4 p-0"
-                        onClick={() => removeArrayItem('activities', index)}
-                      >
-                        <X className="h-3 w-3" />
-                      </Button>
-                    </Badge>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
+          <div className="text-center">
+            <AlertTriangle className="mx-auto h-12 w-12 text-orange-500 mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Risk Assessment</h3>
+            <p className="text-gray-600 text-sm">
+              Identify and assess potential hazards for your work activities
+            </p>
+          </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <AlertTriangle className="mr-2 h-5 w-5" />
-                Identify Additional Hazards
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-3">
-                {formData.hazards.map((hazard: string, index: number) => (
-                  <div key={index} className="flex items-center space-x-2">
-                    <Input
-                      value={hazard}
-                      onChange={(e) => {
-                        const newHazards = [...formData.hazards];
-                        newHazards[index] = e.target.value;
-                        updateFormData({ hazards: newHazards });
-                      }}
-                      placeholder="Describe the hazard"
-                    />
+          {formData.activities.length > 0 && (
+            <div className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base flex items-center">
+                    <Shield className="mr-2 h-4 w-4" />
+                    AI-Powered Risk Analysis
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div>
+                      <Label className="text-sm font-medium">Selected Activities ({formData.activities.length})</Label>
+                      <div className="flex flex-wrap gap-1.5 mt-2">
+                        {formData.activities.slice(0, 6).map((activity: string, index: number) => (
+                          <Badge key={index} variant="secondary" className="text-xs">
+                            {activity}
+                          </Badge>
+                        ))}
+                        {formData.activities.length > 6 && (
+                          <Badge variant="outline" className="text-xs">
+                            +{formData.activities.length - 6} more
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                    
                     <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => removeArrayItem('hazards', index)}
+                      type="button"
+                      className="w-full"
+                      onClick={async () => {
+                        try {
+                          const response = await fetch('/api/ai/enhance-swms', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                              activities: formData.activities,
+                              tradeType: formData.tradeType,
+                              projectLocation: formData.projectLocation
+                            })
+                          });
+                          
+                          if (response.ok) {
+                            const aiData = await response.json();
+                            updateFormData({
+                              riskAssessments: aiData.riskAssessments,
+                              safetyMeasures: aiData.safetyMeasures,
+                              complianceCodes: [...(formData.complianceCodes || []), ...aiData.complianceRecommendations]
+                            });
+                            toast({
+                              title: "AI Analysis Complete",
+                              description: `Generated ${aiData.riskAssessments.length} risk assessments and ${aiData.safetyMeasures.length} safety measures`,
+                            });
+                          } else {
+                            throw new Error('AI analysis failed');
+                          }
+                        } catch (error) {
+                          toast({
+                            title: "AI Analysis Error",
+                            description: "Unable to generate AI risk assessment. Please check your connection.",
+                            variant: "destructive"
+                          });
+                        }
+                      }}
                     >
-                      <X className="h-4 w-4" />
+                      <Shield className="mr-2 h-4 w-4" />
+                      Generate AI Risk Assessment
                     </Button>
                   </div>
-                ))}
-              </div>
-              <Button
-                variant="outline"
-                onClick={() => addArrayItem('hazards', '')}
-                className="w-full"
-              >
-                <Plus className="mr-2 h-4 w-4" />
-                Add Hazard
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-      );
+                </CardContent>
+              </Card>
 
-    case 3:
-      return (
-        <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Shield className="mr-2 h-5 w-5" />
-                Risk Assessment
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {[...formData.activities, ...formData.hazards.filter((h: string) => h.trim())].map((item: string, index: number) => (
-                <div key={index} className="border rounded-lg p-4 space-y-4">
-                  <h4 className="font-medium text-gray-800">{item}</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {formData.riskAssessments && formData.riskAssessments.length > 0 && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-base">Identified Risks</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {formData.riskAssessments.map((risk: any, index: number) => (
+                        <div key={index} className="border border-gray-200 rounded-lg p-4">
+                          <div className="flex items-start justify-between mb-3">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-2">
+                                <h4 className="font-medium text-gray-900">{risk.hazard}</h4>
+                                <Badge 
+                                  variant={
+                                    risk.riskLevel === 'extreme' ? 'destructive' :
+                                    risk.riskLevel === 'high' ? 'destructive' :
+                                    risk.riskLevel === 'medium' ? 'default' : 'secondary'
+                                  }
+                                  className="text-xs"
+                                >
+                                  {risk.riskLevel.toUpperCase()}
+                                </Badge>
+                              </div>
+                              <p className="text-sm text-gray-600 mb-2">
+                                <strong>Responsible:</strong> {risk.responsiblePerson}
+                              </p>
+                            </div>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                const updatedRisks = formData.riskAssessments.filter((_: any, i: number) => i !== index);
+                                updateFormData({ riskAssessments: updatedRisks });
+                              }}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                          
+                          <div className="space-y-2">
+                            <Label className="text-xs font-medium text-gray-700">Control Measures</Label>
+                            <div className="space-y-1">
+                              {Array.isArray(risk.controlMeasures) ? 
+                                risk.controlMeasures.map((measure: string, measureIndex: number) => (
+                                  <div key={measureIndex} className="text-sm text-gray-600 flex items-start">
+                                    <CheckSquare className="h-3 w-3 mt-0.5 mr-2 text-green-500 flex-shrink-0" />
+                                    {measure}
+                                  </div>
+                                )) :
+                                <div className="text-sm text-gray-600 flex items-start">
+                                  <CheckSquare className="h-3 w-3 mt-0.5 mr-2 text-green-500 flex-shrink-0" />
+                                  {risk.controlMeasures}
+                                </div>
+                              }
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">Add Custom Risk</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label>Risk Level</Label>
+                      <Label htmlFor="hazard">Hazard Description</Label>
+                      <Input
+                        id="hazard"
+                        placeholder="e.g., Fall from height"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="riskLevel">Risk Level</Label>
                       <Select>
                         <SelectTrigger>
                           <SelectValue placeholder="Select risk level" />
@@ -387,21 +457,177 @@ export default function SwmsForm({ step, data, onDataChange }: SwmsFormProps) {
                       </Select>
                     </div>
                     <div className="space-y-2">
-                      <Label>Control Measures</Label>
-                      <Textarea
-                        placeholder="Describe control measures"
-                        rows={2}
+                      <Label htmlFor="responsiblePerson">Responsible Person</Label>
+                      <Input
+                        id="responsiblePerson"
+                        placeholder="e.g., Site Supervisor"
                       />
                     </div>
-                    <div className="space-y-2">
-                      <Label>Responsible Person</Label>
-                      <Input placeholder="Role/Position" />
+                    <div className="space-y-2 md:col-span-2">
+                      <Label htmlFor="controlMeasures">Control Measures</Label>
+                      <Textarea
+                        id="controlMeasures"
+                        placeholder="Describe the control measures to mitigate this risk..."
+                        rows={3}
+                      />
+                    </div>
+                    <div className="md:col-span-2">
+                      <Button type="button" className="w-full">
+                        <Plus className="mr-2 h-4 w-4" />
+                        Add Risk Assessment
+                      </Button>
                     </div>
                   </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
+          {formData.activities.length === 0 && (
+            <Card>
+              <CardContent className="text-center py-8">
+                <AlertTriangle className="mx-auto h-8 w-8 text-gray-400 mb-3" />
+                <p className="text-gray-500">
+                  Please select activities in Step 1 to continue with risk assessment
+                </p>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      );
+
+    case 3:
+      return (
+        <div className="space-y-6">
+          <div className="text-center">
+            <Shield className="mx-auto h-12 w-12 text-green-500 mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Safety Measures</h3>
+            <p className="text-gray-600 text-sm">
+              Define safety procedures and protective measures for your work
+            </p>
+          </div>
+
+          {formData.safetyMeasures && formData.safetyMeasures.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">AI-Generated Safety Measures</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {formData.safetyMeasures.map((measure: any, index: number) => (
+                    <div key={index} className="border border-gray-200 rounded-lg p-4">
+                      <div className="flex items-start justify-between mb-3">
+                        <h4 className="font-medium text-gray-900">{measure.category}</h4>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            const updatedMeasures = formData.safetyMeasures.filter((_: any, i: number) => i !== index);
+                            updateFormData({ safetyMeasures: updatedMeasures });
+                          }}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      
+                      <div className="space-y-3">
+                        {measure.measures && measure.measures.length > 0 && (
+                          <div>
+                            <Label className="text-xs font-medium text-gray-700">Safety Procedures</Label>
+                            <div className="space-y-1 mt-1">
+                              {measure.measures.map((item: string, itemIndex: number) => (
+                                <div key={itemIndex} className="text-sm text-gray-600 flex items-start">
+                                  <CheckSquare className="h-3 w-3 mt-0.5 mr-2 text-green-500 flex-shrink-0" />
+                                  {item}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        
+                        {measure.equipment && measure.equipment.length > 0 && (
+                          <div>
+                            <Label className="text-xs font-medium text-gray-700">Required Equipment</Label>
+                            <div className="space-y-1 mt-1">
+                              {measure.equipment.map((item: string, itemIndex: number) => (
+                                <div key={itemIndex} className="text-sm text-gray-600 flex items-start">
+                                  <Shield className="h-3 w-3 mt-0.5 mr-2 text-blue-500 flex-shrink-0" />
+                                  {item}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        
+                        {measure.procedures && measure.procedures.length > 0 && (
+                          <div>
+                            <Label className="text-xs font-medium text-gray-700">Work Procedures</Label>
+                            <div className="space-y-1 mt-1">
+                              {measure.procedures.map((item: string, itemIndex: number) => (
+                                <div key={itemIndex} className="text-sm text-gray-600 flex items-start">
+                                  <FileText className="h-3 w-3 mt-0.5 mr-2 text-orange-500 flex-shrink-0" />
+                                  {item}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              </CardContent>
+            </Card>
+          )}
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Add Custom Safety Measure</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="safetyCategory">Safety Category</Label>
+                  <Input
+                    id="safetyCategory"
+                    placeholder="e.g., Personal Protective Equipment"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="safetyProcedures">Safety Procedures</Label>
+                  <Textarea
+                    id="safetyProcedures"
+                    placeholder="List the safety procedures and measures..."
+                    rows={4}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="requiredEquipment">Required Equipment</Label>
+                  <Textarea
+                    id="requiredEquipment"
+                    placeholder="List required safety equipment..."
+                    rows={3}
+                  />
+                </div>
+                <Button type="button" className="w-full">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Safety Measure
+                </Button>
+              </div>
             </CardContent>
           </Card>
+
+          {(formData.activities.length === 0 || !formData.riskAssessments || formData.riskAssessments.length === 0) && (
+            <Card>
+              <CardContent className="text-center py-8">
+                <Shield className="mx-auto h-8 w-8 text-gray-400 mb-3" />
+                <p className="text-gray-500">
+                  Complete risk assessments in Step 2 to get AI-generated safety measures
+                </p>
+              </CardContent>
+            </Card>
+          )}
         </div>
       );
 

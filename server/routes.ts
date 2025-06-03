@@ -533,6 +533,630 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }
         ],
         codes: ["AS 3600:2018", "AS 1379:2007"]
+      },
+      {
+        name: "Steelwork",
+        categories: [
+          {
+            name: "Structural Steel",
+            activities: [
+              "Steel beam installation",
+              "Column erection",
+              "Welding operations",
+              "Bolting connections",
+              "Steel frame assembly",
+              "Crane operations"
+            ]
+          },
+          {
+            name: "Fabrication",
+            activities: [
+              "Steel cutting",
+              "Steel bending",
+              "Shop welding",
+              "Surface preparation",
+              "Quality inspection",
+              "Material handling"
+            ]
+          },
+          {
+            name: "Installation",
+            activities: [
+              "Site welding",
+              "Alignment checking",
+              "Temporary supports",
+              "Safety netting",
+              "Fall protection setup",
+              "Load testing"
+            ]
+          }
+        ],
+        codes: ["AS 4100:2020", "AS/NZS 1554:2014"]
+      },
+      {
+        name: "Painting",
+        categories: [
+          {
+            name: "Surface Preparation",
+            activities: [
+              "Pressure washing",
+              "Sandblasting",
+              "Scraping and sanding",
+              "Chemical stripping",
+              "Primer application",
+              "Surface inspection"
+            ]
+          },
+          {
+            name: "Paint Application",
+            activities: [
+              "Spray painting",
+              "Brush application",
+              "Roller application",
+              "Protective coating",
+              "Line marking",
+              "Touch-up work"
+            ]
+          },
+          {
+            name: "Specialized Coatings",
+            activities: [
+              "Anti-corrosion coating",
+              "Fire retardant coating",
+              "Epoxy floor coating",
+              "Waterproof membrane",
+              "Industrial coating",
+              "Lead paint removal"
+            ]
+          }
+        ],
+        codes: ["AS/NZS 2311:2009", "AS 4548:2014"]
+      },
+      {
+        name: "Landscaping",
+        categories: [
+          {
+            name: "Site Preparation",
+            activities: [
+              "Site clearing",
+              "Soil preparation",
+              "Excavation work",
+              "Drainage installation",
+              "Irrigation setup",
+              "Level surveying"
+            ]
+          },
+          {
+            name: "Planting",
+            activities: [
+              "Tree planting",
+              "Shrub installation",
+              "Lawn installation",
+              "Garden bed preparation",
+              "Mulching",
+              "Plant maintenance"
+            ]
+          },
+          {
+            name: "Hardscaping",
+            activities: [
+              "Paving installation",
+              "Retaining wall construction",
+              "Pathway construction",
+              "Garden edging",
+              "Water feature installation",
+              "Outdoor lighting"
+            ]
+          }
+        ],
+        codes: ["AS 4970:2009", "AS/NZS 3500.1:2021"]
+      },
+      {
+        name: "Bricklaying",
+        categories: [
+          {
+            name: "Foundation Work",
+            activities: [
+              "Foundation wall construction",
+              "Footing brickwork",
+              "Damp course installation",
+              "Mortar preparation",
+              "Level checking",
+              "Reinforcement placement"
+            ]
+          },
+          {
+            name: "Wall Construction",
+            activities: [
+              "External wall construction",
+              "Internal wall construction",
+              "Cavity wall construction",
+              "Veneer brickwork",
+              "Feature wall construction",
+              "Arch construction"
+            ]
+          },
+          {
+            name: "Specialized Work",
+            activities: [
+              "Chimney construction",
+              "Garden wall construction",
+              "Retaining wall construction",
+              "Repair and restoration",
+              "Pointing and repointing",
+              "Heritage brickwork"
+            ]
+          }
+        ],
+        codes: ["AS 3700:2018", "AS/NZS 4455:2018"]
+      },
+      {
+        name: "Tiling",
+        categories: [
+          {
+            name: "Floor Tiling",
+            activities: [
+              "Ceramic floor tiling",
+              "Porcelain floor tiling",
+              "Natural stone tiling",
+              "Vinyl floor installation",
+              "Substrate preparation",
+              "Underfloor heating installation"
+            ]
+          },
+          {
+            name: "Wall Tiling",
+            activities: [
+              "Bathroom wall tiling",
+              "Kitchen backsplash",
+              "Shower recess tiling",
+              "External wall tiling",
+              "Mosaic installation",
+              "Feature wall tiling"
+            ]
+          },
+          {
+            name: "Waterproofing",
+            activities: [
+              "Wet area waterproofing",
+              "Membrane installation",
+              "Sealant application",
+              "Drainage installation",
+              "Leak testing",
+              "Compliance certification"
+            ]
+          }
+        ],
+        codes: ["AS 3958.1:2007", "AS/NZS 3740:2021"]
+      },
+      {
+        name: "HVAC",
+        categories: [
+          {
+            name: "Installation",
+            activities: [
+              "Ductwork installation",
+              "Air conditioning installation",
+              "Heating system installation",
+              "Ventilation system installation",
+              "Refrigeration installation",
+              "Control system installation"
+            ]
+          },
+          {
+            name: "Maintenance",
+            activities: [
+              "System commissioning",
+              "Filter replacement",
+              "Refrigerant handling",
+              "Leak detection",
+              "Performance testing",
+              "Preventive maintenance"
+            ]
+          },
+          {
+            name: "Specialized Systems",
+            activities: [
+              "Clean room systems",
+              "Industrial HVAC",
+              "Commercial kitchen ventilation",
+              "Smoke extraction systems",
+              "Energy recovery systems",
+              "BMS integration"
+            ]
+          }
+        ],
+        codes: ["AS 1668.2:2012", "AS/NZS 3000:2018"]
+      },
+      {
+        name: "Glazing",
+        categories: [
+          {
+            name: "Window Installation",
+            activities: [
+              "Aluminum window installation",
+              "Timber window installation",
+              "UPVC window installation",
+              "Commercial glazing",
+              "Curtain wall installation",
+              "Window replacement"
+            ]
+          },
+          {
+            name: "Glass Installation",
+            activities: [
+              "Safety glass installation",
+              "Laminated glass installation",
+              "Tempered glass installation",
+              "Insulated glass units",
+              "Structural glazing",
+              "Glass balustrades"
+            ]
+          },
+          {
+            name: "Specialized Work",
+            activities: [
+              "Shopfront glazing",
+              "High-rise glazing",
+              "Skylight installation",
+              "Glass repair",
+              "Thermal improvement",
+              "Security glazing"
+            ]
+          }
+        ],
+        codes: ["AS 1288:2021", "AS 2047:2014"]
+      },
+      {
+        name: "Flooring",
+        categories: [
+          {
+            name: "Timber Flooring",
+            activities: [
+              "Hardwood floor installation",
+              "Engineered floor installation",
+              "Laminate floor installation",
+              "Floor sanding",
+              "Floor polishing",
+              "Floor repairs"
+            ]
+          },
+          {
+            name: "Carpet & Soft Flooring",
+            activities: [
+              "Carpet installation",
+              "Vinyl installation",
+              "Linoleum installation",
+              "Rubber flooring",
+              "Underlay installation",
+              "Floor preparation"
+            ]
+          },
+          {
+            name: "Specialized Flooring",
+            activities: [
+              "Epoxy floor coatings",
+              "Industrial flooring",
+              "Sports flooring",
+              "Raised access flooring",
+              "Anti-static flooring",
+              "Heated floor systems"
+            ]
+          }
+        ],
+        codes: ["AS/NZS 1080:2012", "AS 1884:2012"]
+      },
+      {
+        name: "Insulation",
+        categories: [
+          {
+            name: "Thermal Insulation",
+            activities: [
+              "Bulk insulation installation",
+              "Reflective insulation installation",
+              "Ceiling insulation",
+              "Wall insulation",
+              "Floor insulation",
+              "Roof insulation"
+            ]
+          },
+          {
+            name: "Acoustic Insulation",
+            activities: [
+              "Sound insulation installation",
+              "Vibration isolation",
+              "Acoustic wall treatment",
+              "Ceiling sound treatment",
+              "Floor impact insulation",
+              "HVAC acoustic treatment"
+            ]
+          },
+          {
+            name: "Specialized Insulation",
+            activities: [
+              "Fire-rated insulation",
+              "Industrial insulation",
+              "Pipe insulation",
+              "Duct insulation",
+              "Cold storage insulation",
+              "Marine insulation"
+            ]
+          }
+        ],
+        codes: ["AS/NZS 4859.1:2018", "AS 3999:2015"]
+      },
+      {
+        name: "Security Systems",
+        categories: [
+          {
+            name: "Access Control",
+            activities: [
+              "Card access installation",
+              "Biometric system installation",
+              "Intercom system installation",
+              "Gate automation",
+              "Barrier installation",
+              "Access software setup"
+            ]
+          },
+          {
+            name: "CCTV & Surveillance",
+            activities: [
+              "CCTV camera installation",
+              "DVR/NVR installation",
+              "Video analytics setup",
+              "Remote monitoring setup",
+              "Cable installation",
+              "System integration"
+            ]
+          },
+          {
+            name: "Alarm Systems",
+            activities: [
+              "Burglar alarm installation",
+              "Fire alarm installation",
+              "Monitoring system setup",
+              "Sensor installation",
+              "Control panel installation",
+              "Emergency systems"
+            ]
+          }
+        ],
+        codes: ["AS 2201.1:2007", "AS 1670.1:2018"]
+      },
+      {
+        name: "Earthworks",
+        categories: [
+          {
+            name: "Excavation",
+            activities: [
+              "Site excavation",
+              "Foundation excavation",
+              "Trench excavation",
+              "Bulk earthworks",
+              "Rock excavation",
+              "Underground service excavation"
+            ]
+          },
+          {
+            name: "Civil Works",
+            activities: [
+              "Road construction",
+              "Drainage installation",
+              "Culvert installation",
+              "Retaining wall construction",
+              "Kerb and gutter",
+              "Pavement construction"
+            ]
+          },
+          {
+            name: "Site Services",
+            activities: [
+              "Sewer installation",
+              "Water main installation",
+              "Gas main installation",
+              "Electrical conduit installation",
+              "Telecommunications installation",
+              "Storm water systems"
+            ]
+          }
+        ],
+        codes: ["AS 3798:2007", "AS/NZS 2566.1:2019"]
+      },
+      {
+        name: "Fire Protection",
+        categories: [
+          {
+            name: "Sprinkler Systems",
+            activities: [
+              "Sprinkler head installation",
+              "Pipe installation",
+              "Pump installation",
+              "Control valve installation",
+              "System testing",
+              "Commissioning"
+            ]
+          },
+          {
+            name: "Detection Systems",
+            activities: [
+              "Smoke detector installation",
+              "Heat detector installation",
+              "Manual call point installation",
+              "Control panel installation",
+              "Sounder installation",
+              "System programming"
+            ]
+          },
+          {
+            name: "Passive Fire Protection",
+            activities: [
+              "Fire damper installation",
+              "Fire door installation",
+              "Penetration sealing",
+              "Fire barrier construction",
+              "Emergency lighting",
+              "Exit sign installation"
+            ]
+          }
+        ],
+        codes: ["AS 2118.1:2017", "AS 1851:2012"]
+      },
+      {
+        name: "Scaffolding",
+        categories: [
+          {
+            name: "Standard Scaffolding",
+            activities: [
+              "Tube and coupler scaffolding",
+              "System scaffolding",
+              "Mobile scaffolding",
+              "Suspended scaffolding",
+              "Mast climbing platforms",
+              "Scaffold inspection"
+            ]
+          },
+          {
+            name: "Specialized Access",
+            activities: [
+              "Chimney scaffolding",
+              "Bridge scaffolding",
+              "Stairway scaffolding",
+              "Cantilever scaffolding",
+              "Birdcage scaffolding",
+              "Loading platforms"
+            ]
+          },
+          {
+            name: "Safety Systems",
+            activities: [
+              "Fall protection systems",
+              "Edge protection",
+              "Safety netting",
+              "Temporary roofing",
+              "Weather protection",
+              "Access control"
+            ]
+          }
+        ],
+        codes: ["AS/NZS 4576:1995", "AS/NZS 1891.4:2009"]
+      },
+      {
+        name: "Communications",
+        categories: [
+          {
+            name: "Data & Voice",
+            activities: [
+              "Structured cabling",
+              "Fiber optic installation",
+              "Network equipment installation",
+              "Telephone system installation",
+              "PBX installation",
+              "Cable testing"
+            ]
+          },
+          {
+            name: "Audio Visual",
+            activities: [
+              "Sound system installation",
+              "Video system installation",
+              "Digital signage",
+              "Conference room systems",
+              "Public address systems",
+              "Control system programming"
+            ]
+          },
+          {
+            name: "Wireless Systems",
+            activities: [
+              "WiFi installation",
+              "Cellular enhancement",
+              "Radio system installation",
+              "Antenna installation",
+              "Emergency communications",
+              "DAS installation"
+            ]
+          }
+        ],
+        codes: ["AS/CA S009:2013", "AS/NZS 3080:2013"]
+      },
+      {
+        name: "Pool Construction",
+        categories: [
+          {
+            name: "Pool Construction",
+            activities: [
+              "Pool excavation",
+              "Concrete pool construction",
+              "Vinyl liner installation",
+              "Fiberglass pool installation",
+              "Pool equipment installation",
+              "Pool commissioning"
+            ]
+          },
+          {
+            name: "Pool Equipment",
+            activities: [
+              "Pump installation",
+              "Filter installation",
+              "Heater installation",
+              "Chemical dosing systems",
+              "Pool lighting",
+              "Automatic pool cleaners"
+            ]
+          },
+          {
+            name: "Pool Safety",
+            activities: [
+              "Pool fence installation",
+              "Safety barrier installation",
+              "Pool alarm installation",
+              "Pool cover installation",
+              "Emergency equipment",
+              "Compliance inspection"
+            ]
+          }
+        ],
+        codes: ["AS 1926.1:2012", "AS 1926.2:2007"]
+      },
+      {
+        name: "Solar & Renewable",
+        categories: [
+          {
+            name: "Solar PV",
+            activities: [
+              "Solar panel installation",
+              "Inverter installation",
+              "DC cabling",
+              "AC cabling",
+              "Earthing systems",
+              "System commissioning"
+            ]
+          },
+          {
+            name: "Solar Hot Water",
+            activities: [
+              "Solar collector installation",
+              "Storage tank installation",
+              "Pump station installation",
+              "Control system installation",
+              "Pipe insulation",
+              "System testing"
+            ]
+          },
+          {
+            name: "Battery Systems",
+            activities: [
+              "Battery installation",
+              "Battery management system",
+              "Backup power systems",
+              "Grid connection",
+              "Monitoring systems",
+              "Safety systems"
+            ]
+          }
+        ],
+        codes: ["AS/NZS 5033:2021", "AS/NZS 2712:2007"]
       }
     ];
     
