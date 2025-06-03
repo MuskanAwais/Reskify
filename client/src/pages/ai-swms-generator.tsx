@@ -75,7 +75,7 @@ export default function AISwmsGenerator() {
   const [generatedSWMS, setGeneratedSWMS] = useState<AIGeneratedSWMS | null>(null);
 
   const { toast } = useToast();
-  const { isAdmin } = useAdmin();
+  const { isAdminMode } = useAdmin();
 
   // Check user subscription
   const { data: subscription } = useQuery({

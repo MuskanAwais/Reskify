@@ -46,7 +46,7 @@ const quickActions = [
 
 export default function Sidebar() {
   const [location] = useLocation();
-  const { isAdmin, setIsAdmin } = useAdmin();
+  const { isAdminMode, setIsAdminMode } = useAdmin();
   
   // Fetch user subscription data
   const { data: subscription } = useQuery({
@@ -170,7 +170,7 @@ export default function Sidebar() {
         </nav>
 
         {/* Admin Navigation */}
-        {isAdmin && (
+        {isAdminMode && (
           <>
             <Separator className="my-6" />
             <nav className="space-y-2">
