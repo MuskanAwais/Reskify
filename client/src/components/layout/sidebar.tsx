@@ -36,12 +36,6 @@ const quickActions = [
     className: "bg-primary text-white hover:bg-primary/90"
   },
   {
-    title: "Search Codes",
-    icon: Search,
-    href: "/safety-library",
-    className: "bg-gray-100 text-gray-700 hover:bg-gray-200"
-  },
-  {
     title: "AI Assistant",
     icon: Bot,
     href: "/ai-assistant",
@@ -144,23 +138,8 @@ export default function Sidebar() {
             const isActive = location === item.href || 
               (item.href === "/dashboard" && location === "/");
             
-            const isLocked = item.requiresAccess && !item.hasAccess;
-            
-            if (isLocked) {
-              return (
-                <div key={item.href} className="relative">
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-start text-gray-400 cursor-not-allowed opacity-60"
-                    disabled
-                  >
-                    <Icon className="mr-3 h-4 w-4" />
-                    {item.label}
-                    <Lock className="ml-auto h-3 w-3" />
-                  </Button>
-                </div>
-              );
-            }
+            // Safety Library should always be accessible to show lock content
+            // when not authorized, rather than greying out the navigation
             
             return (
               <Link key={item.href} href={item.href}>
