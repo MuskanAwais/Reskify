@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Link, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { useAdmin } from "@/App";
+import { useState, useEffect } from "react";
 import { 
   FileText, 
   Search, 
@@ -97,12 +98,16 @@ export default function Sidebar() {
                 const newState = !isAdmin;
                 console.log('Admin button clicked, changing from', isAdmin, 'to', newState);
                 setIsAdmin(newState);
+                // Force immediate re-render
+                window.location.hash = Date.now().toString();
+                setTimeout(() => { window.location.hash = ''; }, 0);
               }}
               className={`px-3 py-1 text-xs transition-all duration-200 ${
                 isAdmin 
                   ? 'bg-green-50 border-green-300 text-green-800 hover:bg-green-100' 
                   : 'bg-gray-50 border-gray-300 text-gray-600 hover:bg-gray-100'
               }`}
+              key={`admin-${isAdmin}`}
             >
               <Shield className="mr-1 h-3 w-3" />
               {isAdmin ? 'ON' : 'OFF'}

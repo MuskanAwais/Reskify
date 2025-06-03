@@ -38,15 +38,31 @@ export default function Header() {
         <div className="flex justify-between items-center">
           {/* Logo and Title */}
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-lg bg-blue-500 flex items-center justify-center">
-              <svg width="24" height="24" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M50 20C42 20 35 25 35 32V40H65V32C65 25 58 20 50 20Z" stroke="white" strokeWidth="3" fill="none"/>
-                <path d="M30 40H70C72 40 74 42 74 44V46C74 48 72 50 70 50H30C28 50 26 48 26 46V44C26 42 28 40 30 40Z" fill="white"/>
-                <circle cx="50" cy="60" r="15" fill="white"/>
-                <circle cx="45" cy="57" r="2" fill="#3B82F6"/>
-                <circle cx="55" cy="57" r="2" fill="#3B82F6"/>
-                <path d="M35 70C35 75 42 80 50 80C58 80 65 75 65 70V65H35V70Z" fill="#1E40AF"/>
-                <path d="M43 63C46 65 54 65 57 63" stroke="#1E40AF" strokeWidth="2" fill="none"/>
+            <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center border border-gray-200">
+              <svg width="28" height="28" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                {/* Hard hat */}
+                <path d="M25 45C25 30 35 18 50 18C65 18 75 30 75 45V50H25V45Z" fill="#1E3A5F" stroke="#1E3A5F" strokeWidth="2"/>
+                <rect x="20" y="50" width="60" height="8" rx="4" fill="#1E3A5F"/>
+                
+                {/* Face */}
+                <circle cx="50" cy="65" r="12" fill="#F5F5F5"/>
+                
+                {/* Eyes */}
+                <circle cx="45" cy="62" r="1.5" fill="#1E3A5F"/>
+                <circle cx="55" cy="62" r="1.5" fill="#1E3A5F"/>
+                
+                {/* Eyebrows */}
+                <path d="M42 59C44 58 46 58 48 59" stroke="#1E3A5F" strokeWidth="1.5" strokeLinecap="round"/>
+                <path d="M52 59C54 58 56 58 58 59" stroke="#1E3A5F" strokeWidth="1.5" strokeLinecap="round"/>
+                
+                {/* Beard/Face outline */}
+                <path d="M38 70C38 75 42 80 50 85C58 80 62 75 62 70V65C62 65 58 68 50 68C42 68 38 65 38 65V70Z" fill="#1E3A5F"/>
+                
+                {/* Mouth/Mustache area */}
+                <path d="M45 67C47 68 50 68 50 68C50 68 53 68 55 67" stroke="#F5F5F5" strokeWidth="1" strokeLinecap="round"/>
+                
+                {/* Hard hat details */}
+                <rect x="48" y="22" width="4" height="12" rx="2" fill="#F5F5F5"/>
               </svg>
             </div>
             <div>
