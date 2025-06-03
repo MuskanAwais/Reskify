@@ -1,14 +1,15 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useAdmin } from "@/App";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Lock, Crown, Unlock, Search, ExternalLink, Filter } from "lucide-react";
+import { Lock, Crown, Unlock, Search, ExternalLink, Filter, Shield } from "lucide-react";
 
 export default function SafetyLibrary() {
-  const [adminUnlocked, setAdminUnlocked] = useState(false);
+  const { isAdmin } = useAdmin();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
 
@@ -20,10 +21,10 @@ export default function SafetyLibrary() {
   // Get safety library data
   const { data: safetyLibrary = [] } = useQuery({
     queryKey: ['/api/safety-library'],
-    enabled: adminUnlocked || subscription?.features?.safetyLibrary
+    enabled: isAdmin || subscription?.features?.safetyLibrary
   });
 
-  const hasAccess = adminUnlocked || subscription?.features?.safetyLibrary || false;
+  const hasAccess = isAdmin || subscription?.features?.safetyLibrary || false;
 
   if (!hasAccess) {
     return (

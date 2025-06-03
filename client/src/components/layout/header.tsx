@@ -40,11 +40,12 @@ export default function Header() {
           <div className="flex items-center space-x-3">
             <div className="bg-primary p-2 rounded-lg shadow-sm">
               <svg className="h-6 w-6 text-primary-foreground" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M6.92 5L12 10.07L17.08 5H6.92M6.92 19L12 13.93L17.08 19H6.92M12 12.5L9.5 10H14.5L12 12.5Z"/>
+                <path d="M20.94 11c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/>
+                <circle cx="12" cy="12" r="3"/>
               </svg>
             </div>
             <div>
-              <h1 className="text-xl font-bold tracking-tight text-foreground">Safety Samurai</h1>
+              <h1 className="text-xl font-bold tracking-tight text-foreground">Sensei</h1>
               <div className="flex items-center space-x-2">
                 <span className="text-sm text-muted-foreground">Professional SWMS Builder</span>
               </div>
@@ -55,11 +56,6 @@ export default function Header() {
 
           {/* Actions and User Menu */}
           <div className="flex items-center space-x-4">
-            {/* Credit Counter */}
-            <div className="hidden md:block">
-              <CreditCounter className="compact" />
-            </div>
-            
             {/* Voice Assistant */}
             <VoiceAssistant />
             
