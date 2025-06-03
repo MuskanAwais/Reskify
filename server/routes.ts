@@ -1249,6 +1249,188 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin API endpoints
+  app.get("/api/admin/users", async (req, res) => {
+    try {
+      const users = [
+        {
+          id: 1,
+          username: "John Doe",
+          email: "john.doe@example.com",
+          companyName: "ABC Construction",
+          subscriptionType: "premium",
+          creditsRemaining: 25,
+          isActive: true,
+          createdAt: "2024-01-01T00:00:00.000Z",
+          lastLogin: "2024-06-03T00:00:00.000Z"
+        },
+        {
+          id: 2,
+          username: "Jane Smith",
+          email: "jane.smith@example.com",
+          companyName: "XYZ Builders",
+          subscriptionType: "basic",
+          creditsRemaining: 10,
+          isActive: true,
+          createdAt: "2024-02-01T00:00:00.000Z",
+          lastLogin: "2024-06-02T00:00:00.000Z"
+        }
+      ];
+      res.json(users);
+    } catch (error: any) {
+      console.error("Get users error:", error);
+      res.status(500).json({ message: "Failed to fetch users" });
+    }
+  });
+
+  app.get("/api/admin/all-swms", async (req, res) => {
+    try {
+      const documents = await storage.getSwmsDocumentsByUser(1);
+      const swmsWithUserInfo = documents.map(doc => ({
+        ...doc,
+        username: "John Doe",
+        userEmail: "john.doe@example.com",
+        companyName: "ABC Construction",
+        creditsUsed: 1,
+        status: "active"
+      }));
+      res.json(swmsWithUserInfo);
+    } catch (error: any) {
+      console.error("Get all SWMS error:", error);
+      res.status(500).json({ message: "Failed to fetch SWMS documents" });
+    }
+  });
+
+  app.get("/api/admin/trade-types", async (req, res) => {
+    try {
+      const tradeTypes = ["Electrical", "Plumbing", "Carpentry", "Roofing", "Concrete", "Painting"];
+      res.json(tradeTypes);
+    } catch (error: any) {
+      console.error("Get trade types error:", error);
+      res.status(500).json({ message: "Failed to fetch trade types" });
+    }
+  });
+
+  app.get("/api/admin/billing", async (req, res) => {
+    try {
+      const billingData = {
+        totalRevenue: 15420,
+        revenueGrowth: 12.5,
+        activeSubscriptions: 156,
+        subscriptionGrowth: 8.2,
+        mrr: 4850,
+        mrrGrowth: 15.3,
+        creditsSold: 2340,
+        creditsGrowth: 18.7
+      };
+      res.json(billingData);
+    } catch (error: any) {
+      console.error("Get billing analytics error:", error);
+      res.status(500).json({ message: "Failed to fetch billing analytics" });
+    }
+  });
+
+  app.get("/api/admin/subscriptions", async (req, res) => {
+    try {
+      const subscriptions = [
+        { plan: "Basic", count: 89, revenue: 2670 },
+        { plan: "Professional", count: 45, revenue: 6750 },
+        { plan: "Enterprise", count: 22, revenue: 6600 }
+      ];
+      res.json(subscriptions);
+    } catch (error: any) {
+      console.error("Get subscriptions error:", error);
+      res.status(500).json({ message: "Failed to fetch subscriptions" });
+    }
+  });
+
+  app.get("/api/admin/transactions", async (req, res) => {
+    try {
+      const transactions = [
+        { id: 1, userEmail: "john.doe@example.com", amount: 50, type: "subscription", createdAt: new Date() },
+        { id: 2, userEmail: "jane.smith@example.com", amount: 100, type: "credits", createdAt: new Date() }
+      ];
+      res.json(transactions);
+    } catch (error: any) {
+      console.error("Get transactions error:", error);
+      res.status(500).json({ message: "Failed to fetch transactions" });
+    }
+  });
+
+  app.get("/api/admin/usage", async (req, res) => {
+    try {
+      const usageData = {
+        totalSwms: 1245,
+        swmsGrowth: 22.3,
+        activeUsers: 156,
+        userGrowth: 8.2,
+        creditsUsed: 1890,
+        creditsGrowth: 15.7,
+        avgSessionTime: 24,
+        sessionGrowth: 5.2,
+        todaySwms: 12,
+        weekSwms: 89,
+        monthSwms: 342
+      };
+      res.json(usageData);
+    } catch (error: any) {
+      console.error("Get usage analytics error:", error);
+      res.status(500).json({ message: "Failed to fetch usage analytics" });
+    }
+  });
+
+  app.get("/api/admin/popular-trades", async (req, res) => {
+    try {
+      const popularTrades = [
+        { tradeType: "Electrical", swmsCount: 342, percentage: 27.5 },
+        { tradeType: "Plumbing", swmsCount: 289, percentage: 23.2 },
+        { tradeType: "Carpentry", swmsCount: 234, percentage: 18.8 },
+        { tradeType: "Roofing", swmsCount: 189, percentage: 15.2 },
+        { tradeType: "Concrete", swmsCount: 124, percentage: 10.0 }
+      ];
+      res.json(popularTrades);
+    } catch (error: any) {
+      console.error("Get popular trades error:", error);
+      res.status(500).json({ message: "Failed to fetch popular trades" });
+    }
+  });
+
+  app.get("/api/admin/recent-activity", async (req, res) => {
+    try {
+      const recentActivity = [
+        { id: 1, username: "John Doe", action: "created", tradeType: "Electrical", timestamp: new Date() },
+        { id: 2, username: "Jane Smith", action: "updated", tradeType: "Plumbing", timestamp: new Date() },
+        { id: 3, username: "Bob Wilson", action: "created", tradeType: "Carpentry", timestamp: new Date() }
+      ];
+      res.json(recentActivity);
+    } catch (error: any) {
+      console.error("Get recent activity error:", error);
+      res.status(500).json({ message: "Failed to fetch recent activity" });
+    }
+  });
+
+  app.patch("/api/admin/users/:id", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id);
+      const updatedUser = { id: userId, ...req.body };
+      res.json(updatedUser);
+    } catch (error: any) {
+      console.error("Update user error:", error);
+      res.status(500).json({ message: "Failed to update user" });
+    }
+  });
+
+  app.delete("/api/admin/swms/:id", async (req, res) => {
+    try {
+      const swmsId = parseInt(req.params.id);
+      await storage.deleteSwmsDocument(swmsId);
+      res.json({ message: "SWMS deleted successfully" });
+    } catch (error: any) {
+      console.error("Delete SWMS error:", error);
+      res.status(500).json({ message: "Failed to delete SWMS" });
+    }
+  });
+
   const server = createServer(app);
   return server;
 }

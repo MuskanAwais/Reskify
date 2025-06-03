@@ -10,13 +10,18 @@ import Dashboard from "@/pages/dashboard";
 import SwmsBuilder from "@/pages/swms-builder";
 import Profile from "@/pages/profile";
 import SafetyLibrary from "@/pages/safety-library";
-
 import MySwms from "@/pages/my-swms";
 import Analytics from "@/pages/analytics";
 import AiAssistant from "@/pages/ai-assistant";
 import Settings from "@/pages/settings";
 import Billing from "@/pages/billing";
 import NotFound from "@/pages/not-found";
+
+// Admin pages
+import UserManagement from "@/pages/admin/user-management";
+import BillingAnalytics from "@/pages/admin/billing-analytics";
+import UsageAnalytics from "@/pages/admin/usage-analytics";
+import AllSwms from "@/pages/admin/all-swms";
 
 // User context for demo purposes
 interface User {
@@ -76,6 +81,13 @@ function Router() {
 
         <Route path="/billing" component={Billing} />
         <Route path="/settings" component={Settings} />
+        
+        {/* Admin Routes */}
+        <Route path="/admin/user-management" component={UserManagement} />
+        <Route path="/admin/billing-analytics" component={BillingAnalytics} />
+        <Route path="/admin/usage-analytics" component={UsageAnalytics} />
+        <Route path="/admin/all-swms" component={AllSwms} />
+        
         <Route component={NotFound} />
       </Switch>
     </Layout>
