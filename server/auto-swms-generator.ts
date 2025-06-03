@@ -433,6 +433,8 @@ export const ACTIVITY_RISK_DATABASE = {
   }
 };
 
+import { getTasksByTrade, getUniversalTasks, searchMegaTasks, MEGA_CONSTRUCTION_DATABASE } from './mega-construction-database';
+
 export async function generateAutoSwms(activities: string[], tradeType: string) {
   const risks: any[] = [];
   const safetyMeasures: any[] = [];
