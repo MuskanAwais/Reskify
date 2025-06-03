@@ -1,4 +1,4 @@
-import { Switch, Route } from "wouter";
+import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -19,6 +19,9 @@ import Settings from "@/pages/settings";
 import Billing from "@/pages/billing";
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
+import Demo from "@/pages/demo";
+import Contact from "@/pages/contact";
+import Register from "@/pages/register";
 
 // Admin pages
 import AdminDashboard from "@/pages/admin/admin-dashboard";
@@ -99,6 +102,17 @@ export const useUser = () => useContext(UserContext);
 export const useAdmin = () => useContext(AdminContext);
 
 function Layout({ children }: { children: React.ReactNode }) {
+  const [location] = useLocation();
+  const isPublicPage = ['/', '/landing', '/demo', '/contact', '/register'].includes(location);
+  
+  if (isPublicPage) {
+    return (
+      <div className="min-h-screen">
+        {children}
+      </div>
+    );
+  }
+  
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -118,6 +132,9 @@ function Router() {
       <Switch>
         <Route path="/" component={Landing} />
         <Route path="/landing" component={Landing} />
+        <Route path="/demo" component={Demo} />
+        <Route path="/contact" component={Contact} />
+        <Route path="/register" component={Register} />
         <Route path="/dashboard" component={Dashboard} />
         <Route path="/swms-builder" component={SwmsBuilder} />
         <Route path="/my-swms" component={MySwms} />
