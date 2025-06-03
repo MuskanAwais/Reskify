@@ -60,10 +60,16 @@ export default function Sidebar() {
       label: "Safety Library", 
       href: "/safety-library",
       requiresAccess: true,
-      hasAccess: subscription?.features?.safetyLibrary
+      hasAccess: subscription?.features?.safetyLibrary || isAdmin
     },
     { icon: BarChart3, label: "Analytics", href: "/analytics" },
     { icon: User, label: "Account", href: "/billing" }
+  ];
+
+  const innovativeFeatures = [
+    { icon: Bot, label: "Smart Risk Predictor", href: "/smart-risk-predictor" },
+    { icon: Activity, label: "Digital Twin Dashboard", href: "/digital-twin-dashboard" },
+    { icon: Users, label: "Live Collaboration", href: "/live-collaboration" }
   ];
 
   const adminNavigationItems = [

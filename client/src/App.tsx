@@ -23,6 +23,11 @@ import BillingAnalytics from "@/pages/admin/billing-analytics";
 import UsageAnalytics from "@/pages/admin/usage-analytics";
 import AllSwms from "@/pages/admin/all-swms";
 
+// Innovative features
+import SmartRiskPredictor from "@/pages/smart-risk-predictor";
+import DigitalTwinDashboard from "@/pages/digital-twin-dashboard";
+import LiveCollaboration from "@/pages/live-collaboration";
+
 // User context for demo purposes
 interface User {
   id: number;
@@ -81,6 +86,11 @@ function Router() {
 
         <Route path="/billing" component={Billing} />
         <Route path="/settings" component={Settings} />
+        
+        {/* Innovative Features */}
+        <Route path="/smart-risk-predictor" component={SmartRiskPredictor} />
+        <Route path="/digital-twin-dashboard" component={DigitalTwinDashboard} />
+        <Route path="/live-collaboration" component={LiveCollaboration} />
         
         {/* Admin Routes */}
         <Route path="/admin/user-management" component={UserManagement} />
