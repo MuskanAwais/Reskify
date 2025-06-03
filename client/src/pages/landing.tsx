@@ -180,47 +180,7 @@ export default function Landing() {
             ease: "easeInOut"
           }}
           style={{
-            top: "20%",
-            left: "10%",
-          }}
-        />
-        <motion.img
-          src={logoImage}
-          alt="Safety Sensei Background"
-          className="absolute w-80 h-80 object-contain opacity-3"
-          animate={{
-            x: [-80, 80, -80],
-            y: [-30, 30, -30],
-            rotate: [0, -3, 3, 0],
-          }}
-          transition={{
-            duration: 25,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 5
-          }}
-          style={{
-            top: "60%",
-            right: "15%",
-          }}
-        />
-        <motion.img
-          src={logoImage}
-          alt="Safety Sensei Background"
-          className="absolute w-72 h-72 object-contain opacity-4"
-          animate={{
-            x: [60, -60, 60],
-            y: [40, -40, 40],
-            rotate: [0, 8, -8, 0],
-          }}
-          transition={{
-            duration: 30,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 10
-          }}
-          style={{
-            bottom: "10%",
+            top: "30%",
             left: "20%",
           }}
         />
