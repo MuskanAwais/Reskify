@@ -73,6 +73,9 @@ export default function AISwmsGenerator() {
   const [estimatedDuration, setEstimatedDuration] = useState("");
   const [specificRequirements, setSpecificRequirements] = useState("");
   const [generatedSWMS, setGeneratedSWMS] = useState<AIGeneratedSWMS | null>(null);
+  const [showPreview, setShowPreview] = useState(false);
+  const [showEditor, setShowEditor] = useState(false);
+  const [editableSwms, setEditableSwms] = useState<AIGeneratedSWMS | null>(null);
 
   const { toast } = useToast();
   const { isAdminMode } = useAdmin();
@@ -165,6 +168,57 @@ export default function AISwmsGenerator() {
       });
     },
   });
+
+  // Create SWMS from AI generation
+  const createSwmsMutation = useMutation({
+    mutationFn: async () => {
+      if (!generatedSWMS) throw new Error("No SWMS generated");
+      
+      const swmsData = {
+        title: generatedSWMS.projectDetails.title,
+        jobName: generatedSWMS.projectDetails.title,
+        projectAddress: generatedSWMS.projectDetails.location,
+        projectLocation: generatedSWMS.projectDetails.location,
+        tradeType: selectedTrade,
+        activities: generatedSWMS.suggestedTasks.map(task => task.activity),
+        riskAssessments: generatedSWMS.riskAssessments.map(risk => ({
+          activity: risk.activity,
+          hazards: risk.hazards,
+          initialRiskScore: risk.initialRiskScore,
+          controlMeasures: risk.controlMeasures,
+          legislation: risk.legislation,
+          residualRiskScore: risk.residualRiskScore,
+          responsible: risk.responsible
+        })),
+        complianceCodes: generatedSWMS.complianceCodes,
+        emergencyProcedures: generatedSWMS.emergencyProcedures,
+        generalRequirements: generatedSWMS.generalRequirements || []
+      };
+
+      const response = await apiRequest("POST", "/api/swms", swmsData);
+      if (!response.ok) {
+        throw new Error("Failed to create SWMS");
+      }
+      return response.json();
+    },
+    onSuccess: (data) => {
+      toast({
+        title: "SWMS Created Successfully",
+        description: "Your AI-generated SWMS has been saved to My SWMS.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error Creating SWMS",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  });
+
+  const handleCreateSwmsFromAI = () => {
+    createSwmsMutation.mutate();
+  };
 
   if (!hasAccess) {
     return (
@@ -391,6 +445,33 @@ export default function AISwmsGenerator() {
                     </div>
                   ))}
                 </div>
+              </div>
+
+              <Separator />
+
+              {/* Action Buttons */}
+              <div className="flex gap-3">
+                <Button 
+                  onClick={() => setShowPreview(true)}
+                  className="flex-1"
+                >
+                  <FileText className="mr-2 h-4 w-4" />
+                  Preview Document
+                </Button>
+                <Button 
+                  variant="outline"
+                  onClick={() => setShowEditor(true)}
+                  className="flex-1"
+                >
+                  Edit SWMS
+                </Button>
+                <Button 
+                  variant="secondary"
+                  onClick={handleCreateSwmsFromAI}
+                  disabled={createSwmsMutation.isPending}
+                >
+                  Save to Library
+                </Button>
               </div>
 
               <Separator />

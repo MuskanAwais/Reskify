@@ -180,8 +180,8 @@ function enhanceWithDatabaseKnowledge(aiResponse: any, trade: string, tradeTasks
         hazards: [...new Set([...assessment.hazards, ...matchingTask.hazards])],
         controlMeasures: [...new Set([...assessment.controlMeasures, ...matchingTask.controlMeasures])],
         legislation: [...new Set([...assessment.legislation, ...matchingTask.legislation])],
-        ppe: [...new Set([...assessment.ppe, ...matchingTask.ppe])],
-        trainingRequired: [...new Set([...assessment.trainingRequired, ...matchingTask.trainingRequired])]
+        ppe: [...new Set([...assessment.ppe, ...(Array.isArray(matchingTask.ppe) ? matchingTask.ppe : [])])],
+        trainingRequired: [...new Set([...assessment.trainingRequired, ...(Array.isArray(matchingTask.trainingRequired) ? matchingTask.trainingRequired : [])])]
       };
     }
     return assessment;
