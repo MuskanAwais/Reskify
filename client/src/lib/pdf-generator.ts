@@ -334,7 +334,7 @@ export async function generateProtectedPDF(document: SwmsDocument, user: User | 
     // Risk Matrix Section
     if (yPosition > pageHeight - 120) {
       pdf.addPage();
-      addFullPageWatermark();
+      addEnhancedWatermark();
       yPosition = 20;
     }
 
@@ -439,7 +439,7 @@ export async function generateProtectedPDF(document: SwmsDocument, user: User | 
 
     // Digital Signature Section
     pdf.addPage();
-    addFullPageWatermark();
+    addEnhancedWatermark();
     yPosition = 20;
 
     pdf.setFontSize(16);

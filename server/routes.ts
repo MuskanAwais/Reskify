@@ -914,56 +914,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         downloadUrl: `/my-swms/${id}` 
       });
       
-      doc.setFontSize(12);
-      doc.text(`Job: ${document.jobName}`, 20, 35);
-      doc.text(`Job Number: ${document.jobNumber || 'N/A'}`, 20, 45);
-      doc.text(`Address: ${document.projectAddress}`, 20, 55);
-      doc.text(`Trade: ${document.tradeType}`, 20, 65);
-      
-      // Activities table
-      let currentY = 80;
-      if (document.activities && document.activities.length > 0) {
-        doc.text('Selected Activities:', 20, currentY);
-        currentY += 10;
-        document.activities.forEach((activity, index) => {
-          doc.text(`${index + 1}. ${activity}`, 25, currentY);
-          currentY += 7;
-        });
-        currentY += 10;
-      }
-      
-      // Risk assessments table
-      if (document.riskAssessments && Array.isArray(document.riskAssessments)) {
-        const tableData = document.riskAssessments.map((risk: any) => [
-          risk.activity || '',
-          (risk.hazards || []).join(', '),
-          risk.initialRiskScore || '',
-          (risk.controlMeasures || []).join(', '),
-          risk.residualRiskScore || '',
-          risk.responsible || ''
-        ]);
 
-        doc.autoTable({
-          startY: currentY,
-          head: [['Activity', 'Hazards', 'Initial Risk', 'Control Measures', 'Residual Risk', 'Responsible']],
-          body: tableData,
-          styles: { fontSize: 8 },
-          columnStyles: {
-            0: { cellWidth: 30 },
-            1: { cellWidth: 35 },
-            2: { cellWidth: 15 },
-            3: { cellWidth: 40 },
-            4: { cellWidth: 15 },
-            5: { cellWidth: 25 }
-          }
-        });
-      }
-      
-      const pdfBuffer = Buffer.from(doc.output('arraybuffer'));
-      
-      res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', `attachment; filename="${document.jobName || 'SWMS'}-${document.jobNumber || document.id}.pdf"`);
-      res.send(pdfBuffer);
       
     } catch (error: any) {
       console.error('PDF generation error:', error);

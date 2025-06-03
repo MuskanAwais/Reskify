@@ -22,10 +22,10 @@ export default function SafetyLibrary() {
   // Get safety library data
   const { data: safetyLibrary = [] } = useQuery({
     queryKey: ['/api/safety-library'],
-    enabled: isAdminMode || adminUnlocked || subscription?.plan === "Pro Plan"
+    enabled: isAdminMode || adminUnlocked || (subscription as any)?.plan === "Pro Plan"
   });
 
-  const hasAccess = isAdminMode || adminUnlocked || subscription?.plan === "Pro Plan" || false;
+  const hasAccess = isAdminMode || adminUnlocked || (subscription as any)?.plan === "Pro Plan" || false;
 
   if (!hasAccess) {
     return (
@@ -95,7 +95,7 @@ export default function SafetyLibrary() {
       item.code?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.description?.toLowerCase().includes(searchTerm.toLowerCase());
     
-    const matchesCategory = !selectedCategory || item.category === selectedCategory;
+    const matchesCategory = !selectedCategory || selectedCategory === "all" || item.category === selectedCategory;
     
     return matchesSearch && matchesCategory;
   });
@@ -143,10 +143,10 @@ export default function SafetyLibrary() {
                   <SelectValue placeholder="All Categories" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Categories</SelectItem>
-                  {categories.map((category) => (
-                    <SelectItem key={category} value={category}>
-                      {category}
+                  <SelectItem value="all">All Categories</SelectItem>
+                  {categories.map((category, index) => (
+                    <SelectItem key={`${category}-${index}`} value={category || 'unknown'}>
+                      {category || 'Unknown Category'}
                     </SelectItem>
                   ))}
                 </SelectContent>
