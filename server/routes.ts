@@ -818,7 +818,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/swms/:id", async (req, res) => {
     try {
-      const document = await storage.getSwmsDocument(parseInt(req.params.id));
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid document ID" });
+      }
+      const document = await storage.getSwmsDocument(id);
       if (!document) {
         return res.status(404).json({ message: "SWMS document not found" });
       }
@@ -826,6 +830,86 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error('Get SWMS by ID error:', error);
       res.status(500).json({ message: 'Failed to fetch SWMS document' });
+    }
+  });
+
+  // PDF generation endpoint
+  app.get("/api/swms/:id/pdf", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid document ID" });
+      }
+      
+      const document = await storage.getSwmsDocument(id);
+      if (!document) {
+        return res.status(404).json({ message: "SWMS document not found" });
+      }
+
+      // Generate PDF using jsPDF
+      const { jsPDF } = require('jspdf');
+      require('jspdf-autotable');
+      
+      const doc = new jsPDF();
+      
+      // Header with job details
+      doc.setFontSize(20);
+      doc.text('SAFE WORK METHOD STATEMENT', 20, 20);
+      
+      doc.setFontSize(12);
+      doc.text(`Job: ${document.jobName}`, 20, 35);
+      doc.text(`Job Number: ${document.jobNumber || 'N/A'}`, 20, 45);
+      doc.text(`Address: ${document.projectAddress}`, 20, 55);
+      doc.text(`Trade: ${document.tradeType}`, 20, 65);
+      
+      // Activities table
+      let currentY = 80;
+      if (document.activities && document.activities.length > 0) {
+        doc.text('Selected Activities:', 20, currentY);
+        currentY += 10;
+        document.activities.forEach((activity, index) => {
+          doc.text(`${index + 1}. ${activity}`, 25, currentY);
+          currentY += 7;
+        });
+        currentY += 10;
+      }
+      
+      // Risk assessments table
+      if (document.riskAssessments && Array.isArray(document.riskAssessments)) {
+        const tableData = document.riskAssessments.map((risk: any) => [
+          risk.activity || '',
+          (risk.hazards || []).join(', '),
+          risk.initialRiskScore || '',
+          (risk.controlMeasures || []).join(', '),
+          risk.residualRiskScore || '',
+          risk.responsible || ''
+        ]);
+
+        doc.autoTable({
+          startY: currentY,
+          head: [['Activity', 'Hazards', 'Initial Risk', 'Control Measures', 'Residual Risk', 'Responsible']],
+          body: tableData,
+          styles: { fontSize: 8 },
+          columnStyles: {
+            0: { cellWidth: 30 },
+            1: { cellWidth: 35 },
+            2: { cellWidth: 15 },
+            3: { cellWidth: 40 },
+            4: { cellWidth: 15 },
+            5: { cellWidth: 25 }
+          }
+        });
+      }
+      
+      const pdfBuffer = Buffer.from(doc.output('arraybuffer'));
+      
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `attachment; filename="${document.jobName || 'SWMS'}-${document.jobNumber || document.id}.pdf"`);
+      res.send(pdfBuffer);
+      
+    } catch (error: any) {
+      console.error('PDF generation error:', error);
+      res.status(500).json({ message: 'Failed to generate PDF' });
     }
   });
 
@@ -888,11 +972,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/ai/enhance-swms", async (req, res) => {
     try {
       const { activities, tradeType, projectLocation } = req.body;
-      const enhancement = await enhanceSwmsWithAI(activities, tradeType, projectLocation);
-      res.json(enhancement);
+      
+      if (!activities || !Array.isArray(activities) || activities.length === 0) {
+        return res.status(400).json({ message: 'Activities array is required' });
+      }
+      
+      // Generate risk assessments from database for each activity
+      const { generateComprehensiveSwms } = require('./advanced-swms-generator');
+      
+      const swmsData = await generateComprehensiveSwms(activities, tradeType || 'General', {
+        projectLocation: projectLocation || 'Unknown',
+        projectType: 'Standard'
+      });
+      
+      res.json({
+        riskAssessments: swmsData.riskAssessments.map(risk => ({
+          hazard: risk.activity,
+          riskLevel: risk.initialRiskScore > 12 ? 'high' : risk.initialRiskScore > 6 ? 'medium' : 'low',
+          controlMeasures: risk.controlMeasures,
+          responsiblePerson: risk.responsible,
+          complianceCodes: risk.legislation
+        })),
+        safetyMeasures: swmsData.safetyMeasures,
+        additionalHazards: [],
+        complianceRecommendations: swmsData.complianceCodes
+      });
     } catch (error: any) {
       console.error('AI enhance SWMS error:', error);
-      res.status(500).json({ message: 'Failed to enhance SWMS with AI' });
+      res.status(500).json({ message: 'Failed to enhance SWMS with AI: ' + error.message });
     }
   });
 

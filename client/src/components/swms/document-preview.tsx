@@ -64,10 +64,34 @@ export default function DocumentPreview({ formData }: DocumentPreviewProps) {
     },
     onSuccess: (data) => {
       setGeneratedDocument(data);
+      
+      // Automatically download the PDF
+      const downloadPdf = async () => {
+        try {
+          const response = await apiRequest("GET", `/api/swms/${data.id}/pdf`);
+          const blob = await response.blob();
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `${data.title || 'SWMS'}-${data.jobNumber || data.id}.pdf`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(url);
+        } catch (error) {
+          console.error('Failed to download PDF:', error);
+        }
+      };
+      
+      downloadPdf();
+      
       toast({
         title: "SWMS Created Successfully",
-        description: "Your SWMS document has been generated and saved.",
+        description: "Your SWMS document has been generated, saved, and downloaded.",
       });
+      
+      // Invalidate My SWMS cache to show the new document
+      queryClient.invalidateQueries({ queryKey: ['/api/swms/my-documents'] });
     },
     onError: (error: any) => {
       toast({
@@ -230,9 +254,9 @@ export default function DocumentPreview({ formData }: DocumentPreviewProps) {
                       <div className="absolute top-0 right-0 opacity-10 text-3xl font-bold text-blue-600 transform rotate-12 pointer-events-none">
                         <div className="text-center">
                           <div className="text-2xl">Safety Samurai</div>
-                          <div className="text-sm mt-1">{documentToDisplay.jobName || documentToDisplay.projectDetails?.jobName || "Project Name Required"}</div>
-                          <div className="text-xs mt-1">Job: {documentToDisplay.jobNumber || documentToDisplay.projectDetails?.jobNumber || "N/A"}</div>
-                          <div className="text-xs mt-1">{documentToDisplay.projectAddress || documentToDisplay.projectDetails?.projectAddress || "Address Required"}</div>
+                          <div className="text-sm mt-1">{formData.jobName || documentToDisplay.jobName || "Project Name Required"}</div>
+                          <div className="text-xs mt-1">Job: {formData.jobNumber || documentToDisplay.jobNumber || "N/A"}</div>
+                          <div className="text-xs mt-1">{formData.projectAddress || documentToDisplay.projectAddress || "Address Required"}</div>
                         </div>
                       </div>
                     </div>
