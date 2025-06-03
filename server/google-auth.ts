@@ -4,6 +4,25 @@ import type { Express } from 'express';
 import { storage } from './storage';
 
 export function setupGoogleAuth(app: Express) {
+  // Only setup Google OAuth if credentials are available
+  if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
+    console.log('Google OAuth credentials not configured - Google Sign-In disabled');
+    
+    // Fallback routes for when Google OAuth is not configured
+    app.get('/api/auth/google', (req, res) => {
+      res.status(503).json({ 
+        error: 'Google Sign-In not configured',
+        message: 'Google OAuth credentials are required to enable this feature.'
+      });
+    });
+    
+    app.get('/api/auth/google/callback', (req, res) => {
+      res.redirect('/?error=google_auth_unavailable');
+    });
+    
+    return;
+  }
+
   // Google OAuth Strategy
   passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID!,

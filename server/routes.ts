@@ -12,9 +12,56 @@ import { generateAutoSwms } from "./auto-swms-generator";
 import { z } from "zod";
 import { generateSafetyContent, enhanceSwmsWithAI } from "./openai";
 import { generateComprehensiveAISwms } from "./comprehensive-ai-swms-generator";
+import { setupGoogleAuth } from "./google-auth";
+import passport from "passport";
+import session from "express-session";
 import * as crypto from "crypto";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Setup session and Google authentication
+  app.use(session({
+    secret: process.env.SESSION_SECRET || 'safety-sensei-secret',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000 } // 24 hours
+  }));
+  
+  app.use(passport.initialize());
+  app.use(passport.session());
+  
+  setupGoogleAuth(app);
+
+  // Authentication middleware
+  const requireAuth = (req: any, res: any, next: any) => {
+    if (req.isAuthenticated()) {
+      return next();
+    }
+    res.status(401).json({ error: 'Authentication required' });
+  };
+
+  // Check SWMS generation limits and show subscription modal
+  const checkSwmsLimits = async (req: any, res: any, next: any) => {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+
+    const swmsDocuments = await storage.getSwmsDocumentsByUser(req.user.id);
+    const swmsCount = swmsDocuments.length;
+    const user = req.user;
+
+    // If this is their second SWMS or more, check subscription
+    if (swmsCount >= 1 && user.subscriptionStatus === 'trial') {
+      return res.status(402).json({ 
+        error: 'Subscription required',
+        message: 'You have used your free trial SWMS. Please subscribe to continue.',
+        swmsCount: swmsCount + 1,
+        requiresSubscription: true
+      });
+    }
+
+    next();
+  };
+
   // User management
   app.post("/api/register", async (req, res) => {
     try {
