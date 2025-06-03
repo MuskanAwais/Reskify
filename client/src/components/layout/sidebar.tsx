@@ -10,7 +10,8 @@ import {
   User, 
   Book, 
   Settings, 
-  Home
+  Home,
+  CreditCard
 } from "lucide-react";
 
 const quickActions = [
@@ -40,6 +41,7 @@ const navigationItems = [
   { icon: FileText, label: "My SWMS", href: "/my-swms" },
   { icon: Book, label: "Safety Library", href: "/safety-library" },
   { icon: BarChart3, label: "Analytics", href: "/analytics" },
+  { icon: CreditCard, label: "Billing", href: "/billing" },
   { icon: Settings, label: "Settings", href: "/settings" }
 ];
 

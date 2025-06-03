@@ -242,24 +242,24 @@ export default function Profile() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="licenseNumber">Copyright Number</Label>
+                <Label htmlFor="licenseNumber">Trade License Number</Label>
                 <div className="relative">
                   <Copyright className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                   <Input
                     id="licenseNumber"
-                    value={isEditing ? formData.licenseNumber : currentUserData?.licenseNumber || ""}
+                    value={isEditing ? formData.licenseNumber : currentUserData?.licenseNumber || "N/A"}
                     onChange={(e) => setFormData(prev => ({ ...prev, licenseNumber: e.target.value }))}
                     disabled={!isEditing}
                     className="pl-10"
-                    placeholder="Enter your trade license number"
+                    placeholder="N/A - Trade license number not applicable"
                   />
                 </div>
               </div>
 
               {!isEditing && !currentUserData?.licenseNumber && (
-                <div className="flex items-center space-x-2 p-3 bg-amber-50 border border-amber-200 rounded-lg">
-                  <AlertCircle className="h-4 w-4 text-amber-600" />
-                  <span className="text-sm text-amber-700">Copyright number not provided</span>
+                <div className="flex items-center space-x-2 p-3 bg-gray-50 border border-gray-200 rounded-lg">
+                  <AlertCircle className="h-4 w-4 text-gray-500" />
+                  <span className="text-sm text-gray-600">Trade license number: N/A</span>
                 </div>
               )}
             </CardContent>
