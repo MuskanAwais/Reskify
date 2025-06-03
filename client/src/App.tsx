@@ -76,6 +76,15 @@ const useAdminState = () => {
     }
   });
 
+  const [isTrialMode, setIsTrialModeState] = useState(() => {
+    try {
+      const saved = localStorage.getItem('trialMode');
+      return saved === 'true';
+    } catch {
+      return false;
+    }
+  });
+
   const setIsAdminMode = (mode: boolean) => {
     try {
       localStorage.setItem('adminMode', mode.toString());
@@ -86,7 +95,17 @@ const useAdminState = () => {
     }
   };
 
-  return { isAdminMode, setIsAdminMode };
+  const setIsTrialMode = (mode: boolean) => {
+    try {
+      localStorage.setItem('trialMode', mode.toString());
+      setIsTrialModeState(mode);
+    } catch (error) {
+      console.error('Failed to save trial state:', error);
+      setIsTrialModeState(mode);
+    }
+  };
+
+  return { isAdminMode, setIsAdminMode, isTrialMode, setIsTrialMode };
 };
 
 // Legacy admin context for compatibility
