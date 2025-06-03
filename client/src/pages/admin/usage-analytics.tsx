@@ -112,7 +112,7 @@ export default function UsageAnalytics() {
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={data.dailyData}>
+              <BarChart data={data.dailyData || []}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="date" />
                 <YAxis />
@@ -132,7 +132,7 @@ export default function UsageAnalytics() {
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
                 <Pie
-                  data={data.featureUsage}
+                  data={data.featureUsage || []}
                   cx="50%"
                   cy="50%"
                   innerRadius={60}
@@ -140,7 +140,7 @@ export default function UsageAnalytics() {
                   dataKey="value"
                   label={({ name, value }) => `${name}: ${value}%`}
                 >
-                  {data.featureUsage.map((entry, index) => (
+                  {(data.featureUsage || []).map((entry: any, index: number) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
@@ -158,7 +158,7 @@ export default function UsageAnalytics() {
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={data.dailyData}>
+              <LineChart data={data.dailyData || []}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="date" />
                 <YAxis />
@@ -176,7 +176,7 @@ export default function UsageAnalytics() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {data.tradeUsage.map((trade) => (
+              {(data.tradeUsage || []).map((trade: any) => (
                 <div key={trade.trade} className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
                     <div className="font-medium">{trade.trade}</div>
@@ -215,7 +215,7 @@ export default function UsageAnalytics() {
                 </tr>
               </thead>
               <tbody>
-                {data.dailyData.map((day) => (
+                {(data.dailyData || []).map((day: any) => (
                   <tr key={day.date} className="border-b hover:bg-gray-50">
                     <td className="p-3 font-medium">{day.date}</td>
                     <td className="p-3">{day.general}</td>
