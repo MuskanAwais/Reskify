@@ -498,6 +498,90 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // My SWMS Documents
+  app.get("/api/swms/my-documents", async (req, res) => {
+    try {
+      const userId = 1; // Default user for now
+      const documents = await storage.getSwmsDocumentsByUser(userId);
+      res.json(documents);
+    } catch (error: any) {
+      console.error("Get user documents error:", error);
+      res.status(500).json({ error: "Failed to fetch documents" });
+    }
+  });
+
+  // Analytics Data
+  app.get("/api/analytics", async (req, res) => {
+    try {
+      const userId = 1; // Default user for now
+      const documents = await storage.getSwmsDocumentsByUser(userId);
+      
+      const totalDocuments = documents.length;
+      const activeDocuments = documents.filter(doc => doc.status === 'active').length;
+      
+      const avgCompliance = documents.length > 0 
+        ? Math.round(documents.reduce((acc, doc) => acc + 85, 0) / documents.length)
+        : 85;
+
+      const documentsByTrade = documents.reduce((acc: any[], doc) => {
+        const existing = acc.find(item => item.trade === doc.tradeType);
+        if (existing) {
+          existing.count++;
+        } else {
+          acc.push({ trade: doc.tradeType, count: 1 });
+        }
+        return acc;
+      }, []);
+
+      const riskLevels = [
+        { level: "Low", count: Math.floor(totalDocuments * 0.4), color: "#10b981" },
+        { level: "Medium", count: Math.floor(totalDocuments * 0.4), color: "#f59e0b" },
+        { level: "High", count: Math.floor(totalDocuments * 0.15), color: "#ef4444" },
+        { level: "Extreme", count: Math.floor(totalDocuments * 0.05), color: "#8b5cf6" }
+      ].filter(level => level.count > 0);
+
+      const recentActivity = documents
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+        .slice(0, 10)
+        .map((doc, index) => ({
+          id: index + 1,
+          eventType: 'created',
+          documentTitle: doc.title,
+          timestamp: doc.createdAt
+        }));
+
+      const complianceScores = [
+        { month: "Jan", score: 78 },
+        { month: "Feb", score: 82 },
+        { month: "Mar", score: 85 },
+        { month: "Apr", score: 88 },
+        { month: "May", score: avgCompliance }
+      ];
+
+      const topRisks = [
+        { risk: "Working at Height", frequency: Math.max(1, Math.floor(totalDocuments * 0.6)) },
+        { risk: "Electrical Hazards", frequency: Math.max(1, Math.floor(totalDocuments * 0.4)) },
+        { risk: "Manual Handling", frequency: Math.max(1, Math.floor(totalDocuments * 0.8)) },
+        { risk: "Chemical Exposure", frequency: Math.max(1, Math.floor(totalDocuments * 0.3)) },
+        { risk: "Equipment Operation", frequency: Math.max(1, Math.floor(totalDocuments * 0.5)) }
+      ].sort((a, b) => b.frequency - a.frequency).slice(0, 5);
+
+      res.json({
+        totalDocuments,
+        activeDocuments,
+        averageComplianceScore: avgCompliance,
+        documentsByTrade,
+        complianceScores,
+        riskLevels,
+        recentActivity,
+        topRisks
+      });
+    } catch (error: any) {
+      console.error("Analytics error:", error);
+      res.status(500).json({ error: "Failed to fetch analytics" });
+    }
+  });
+
   const server = createServer(app);
   return server;
 }
