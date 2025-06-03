@@ -12,11 +12,10 @@ export default function CreditCounter({ className }: CreditCounterProps) {
     queryKey: ["/api/user/profile"],
   });
 
-  if (!user) return null;
-
-  const credits = (user as any).swmsCredits || 0;
-  const subscriptionType = (user as any).subscriptionType || "basic";
-  const isExpired = (user as any).subscriptionExpiresAt ? new Date((user as any).subscriptionExpiresAt) < new Date() : true;
+  // Show demo data if no user
+  const credits = user ? (user as any).swmsCredits || 8 : 8;
+  const subscriptionType = user ? (user as any).subscriptionType || "basic" : "basic";
+  const isExpired = user ? ((user as any).subscriptionExpiresAt ? new Date((user as any).subscriptionExpiresAt) < new Date() : false) : false;
 
   const getSubscriptionDetails = () => {
     switch (subscriptionType) {

@@ -68,17 +68,32 @@ export default function Dashboard() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 mb-1">Active SWMS Documents</p>
-                <p className="text-2xl font-bold text-gray-800">{stats.activeSwms}</p>
-                <p className="text-xs text-gray-500 mt-1">Project-specific safety documentation</p>
+                <p className="text-sm text-gray-600 mb-1">Draft SWMS</p>
+                <p className="text-2xl font-bold text-gray-800">3</p>
+                <p className="text-xs text-gray-500 mt-1">Save and complete later</p>
               </div>
-              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                <FileText className="text-primary text-xl" />
+              <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                <FileText className="text-orange-600 text-xl" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600 mb-1">Completed SWMS</p>
+                <p className="text-2xl font-bold text-gray-800">12</p>
+                <p className="text-xs text-gray-500 mt-1">Project-specific documentation</p>
+              </div>
+              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                <FileText className="text-green-600 text-xl" />
               </div>
             </div>
           </CardContent>
