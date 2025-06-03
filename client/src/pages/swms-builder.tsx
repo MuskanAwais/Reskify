@@ -23,6 +23,7 @@ export default function SwmsBuilder() {
     title: "",
     jobName: "",
     jobNumber: "",
+    projectAddress: "",
     projectLocation: "",
     tradeType: "",
     activities: [],

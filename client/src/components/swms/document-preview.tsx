@@ -212,7 +212,8 @@ export default function DocumentPreview({ formData }: DocumentPreviewProps) {
                         <div className="text-center">
                           <div className="text-2xl">Safety Samurai</div>
                           <div className="text-sm mt-1">{documentToDisplay.jobName || documentToDisplay.projectDetails?.jobName || "Project Name Required"}</div>
-                          <div className="text-xs mt-1">Job: {documentToDisplay.jobNumber || documentToDisplay.projectDetails?.jobNumber || "Job Number Required"}</div>
+                          <div className="text-xs mt-1">Job: {documentToDisplay.jobNumber || documentToDisplay.projectDetails?.jobNumber || "N/A"}</div>
+                          <div className="text-xs mt-1">{documentToDisplay.projectAddress || documentToDisplay.projectDetails?.projectAddress || "Address Required"}</div>
                         </div>
                       </div>
                     </div>

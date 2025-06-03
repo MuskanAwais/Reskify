@@ -12,6 +12,11 @@ export const users = pgTable("users", {
   address: text("address"),
   primaryTrade: text("primary_trade").notNull(),
   licenseNumber: text("license_number"),
+  subscriptionType: text("subscription_type").default("basic"), // basic, premium
+  swmsCredits: integer("swms_credits").default(0),
+  subscriptionExpiresAt: timestamp("subscription_expires_at"),
+  stripeCustomerId: text("stripe_customer_id"),
+  stripeSubscriptionId: text("stripe_subscription_id"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -19,6 +24,9 @@ export const swmsDocuments = pgTable("swms_documents", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id).notNull(),
   title: text("title").notNull(),
+  jobName: text("job_name").notNull(),
+  jobNumber: text("job_number"),
+  projectAddress: text("project_address").notNull(),
   projectLocation: text("project_location").notNull(),
   tradeType: text("trade_type").notNull(),
   activities: text("activities").array().notNull(),
@@ -27,7 +35,9 @@ export const swmsDocuments = pgTable("swms_documents", {
   complianceCodes: text("compliance_codes").array().notNull(),
   status: text("status").notNull().default("draft"), // draft, under_review, approved
   aiEnhanced: boolean("ai_enhanced").default(false),
-  documentHash: text("document_hash"), // for protection
+  documentHash: text("document_hash"), // for protection against reuse
+  originalCreatedAt: timestamp("original_created_at").defaultNow().notNull(), // immutable creation time
+  creditsCost: integer("credits_cost").default(1), // how many credits this SWMS cost
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
