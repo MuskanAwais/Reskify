@@ -100,6 +100,22 @@ export default function DocumentPreview({ formData }: DocumentPreviewProps) {
       return;
     }
 
+    // Show legal disclaimer before generating
+    const userAccepted = window.confirm(
+      "IMPORTANT LEGAL DISCLAIMER:\n\n" +
+      "By clicking OK, you acknowledge that:\n\n" +
+      "• Safety Samurai and its operators are NOT LIABLE for any incidents, accidents, injuries, or damages arising from the use of this SWMS document\n\n" +
+      "• This document is a TEMPLATE ONLY and must be reviewed, modified, and approved by qualified safety professionals before use\n\n" +
+      "• You are responsible for ensuring this SWMS complies with all applicable laws and regulations in your jurisdiction\n\n" +
+      "• You must conduct your own risk assessments and site-specific safety evaluations\n\n" +
+      "• You must verify all control measures are appropriate for your specific work conditions\n\n" +
+      "Do you accept these terms and wish to proceed?"
+    );
+
+    if (!userAccepted) {
+      return;
+    }
+
     // Try to enhance with AI first, then fallback to regular creation
     enhanceWithAiMutation.mutate();
   };
@@ -205,13 +221,34 @@ export default function DocumentPreview({ formData }: DocumentPreviewProps) {
                     </h1>
                     <p className="text-lg text-gray-600">{documentToDisplay.title}</p>
                     
-                    {/* Protection Notice */}
-                    <div className="mt-4 p-4 bg-red-50 border-2 border-red-200 rounded-lg">
-                      <div className="flex items-center justify-center">
-                        <Shield className="mr-2 h-5 w-5 text-red-600" />
-                        <p className="text-sm font-medium text-red-700">
-                          <strong>PROTECTED DOCUMENT:</strong> This SWMS is digitally protected and cannot be copied or modified without authorization.
-                        </p>
+                    {/* Legal Disclaimer and Liability Notice */}
+                    <div className="mt-4 space-y-3">
+                      <div className="p-4 bg-red-50 border-2 border-red-200 rounded-lg">
+                        <div className="flex items-start">
+                          <Shield className="mr-2 h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
+                          <div className="text-sm text-red-700">
+                            <p className="font-bold mb-2">IMPORTANT LEGAL DISCLAIMER</p>
+                            <p className="mb-2">
+                              <strong>Safety Samurai and its operators are NOT LIABLE</strong> for any incidents, accidents, injuries, or damages arising from the use of this SWMS document.
+                            </p>
+                            <p className="mb-2">
+                              This document is a <strong>TEMPLATE ONLY</strong> and must be reviewed, modified, and approved by qualified safety professionals before use.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="p-4 bg-amber-50 border-2 border-amber-200 rounded-lg">
+                        <div className="flex items-start">
+                          <AlertTriangle className="mr-2 h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" />
+                          <div className="text-sm text-amber-700">
+                            <p className="font-bold mb-2">CONTRACTOR RESPONSIBILITY</p>
+                            <p className="mb-1">• You are responsible for ensuring this SWMS complies with all applicable laws and regulations</p>
+                            <p className="mb-1">• You must conduct your own risk assessments and site-specific safety evaluations</p>
+                            <p className="mb-1">• You must verify all control measures are appropriate for your specific work conditions</p>
+                            <p>• You must obtain proper approvals from relevant authorities before commencing work</p>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -341,15 +378,31 @@ export default function DocumentPreview({ formData }: DocumentPreviewProps) {
                     </div>
                   )}
 
-                  {/* Document Footer */}
+                  {/* Document Footer with Legal Disclaimers */}
                   <Separator className="my-6" />
+                  
+                  {/* Final Legal Notice */}
+                  <div className="mb-6 p-4 bg-gray-50 border-2 border-gray-300 rounded-lg">
+                    <div className="text-center">
+                      <h4 className="font-bold text-gray-800 mb-3">FINAL LEGAL NOTICE & DISCLAIMER</h4>
+                      <div className="text-xs text-gray-700 space-y-2">
+                        <p><strong>NO LIABILITY:</strong> Safety Samurai, its operators, developers, and affiliates accept NO LIABILITY for any incidents, accidents, injuries, property damage, or fatalities arising from the use of this SWMS document.</p>
+                        <p><strong>TEMPLATE ONLY:</strong> This document is a TEMPLATE and must be reviewed, modified, and approved by qualified safety professionals and relevant authorities before use.</p>
+                        <p><strong>CONTRACTOR RESPONSIBILITY:</strong> The contractor using this document is solely responsible for ensuring compliance with all applicable laws, regulations, Australian Standards, and workplace safety requirements.</p>
+                        <p><strong>SITE-SPECIFIC REQUIREMENTS:</strong> This document must be adapted to site-specific conditions, hazards, and requirements. Generic control measures may not be adequate for all situations.</p>
+                        <p><strong>PROFESSIONAL REVIEW REQUIRED:</strong> A qualified safety professional must review and approve this SWMS before work commences.</p>
+                        <p><strong>INDEMNIFICATION:</strong> By using this document, you agree to indemnify and hold harmless Safety Samurai from any claims, damages, or liabilities.</p>
+                      </div>
+                    </div>
+                  </div>
+
                   <div className="flex justify-between items-center text-sm text-gray-600">
                     <div className="flex items-center">
                       <User className="mr-2 h-4 w-4" />
-                      <span>Generated by: {user?.username} ({user?.companyName})</span>
+                      <span>Generated by: {user?.username}</span>
                     </div>
                     <div className="flex items-center">
-                      <span>Document ID: SWM-{documentToDisplay.id}</span>
+                      <span>Document ID: SWM-{documentToDisplay.id} | Generated: {new Date().toLocaleDateString('en-AU')}</span>
                     </div>
                   </div>
                 </CardContent>
