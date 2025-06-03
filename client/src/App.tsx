@@ -118,13 +118,22 @@ function App() {
 
   // Admin state for temporary admin features - persist in localStorage
   const [isAdmin, setIsAdmin] = useState<boolean>(() => {
-    const saved = localStorage.getItem('isAdmin');
-    return saved ? JSON.parse(saved) : false;
+    try {
+      const saved = localStorage.getItem('isAdmin');
+      return saved ? JSON.parse(saved) : false;
+    } catch {
+      return false;
+    }
   });
 
   // Save admin state to localStorage when it changes
   useEffect(() => {
-    localStorage.setItem('isAdmin', JSON.stringify(isAdmin));
+    try {
+      localStorage.setItem('isAdmin', JSON.stringify(isAdmin));
+      console.log('Admin state saved to localStorage:', isAdmin);
+    } catch (error) {
+      console.error('Failed to save admin state:', error);
+    }
   }, [isAdmin]);
 
   return (

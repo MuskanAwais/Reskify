@@ -94,14 +94,18 @@ export default function Sidebar() {
               variant="outline"
               size="sm"
               onClick={() => {
-                console.log('Admin button clicked, current state:', isAdmin);
-                setIsAdmin(!isAdmin);
-                console.log('Admin state should now be:', !isAdmin);
+                const newState = !isAdmin;
+                console.log('Admin button clicked, setting state to:', newState);
+                setIsAdmin(newState);
+                // Force re-render by triggering state update
+                setTimeout(() => {
+                  console.log('Admin state after update:', newState);
+                }, 100);
               }}
-              className={`px-3 py-1 text-xs ${
+              className={`px-3 py-1 text-xs transition-all duration-200 ${
                 isAdmin 
-                  ? 'bg-red-50 border-red-200 text-red-700 hover:bg-red-100' 
-                  : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
+                  ? 'bg-green-50 border-green-300 text-green-800 hover:bg-green-100' 
+                  : 'bg-gray-50 border-gray-300 text-gray-600 hover:bg-gray-100'
               }`}
             >
               <Shield className="mr-1 h-3 w-3" />
@@ -204,23 +208,23 @@ export default function Sidebar() {
 
         {/* Subscription Status */}
         <Separator className="my-6" />
-        <Card className="bg-blue-50 border-blue-200">
+        <Card className="bg-slate-50 border-slate-200">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-blue-800">Current Plan</span>
-              <CreditCard className="h-4 w-4 text-blue-600" />
+              <span className="text-sm font-medium text-slate-700">Current Plan</span>
+              <CreditCard className="h-4 w-4 text-slate-500" />
             </div>
-            <p className="text-xs text-blue-600 mb-3">
+            <p className="text-xs text-slate-600 mb-3">
               {subscription?.plan || "Basic Plan"}
             </p>
-            <div className="text-xs text-blue-700">
+            <div className="text-xs text-slate-600">
               <div className="flex justify-between mb-1">
                 <span>Credits Used</span>
                 <span>{subscription?.creditsUsed || 0}/{subscription?.creditsTotal || 10}</span>
               </div>
-              <div className="w-full bg-blue-200 rounded-full h-2">
+              <div className="w-full bg-slate-200 rounded-full h-2">
                 <div 
-                  className="bg-blue-600 h-2 rounded-full" 
+                  className="bg-blue-500 h-2 rounded-full transition-all duration-300" 
                   style={{ 
                     width: `${((subscription?.creditsUsed || 0) / (subscription?.creditsTotal || 10)) * 100}%` 
                   }}

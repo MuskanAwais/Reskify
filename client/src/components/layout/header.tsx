@@ -38,8 +38,16 @@ export default function Header() {
         <div className="flex justify-between items-center">
           {/* Logo and Title */}
           <div className="flex items-center space-x-3">
-            <div className="bg-primary p-2 rounded-lg shadow-sm">
-              <HardHat className="h-6 w-6 text-primary-foreground" />
+            <div className="w-10 h-10 rounded-lg bg-blue-500 flex items-center justify-center">
+              <svg width="24" height="24" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M50 20C42 20 35 25 35 32V40H65V32C65 25 58 20 50 20Z" stroke="white" strokeWidth="3" fill="none"/>
+                <path d="M30 40H70C72 40 74 42 74 44V46C74 48 72 50 70 50H30C28 50 26 48 26 46V44C26 42 28 40 30 40Z" fill="white"/>
+                <circle cx="50" cy="60" r="15" fill="white"/>
+                <circle cx="45" cy="57" r="2" fill="#3B82F6"/>
+                <circle cx="55" cy="57" r="2" fill="#3B82F6"/>
+                <path d="M35 70C35 75 42 80 50 80C58 80 65 75 65 70V65H35V70Z" fill="#1E40AF"/>
+                <path d="M43 63C46 65 54 65 57 63" stroke="#1E40AF" strokeWidth="2" fill="none"/>
+              </svg>
             </div>
             <div>
               <h1 className="text-xl font-bold tracking-tight text-foreground">Sensei</h1>
