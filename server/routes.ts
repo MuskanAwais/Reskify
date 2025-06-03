@@ -62,107 +62,120 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: 'Activities array is required' });
       }
 
-      // Use OpenAI to generate comprehensive risk assessments for each activity
-      const { generateSafetyContent } = await import('./openai');
+      // Use comprehensive database to get authentic risk assessments for each activity
+      const { getAllMegaTradeTasks } = await import('./mega-trades-database');
       
+      const allTasks = getAllMegaTradeTasks();
       const riskAssessments = [];
       const safetyMeasures = [];
       const complianceCodes = new Set();
 
-      // Generate risk assessment for each activity using AI
+      // Find exact matches in the comprehensive database for each selected activity
       for (const activity of activities) {
-        try {
-          const safetyData = await generateSafetyContent(
-            `Generate a comprehensive risk assessment for the construction activity: "${activity}" in the trade: "${tradeType}". Include specific hazards, control measures, Australian legislation references, PPE requirements, and responsible persons.`,
-            {
-              activity,
-              trade: tradeType,
-              location: projectLocation
-            }
-          );
-
-          // Parse the AI response and create structured risk assessment
+        // Find exact task match in comprehensive database
+        const exactTask = allTasks.find(task => 
+          task.activity === activity && task.trade === tradeType
+        );
+        
+        if (exactTask) {
+          // Use authentic data from comprehensive database
           const riskAssessment = {
-            id: `risk-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-            activity: activity,
-            hazards: safetyData.hazards || [
-              "Manual handling injuries",
-              "Electrical shock hazards",
-              "Falls from height",
-              "Tool and equipment injuries",
-              "Environmental exposure"
-            ],
-            initialRiskScore: safetyData.initialRiskScore || 9,
-            riskLevel: safetyData.riskLevel || "Medium",
-            controlMeasures: safetyData.controlMeasures || [
-              "Follow safe work procedures",
-              "Use appropriate PPE",
-              "Conduct pre-task safety briefing",
-              "Ensure proper tool maintenance",
-              "Implement environmental controls"
-            ],
-            residualRiskScore: safetyData.residualRiskScore || 3,
-            residualRiskLevel: safetyData.residualRiskLevel || "Low",
-            responsible: safetyData.responsible || "Site Supervisor",
-            ppe: safetyData.ppe || ["Safety glasses", "Hard hat", "Safety boots", "High-vis clothing"],
-            training: safetyData.training || ["Task-specific training", "Safety induction"],
-            inspection: safetyData.inspection || "Pre-work inspection",
-            emergencyProcedures: safetyData.emergencyProcedures || ["Call 000 for emergencies", "Follow site evacuation procedures"],
-            environmental: safetyData.environmental || ["Protect waterways", "Minimize noise"],
-            quality: safetyData.quality || ["Follow quality standards", "Complete documentation"],
-            legislation: safetyData.legislation || [
-              "Work Health and Safety Act 2011",
-              "Work Health and Safety Regulation 2017",
-              "Building Code of Australia"
-            ],
-            category: safetyData.category || "General Construction",
-            trade: tradeType,
-            complexity: safetyData.complexity || "intermediate",
-            frequency: safetyData.frequency || "project-based",
+            id: exactTask.taskId,
+            activity: exactTask.activity,
+            hazards: exactTask.hazards,
+            initialRiskScore: exactTask.initialRiskScore,
+            riskLevel: exactTask.riskLevel,
+            controlMeasures: exactTask.controlMeasures,
+            residualRiskScore: exactTask.residualRiskScore,
+            residualRiskLevel: exactTask.residualRiskLevel,
+            responsible: exactTask.responsible,
+            ppe: exactTask.ppe,
+            training: exactTask.trainingRequired,
+            inspection: exactTask.inspectionFrequency,
+            emergencyProcedures: exactTask.emergencyProcedures,
+            environmental: exactTask.environmentalControls,
+            quality: exactTask.qualityRequirements,
+            legislation: exactTask.legislation,
+            category: exactTask.category,
+            trade: exactTask.trade,
+            complexity: exactTask.complexity,
+            frequency: exactTask.frequency,
             editable: true
           };
 
           riskAssessments.push(riskAssessment);
 
-          // Add safety measures
-          if (safetyData.safetyMeasures) {
-            safetyMeasures.push(...safetyData.safetyMeasures);
-          }
-
-          // Add compliance codes
-          if (safetyData.legislation) {
-            safetyData.legislation.forEach((code: string) => complianceCodes.add(code));
-          }
-
-        } catch (aiError) {
-          console.error(`Failed to generate AI content for activity: ${activity}`, aiError);
+          // Add legislation to compliance codes
+          exactTask.legislation.forEach(code => complianceCodes.add(code));
           
-          // Fallback risk assessment if AI fails
-          const fallbackRisk = {
-            id: `risk-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-            activity: activity,
-            hazards: ["General construction hazards", "Manual handling", "Tool injuries"],
-            initialRiskScore: 9,
-            riskLevel: "Medium",
-            controlMeasures: ["Follow safe work procedures", "Use appropriate PPE", "Conduct safety briefing"],
-            residualRiskScore: 3,
-            residualRiskLevel: "Low",
-            responsible: "Site Supervisor",
-            ppe: ["Safety glasses", "Hard hat", "Safety boots", "High-vis clothing"],
-            training: ["Safety induction", "Task-specific training"],
-            inspection: "Pre-work inspection",
-            emergencyProcedures: ["Call 000 for emergencies"],
-            environmental: ["Standard environmental controls"],
-            quality: ["Follow quality procedures"],
-            legislation: ["Work Health and Safety Act 2011"],
-            category: "General Construction",
-            trade: tradeType,
-            complexity: "basic",
-            frequency: "project-based",
-            editable: true
-          };
+          // Add safety measures from control measures
+          safetyMeasures.push(...exactTask.controlMeasures);
+        } else {
+          // Find similar task in same trade if exact match not found
+          const similarTask = allTasks.find(task => 
+            task.trade === tradeType && 
+            (task.activity.toLowerCase().includes(activity.toLowerCase()) ||
+             activity.toLowerCase().includes(task.activity.toLowerCase()))
+          );
           
-          riskAssessments.push(fallbackRisk);
+          if (similarTask) {
+            const riskAssessment = {
+              id: `custom-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+              activity: activity,
+              hazards: similarTask.hazards,
+              initialRiskScore: similarTask.initialRiskScore,
+              riskLevel: similarTask.riskLevel,
+              controlMeasures: similarTask.controlMeasures,
+              residualRiskScore: similarTask.residualRiskScore,
+              residualRiskLevel: similarTask.residualRiskLevel,
+              responsible: similarTask.responsible,
+              ppe: similarTask.ppe,
+              training: similarTask.trainingRequired,
+              inspection: similarTask.inspectionFrequency,
+              emergencyProcedures: similarTask.emergencyProcedures,
+              environmental: similarTask.environmentalControls,
+              quality: similarTask.qualityRequirements,
+              legislation: similarTask.legislation,
+              category: similarTask.category,
+              trade: tradeType,
+              complexity: similarTask.complexity,
+              frequency: similarTask.frequency,
+              editable: true
+            };
+
+            riskAssessments.push(riskAssessment);
+            similarTask.legislation.forEach(code => complianceCodes.add(code));
+            safetyMeasures.push(...similarTask.controlMeasures);
+          } else {
+            // Generic fallback for unmatched activities
+            const riskAssessment = {
+              id: `generic-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+              activity: activity,
+              hazards: ["Manual handling injuries", "Tool and equipment hazards", "Slips, trips and falls"],
+              initialRiskScore: 9,
+              riskLevel: "Medium",
+              controlMeasures: ["Follow safe work procedures", "Use appropriate PPE", "Conduct safety briefing"],
+              residualRiskScore: 3,
+              residualRiskLevel: "Low",
+              responsible: "Site Supervisor",
+              ppe: ["Safety glasses", "Hard hat", "Safety boots", "High-vis clothing"],
+              training: ["Safety induction", "Task-specific training"],
+              inspection: "Pre-work inspection",
+              emergencyProcedures: ["Call 000 for emergencies"],
+              environmental: ["Standard environmental controls"],
+              quality: ["Follow quality procedures"],
+              legislation: ["Work Health and Safety Act 2011"],
+              category: "General Construction",
+              trade: tradeType,
+              complexity: "basic",
+              frequency: "project-based",
+              editable: true
+            };
+            
+            riskAssessments.push(riskAssessment);
+            complianceCodes.add("Work Health and Safety Act 2011");
+            safetyMeasures.push(...riskAssessment.controlMeasures);
+          }
         }
       }
 
@@ -331,8 +344,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { tradeName } = req.params;
       const { category } = req.query;
       
-      const { getRealTasksByTrade } = await import('./real-construction-tasks');
-      const allTasks = getRealTasksByTrade(tradeName);
+      const { getMegaTradeTasksByTrade } = await import('./mega-trades-database');
+      const allTasks = getMegaTradeTasksByTrade(tradeName);
       
       if (category) {
         const categoryTasks = allTasks.filter(task => task.category === category);
@@ -351,13 +364,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/trades", async (req, res) => {
     try {
       // Use the real construction tasks database with unique tasks
-      const { getAllRealTasks, getRealTasksByTrade } = await import('./real-construction-tasks');
+      const { getAllMegaTradeTasks, getMegaTradeTasksByTrade } = await import('./mega-trades-database');
       
-      const allTasks = getAllRealTasks();
+      const allTasks = getAllMegaTradeTasks();
       const tradeNames = Array.from(new Set(allTasks.map(task => task.trade)));
       
       const trades = tradeNames.map(tradeName => {
-        const tradeTasks = getRealTasksByTrade(tradeName);
+        const tradeTasks = getMegaTradeTasksByTrade(tradeName);
         
         // Group tasks by category
         const categories = tradeTasks.reduce((acc, task) => {
