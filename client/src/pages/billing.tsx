@@ -154,30 +154,33 @@ export default function Billing() {
 
   const plans = [
     {
-      name: "Basic",
+      name: "Pro Plan",
       price: 50,
       credits: 10,
       tier: 1,
       features: [
         "10 SWMS per month",
-        "Project-specific SWMS",
-        "Email support",
-        "Basic compliance checking"
+        "AI-powered generation",
+        "Visual table editor",
+        "QR check-in system",
+        "Multi-language support",
+        "Voice control",
+        "Priority support"
       ],
-      popular: false
+      popular: true
     },
     {
-      name: "Professional",
+      name: "Enterprise",
       price: 100,
       credits: 25,
       tier: 2,
       features: [
         "25 SWMS per month",
-        "Project-specific SWMS",
-        "Priority support",
-        "Advanced compliance",
-        "AI enhancements",
+        "Everything in Pro",
         "Custom branding",
+        "API access",
+        "Advanced analytics",
+        "Team management",
         "Standard practice guide access"
       ],
       popular: true
@@ -360,7 +363,7 @@ export default function Billing() {
               <p className="text-muted-foreground">Upgrade or downgrade your subscription at any time</p>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {plans.map((plan) => (
                   <div
                     key={plan.name}
