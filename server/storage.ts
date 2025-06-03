@@ -21,6 +21,11 @@ export interface IStorage {
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateUser(id: number, updates: Partial<InsertUser>): Promise<User | undefined>;
+  
+  // Subscription tracking
+  incrementSwmsGenerated(userId: number): Promise<void>;
+  getUserSwmsCount(userId: number): Promise<number>;
+  updateSubscription(userId: number, subscriptionType: string, subscriptionStatus: string): Promise<void>;
 
   // User settings and security
   updateUserNotifications(userId: number, enabled: boolean): Promise<boolean>;
@@ -211,6 +216,37 @@ export class MemStorage implements IStorage {
     const updatedUser = { ...user, ...profileData };
     this.users.set(userId, updatedUser);
     return true;
+  }
+
+  async incrementSwmsGenerated(userId: number): Promise<void> {
+    const user = this.users.get(userId);
+    if (user) {
+      const updatedUser = { 
+        ...user, 
+        swmsGenerated: (user.swmsGenerated || 0) + 1,
+        trialUsed: (user.swmsGenerated || 0) === 0 ? true : user.trialUsed
+      };
+      this.users.set(userId, updatedUser);
+    }
+  }
+
+  async getUserSwmsCount(userId: number): Promise<number> {
+    const user = this.users.get(userId);
+    return user?.swmsGenerated || 0;
+  }
+
+  async updateSubscription(userId: number, subscriptionType: string, subscriptionStatus: string): Promise<void> {
+    const user = this.users.get(userId);
+    if (user) {
+      const credits = subscriptionType === 'pro' ? 10 : subscriptionType === 'enterprise' ? 25 : 1;
+      const updatedUser = {
+        ...user,
+        subscriptionType,
+        subscriptionStatus,
+        swmsCredits: credits
+      };
+      this.users.set(userId, updatedUser);
+    }
   }
 
   async getSwmsDocument(id: number): Promise<SwmsDocument | undefined> {

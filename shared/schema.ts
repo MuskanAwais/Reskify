@@ -7,14 +7,20 @@ export const users = pgTable("users", {
   username: text("username").notNull().unique(),
   email: text("email").notNull().unique(),
   passwordHash: text("password_hash"),
+  name: text("name"),
+  googleId: text("google_id"),
+  profileImage: text("profile_image"),
   companyName: text("company_name").notNull(),
   abn: text("abn"),
   phone: text("phone"),
   address: text("address"),
   primaryTrade: text("primary_trade").notNull(),
   licenseNumber: text("license_number"),
-  subscriptionType: text("subscription_type").default("basic"), // basic, premium
-  swmsCredits: integer("swms_credits").default(0),
+  subscriptionType: text("subscription_type").default("trial"), // trial, pro, enterprise
+  subscriptionStatus: text("subscription_status").default("trial"), // trial, active, inactive
+  swmsCredits: integer("swms_credits").default(1),
+  swmsGenerated: integer("swms_generated").default(0),
+  trialUsed: boolean("trial_used").default(false),
   subscriptionExpiresAt: timestamp("subscription_expires_at"),
   stripeCustomerId: text("stripe_customer_id"),
   stripeSubscriptionId: text("stripe_subscription_id"),

@@ -16,9 +16,12 @@ export function setupGoogleAuth(app: Express) {
       let user = await storage.getUserByEmail(profile.emails?.[0]?.value || '');
       
       if (!user) {
-        // Create new user
+        // Create new user with required fields
         user = await storage.createUser({
+          username: profile.emails?.[0]?.value?.split('@')[0] || `user_${profile.id}`,
           email: profile.emails?.[0]?.value || '',
+          companyName: 'Not Specified',
+          primaryTrade: 'General Construction',
           name: profile.displayName || '',
           googleId: profile.id,
           profileImage: profile.photos?.[0]?.value || '',
