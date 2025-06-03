@@ -389,9 +389,11 @@ export default function SwmsForm({ step, data, onDataChange }: SwmsFormProps) {
                                     <Checkbox
                                       id={activity}
                                       checked={isSelected}
-                                      onCheckedChange={(checked) => {
+                                      onCheckedChange={async (checked) => {
                                         if (checked) {
                                           addArrayItem('activities', activity);
+                                          // Auto-generate SWMS when activities are selected
+                                          setTimeout(() => autoGenerateSwms(), 500);
                                         } else {
                                           const index = formData.activities.indexOf(activity);
                                           if (index > -1) removeArrayItem('activities', index);

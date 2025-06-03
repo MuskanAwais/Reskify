@@ -53,13 +53,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Auto-generate SWMS based on selected activities
+  // Get user profile with subscription details
+  app.get("/api/user/profile", (req, res) => {
+    if (req.isAuthenticated()) {
+      const user = req.user as any;
+      res.json({
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        swmsCredits: user.swmsCredits || 0,
+        subscriptionType: user.subscriptionType || "basic",
+        subscriptionExpiresAt: user.subscriptionExpiresAt,
+        isSubscriptionActive: user.subscriptionExpiresAt && new Date(user.subscriptionExpiresAt) > new Date()
+      });
+    } else {
+      res.status(401).json({ message: "Not logged in" });
+    }
+  });
+
+  // Auto-generate SWMS based on selected activities with credit tracking
   app.post("/api/auto-generate-swms", async (req, res) => {
     try {
-      const { activities, tradeType, projectLocation, title, jobName, jobNumber } = req.body;
+      if (!req.isAuthenticated()) {
+        return res.status(401).json({ message: 'Authentication required' });
+      }
+
+      const { activities, tradeType, projectLocation, title, jobName, jobNumber, projectAddress } = req.body;
       
       if (!activities || !Array.isArray(activities) || activities.length === 0) {
         return res.status(400).json({ message: 'Activities array is required' });
+      }
+
+      // Check user credits and subscription status
+      const user = req.user as any;
+      const hasCredits = user.swmsCredits > 0;
+      const isSubscriptionActive = user.subscriptionExpiresAt && new Date(user.subscriptionExpiresAt) > new Date();
+      
+      if (!hasCredits && !isSubscriptionActive) {
+        return res.status(403).json({ 
+          message: 'Insufficient SWMS credits. Please upgrade your subscription or purchase additional credits.',
+          creditsRemaining: user.swmsCredits || 0
+        });
       }
 
       // Use comprehensive Ultimate Construction Database to get authentic risk assessments for each activity
