@@ -43,11 +43,22 @@ export default function VoiceAssistant({ onVoiceCommand, language = "en-US" }: V
       recognition.current.onerror = (event) => {
         console.error('Speech recognition error:', event.error);
         setIsListening(false);
-        toast({
-          title: "Voice Recognition Error",
-          description: "Could not process voice input. Please try again.",
-          variant: "destructive",
-        });
+        
+        // Handle permission denied gracefully
+        if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+          setIsSupported(false);
+          toast({
+            title: "Microphone Access Required",
+            description: "Please allow microphone access to use voice commands.",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Voice Recognition Error",
+            description: "Could not process voice input. Please try again.",
+            variant: "destructive",
+          });
+        }
       };
     }
 
