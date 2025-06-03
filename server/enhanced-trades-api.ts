@@ -165,7 +165,7 @@ export function generateEnhancedTradesData(): EnhancedTradeStructure[] {
     
     // Get all unique activities for this trade
     const allTradeActivities = tradeTasks.map(task => task.activity);
-    const uniqueActivities = [...new Set(allTradeActivities)];
+    const uniqueActivities = Array.from(new Set(allTradeActivities));
     
     // Organize by categories
     const categoryMap = new Map<string, string[]>();

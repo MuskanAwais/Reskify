@@ -80,24 +80,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Trade types and comprehensive activities
   app.get("/api/trades", async (req, res) => {
-    const trades = [
-      {
-        name: "Electrical",
-        categories: [
-          {
-            name: "Installation Work",
-            activities: [
-              "Power outlet installation",
-              "Light fixture installation", 
-              "Switchboard installation",
-              "Cable tray installation",
-              "Conduit installation",
-              "Earthing system installation",
-              "Motor control installation",
-              "Distribution board installation",
-              "Emergency lighting installation",
-              "Exit sign installation",
-              "Data point installation",
+    try {
+      // Use the comprehensive task database
+      const { COMPREHENSIVE_TRADES_DATA, getCategoriesForTrade, getPrimaryTasksForTrade } = await import('./comprehensive-trades-data');
+      
+      const tradeNames = Object.keys(COMPREHENSIVE_TRADES_DATA);
+      const trades = tradeNames.map(tradeName => {
+        const categories = getCategoriesForTrade(tradeName);
+        
+        return {
+          name: tradeName,
+          categories: categories.map(cat => ({
+            name: cat.name,
+            isPrimary: cat.isPrimary,
+            activities: cat.tasks
+          }))
+        };
+      });
+      
+      res.json(trades);
+    } catch (error: any) {
+      console.error('Comprehensive trades error:', error);
+      
+      // Fallback to basic structure
+      const trades = [
+        {
+          name: "Electrical",
+          categories: [
+            {
+              name: "Primary Tasks",
+              isPrimary: true,
+              activities: [
+                "Power outlet installation",
+                "Light switch installation",
+                "Circuit breaker installation",
+                "Ceiling fan installation",
+                "Smoke alarm installation",
+                "Switchboard installation",
+                "Cable installation",
+                "Conduit installation",
+                "Emergency lighting installation",
+                "Data point installation",
               "Antenna installation",
               "Solar panel installation",
               "Battery system installation",
@@ -369,7 +392,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
     ];
 
-    res.json(trades);
+      res.json(trades);
+    }
   });
 
   // Get safety library
