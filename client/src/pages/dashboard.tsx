@@ -196,65 +196,7 @@ export default function Dashboard() {
         </Card>
       </div>
 
-      {/* Safety Library Preview */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle>Safety Code Library</CardTitle>
-            <Link href="/safety-library">
-              <Button variant="ghost" size="sm" className="text-primary hover:text-primary/80">
-                <Search className="mr-1 h-4 w-4" />
-                Advanced Search
-              </Button>
-            </Link>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <Input 
-              placeholder="Search safety codes, regulations..." 
-              className="w-full"
-            />
-            
-            {topSafetyCodes.length === 0 ? (
-              <div className="text-center py-8">
-                <AlertCircle className="mx-auto h-8 w-8 text-gray-400 mb-2" />
-                <p className="text-gray-500 text-sm">No safety codes available</p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {topSafetyCodes.map((item: any) => (
-                  <div key={item.id} className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <p className="font-medium text-gray-800">{item.code}</p>
-                        <p className="text-sm text-gray-600 mt-1">{item.title}</p>
-                        <div className="flex items-center mt-2 space-x-4">
-                          <span className="text-xs text-gray-500">{item.authority}</span>
-                          <Badge variant="outline" className="text-xs">
-                            {item.category}
-                          </Badge>
-                        </div>
-                      </div>
-                      <Button variant="ghost" size="sm" className="text-primary hover:text-primary/80">
-                        <ExternalLink className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-            
-            <Separator />
-            <Link href="/safety-library">
-              <Button variant="ghost" className="w-full text-primary hover:text-primary/80">
-                Browse All Safety Codes
-                <TrendingUp className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
-          </div>
-        </CardContent>
-      </Card>
+
     </div>
   );
 }

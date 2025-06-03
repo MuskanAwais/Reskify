@@ -1,15 +1,29 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Lock, Crown } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Lock, Crown, Unlock, Search, ExternalLink, Filter } from "lucide-react";
 
 export default function SafetyLibrary() {
+  const [adminUnlocked, setAdminUnlocked] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+
   // Check if user has access to Safety Library
   const { data: subscription } = useQuery({
     queryKey: ['/api/user/subscription']
   });
 
-  const hasAccess = subscription?.features?.safetyLibrary || false;
+  // Get safety library data
+  const { data: safetyLibrary = [] } = useQuery({
+    queryKey: ['/api/safety-library'],
+    enabled: adminUnlocked || subscription?.features?.safetyLibrary
+  });
+
+  const hasAccess = adminUnlocked || subscription?.features?.safetyLibrary || false;
 
   if (!hasAccess) {
     return (
@@ -49,10 +63,22 @@ export default function SafetyLibrary() {
               </div>
             </div>
 
-            <Button className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2">
-              <Crown className="h-4 w-4 mr-2" />
-              Upgrade to Access
-            </Button>
+            <div className="flex gap-3">
+              <Button className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2">
+                <Crown className="h-4 w-4 mr-2" />
+                Upgrade to Access
+              </Button>
+              
+              {/* Temporary Admin Toggle */}
+              <Button 
+                variant="outline" 
+                onClick={() => setAdminUnlocked(!adminUnlocked)}
+                className="border-orange-200 text-orange-600 hover:bg-orange-50 px-6 py-2"
+              >
+                <Unlock className="h-4 w-4 mr-2" />
+                Admin Access
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>
