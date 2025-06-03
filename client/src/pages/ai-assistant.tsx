@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Bot, Send, Loader2, FileText, Shield, AlertTriangle } from "lucide-react";
+import { Bot, Send, Loader2, FileText, Shield, AlertTriangle, RefreshCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface ChatMessage {
@@ -77,13 +77,38 @@ export default function AiAssistant() {
     }
   };
 
-  const quickPrompts = [
-    "Analyze hazards for electrical work",
-    "Suggest control measures for working at height",
-    "Review compliance for excavation work",
-    "Generate emergency procedures",
-    "Assess PPE requirements"
+  // Expanded quick prompts with proper formatting
+  const allQuickPrompts = [
+    "Analyze hazards for electrical work in wet conditions",
+    "Suggest control measures for working at height above 2m",
+    "Review compliance for excavation work near utilities",
+    "Generate emergency procedures for confined spaces",
+    "Assess PPE requirements for welding operations",
+    "Identify risks in crane lifting operations",
+    "Control measures for hot work permits",
+    "Safety requirements for demolition work",
+    "Hazard assessment for asbestos removal",
+    "Emergency response for chemical spills",
+    "Fall protection systems for roofing work",
+    "Safe work procedures for trenching",
+    "Risk controls for machinery operation",
+    "Safety measures for concrete pouring",
+    "Hazards in underground utilities work"
   ];
+
+  // State for rotated prompts
+  const [currentPrompts, setCurrentPrompts] = useState<string[]>([]);
+
+  // Rotate prompts on component mount and provide refresh function
+  useEffect(() => {
+    rotatePrompts();
+  }, []);
+
+  const rotatePrompts = () => {
+    // Shuffle array and take first 5
+    const shuffled = [...allQuickPrompts].sort(() => Math.random() - 0.5);
+    setCurrentPrompts(shuffled.slice(0, 5));
+  };
 
   return (
     <div className="container mx-auto p-6 space-y-6">
@@ -166,17 +191,28 @@ export default function AiAssistant() {
           {/* Quick Prompts */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Quick Questions</CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-lg">Quick Questions</CardTitle>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={rotatePrompts}
+                  className="text-muted-foreground hover:text-foreground"
+                  title="Get new suggestions"
+                >
+                  <RefreshCw className="h-4 w-4" />
+                </Button>
+              </div>
             </CardHeader>
-            <CardContent className="space-y-2">
-              {quickPrompts.map((prompt, index) => (
+            <CardContent className="space-y-3">
+              {currentPrompts.map((prompt, index) => (
                 <Button
                   key={index}
                   variant="ghost"
-                  className="w-full text-left justify-start h-auto p-2"
+                  className="w-full text-left justify-start h-auto p-3 whitespace-normal leading-relaxed"
                   onClick={() => setInputMessage(prompt)}
                 >
-                  <span className="text-sm">{prompt}</span>
+                  <span className="text-sm text-left break-words">{prompt}</span>
                 </Button>
               ))}
             </CardContent>
