@@ -4,7 +4,6 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Link, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
-import { useAdmin } from "@/App";
 import { useState, useEffect } from "react";
 import { 
   FileText, 
