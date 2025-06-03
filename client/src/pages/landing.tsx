@@ -25,6 +25,7 @@ import {
   Play
 } from "lucide-react";
 import Logo from "@/components/ui/logo";
+import logoImage from "@assets/Untitled design-2.png";
 
 const AnimatedSection = ({ children, className = "", delay = 0 }: any) => {
   const ref = React.useRef<HTMLDivElement>(null);
@@ -113,26 +114,12 @@ export default function Landing() {
       trial: true
     },
     {
-      name: "Starter Plan",
-      price: "$29",
-      period: "/month",
-      credits: "5 SWMS per month",
-      features: [
-        "AI-powered SWMS generation",
-        "Basic template library",
-        "PDF export",
-        "Email support",
-        "Mobile app access"
-      ],
-      popular: false
-    },
-    {
       name: "Pro Plan",
       price: "$50",
       period: "/month",
       credits: "10 SWMS per month",
       features: [
-        "Everything in Starter",
+        "AI-powered SWMS generation",
         "Advanced AI features",
         "Visual table editor",
         "Safety library access",
@@ -255,7 +242,12 @@ export default function Landing() {
           }}
           className="absolute top-20 left-10 opacity-20"
         >
-          <Shield className="h-24 w-24 text-blue-600" />
+          <img 
+            src={logoImage} 
+            alt="Safety Sensei Background Logo" 
+            className="object-contain"
+            style={{ height: '480px', width: '480px' }}
+          />
         </motion.div>
 
         <motion.div
@@ -372,7 +364,7 @@ export default function Landing() {
             </div>
           </AnimatedSection>
 
-          <div className="grid md:grid-cols-4 gap-6 max-w-7xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {pricing.map((plan, index) => (
               <FloatingCard key={index} delay={index * 0.15}>
                 <Card className={`h-full relative ${

@@ -29,22 +29,13 @@ export default function Register() {
 
   const plans = [
     {
-      id: "starter",
-      name: "Starter Plan",
-      price: "$29",
-      period: "/month",
-      credits: "5 SWMS per month",
-      popular: false,
-      features: ["AI-powered generation", "Basic templates", "PDF export", "Email support"]
-    },
-    {
       id: "pro",
       name: "Pro Plan", 
       price: "$50",
       period: "/month",
       credits: "10 SWMS per month",
       popular: true,
-      features: ["Everything in Starter", "Visual table editor", "QR check-in", "Multi-language", "Voice control"]
+      features: ["AI-powered generation", "Visual table editor", "QR check-in", "Multi-language", "Voice control"]
     },
     {
       id: "enterprise",
