@@ -1,55 +1,47 @@
-import React from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle, CreditCard, AlertTriangle } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import React from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Check, X, Zap } from 'lucide-react';
 
 interface SubscriptionModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubscribe: (plan: string) => void;
-  swmsCount: number;
+  onSubscribe: (planType: string) => void;
 }
 
-export default function SubscriptionModal({ 
-  isOpen, 
-  onClose, 
-  onSubscribe, 
-  swmsCount 
-}: SubscriptionModalProps) {
+export function SubscriptionModal({ isOpen, onClose, onSubscribe }: SubscriptionModalProps) {
   const plans = [
     {
-      id: "pro",
-      name: "Pro Plan",
-      price: "$50",
-      period: "/month",
-      credits: "10 SWMS per month",
+      name: 'Pro',
+      price: '$50',
+      period: '/month',
       features: [
-        "AI-powered SWMS generation",
-        "Visual table editor",
-        "QR check-in system",
-        "Multi-language support",
-        "Voice control",
-        "Priority support"
+        'Unlimited SWMS Generation',
+        'AI-Powered Safety Recommendations',
+        'Digital Signatures',
+        'QR Code Check-ins',
+        'Export to PDF',
+        'Email Support'
       ],
-      popular: true
+      color: 'blue',
+      popular: false
     },
     {
-      id: "enterprise",
-      name: "Enterprise",
-      price: "$100",
-      period: "/month",
-      credits: "25 SWMS per month",
+      name: 'Enterprise',
+      price: '$100',
+      period: '/month',
       features: [
-        "Everything in Pro",
-        "Custom branding",
-        "API access",
-        "Advanced analytics",
-        "Team management",
-        "Dedicated support"
+        'Everything in Pro',
+        'Multi-Company Management',
+        'Advanced Analytics',
+        'Custom Branding',
+        'Priority Support',
+        'API Access',
+        'Compliance Reporting',
+        'Team Collaboration'
       ],
-      popular: false
+      color: 'purple',
+      popular: true
     }
   ];
 
@@ -57,86 +49,83 @@ export default function SubscriptionModal({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-2xl">
-            <AlertTriangle className="h-6 w-6 text-orange-500" />
-            Subscription Required
+          <DialogTitle className="text-2xl font-bold text-center">
+            Upgrade to Continue Creating SWMS
           </DialogTitle>
+          <p className="text-gray-600 text-center mt-2">
+            You've used your free trial SWMS. Choose a plan to continue building professional safety documents.
+          </p>
         </DialogHeader>
-        
-        <div className="space-y-6">
-          {/* Trial Notice */}
-          <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
-            <div className="flex items-center gap-3">
-              <AlertTriangle className="h-5 w-5 text-orange-500" />
-              <div>
-                <h3 className="font-semibold text-orange-800">Trial Period Complete</h3>
-                <p className="text-orange-700">
-                  You've used your free trial SWMS. This is SWMS #{swmsCount + 1}. 
-                  Choose a subscription plan to continue creating professional SWMS documents.
-                </p>
+
+        <div className="grid md:grid-cols-2 gap-6 mt-6">
+          {plans.map((plan) => (
+            <div
+              key={plan.name}
+              className={`relative rounded-2xl border-2 p-6 ${
+                plan.popular
+                  ? 'border-purple-500 bg-purple-50'
+                  : 'border-blue-300 bg-blue-50'
+              }`}
+            >
+              {plan.popular && (
+                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                  <span className="bg-purple-500 text-white px-4 py-1 rounded-full text-sm font-medium flex items-center gap-1">
+                    <Zap className="h-4 w-4" />
+                    Most Popular
+                  </span>
+                </div>
+              )}
+
+              <div className="text-center mb-6">
+                <h3 className={`text-2xl font-bold ${
+                  plan.color === 'purple' ? 'text-purple-700' : 'text-blue-700'
+                }`}>
+                  {plan.name}
+                </h3>
+                <div className="mt-2">
+                  <span className="text-4xl font-bold text-gray-900">{plan.price}</span>
+                  <span className="text-gray-600">{plan.period}</span>
+                </div>
               </div>
-            </div>
-          </div>
 
-          {/* Pricing Plans */}
-          <div className="grid md:grid-cols-2 gap-6">
-            {plans.map((plan) => (
-              <Card 
-                key={plan.id} 
-                className={`relative ${plan.popular ? 'border-blue-500 border-2 scale-105' : 'border-gray-200'}`}
+              <ul className="space-y-3 mb-8">
+                {plan.features.map((feature, index) => (
+                  <li key={index} className="flex items-center gap-3">
+                    <Check className={`h-5 w-5 ${
+                      plan.color === 'purple' ? 'text-purple-500' : 'text-blue-500'
+                    }`} />
+                    <span className="text-gray-700">{feature}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <Button
+                onClick={() => onSubscribe(plan.name.toLowerCase())}
+                className={`w-full py-3 text-lg font-semibold ${
+                  plan.color === 'purple'
+                    ? 'bg-purple-600 hover:bg-purple-700'
+                    : 'bg-blue-600 hover:bg-blue-700'
+                }`}
               >
-                {plan.popular && (
-                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                    <Badge className="bg-blue-600 text-white px-4 py-1">
-                      Most Popular
-                    </Badge>
-                  </div>
-                )}
-                
-                <CardHeader className="text-center pb-4">
-                  <CardTitle className="text-xl">{plan.name}</CardTitle>
-                  <div className="mt-4">
-                    <span className="text-3xl font-bold text-gray-900">{plan.price}</span>
-                    <span className="text-gray-600">{plan.period}</span>
-                  </div>
-                  <p className="text-blue-600 font-medium mt-2">{plan.credits}</p>
-                </CardHeader>
-                
-                <CardContent>
-                  <ul className="space-y-3 mb-6">
-                    {plan.features.map((feature, index) => (
-                      <li key={index} className="flex items-center gap-3">
-                        <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />
-                        <span className="text-gray-700 text-sm">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  
-                  <Button 
-                    className={`w-full ${
-                      plan.popular ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-900 hover:bg-gray-800'
-                    } text-white`}
-                    onClick={() => onSubscribe(plan.id)}
-                  >
-                    <CreditCard className="mr-2 h-4 w-4" />
-                    Subscribe to {plan.name}
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          {/* Security Notice */}
-          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-            <div className="flex items-center gap-2 mb-2">
-              <CheckCircle className="h-5 w-5 text-green-500" />
-              <span className="font-semibold text-gray-800">Secure Payment</span>
+                Choose {plan.name}
+              </Button>
             </div>
-            <p className="text-gray-600 text-sm">
-              Your payment is processed securely through Stripe. Cancel anytime. 
-              No hidden fees or long-term commitments.
-            </p>
-          </div>
+          ))}
+        </div>
+
+        <div className="mt-6 text-center">
+          <Button
+            variant="ghost"
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-700"
+          >
+            <X className="h-4 w-4 mr-2" />
+            Maybe Later
+          </Button>
+        </div>
+
+        <div className="mt-4 text-center text-sm text-gray-500">
+          <p>30-day money-back guarantee • Cancel anytime • Secure payment processing</p>
         </div>
       </DialogContent>
     </Dialog>

@@ -24,18 +24,8 @@ const Logo: React.FC<LogoProps> = ({
   };
 
   return (
-    <div className={`flex items-center gap-3 ${className}`}>
-      {/* Safety Sensei Logo - Stylized SS with Safety Elements */}
-      <div className={`${sizeClasses[size]} relative flex items-center justify-center bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl shadow-lg`}>
-        <div className="absolute inset-1 bg-white rounded-lg flex items-center justify-center">
-          <div className={`${colorClasses[variant]} font-bold text-lg relative`}>
-            <div className="absolute -top-1 -right-1 w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
-            SS
-          </div>
-        </div>
-      </div>
-      
-      {/* Brand Text */}
+    <div className={`flex items-center ${className}`}>
+      {/* Brand Text Only */}
       <div className="flex flex-col">
         <div className={`font-bold ${size === 'xl' ? 'text-3xl' : size === 'lg' ? 'text-2xl' : size === 'md' ? 'text-xl' : 'text-lg'} ${colorClasses[variant]} tracking-tight`}>
           Safety Sensei

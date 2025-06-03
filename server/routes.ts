@@ -482,6 +482,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get user subscription information
+  app.get('/api/user/subscription-info', async (req, res) => {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+
+    try {
+      const user = req.user;
+      const swmsDocuments = await storage.getSwmsDocumentsByUser(user.id);
+      
+      res.json({
+        subscriptionType: user.subscriptionType || 'trial',
+        subscriptionStatus: user.subscriptionStatus || 'trial',
+        swmsGenerated: swmsDocuments.length,
+        swmsCredits: user.swmsCredits || 0,
+        trialUsed: swmsDocuments.length > 0
+      });
+    } catch (error) {
+      console.error('Error fetching subscription info:', error);
+      res.status(500).json({ error: 'Failed to fetch subscription information' });
+    }
+  });
+
   // AI Chat Assistant endpoint
   app.post("/api/ai-chat", async (req, res) => {
     try {
