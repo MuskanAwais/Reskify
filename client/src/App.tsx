@@ -12,6 +12,7 @@ import Profile from "@/pages/profile";
 import SafetyLibrary from "@/pages/safety-library";
 import MySwms from "@/pages/my-swms";
 import Analytics from "@/pages/analytics";
+import AiAssistant from "@/pages/ai-assistant";
 import Settings from "@/pages/settings";
 import NotFound from "@/pages/not-found";
 
@@ -57,6 +58,7 @@ function Router() {
         <Route path="/swms-builder" component={SwmsBuilder} />
         <Route path="/my-swms" component={MySwms} />
         <Route path="/analytics" component={Analytics} />
+        <Route path="/ai-assistant" component={AiAssistant} />
         <Route path="/profile" component={Profile} />
         <Route path="/safety-library" component={SafetyLibrary} />
         <Route path="/settings" component={Settings} />

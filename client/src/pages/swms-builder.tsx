@@ -64,7 +64,7 @@ export default function SwmsBuilder() {
             <p className="text-gray-600">Create comprehensive safety documentation</p>
           </div>
         </div>
-        <Badge variant="outline" className="bg-blue-50 text-primary border-primary/20">
+        <Badge variant="outline" className="bg-green-50 text-primary border-primary/20">
           Step {currentStep} of {STEPS.length}
         </Badge>
       </div>
