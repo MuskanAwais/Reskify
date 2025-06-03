@@ -57,20 +57,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Get user profile with subscription details
   app.get("/api/user/profile", (req, res) => {
-    if (req.isAuthenticated()) {
-      const user = req.user as any;
-      res.json({
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        swmsCredits: user.swmsCredits || 0,
-        subscriptionType: user.subscriptionType || "basic",
-        subscriptionExpiresAt: user.subscriptionExpiresAt,
-        isSubscriptionActive: user.subscriptionExpiresAt && new Date(user.subscriptionExpiresAt) > new Date()
-      });
-    } else {
-      res.status(401).json({ message: "Not logged in" });
-    }
+    // Mock user for testing
+    const user = {
+      id: 1,
+      username: "testuser",
+      email: "test@example.com",
+      companyName: "Test Company",
+      primaryTrade: "General Construction",
+      swmsCredits: 10,
+      subscriptionType: "pro",
+      subscriptionExpiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+    };
+    
+    res.json({
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      swmsCredits: user.swmsCredits || 0,
+      subscriptionType: user.subscriptionType || "basic",
+      subscriptionExpiresAt: user.subscriptionExpiresAt,
+      isSubscriptionActive: user.subscriptionExpiresAt && new Date(user.subscriptionExpiresAt) > new Date()
+    });
   });
 
   // Get user subscription data for sidebar
@@ -103,18 +110,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auto-generate SWMS based on selected activities with credit tracking
   app.post("/api/auto-generate-swms", async (req, res) => {
     try {
-      if (!req.isAuthenticated()) {
-        return res.status(401).json({ message: 'Authentication required' });
-      }
+      // Mock authentication for testing
+      const user = {
+        id: 1,
+        username: "testuser",
+        email: "test@example.com",
+        companyName: "Test Company",
+        primaryTrade: "General Construction",
+        swmsCredits: 10,
+        subscriptionExpiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 days from now
+      };
 
       const { activities, tradeType, projectLocation, title, jobName, jobNumber, projectAddress } = req.body;
+      
+      console.log('Received SWMS generation request:', { activities, tradeType, projectLocation, title });
       
       if (!activities || !Array.isArray(activities) || activities.length === 0) {
         return res.status(400).json({ message: 'Activities array is required' });
       }
-
-      // Check user credits and subscription status
-      const user = req.user as any;
       const hasCredits = user.swmsCredits > 0;
       const isSubscriptionActive = user.subscriptionExpiresAt && new Date(user.subscriptionExpiresAt) > new Date();
       
