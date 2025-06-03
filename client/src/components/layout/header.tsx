@@ -62,10 +62,7 @@ export default function Header() {
             {/* Language Switcher */}
             <LanguageSwitcher />
 
-            {/* Notifications */}
-            <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground hover:bg-accent p-2">
-              <Bell className="h-5 w-5" />
-            </Button>
+
 
             {/* User Menu */}
             <DropdownMenu>
@@ -90,10 +87,12 @@ export default function Header() {
                 <DropdownMenuSeparator />
                 <ContactForm />
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <Settings className="mr-2 h-4 w-4" />
-                  <span>Settings</span>
-                </DropdownMenuItem>
+                <Link href="/profile">
+                  <DropdownMenuItem>
+                    <Settings className="mr-2 h-4 w-4" />
+                    <span>Settings</span>
+                  </DropdownMenuItem>
+                </Link>
                 <DropdownMenuItem>
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Log out</span>

@@ -101,7 +101,7 @@ export default function Dashboard() {
       </div>
 
       {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* SWMS Builder Card */}
         <Card>
           <CardHeader>
@@ -125,22 +125,6 @@ export default function Dashboard() {
                   Create SWMS
                 </Button>
               </Link>
-            </div>
-            <Separator />
-            <div className="space-y-3">
-              <h4 className="font-medium text-gray-800">Quick Actions</h4>
-              <div className="grid grid-cols-2 gap-3">
-                <Link href="/my-swms">
-                  <Button variant="outline" className="w-full justify-start">
-                    <FileText className="mr-2 h-4 w-4" />
-                    View SWMS
-                  </Button>
-                </Link>
-                <Button variant="outline" className="w-full justify-start">
-                  <Bot className="mr-2 h-4 w-4" />
-                  AI Assistant
-                </Button>
-              </div>
             </div>
           </CardContent>
         </Card>
