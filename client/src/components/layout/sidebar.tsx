@@ -95,12 +95,8 @@ export default function Sidebar() {
               size="sm"
               onClick={() => {
                 const newState = !isAdmin;
-                console.log('Admin button clicked, setting state to:', newState);
+                console.log('Admin button clicked, changing from', isAdmin, 'to', newState);
                 setIsAdmin(newState);
-                // Force re-render by triggering state update
-                setTimeout(() => {
-                  console.log('Admin state after update:', newState);
-                }, 100);
               }}
               className={`px-3 py-1 text-xs transition-all duration-200 ${
                 isAdmin 

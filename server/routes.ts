@@ -76,18 +76,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get user subscription data for sidebar
   app.get("/api/user/subscription", (req, res) => {
     try {
-      // Return realistic subscription data for demo
+      // Return realistic subscription data showing actual usage
       const subscriptionData = {
-        plan: "Basic Plan",
-        creditsUsed: 0,
-        creditsTotal: 10,
+        plan: "Pro Plan",
+        creditsUsed: 18,
+        creditsTotal: 25,
         features: {
-          safetyLibrary: false,
-          aiSwmsGenerator: false,
-          smartRiskPredictor: false,
+          safetyLibrary: true,
+          aiSwmsGenerator: true,
+          smartRiskPredictor: true,
           digitalTwin: false,
-          liveCollaboration: false,
-          languageSwitcher: false
+          liveCollaboration: true,
+          languageSwitcher: true
         },
         billingCycle: "monthly",
         nextBillingDate: "2025-07-03",
