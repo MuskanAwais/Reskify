@@ -18,10 +18,14 @@ import Billing from "@/pages/billing";
 import NotFound from "@/pages/not-found";
 
 // Admin pages
+import AdminDashboard from "@/pages/admin/admin-dashboard";
 import UserManagement from "@/pages/admin/user-management";
 import BillingAnalytics from "@/pages/admin/billing-analytics";
 import UsageAnalytics from "@/pages/admin/usage-analytics";
 import AllSwms from "@/pages/admin/all-swms";
+import DataManagement from "@/pages/admin/data-management";
+import ContactLists from "@/pages/admin/contact-lists";
+import SystemHealth from "@/pages/admin/system-health";
 
 // Innovative features
 import SmartRiskPredictor from "@/pages/smart-risk-predictor";

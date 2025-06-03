@@ -38,11 +38,22 @@ export const swmsDocuments = pgTable("swms_documents", {
   riskAssessments: jsonb("risk_assessments").notNull(),
   safetyMeasures: jsonb("safety_measures").notNull(),
   complianceCodes: text("compliance_codes").array().notNull(),
-  status: text("status").notNull().default("draft"), // draft, under_review, approved
+  status: text("status").notNull().default("draft"), // draft, under_review, approved, signed
   aiEnhanced: boolean("ai_enhanced").default(false),
   documentHash: text("document_hash"), // for protection against reuse
   originalCreatedAt: timestamp("original_created_at").defaultNow().notNull(), // immutable creation time
   creditsCost: integer("credits_cost").default(1), // how many credits this SWMS cost
+  // Digital signature fields
+  requiresSignature: boolean("requires_signature").default(false),
+  signatureStatus: text("signature_status").default("unsigned"), // unsigned, pending, signed
+  signedAt: timestamp("signed_at"),
+  signedBy: text("signed_by"), // name of person who signed
+  signatureTitle: text("signature_title"), // job title/role of signer
+  signatureData: text("signature_data"), // base64 encoded signature image
+  signatureHash: text("signature_hash"), // hash of signature for integrity
+  witnessName: text("witness_name"),
+  witnessSignature: text("witness_signature"),
+  witnessSignedAt: timestamp("witness_signed_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
