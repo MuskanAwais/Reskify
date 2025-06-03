@@ -551,11 +551,11 @@ export class DatabaseStorage implements IStorage {
   async getTradeUsageStats(): Promise<any[]> {
     // Return trade usage based on actual database
     const result = await db.select({
-      trade: swmsDocuments.primaryTrade,
+      trade: swmsDocuments.tradeType,
       count: sql<number>`count(*)`
     })
     .from(swmsDocuments)
-    .groupBy(swmsDocuments.primaryTrade)
+    .groupBy(swmsDocuments.tradeType)
     .orderBy(sql`count(*) desc`);
 
     const total = result.reduce((sum, item) => sum + item.count, 0);

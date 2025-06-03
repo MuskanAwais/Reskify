@@ -118,8 +118,8 @@ export default function UserManagement() {
                     </td>
                     <td className="p-3 text-gray-600">{user.company}</td>
                     <td className="p-3">
-                      <Badge variant={user.plan.includes('Enterprise') ? 'default' : user.plan.includes('Pro') ? 'secondary' : 'outline'}>
-                        {user.plan}
+                      <Badge variant={user.plan?.includes('Enterprise') ? 'default' : user.plan?.includes('Pro') ? 'secondary' : 'outline'}>
+                        {user.plan || 'Basic Plan'}
                       </Badge>
                     </td>
                     <td className="p-3 font-medium">{user.swmsCount}</td>
