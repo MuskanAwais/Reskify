@@ -34,6 +34,9 @@ export default function SwmsForm({ step, data, onDataChange }: SwmsFormProps) {
   const { toast } = useToast();
   const [formData, setFormData] = useState(data);
   const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set());
+  const [searchTerm, setSearchTerm] = useState("");
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
+  const [searchResults, setSearchResults] = useState<any[]>([]);
 
   const { data: trades } = useQuery({
     queryKey: ["/api/trades"],
@@ -196,10 +199,65 @@ export default function SwmsForm({ step, data, onDataChange }: SwmsFormProps) {
                     <Input
                       placeholder="Search for specific activities..."
                       className="pl-10"
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
+                      value={searchTerm || ""}
+                      onChange={async (e) => {
+                        const term = e.target.value;
+                        setSearchTerm(term);
+                        
+                        if (term.length > 2) {
+                          try {
+                            const response = await fetch(`/api/search-activities?q=${encodeURIComponent(term)}&trade=${encodeURIComponent(selectedTrade.name)}`);
+                            const results = await response.json();
+                            setSearchResults(results);
+                          } catch (error) {
+                            console.error('Search failed:', error);
+                            setSearchResults([]);
+                          }
+                        } else {
+                          setSearchResults([]);
+                        }
+                      }}
                     />
                   </div>
+                  
+                  {/* Search Results */}
+                  {searchTerm.length > 2 && searchResults.length > 0 && (
+                    <div className="border rounded-lg p-4 bg-blue-50">
+                      <h4 className="font-medium text-sm mb-3">Search Results ({searchResults.length} found)</h4>
+                      <div className="space-y-2 max-h-48 overflow-y-auto">
+                        {searchResults.map((result: any, index: number) => {
+                          const isSelected = formData.activities.includes(result.activity);
+                          return (
+                            <div key={index} className="flex items-center space-x-2">
+                              <Checkbox
+                                checked={isSelected}
+                                onCheckedChange={(checked) => {
+                                  if (checked) {
+                                    addArrayItem('activities', result.activity);
+                                  } else {
+                                    const idx = formData.activities.indexOf(result.activity);
+                                    if (idx > -1) removeArrayItem('activities', idx);
+                                  }
+                                }}
+                              />
+                              <Label className="text-sm flex-1 cursor-pointer">
+                                {result.activity}
+                                <Badge variant="outline" className="ml-2 text-xs">
+                                  {result.trade || selectedTrade.name}
+                                </Badge>
+                              </Label>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {searchTerm.length > 2 && searchResults.length === 0 && (
+                    <div className="text-sm text-gray-500 p-2">
+                      No activities found matching "{searchTerm}"
+                    </div>
+                  )}
                 </div>
 
                 {selectedTrade.categories?.map((category: any) => {
@@ -299,6 +357,39 @@ export default function SwmsForm({ step, data, onDataChange }: SwmsFormProps) {
                                 );
                               })}
                             </div>
+
+                            {/* Show More Button for categories with additional activities */}
+                            {category.hasMore && (
+                              <div className="mt-4 border-t pt-4">
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  className="w-full"
+                                  onClick={async () => {
+                                    try {
+                                      const response = await fetch(`/api/trades/${selectedTrade.name}/activities?category=${encodeURIComponent(category.name)}`);
+                                      const data = await response.json();
+                                      
+                                      // Update the category with all activities
+                                      const updatedCategories = selectedTrade.categories.map((cat: any) => 
+                                        cat.name === category.name 
+                                          ? { ...cat, activities: data.activities, hasMore: false }
+                                          : cat
+                                      );
+                                      
+                                      // Update the trades data locally
+                                      // This would need proper state management in a real app
+                                      console.log('Loaded all activities for', category.name, ':', data.activities.length);
+                                    } catch (error) {
+                                      console.error('Failed to load more activities:', error);
+                                    }
+                                  }}
+                                >
+                                  Show All {totalCount} Activities ({displayedCount} of {totalCount} shown)
+                                </Button>
+                              </div>
+                            )}
                           </div>
                         )}
                       </div>

@@ -8,12 +8,26 @@ export interface MegaTaskAssessment {
   category: string;
   subcategory: string;
   trade: string;
+  
+  // Complete SWMS Table Data
   hazards: string[];
   initialRiskScore: number;
+  riskLevel: "Low" | "Medium" | "High" | "Extreme";
   controlMeasures: string[];
   legislation: string[];
   residualRiskScore: number;
+  residualRiskLevel: "Low" | "Medium" | "High" | "Extreme";
   responsible: string;
+  
+  // Additional SWMS Table Columns
+  ppe: string[];
+  trainingRequired: string[];
+  inspectionFrequency: string;
+  emergencyProcedures: string[];
+  environmentalControls: string[];
+  qualityRequirements: string[];
+  
+  // Task Classification
   applicableToAllTrades?: boolean;
   relatedTasks?: string[];
   frequency: "daily" | "weekly" | "monthly" | "project-based";
@@ -28,6 +42,68 @@ export const MEGA_CONSTRUCTION_DATABASE: Record<string, MegaTaskAssessment> = {
     taskId: "site-access-001",
     activity: "Site entry and security check",
     category: "General Access",
+    subcategory: "Site Entry",
+    trade: "Universal",
+    hazards: [
+      "Unauthorised access to restricted areas",
+      "Vehicle/pedestrian conflicts in entry areas",
+      "Inadequate site induction",
+      "Missing or expired security credentials"
+    ],
+    initialRiskScore: 12,
+    riskLevel: "High",
+    controlMeasures: [
+      "Implement controlled access points with security personnel",
+      "Mandatory site induction for all personnel before entry",
+      "Valid security clearance and ID verification required",
+      "Separate pedestrian and vehicle access routes",
+      "Emergency evacuation procedures communicated",
+      "Site safety rules and regulations briefing"
+    ],
+    legislation: [
+      "Work Health and Safety Act 2011 (Cth)",
+      "Work Health and Safety Regulation 2017",
+      "AS 1742.3 - Manual of uniform traffic control devices",
+      "Construction Work Code of Practice 2013"
+    ],
+    residualRiskScore: 4,
+    residualRiskLevel: "Low",
+    responsible: "Site Security Officer / Site Supervisor",
+    ppe: [
+      "High visibility vest",
+      "Safety helmet",
+      "Steel-capped boots",
+      "ID badge visible"
+    ],
+    trainingRequired: [
+      "Site induction training",
+      "Emergency evacuation procedures",
+      "Security protocols awareness"
+    ],
+    inspectionFrequency: "Daily",
+    emergencyProcedures: [
+      "Emergency assembly point identification",
+      "Emergency contact numbers provided",
+      "Evacuation route familiarisation"
+    ],
+    environmentalControls: [
+      "Dust minimisation at entry points",
+      "Noise control during peak hours"
+    ],
+    qualityRequirements: [
+      "Security log maintenance",
+      "Visitor register completion",
+      "Induction record keeping"
+    ],
+    applicableToAllTrades: true,
+    frequency: "daily",
+    complexity: "basic"
+  },
+
+  "scaffold-erection-001": {
+    taskId: "scaffold-erection-001",
+    activity: "Scaffold erection and installation",
+    category: "Access Equipment",
     subcategory: "Site Security",
     trade: "All Trades",
     hazards: ["Unauthorized access", "Security breaches", "Theft", "Vandalism"],
