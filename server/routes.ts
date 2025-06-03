@@ -227,11 +227,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Trade types and comprehensive activities
   app.get("/api/trades", async (req, res) => {
     try {
-      // Use the comprehensive task database
-      const { COMPREHENSIVE_TRADES_DATA, getCategoriesForTrade, getPrimaryTasksForTrade } = await import('./comprehensive-trades-data');
+      // Use the massive task database
+      const { MASSIVE_TASKS_DATABASE, getCategoriesForTrade, getTaskCountByTrade, getTotalTaskCount } = await import('./massive-tasks-database');
       
-      const tradeNames = Object.keys(COMPREHENSIVE_TRADES_DATA);
-      const trades = tradeNames.map(tradeName => {
+      const taskCounts = getTaskCountByTrade();
+      const totalTasks = getTotalTaskCount();
+      
+      const trades = Object.keys(MASSIVE_TASKS_DATABASE).map(tradeName => {
         const categories = getCategoriesForTrade(tradeName);
         
         return {
@@ -239,17 +241,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
           categories: categories.map(cat => ({
             name: cat.name,
             isPrimary: cat.isPrimary,
-            activities: cat.isPrimary ? cat.tasks : cat.tasks.slice(0, 10), // Show all primary, limit others
-            totalActivities: cat.tasks.length,
-            hasMore: !cat.isPrimary && cat.tasks.length > 10
+            activities: cat.tasks.slice(0, 20), // Show first 20 activities
+            totalActivities: cat.totalTasks,
+            hasMore: cat.totalTasks > 20
           })),
-          totalTasks: categories.reduce((sum, cat) => sum + cat.tasks.length, 0)
+          totalTasks: taskCounts[tradeName],
+          primaryTasks: categories.find(c => c.isPrimary)?.tasks.slice(0, 10) || [],
+          allTasks: categories.flatMap(c => c.tasks)
         };
       });
       
       res.json(trades);
     } catch (error: any) {
-      console.error('Comprehensive trades error:', error);
+      console.error('Massive trades database error:', error);
       
       // Fallback to basic structure
       const trades = [
