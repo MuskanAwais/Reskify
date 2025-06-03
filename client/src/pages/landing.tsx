@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "wouter";
 import { 
-  Shield, 
+  Shield,
   FileText, 
   Bot, 
   CheckCircle, 
@@ -21,8 +21,10 @@ import {
   Camera,
   Mic,
   Languages,
-  Smartphone
+  Smartphone,
+  Play
 } from "lucide-react";
+import Logo from "@/components/ui/logo";
 
 const AnimatedSection = ({ children, className = "", delay = 0 }: any) => {
   const ref = React.useRef<HTMLDivElement>(null);
@@ -96,6 +98,21 @@ export default function Landing() {
 
   const pricing = [
     {
+      name: "Free Trial",
+      price: "Free",
+      period: "",
+      credits: "1 SWMS to test",
+      features: [
+        "AI-powered SWMS generation",
+        "Basic template access",
+        "PDF export",
+        "See how it works",
+        "No credit card required"
+      ],
+      popular: false,
+      trial: true
+    },
+    {
       name: "Starter Plan",
       price: "$29",
       period: "/month",
@@ -167,12 +184,9 @@ export default function Landing() {
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ duration: 1, ease: "easeOut" }}
-              className="mb-8"
+              className="mb-12"
             >
-              <div className="inline-flex items-center gap-3 bg-blue-100 text-blue-800 px-6 py-3 rounded-full font-medium">
-                <Shield className="h-5 w-5" />
-                Safety Sensei - Australian SWMS Builder
-              </div>
+              <Logo size="xl" className="justify-center" />
             </motion.div>
           </AnimatedSection>
 
@@ -196,15 +210,16 @@ export default function Landing() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link href="/register">
                 <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg">
-                  Start Free Trial
+                  Try 1 Free SWMS
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
-              <Link href="/demo">
-                <Button variant="outline" size="lg" className="px-8 py-4 text-lg">
-                  Watch Demo
-                </Button>
-              </Link>
+              <Button variant="outline" size="lg" className="px-8 py-4 text-lg" onClick={() => {
+                document.getElementById('demo-video')?.scrollIntoView({ behavior: 'smooth' });
+              }}>
+                <Play className="mr-2 h-5 w-5" />
+                Watch Demo
+              </Button>
             </div>
           </AnimatedSection>
 
@@ -259,6 +274,56 @@ export default function Landing() {
         </motion.div>
       </section>
 
+      {/* Demo Video Section */}
+      <section id="demo-video" className="py-20 bg-gradient-to-br from-gray-50 to-white">
+        <div className="container mx-auto px-4">
+          <AnimatedSection>
+            <div className="text-center mb-16">
+              <h2 className="text-4xl font-bold text-gray-900 mb-4">
+                See Safety Sensei in Action
+              </h2>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                Watch how easy it is to create professional SWMS documents in under 5 minutes
+              </p>
+            </div>
+          </AnimatedSection>
+
+          <AnimatedSection delay={0.3}>
+            <div className="max-w-4xl mx-auto">
+              <Card className="overflow-hidden shadow-2xl border-0">
+                <div className="relative bg-gradient-to-br from-blue-900 to-blue-700 aspect-video flex items-center justify-center">
+                  <motion.div
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="cursor-pointer"
+                  >
+                    <div className="w-24 h-24 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
+                      <Play className="h-12 w-12 text-white ml-1" />
+                    </div>
+                  </motion.div>
+                  
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                  <div className="absolute bottom-6 left-6 text-white">
+                    <h3 className="text-xl font-bold mb-2">Complete SWMS Creation Demo</h3>
+                    <p className="text-white/80">From project setup to PDF generation - 4:32</p>
+                  </div>
+                </div>
+              </Card>
+              
+              <div className="mt-8 text-center">
+                <p className="text-gray-600 mb-4">See the complete workflow:</p>
+                <div className="flex flex-wrap justify-center gap-4 text-sm">
+                  <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full">AI Project Setup</span>
+                  <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full">Activity Selection</span>
+                  <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full">Risk Assessment</span>
+                  <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full">PDF Generation</span>
+                </div>
+              </div>
+            </div>
+          </AnimatedSection>
+        </div>
+      </section>
+
       {/* Features Section */}
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4">
@@ -307,10 +372,20 @@ export default function Landing() {
             </div>
           </AnimatedSection>
 
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-4 gap-6 max-w-7xl mx-auto">
             {pricing.map((plan, index) => (
-              <FloatingCard key={index} delay={index * 0.2}>
-                <Card className={`h-full relative ${plan.popular ? 'border-blue-500 border-2 scale-105' : 'border-gray-200'} shadow-lg`}>
+              <FloatingCard key={index} delay={index * 0.15}>
+                <Card className={`h-full relative ${
+                  plan.trial ? 'border-green-500 border-2 bg-gradient-to-br from-green-50 to-white' :
+                  plan.popular ? 'border-blue-500 border-2 scale-105' : 'border-gray-200'
+                } shadow-lg`}>
+                  {plan.trial && (
+                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                      <Badge className="bg-green-600 text-white px-4 py-1">
+                        Try Now
+                      </Badge>
+                    </div>
+                  )}
                   {plan.popular && (
                     <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                       <Badge className="bg-blue-600 text-white px-4 py-1">
@@ -320,30 +395,39 @@ export default function Landing() {
                   )}
                   
                   <CardHeader className="text-center pb-4">
-                    <CardTitle className="text-2xl">{plan.name}</CardTitle>
+                    <CardTitle className="text-xl">{plan.name}</CardTitle>
                     <div className="mt-4">
-                      <span className="text-4xl font-bold text-gray-900">{plan.price}</span>
+                      <span className={`text-3xl font-bold ${plan.trial ? 'text-green-600' : 'text-gray-900'}`}>
+                        {plan.price}
+                      </span>
                       <span className="text-gray-600">{plan.period}</span>
                     </div>
-                    <p className="text-blue-600 font-medium mt-2">{plan.credits}</p>
+                    <p className={`font-medium mt-2 ${plan.trial ? 'text-green-600' : 'text-blue-600'}`}>
+                      {plan.credits}
+                    </p>
                   </CardHeader>
                   
                   <CardContent className="pt-0">
                     <ul className="space-y-3 mb-8">
                       {plan.features.map((feature, featureIndex) => (
                         <li key={featureIndex} className="flex items-center gap-3">
-                          <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0" />
-                          <span className="text-gray-700">{feature}</span>
+                          <CheckCircle className={`h-4 w-4 flex-shrink-0 ${plan.trial ? 'text-green-500' : 'text-green-500'}`} />
+                          <span className="text-gray-700 text-sm">{feature}</span>
                         </li>
                       ))}
                     </ul>
                     
-                    <Button 
-                      className={`w-full ${plan.popular ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-900 hover:bg-gray-800'} text-white`}
-                      size="lg"
-                    >
-                      Get Started
-                    </Button>
+                    <Link href="/register">
+                      <Button 
+                        className={`w-full ${
+                          plan.trial ? 'bg-green-600 hover:bg-green-700' :
+                          plan.popular ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-900 hover:bg-gray-800'
+                        } text-white`}
+                        size="lg"
+                      >
+                        {plan.trial ? 'Start Free Trial' : 'Get Started'}
+                      </Button>
+                    </Link>
                   </CardContent>
                 </Card>
               </FloatingCard>
