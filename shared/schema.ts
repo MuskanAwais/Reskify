@@ -53,6 +53,41 @@ export const aiInteractions = pgTable("ai_interactions", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const documentAnalytics = pgTable("document_analytics", {
+  id: serial("id").primaryKey(),
+  swmsId: integer("swms_id").references(() => swmsDocuments.id).notNull(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  eventType: text("event_type").notNull(), // 'created', 'viewed', 'edited', 'downloaded', 'shared'
+  eventData: jsonb("event_data"),
+  sessionId: text("session_id"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const complianceTracking = pgTable("compliance_tracking", {
+  id: serial("id").primaryKey(),
+  swmsId: integer("swms_id").references(() => swmsDocuments.id).notNull(),
+  complianceScore: integer("compliance_score").notNull(), // 0-100
+  missingRequirements: text("missing_requirements").array(),
+  recommendedImprovements: text("recommended_improvements").array(),
+  complianceCodes: text("compliance_codes").array(),
+  riskLevel: text("risk_level").notNull(), // 'low', 'medium', 'high', 'extreme'
+  lastAssessment: timestamp("last_assessment").defaultNow().notNull(),
+  assessmentType: text("assessment_type").notNull(), // 'auto', 'manual', 'ai_enhanced'
+  assessmentData: jsonb("assessment_data"),
+});
+
+export const practiceCodeDownloads = pgTable("practice_code_downloads", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  codeId: text("code_id").notNull(),
+  title: text("title").notNull(),
+  url: text("url").notNull(),
+  fileType: text("file_type").notNull(), // 'pdf', 'doc', 'html'
+  downloadedAt: timestamp("downloaded_at").defaultNow().notNull(),
+  fileSize: integer("file_size"),
+  authority: text("authority").notNull(),
+});
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
