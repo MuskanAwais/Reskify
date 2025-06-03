@@ -908,15 +908,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "SWMS document not found" });
       }
 
-      // Generate PDF using jsPDF
-      const { jsPDF } = require('jspdf');
-      require('jspdf-autotable');
-      
-      const doc = new jsPDF();
-      
-      // Header with job details
-      doc.setFontSize(20);
-      doc.text('SAFE WORK METHOD STATEMENT', 20, 20);
+      // Generate PDF using client-side function
+      res.status(200).json({ 
+        message: "PDF generation available on client-side only",
+        downloadUrl: `/my-swms/${id}` 
+      });
       
       doc.setFontSize(12);
       doc.text(`Job: ${document.jobName}`, 20, 35);

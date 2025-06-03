@@ -48,27 +48,65 @@ export async function generateProtectedPDF(document: SwmsDocument, user: User | 
     const pageHeight = pdf.internal.pageSize.getHeight();
     let yPosition = 20;
 
-    // Add full-page watermark pattern
-    const addFullPageWatermark = () => {
-      pdf.setFontSize(12);
-      pdf.setTextColor(240, 240, 240); // Very light gray
+    // Add enhanced watermark with job details behind tables
+    const addEnhancedWatermark = () => {
+      // Main "Safety Sensei" watermark - center diagonal
+      pdf.setFontSize(50);
+      pdf.setTextColor(245, 245, 245); // Very light gray
       pdf.setFont('helvetica', 'bold');
       
-      const watermarkText = `${document.title || 'SWMS'} - ${document.id || 'N/A'} - ${document.projectLocation || 'Location'}`;
+      const mainWatermark = "Safety Sensei";
+      const mainTextWidth = pdf.getTextWidth(mainWatermark);
+      pdf.text(mainWatermark, (pageWidth - mainTextWidth) / 2, pageHeight / 2, { 
+        angle: 45,
+        align: 'center'
+      });
       
-      // Create diagonal watermark pattern across the page
-      for (let x = -100; x < pageWidth + 100; x += 120) {
-        for (let y = 0; y < pageHeight + 100; y += 80) {
-          pdf.text(watermarkText, x, y, { 
-            angle: 45,
+      // Job details watermark - behind table areas
+      pdf.setFontSize(10);
+      pdf.setTextColor(250, 250, 250); // Even lighter gray
+      pdf.setFont('helvetica', 'normal');
+      
+      const jobDetails = [
+        `Job: ${document.jobName || document.title || 'N/A'}`,
+        `Number: ${document.jobNumber || 'N/A'}`,
+        `Address: ${document.projectAddress || document.projectLocation || 'N/A'}`,
+        `Trade: ${document.tradeType || 'N/A'}`,
+        `Generated: ${new Date().toLocaleDateString()}`
+      ];
+      
+      // Distribute job details across page behind where tables will be
+      const positions = [
+        { x: 30, y: 180, angle: 0 },    // Upper left
+        { x: pageWidth - 100, y: 220, angle: 90 }, // Upper right vertical
+        { x: 50, y: 400, angle: -15 },  // Middle left diagonal
+        { x: pageWidth - 120, y: 450, angle: 15 }, // Middle right diagonal
+        { x: 80, y: pageHeight - 100, angle: 0 }   // Lower left
+      ];
+      
+      jobDetails.forEach((detail, index) => {
+        if (positions[index]) {
+          const pos = positions[index];
+          pdf.text(detail, pos.x, pos.y, { 
+            angle: pos.angle,
             align: 'left'
           });
         }
+      });
+      
+      // Additional scattered watermark elements
+      for (let i = 0; i < 3; i++) {
+        const x = Math.random() * (pageWidth - 100) + 50;
+        const y = Math.random() * (pageHeight - 100) + 100;
+        pdf.text(`SWMS ${document.id || ''}`, x, y, { 
+          angle: Math.random() * 60 - 30,
+          align: 'left'
+        });
       }
     };
     
     // Apply watermark to current page
-    addFullPageWatermark();
+    addEnhancedWatermark();
     
     // Reset text color for main content
     pdf.setTextColor(0, 0, 0);
