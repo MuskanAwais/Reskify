@@ -247,67 +247,290 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const trades = [
       {
         name: "Electrical",
-        activities: [
-          "Electrical installation",
-          "Cable pulling and termination",
-          "Switchboard installation",
-          "Testing and commissioning",
-          "Fault finding and repair"
+        categories: [
+          {
+            name: "Installation Work",
+            activities: [
+              "Power outlet installation",
+              "Light fixture installation", 
+              "Switchboard installation",
+              "Cable tray installation",
+              "Conduit installation",
+              "Earthing system installation"
+            ]
+          },
+          {
+            name: "Maintenance & Repair",
+            activities: [
+              "Fault finding and diagnostics",
+              "Circuit breaker replacement",
+              "Cable repair and replacement",
+              "Electrical testing",
+              "Equipment maintenance",
+              "Emergency repairs"
+            ]
+          },
+          {
+            name: "Testing & Commissioning",
+            activities: [
+              "Installation testing",
+              "Insulation resistance testing",
+              "RCD testing",
+              "Loop impedance testing",
+              "System commissioning",
+              "Compliance certification"
+            ]
+          }
         ],
         codes: ["AS/NZS 3000:2018", "AS/NZS 3012:2010"]
       },
       {
         name: "Plumbing",
-        activities: [
-          "Pipe installation",
-          "Fixture installation",
-          "Water system testing",
-          "Drainage work",
-          "Gas fitting"
+        categories: [
+          {
+            name: "Water Systems",
+            activities: [
+              "Hot water system installation",
+              "Cold water pipe installation",
+              "Water meter connection",
+              "Pressure testing",
+              "Backflow prevention",
+              "Water filtration systems"
+            ]
+          },
+          {
+            name: "Drainage & Sewerage",
+            activities: [
+              "Stormwater drainage",
+              "Sewer line installation", 
+              "Grease trap installation",
+              "Septic system work",
+              "Drain cleaning",
+              "CCTV drain inspection"
+            ]
+          },
+          {
+            name: "Gas Fitting",
+            activities: [
+              "Gas pipe installation",
+              "Gas appliance connection",
+              "Gas leak testing",
+              "Meter installation",
+              "Regulator installation",
+              "Emergency gas repairs"
+            ]
+          },
+          {
+            name: "Fixtures & Fittings",
+            activities: [
+              "Toilet installation",
+              "Basin and sink installation",
+              "Shower installation",
+              "Tap installation",
+              "Bath installation",
+              "Disabled access fixtures"
+            ]
+          }
         ],
         codes: ["AS/NZS 3500:2021", "AS 2885:2007"]
       },
       {
         name: "Carpentry",
-        activities: [
-          "Framing work",
-          "Finishing carpentry",
-          "Formwork construction",
-          "Structural timber work",
-          "Cabinet installation"
+        categories: [
+          {
+            name: "Structural Work",
+            activities: [
+              "Wall framing",
+              "Roof framing",
+              "Floor framing",
+              "Stud wall construction",
+              "Beam installation",
+              "Structural repairs"
+            ]
+          },
+          {
+            name: "Formwork",
+            activities: [
+              "Concrete formwork",
+              "Stair formwork",
+              "Column formwork",
+              "Slab formwork", 
+              "Curved formwork",
+              "Formwork stripping"
+            ]
+          },
+          {
+            name: "Finishing Work",
+            activities: [
+              "Door hanging",
+              "Window installation",
+              "Skirting installation",
+              "Architrave installation",
+              "Built-in cupboards",
+              "Staircase construction"
+            ]
+          },
+          {
+            name: "External Work",
+            activities: [
+              "Deck construction",
+              "Pergola construction",
+              "Fencing",
+              "External cladding",
+              "Weatherboard installation",
+              "Fascia and soffit"
+            ]
+          }
         ],
         codes: ["AS 1684:2010", "AS/NZS 1170:2002"]
       },
       {
         name: "Roofing",
-        activities: [
-          "Roof installation",
-          "Roof repair",
-          "Gutter installation",
-          "Skylight installation",
-          "Working at heights"
+        categories: [
+          {
+            name: "Roof Installation",
+            activities: [
+              "Tile roof installation",
+              "Metal roof installation",
+              "Membrane roofing",
+              "Slate roof installation",
+              "Shingle installation",
+              "Green roof systems"
+            ]
+          },
+          {
+            name: "Roof Components",
+            activities: [
+              "Gutter installation",
+              "Downpipe installation",
+              "Ridge capping",
+              "Flashing installation",
+              "Roof ventilation",
+              "Solar panel mounting"
+            ]
+          },
+          {
+            name: "Roof Repairs",
+            activities: [
+              "Leak repairs",
+              "Tile replacement",
+              "Gutter repairs",
+              "Storm damage repairs",
+              "Roof cleaning",
+              "Preventive maintenance"
+            ]
+          },
+          {
+            name: "Specialized Work",
+            activities: [
+              "Skylight installation",
+              "Chimney work",
+              "Roof access systems",
+              "Safety rail installation",
+              "Roof anchors",
+              "Fall protection systems"
+            ]
+          }
         ],
         codes: ["AS/NZS 1891.1:2007", "AS 1562:2018"]
       },
       {
         name: "Demolition",
-        activities: [
-          "Structural demolition",
-          "Selective demolition",
-          "Hazardous material removal",
-          "Site preparation",
-          "Waste management"
+        categories: [
+          {
+            name: "Structural Demolition",
+            activities: [
+              "Building demolition",
+              "Wall removal",
+              "Floor slab removal",
+              "Foundation removal",
+              "Chimney demolition",
+              "Structural steel removal"
+            ]
+          },
+          {
+            name: "Selective Demolition",
+            activities: [
+              "Interior strip-out",
+              "Ceiling removal",
+              "Partition removal",
+              "Kitchen removal",
+              "Bathroom removal",
+              "Flooring removal"
+            ]
+          },
+          {
+            name: "Hazardous Materials",
+            activities: [
+              "Asbestos removal",
+              "Lead paint removal",
+              "Contaminated soil removal",
+              "Chemical tank removal",
+              "Underground storage removal",
+              "Mold remediation"
+            ]
+          },
+          {
+            name: "Site Works",
+            activities: [
+              "Site clearance",
+              "Excavation",
+              "Debris removal",
+              "Waste sorting",
+              "Site remediation",
+              "Landscaping preparation"
+            ]
+          }
         ],
         codes: ["AS 2601:2001", "AS/NZS 1892.1:2013"]
       },
       {
         name: "Concrete Work",
-        activities: [
-          "Concrete pouring",
-          "Reinforcement placement",
-          "Formwork construction",
-          "Concrete finishing",
-          "Curing and protection"
+        categories: [
+          {
+            name: "Concrete Placement",
+            activities: [
+              "Foundation pours",
+              "Slab pours",
+              "Column pours",
+              "Beam pours",
+              "Wall pours",
+              "Stair pours"
+            ]
+          },
+          {
+            name: "Reinforcement",
+            activities: [
+              "Rebar placement",
+              "Mesh installation",
+              "Post-tensioning",
+              "Fiber reinforcement",
+              "Steel fixing",
+              "Reinforcement inspection"
+            ]
+          },
+          {
+            name: "Finishing",
+            activities: [
+              "Surface finishing",
+              "Float finishing",
+              "Power trowel finishing",
+              "Exposed aggregate",
+              "Stamped concrete",
+              "Polished concrete"
+            ]
+          },
+          {
+            name: "Specialized Work",
+            activities: [
+              "Precast installation",
+              "Shotcrete application",
+              "Core drilling",
+              "Concrete cutting",
+              "Crack injection",
+              "Concrete repairs"
+            ]
+          }
         ],
         codes: ["AS 3600:2018", "AS 1379:2007"]
       }

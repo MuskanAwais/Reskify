@@ -17,7 +17,10 @@ import {
   Shield, 
   FileText,
   Plus,
-  X
+  X,
+  ChevronDown,
+  ChevronUp,
+  Layers
 } from "lucide-react";
 
 interface SwmsFormProps {
@@ -29,6 +32,7 @@ interface SwmsFormProps {
 export default function SwmsForm({ step, data, onDataChange }: SwmsFormProps) {
   const { toast } = useToast();
   const [formData, setFormData] = useState(data);
+  const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set());
 
   const { data: trades } = useQuery({
     queryKey: ["/api/trades"],
@@ -58,6 +62,18 @@ export default function SwmsForm({ step, data, onDataChange }: SwmsFormProps) {
       ...prev,
       [field]: prev[field].filter((_: any, i: number) => i !== index)
     }));
+  };
+
+  const toggleCategory = (categoryName: string) => {
+    setCollapsedCategories(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(categoryName)) {
+        newSet.delete(categoryName);
+      } else {
+        newSet.add(categoryName);
+      }
+      return newSet;
+    });
   };
 
   const selectedTrade = trades?.find((trade: any) => trade.name === formData.tradeType);
@@ -116,30 +132,149 @@ export default function SwmsForm({ step, data, onDataChange }: SwmsFormProps) {
           {selectedTrade && (
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Available Activities for {selectedTrade.name}</CardTitle>
+                <CardTitle className="text-base flex items-center">
+                  <CheckSquare className="mr-2 h-4 w-4" />
+                  Select Activities for {selectedTrade.name}
+                </CardTitle>
+                <p className="text-sm text-gray-600">Choose all applicable work activities for this project</p>
               </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {selectedTrade.activities.map((activity: string) => (
-                    <div key={activity} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={activity}
-                        checked={formData.activities.includes(activity)}
-                        onCheckedChange={(checked) => {
-                          if (checked) {
-                            addArrayItem('activities', activity);
-                          } else {
-                            const index = formData.activities.indexOf(activity);
-                            if (index > -1) removeArrayItem('activities', index);
-                          }
-                        }}
-                      />
-                      <Label htmlFor={activity} className="text-sm">
-                        {activity}
-                      </Label>
+              <CardContent className="space-y-4">
+                {selectedTrade.categories?.map((category: any) => {
+                  const isCollapsed = collapsedCategories.has(category.name);
+                  const selectedCount = category.activities.filter((activity: string) => 
+                    formData.activities.includes(activity)
+                  ).length;
+                  const totalCount = category.activities.length;
+                  
+                  return (
+                    <div key={category.name} className="border border-gray-200 rounded-lg overflow-hidden">
+                      <div className="activity-category-header bg-gray-50 px-4 py-3">
+                        <div className="flex items-center justify-between">
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="flex items-center gap-2 p-0 h-auto font-medium text-gray-800 hover:bg-transparent"
+                            onClick={() => toggleCategory(category.name)}
+                          >
+                            <Layers className="h-4 w-4" />
+                            {category.name}
+                            <Badge variant="outline" className="ml-2 text-xs">
+                              {selectedCount}/{totalCount}
+                            </Badge>
+                            {isCollapsed ? (
+                              <ChevronDown className="h-4 w-4 ml-1" />
+                            ) : (
+                              <ChevronUp className="h-4 w-4 ml-1" />
+                            )}
+                          </Button>
+                          
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="select-all-btn"
+                            onClick={() => {
+                              const allSelected = category.activities.every((activity: string) => 
+                                formData.activities.includes(activity)
+                              );
+                              if (allSelected) {
+                                // Deselect all
+                                category.activities.forEach((activity: string) => {
+                                  const index = formData.activities.indexOf(activity);
+                                  if (index > -1) removeArrayItem('activities', index);
+                                });
+                              } else {
+                                // Select all
+                                category.activities.forEach((activity: string) => {
+                                  if (!formData.activities.includes(activity)) {
+                                    addArrayItem('activities', activity);
+                                  }
+                                });
+                              }
+                            }}
+                          >
+                            {category.activities.every((activity: string) => 
+                              formData.activities.includes(activity)
+                            ) ? 'Deselect All' : 'Select All'}
+                          </Button>
+                        </div>
+                      </div>
+                      
+                      <div className={`category-content ${isCollapsed ? 'collapsed' : 'expanded'}`}>
+                        {!isCollapsed && (
+                          <div className="p-4">
+                            <div className="activity-checkbox-group">
+                              {category.activities.map((activity: string) => {
+                                const isSelected = formData.activities.includes(activity);
+                                return (
+                                  <div 
+                                    key={activity} 
+                                    className={`activity-checkbox-item ${isSelected ? 'selected' : ''}`}
+                                  >
+                                    <Checkbox
+                                      id={activity}
+                                      checked={isSelected}
+                                      onCheckedChange={(checked) => {
+                                        if (checked) {
+                                          addArrayItem('activities', activity);
+                                        } else {
+                                          const index = formData.activities.indexOf(activity);
+                                          if (index > -1) removeArrayItem('activities', index);
+                                        }
+                                      }}
+                                      className="mt-0.5"
+                                    />
+                                    <Label 
+                                      htmlFor={activity} 
+                                      className="text-sm text-gray-700 leading-tight cursor-pointer flex-1"
+                                    >
+                                      {activity}
+                                    </Label>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  ))}
-                </div>
+                  );
+                })}
+                
+                {formData.activities.length > 0 && (
+                  <div className="selected-activities-summary">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <CheckSquare className="h-4 w-4 text-blue-600" />
+                        <span className="text-sm font-medium text-blue-800">
+                          Selected Activities ({formData.activities.length})
+                        </span>
+                      </div>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="text-xs h-6 px-2 text-blue-600 hover:text-blue-800"
+                        onClick={() => updateFormData({ activities: [] })}
+                      >
+                        Clear All
+                      </Button>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {formData.activities.slice(0, 8).map((activity: string, index: number) => (
+                        <Badge key={index} className="activity-badge">
+                          {activity}
+                        </Badge>
+                      ))}
+                      {formData.activities.length > 8 && (
+                        <Badge variant="outline" className="text-xs bg-white">
+                          +{formData.activities.length - 8} more
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
           )}

@@ -201,3 +201,87 @@
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: hsl(var(--muted-foreground));
 }
+
+/* Activity selection styles */
+.activity-checkbox-group {
+  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-1;
+}
+
+.activity-checkbox-item {
+  @apply flex items-start space-x-2 p-2 rounded-md hover:bg-gray-50 transition-all duration-200 cursor-pointer;
+  @apply border border-transparent hover:border-gray-200;
+}
+
+.activity-checkbox-item:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.activity-checkbox-item.selected {
+  @apply bg-blue-50 border-blue-200;
+}
+
+.activity-category-header {
+  @apply flex items-center justify-between py-2 px-1 border-b border-gray-100;
+}
+
+.selected-activities-summary {
+  @apply mt-4 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg;
+}
+
+/* Compact form styling */
+.form-section {
+  @apply space-y-4;
+}
+
+.form-row {
+  @apply grid grid-cols-1 md:grid-cols-2 gap-4;
+}
+
+.form-group {
+  @apply space-y-2;
+}
+
+.form-label {
+  @apply flex items-center text-sm font-medium text-gray-700;
+}
+
+.form-label-icon {
+  @apply mr-2 h-4 w-4 text-gray-500;
+}
+
+/* Collapsible categories */
+.category-content {
+  @apply transition-all duration-300 ease-in-out;
+}
+
+.category-content.collapsed {
+  @apply max-h-0 overflow-hidden;
+}
+
+.category-content.expanded {
+  @apply max-h-none;
+}
+
+/* Badge enhancements */
+.activity-badge {
+  @apply inline-flex items-center px-2 py-1 rounded-full text-xs font-medium;
+  @apply bg-blue-100 text-blue-800 hover:bg-blue-200 transition-colors;
+}
+
+/* Button enhancements */
+.select-all-btn {
+  @apply text-xs px-2 py-1 rounded-md font-medium transition-all;
+  @apply text-blue-600 hover:text-blue-800 hover:bg-blue-50;
+}
+
+/* Responsive grid improvements */
+@media (max-width: 768px) {
+  .activity-checkbox-group {
+    @apply grid-cols-1;
+  }
+  
+  .form-row {
+    @apply grid-cols-1;
+  }
+}
