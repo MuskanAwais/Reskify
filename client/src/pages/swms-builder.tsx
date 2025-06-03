@@ -146,6 +146,7 @@ export default function SwmsBuilder() {
               step={currentStep}
               data={formData}
               onDataChange={handleFormDataChange}
+              onNext={handleNext}
             />
             
             {/* Navigation */}

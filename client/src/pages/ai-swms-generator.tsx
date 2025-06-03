@@ -209,13 +209,18 @@ export default function AISwmsGenerator() {
       
       // Redirect to SWMS builder with AI-generated data for visual editing
       setTimeout(() => {
+        const currentFormData = document.querySelector('form');
+        const jobDescription = (document.getElementById('jobDescription') as HTMLTextAreaElement)?.value || '';
+        const trade = (document.querySelector('[name="trade"]') as HTMLSelectElement)?.value || '';
+        const location = (document.getElementById('location') as HTMLInputElement)?.value || '';
+        
         const swmsData = {
-          title: generatedSWMS?.projectDetails?.title || formData.jobDescription,
-          jobName: generatedSWMS?.projectDetails?.title || formData.jobDescription,
+          title: generatedSWMS?.projectDetails?.title || jobDescription,
+          jobName: generatedSWMS?.projectDetails?.title || jobDescription,
           jobNumber: `AI-${Date.now()}`,
-          projectAddress: generatedSWMS?.projectDetails?.location || formData.location,
-          projectLocation: generatedSWMS?.projectDetails?.location || formData.location,
-          tradeType: formData.trade,
+          projectAddress: generatedSWMS?.projectDetails?.location || location,
+          projectLocation: generatedSWMS?.projectDetails?.location || location,
+          tradeType: trade,
           activities: generatedSWMS?.suggestedTasks?.map(task => task.activity) || [],
           riskAssessments: generatedSWMS?.riskAssessments || [],
           safetyMeasures: generatedSWMS?.safetyMeasures || [],
