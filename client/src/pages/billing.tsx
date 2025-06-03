@@ -157,6 +157,7 @@ export default function Billing() {
       name: "Basic",
       price: 50,
       credits: 10,
+      tier: 1,
       features: [
         "10 SWMS per month",
         "Project-specific SWMS",
@@ -169,6 +170,7 @@ export default function Billing() {
       name: "Professional",
       price: 100,
       credits: 25,
+      tier: 2,
       features: [
         "25 SWMS per month",
         "Project-specific SWMS",
@@ -184,6 +186,7 @@ export default function Billing() {
       name: "Enterprise",
       price: 200,
       credits: 60,
+      tier: 3,
       features: [
         "60 SWMS per month",
         "All professional features",
@@ -196,6 +199,24 @@ export default function Billing() {
       popular: false
     }
   ];
+
+  const getCurrentPlanTier = (planName: string) => {
+    const plan = plans.find(p => p.name === planName);
+    return plan ? plan.tier : 1;
+  };
+
+  const getButtonText = (planName: string) => {
+    const currentTier = getCurrentPlanTier(billingData.currentPlan);
+    const planTier = getCurrentPlanTier(planName);
+    
+    if (planName === billingData.currentPlan) {
+      return "Current Plan";
+    } else if (planTier > currentTier) {
+      return `Upgrade to ${planName}`;
+    } else {
+      return `Downgrade to ${planName}`;
+    }
+  };
 
   const calculateProgress = () => {
     return (billingData.creditsUsedThisMonth / billingData.monthlyLimit) * 100;
@@ -379,7 +400,7 @@ export default function Billing() {
                         onClick={() => upgradePlan(plan.name)}
                         disabled={plan.name === billingData.currentPlan}
                       >
-                        {plan.name === billingData.currentPlan ? "Current Plan" : `Upgrade to ${plan.name}`}
+                        {getButtonText(plan.name)}
                       </Button>
                     </div>
                   </div>

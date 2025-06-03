@@ -39,11 +39,7 @@ export default function Header() {
           {/* Logo and Title */}
           <div className="flex items-center space-x-3">
             <div className="bg-primary p-2 rounded-lg shadow-sm">
-              <img 
-                src="@assets/Untitled design-2.png" 
-                alt="Sensei Logo" 
-                className="h-8 w-8 object-contain"
-              />
+              <HardHat className="h-6 w-6 text-primary-foreground" />
             </div>
             <div>
               <h1 className="text-xl font-bold tracking-tight text-foreground">Sensei</h1>
