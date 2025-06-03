@@ -36,10 +36,10 @@ const quickActions = [
     className: "bg-primary text-white hover:bg-primary/90"
   },
   {
-    title: "AI Assistant",
+    title: "AI SWMS Generator",
     icon: Bot,
-    href: "/ai-assistant",
-    className: "bg-gray-100 text-gray-700 hover:bg-gray-200"
+    href: "/ai-swms-generator",
+    className: "bg-gradient-to-r from-purple-500 to-blue-500 text-white hover:from-purple-600 hover:to-blue-600"
   }
 ];
 

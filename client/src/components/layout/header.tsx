@@ -4,7 +4,7 @@ import { Link, useLocation } from "wouter";
 import { HardHat, Plus, Bell, Settings, LogOut } from "lucide-react";
 import CreditCounter from "@/components/ui/credit-counter";
 import VoiceAssistant from "@/components/ui/voice-assistant";
-import LanguageSwitcher from "@/components/ui/language-switcher";
+import ComprehensiveLanguageSwitcher from "@/components/ui/comprehensive-language-switcher";
 import ContactForm from "@/components/ui/contact-form";
 
 import {
@@ -65,7 +65,7 @@ export default function Header() {
             <VoiceAssistant />
             
             {/* Language Switcher */}
-            <LanguageSwitcher />
+            <ComprehensiveLanguageSwitcher />
 
 
 

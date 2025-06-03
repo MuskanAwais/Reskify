@@ -27,6 +27,7 @@ import AllSwms from "@/pages/admin/all-swms";
 import SmartRiskPredictor from "@/pages/smart-risk-predictor";
 import DigitalTwinDashboard from "@/pages/digital-twin-dashboard";
 import LiveCollaboration from "@/pages/live-collaboration";
+import AISwmsGenerator from "@/pages/ai-swms-generator";
 
 // User context for demo purposes
 interface User {
@@ -91,6 +92,7 @@ function Router() {
         <Route path="/smart-risk-predictor" component={SmartRiskPredictor} />
         <Route path="/digital-twin-dashboard" component={DigitalTwinDashboard} />
         <Route path="/live-collaboration" component={LiveCollaboration} />
+        <Route path="/ai-swms-generator" component={AISwmsGenerator} />
         
         {/* Admin Routes */}
         <Route path="/admin/user-management" component={UserManagement} />
