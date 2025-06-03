@@ -46,7 +46,24 @@ const quickActions = [
 
 export default function Sidebar() {
   const [location] = useLocation();
-  const { isAdminMode, setIsAdminMode } = useAdmin();
+  const [adminMode, setAdminMode] = useState(() => {
+    try {
+      return localStorage.getItem('adminMode') === 'true';
+    } catch {
+      return false;
+    }
+  });
+
+  const toggleAdminMode = () => {
+    const newMode = !adminMode;
+    setAdminMode(newMode);
+    try {
+      localStorage.setItem('adminMode', newMode.toString());
+    } catch (error) {
+      console.error('Failed to save admin state:', error);
+    }
+    window.location.reload();
+  };
   
   // Fetch user subscription data
   const { data: subscription } = useQuery({
@@ -61,7 +78,7 @@ export default function Sidebar() {
       label: "Safety Library", 
       href: "/safety-library",
       requiresAccess: true,
-      hasAccess: subscription?.features?.safetyLibrary || isAdminMode
+      hasAccess: subscription?.features?.safetyLibrary || adminMode
     },
     { icon: BarChart3, label: "Analytics", href: "/analytics" },
     { icon: User, label: "Account", href: "/billing" }
@@ -92,23 +109,20 @@ export default function Sidebar() {
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium">Admin Mode</span>
             <Button
-              variant={isAdminMode ? "default" : "outline"}
+              variant={adminMode ? "default" : "outline"}
               size="sm"
-              onClick={() => {
-                setIsAdminMode(!isAdminMode);
-                window.location.reload();
-              }}
+              onClick={toggleAdminMode}
               className={`px-3 py-1 text-xs ${
-                isAdminMode 
+                adminMode 
                   ? 'bg-green-600 text-white hover:bg-green-700' 
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
               <Shield className="mr-1 h-3 w-3" />
-              {isAdminMode ? 'ON' : 'OFF'}
+              {adminMode ? 'ON' : 'OFF'}
             </Button>
           </div>
-          {isAdminMode && (
+          {adminMode && (
             <Badge variant="destructive" className="mt-2 text-xs">
               Administrative Access
             </Badge>
@@ -170,7 +184,7 @@ export default function Sidebar() {
         </nav>
 
         {/* Admin Navigation */}
-        {isAdminMode && (
+        {adminMode && (
           <>
             <Separator className="my-6" />
             <nav className="space-y-2">
