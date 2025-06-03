@@ -2,7 +2,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useUser } from "@/App";
 import { Link, useLocation } from "wouter";
-import { HardHat, Plus, Bell, Settings, LogOut } from "lucide-react";
+import { HardHat, Plus, Bell, Settings, LogOut, Bot } from "lucide-react";
+import { useState } from "react";
+import AiAssistantPopup from "@/components/ai-assistant-popup";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,6 +17,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 export default function Header() {
   const { user } = useUser();
   const [location] = useLocation();
+  const [isAiAssistantOpen, setIsAiAssistantOpen] = useState(false);
 
   const getInitials = (name: string) => {
     return name
@@ -32,19 +35,19 @@ export default function Header() {
   ];
 
   return (
-    <header className="bg-gradient-to-r from-slate-800 to-slate-900 text-white shadow-lg border-b border-slate-700">
+    <header className="bg-gradient-to-r from-green-800 to-green-900 text-white shadow-lg border-b border-green-700">
       <div className="container mx-auto px-6 py-3">
         <div className="flex justify-between items-center">
           {/* Logo and Title */}
           <div className="flex items-center space-x-3">
-            <div className="bg-blue-600 p-2 rounded-lg">
+            <div className="bg-primary p-2 rounded-lg">
               <HardHat className="h-6 w-6 text-white" />
             </div>
             <div>
               <h1 className="text-xl font-bold tracking-tight">SWMS Builder</h1>
               <div className="flex items-center space-x-2">
                 <span className="text-lg font-semibold">Pro</span>
-                <Badge className="bg-slate-700 hover:bg-slate-700 text-white text-xs px-2 py-0.5 border-slate-600">
+                <Badge className="bg-green-700 hover:bg-green-700 text-white text-xs px-2 py-0.5 border-green-600">
                   Australian Construction
                 </Badge>
               </div>
@@ -62,6 +65,16 @@ export default function Header() {
                 New SWMS
               </Button>
             </Link>
+
+            {/* AI Assistant */}
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="text-slate-300 hover:text-white hover:bg-slate-700 p-2"
+              onClick={() => setIsAiAssistantOpen(true)}
+            >
+              <Bot className="h-5 w-5" />
+            </Button>
 
             {/* Notifications */}
             <Button variant="ghost" size="sm" className="text-slate-300 hover:text-white hover:bg-slate-700 p-2">
