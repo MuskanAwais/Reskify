@@ -3,7 +3,7 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { useState, createContext, useContext } from "react";
+import { useState, createContext, useContext, useEffect } from "react";
 import Header from "@/components/layout/header";
 import Sidebar from "@/components/layout/sidebar";
 import Dashboard from "@/pages/dashboard";
@@ -116,8 +116,16 @@ function App() {
     primaryTrade: "Electrical"
   });
 
-  // Admin state for temporary admin features
-  const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  // Admin state for temporary admin features - persist in localStorage
+  const [isAdmin, setIsAdmin] = useState<boolean>(() => {
+    const saved = localStorage.getItem('isAdmin');
+    return saved ? JSON.parse(saved) : false;
+  });
+
+  // Save admin state to localStorage when it changes
+  useEffect(() => {
+    localStorage.setItem('isAdmin', JSON.stringify(isAdmin));
+  }, [isAdmin]);
 
   return (
     <QueryClientProvider client={queryClient}>

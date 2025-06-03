@@ -73,6 +73,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get user subscription data for sidebar
+  app.get("/api/user/subscription", (req, res) => {
+    try {
+      // Return realistic subscription data for demo
+      const subscriptionData = {
+        plan: "Basic Plan",
+        creditsUsed: 0,
+        creditsTotal: 10,
+        features: {
+          safetyLibrary: false,
+          aiSwmsGenerator: false,
+          smartRiskPredictor: false,
+          digitalTwin: false,
+          liveCollaboration: false,
+          languageSwitcher: false
+        },
+        billingCycle: "monthly",
+        nextBillingDate: "2025-07-03",
+        status: "active"
+      };
+      
+      res.json(subscriptionData);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch subscription data" });
+    }
+  });
+
   // Auto-generate SWMS based on selected activities with credit tracking
   app.post("/api/auto-generate-swms", async (req, res) => {
     try {

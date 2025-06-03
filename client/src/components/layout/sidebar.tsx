@@ -216,13 +216,13 @@ export default function Sidebar() {
             <div className="text-xs text-blue-700">
               <div className="flex justify-between mb-1">
                 <span>Credits Used</span>
-                <span>{subscription?.creditsUsed || 0}/{subscription?.creditsLimit || 10}</span>
+                <span>{subscription?.creditsUsed || 0}/{subscription?.creditsTotal || 10}</span>
               </div>
               <div className="w-full bg-blue-200 rounded-full h-2">
                 <div 
                   className="bg-blue-600 h-2 rounded-full" 
                   style={{ 
-                    width: `${((subscription?.creditsUsed || 0) / (subscription?.creditsLimit || 10)) * 100}%` 
+                    width: `${((subscription?.creditsUsed || 0) / (subscription?.creditsTotal || 10)) * 100}%` 
                   }}
                 ></div>
               </div>
