@@ -11,6 +11,7 @@ import {
 import { generateAutoSwms } from "./auto-swms-generator";
 import { z } from "zod";
 import { generateSafetyContent, enhanceSwmsWithAI } from "./openai";
+import { generateComprehensiveAISwms } from "./comprehensive-ai-swms-generator";
 import * as crypto from "crypto";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -861,6 +862,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error('AI safety content error:', error);
       res.status(500).json({ message: 'Failed to generate safety content' });
+    }
+  });
+
+  // AI SWMS Generator endpoint
+  app.post("/api/ai/generate-swms", async (req, res) => {
+    try {
+      const { jobDescription, trade, projectType, location, duration, requirements } = req.body;
+      
+      if (!jobDescription || !trade) {
+        return res.status(400).json({ message: 'Job description and trade are required' });
+      }
+
+      const aiGeneratedSwms = await generateComprehensiveAISwms({
+        jobDescription,
+        trade,
+        projectType,
+        location,
+        duration,
+        requirements
+      });
+
+      res.json(aiGeneratedSwms);
+    } catch (error: any) {
+      console.error('AI generate SWMS error:', error);
+      res.status(500).json({ message: 'Failed to generate AI SWMS' });
     }
   });
 
