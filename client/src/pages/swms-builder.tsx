@@ -73,9 +73,6 @@ export default function SwmsBuilder() {
         </Badge>
       </div>
 
-      {/* Credit Counter */}
-      <CreditCounter />
-
       {/* Progress Bar */}
       <Card>
         <CardContent className="pt-6">

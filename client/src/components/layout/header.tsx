@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { useUser } from "@/App";
 import { Link, useLocation } from "wouter";
 import { HardHat, Plus, Bell, Settings, LogOut } from "lucide-react";
+import CreditCounter from "@/components/ui/credit-counter";
 
 import {
   DropdownMenu,
@@ -66,6 +67,11 @@ export default function Header() {
               </Link>
             ))}
           </nav>
+
+          {/* Credit Counter */}
+          <div className="hidden md:block">
+            <CreditCounter className="compact" />
+          </div>
 
           {/* Actions and User Menu */}
           <div className="flex items-center space-x-3">

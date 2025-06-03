@@ -68,58 +68,17 @@ export default function Dashboard() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 mb-1">Active SWMS</p>
+                <p className="text-sm text-gray-600 mb-1">Active SWMS Documents</p>
                 <p className="text-2xl font-bold text-gray-800">{stats.activeSwms}</p>
+                <p className="text-xs text-gray-500 mt-1">Project-specific safety documentation</p>
               </div>
               <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
                 <FileText className="text-primary text-xl" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Compliance Score</p>
-                <p className="text-2xl font-bold text-success">{stats.complianceScore}%</p>
-              </div>
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                <Shield className="text-success text-xl" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Templates Used</p>
-                <p className="text-2xl font-bold text-gray-800">{stats.templatesUsed}</p>
-              </div>
-              <div className="w-12 h-12 bg-secondary/10 rounded-lg flex items-center justify-center">
-                <Copy className="text-secondary text-xl" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">AI Suggestions</p>
-                <p className="text-2xl font-bold text-gray-800">{stats.aiSuggestions}</p>
-              </div>
-              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                <Bot className="text-purple-600 text-xl" />
               </div>
             </div>
           </CardContent>
