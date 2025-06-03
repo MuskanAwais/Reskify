@@ -550,6 +550,449 @@ export default function AISwmsGenerator() {
           </Card>
         )}
       </div>
+
+      {/* Document Preview Modal */}
+      {showPreview && generatedSWMS && (
+        <SwmsPreviewModal 
+          swms={generatedSWMS}
+          isOpen={showPreview}
+          onClose={() => setShowPreview(false)}
+          onDownload={() => {
+            handleDownloadPDF(generatedSWMS);
+          }}
+        />
+      )}
+
+      {/* Document Editor Modal */}
+      {showEditor && generatedSWMS && (
+        <SwmsEditorModal 
+          swms={editableSwms || generatedSWMS}
+          isOpen={showEditor}
+          onClose={() => setShowEditor(false)}
+          onSave={(editedSwms) => {
+            setEditableSwms(editedSwms);
+            setGeneratedSWMS(editedSwms);
+            setShowEditor(false);
+            toast({
+              title: "SWMS Updated",
+              description: "Your changes have been saved.",
+            });
+          }}
+        />
+      )}
     </div>
   );
+}
+
+// SWMS Preview Modal Component
+function SwmsPreviewModal({ swms, isOpen, onClose, onDownload }: {
+  swms: AIGeneratedSWMS;
+  isOpen: boolean;
+  onClose: () => void;
+  onDownload: () => void;
+}) {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between p-6 border-b">
+          <h2 className="text-xl font-semibold">SWMS Document Preview</h2>
+          <div className="flex gap-2">
+            <Button onClick={onDownload} variant="outline">
+              Download PDF
+            </Button>
+            <Button onClick={onClose} variant="ghost">
+              ✕
+            </Button>
+          </div>
+        </div>
+        
+        <div className="p-6 space-y-6">
+          {/* Document Header with Watermark */}
+          <div className="relative bg-gradient-to-r from-blue-50 to-blue-100 p-6 rounded-lg border-l-4 border-blue-500">
+            <div className="absolute top-2 right-2 text-blue-300 text-xs font-medium opacity-60">
+              SAFETY SENSEI - AI GENERATED
+            </div>
+            <h1 className="text-2xl font-bold text-blue-900 mb-2">
+              {swms.projectDetails.title}
+            </h1>
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div><span className="font-medium">Location:</span> {swms.projectDetails.location}</div>
+              <div><span className="font-medium">Duration:</span> {swms.projectDetails.estimatedDuration}</div>
+            </div>
+            <p className="mt-2 text-sm text-gray-700">{swms.projectDetails.description}</p>
+          </div>
+
+          {/* Project Tasks */}
+          <div>
+            <h3 className="text-lg font-semibold mb-3">Project Tasks</h3>
+            <div className="grid gap-2">
+              {swms.suggestedTasks.map((task, index) => (
+                <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded">
+                  <span className="font-medium">{task.activity}</span>
+                  <Badge variant={task.priority === "high" ? "destructive" : task.priority === "medium" ? "secondary" : "outline"}>
+                    {task.priority} priority
+                  </Badge>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Risk Assessment Table */}
+          <div>
+            <h3 className="text-lg font-semibold mb-3">Risk Assessment Matrix</h3>
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse border border-gray-300">
+                <thead>
+                  <tr className="bg-gray-100">
+                    <th className="border border-gray-300 p-2 text-left">Activity</th>
+                    <th className="border border-gray-300 p-2 text-left">Hazards</th>
+                    <th className="border border-gray-300 p-2 text-center">Initial Risk</th>
+                    <th className="border border-gray-300 p-2 text-left">Control Measures</th>
+                    <th className="border border-gray-300 p-2 text-center">Residual Risk</th>
+                    <th className="border border-gray-300 p-2 text-left">Responsible</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {swms.riskAssessments.map((risk, index) => (
+                    <tr key={index} className="hover:bg-gray-50">
+                      <td className="border border-gray-300 p-2 font-medium">{risk.activity}</td>
+                      <td className="border border-gray-300 p-2">
+                        <ul className="list-disc list-inside text-sm">
+                          {risk.hazards.map((hazard, idx) => (
+                            <li key={idx}>{hazard}</li>
+                          ))}
+                        </ul>
+                      </td>
+                      <td className="border border-gray-300 p-2 text-center">
+                        <Badge variant={risk.initialRiskScore >= 15 ? "destructive" : risk.initialRiskScore >= 8 ? "secondary" : "outline"}>
+                          {risk.initialRiskScore}
+                        </Badge>
+                      </td>
+                      <td className="border border-gray-300 p-2">
+                        <ul className="list-disc list-inside text-sm">
+                          {risk.controlMeasures.map((measure, idx) => (
+                            <li key={idx}>{measure}</li>
+                          ))}
+                        </ul>
+                      </td>
+                      <td className="border border-gray-300 p-2 text-center">
+                        <Badge variant={risk.residualRiskScore >= 15 ? "destructive" : risk.residualRiskScore >= 8 ? "secondary" : "outline"}>
+                          {risk.residualRiskScore}
+                        </Badge>
+                      </td>
+                      <td className="border border-gray-300 p-2">{risk.responsible}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Safety Measures */}
+          <div>
+            <h3 className="text-lg font-semibold mb-3">Safety Measures</h3>
+            <div className="grid gap-4">
+              {swms.safetyMeasures.map((category, index) => (
+                <div key={index} className="border rounded-lg p-4">
+                  <h4 className="font-medium mb-2">{category.category}</h4>
+                  <div className="grid md:grid-cols-3 gap-4 text-sm">
+                    <div>
+                      <span className="font-medium">Measures:</span>
+                      <ul className="list-disc list-inside mt-1">
+                        {category.measures.map((measure, idx) => (
+                          <li key={idx}>{measure}</li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div>
+                      <span className="font-medium">Equipment:</span>
+                      <ul className="list-disc list-inside mt-1">
+                        {category.equipment.map((equipment, idx) => (
+                          <li key={idx}>{equipment}</li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div>
+                      <span className="font-medium">Procedures:</span>
+                      <ul className="list-disc list-inside mt-1">
+                        {category.procedures.map((procedure, idx) => (
+                          <li key={idx}>{procedure}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Compliance Codes */}
+          <div>
+            <h3 className="text-lg font-semibold mb-3">Compliance Requirements</h3>
+            <div className="flex flex-wrap gap-2">
+              {swms.complianceCodes.map((code, index) => (
+                <Badge key={index} variant="secondary">{code}</Badge>
+              ))}
+            </div>
+          </div>
+
+          {/* Emergency Procedures */}
+          <div>
+            <h3 className="text-lg font-semibold mb-3">Emergency Procedures</h3>
+            <ul className="list-disc list-inside space-y-1">
+              {swms.emergencyProcedures.map((procedure, index) => (
+                <li key={index}>{procedure}</li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Document Footer */}
+          <div className="border-t pt-4 text-center text-sm text-gray-500">
+            <p>This document was generated by Safety Sensei AI SWMS Generator</p>
+            <p className="mt-1">Generated on: {new Date().toLocaleDateString()}</p>
+            <p className="text-xs mt-2 text-red-500">
+              ⚠️ This AI-generated document should be reviewed by qualified safety professionals before use on site
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// SWMS Editor Modal Component
+function SwmsEditorModal({ swms, isOpen, onClose, onSave }: {
+  swms: AIGeneratedSWMS;
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: (editedSwms: AIGeneratedSWMS) => void;
+}) {
+  const [editedSwms, setEditedSwms] = useState<AIGeneratedSWMS>(swms);
+
+  if (!isOpen) return null;
+
+  const handleSave = () => {
+    onSave(editedSwms);
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between p-6 border-b">
+          <h2 className="text-xl font-semibold">Edit SWMS Document</h2>
+          <div className="flex gap-2">
+            <Button onClick={handleSave}>Save Changes</Button>
+            <Button onClick={onClose} variant="ghost">Cancel</Button>
+          </div>
+        </div>
+        
+        <div className="p-6 space-y-6">
+          {/* Project Details Editor */}
+          <div>
+            <h3 className="text-lg font-semibold mb-3">Project Details</h3>
+            <div className="grid gap-4">
+              <div>
+                <Label>Project Title</Label>
+                <Input 
+                  value={editedSwms.projectDetails.title}
+                  onChange={(e) => setEditedSwms({
+                    ...editedSwms,
+                    projectDetails: {
+                      ...editedSwms.projectDetails,
+                      title: e.target.value
+                    }
+                  })}
+                />
+              </div>
+              <div>
+                <Label>Location</Label>
+                <Input 
+                  value={editedSwms.projectDetails.location}
+                  onChange={(e) => setEditedSwms({
+                    ...editedSwms,
+                    projectDetails: {
+                      ...editedSwms.projectDetails,
+                      location: e.target.value
+                    }
+                  })}
+                />
+              </div>
+              <div>
+                <Label>Duration</Label>
+                <Input 
+                  value={editedSwms.projectDetails.estimatedDuration}
+                  onChange={(e) => setEditedSwms({
+                    ...editedSwms,
+                    projectDetails: {
+                      ...editedSwms.projectDetails,
+                      estimatedDuration: e.target.value
+                    }
+                  })}
+                />
+              </div>
+              <div>
+                <Label>Description</Label>
+                <Textarea 
+                  value={editedSwms.projectDetails.description}
+                  onChange={(e) => setEditedSwms({
+                    ...editedSwms,
+                    projectDetails: {
+                      ...editedSwms.projectDetails,
+                      description: e.target.value
+                    }
+                  })}
+                  rows={3}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Tasks Editor */}
+          <div>
+            <h3 className="text-lg font-semibold mb-3">Project Tasks</h3>
+            <div className="space-y-2">
+              {editedSwms.suggestedTasks.map((task, index) => (
+                <div key={index} className="flex gap-2 items-center">
+                  <Input 
+                    value={task.activity}
+                    onChange={(e) => {
+                      const newTasks = [...editedSwms.suggestedTasks];
+                      newTasks[index] = { ...task, activity: e.target.value };
+                      setEditedSwms({ ...editedSwms, suggestedTasks: newTasks });
+                    }}
+                    className="flex-1"
+                  />
+                  <Select 
+                    value={task.priority} 
+                    onValueChange={(value: "high" | "medium" | "low") => {
+                      const newTasks = [...editedSwms.suggestedTasks];
+                      newTasks[index] = { ...task, priority: value };
+                      setEditedSwms({ ...editedSwms, suggestedTasks: newTasks });
+                    }}
+                  >
+                    <SelectTrigger className="w-32">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="high">High</SelectItem>
+                      <SelectItem value="medium">Medium</SelectItem>
+                      <SelectItem value="low">Low</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => {
+                      const newTasks = editedSwms.suggestedTasks.filter((_, i) => i !== index);
+                      setEditedSwms({ ...editedSwms, suggestedTasks: newTasks });
+                    }}
+                  >
+                    Remove
+                  </Button>
+                </div>
+              ))}
+              <Button 
+                variant="outline"
+                onClick={() => {
+                  setEditedSwms({
+                    ...editedSwms,
+                    suggestedTasks: [
+                      ...editedSwms.suggestedTasks,
+                      { activity: "New Task", category: "General", priority: "medium", reasoning: "Added manually" }
+                    ]
+                  });
+                }}
+              >
+                Add Task
+              </Button>
+            </div>
+          </div>
+
+          {/* Note about editing */}
+          <div className="bg-blue-50 p-4 rounded-lg">
+            <p className="text-sm text-blue-700">
+              💡 <strong>Note:</strong> This is a simplified editor. For detailed risk assessment editing, 
+              save this SWMS and use the full editor in the "My SWMS" section.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// PDF Download Function
+function handleDownloadPDF(swms: AIGeneratedSWMS) {
+  // Import jsPDF dynamically for better performance
+  import('jspdf').then(({ default: jsPDF }) => {
+    const doc = new jsPDF();
+    let yPosition = 20;
+
+    // Add Safety Sensei watermark
+    doc.setFontSize(8);
+    doc.setTextColor(200, 200, 200);
+    doc.text('SAFETY SENSEI - AI GENERATED SWMS', 150, 10);
+    
+    // Reset color and add title
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(18);
+    doc.text(swms.projectDetails.title, 20, yPosition);
+    yPosition += 15;
+
+    // Project details
+    doc.setFontSize(12);
+    doc.text(`Location: ${swms.projectDetails.location}`, 20, yPosition);
+    yPosition += 8;
+    doc.text(`Duration: ${swms.projectDetails.estimatedDuration}`, 20, yPosition);
+    yPosition += 8;
+    doc.text(`Description: ${swms.projectDetails.description}`, 20, yPosition);
+    yPosition += 15;
+
+    // Tasks section
+    doc.setFontSize(14);
+    doc.text('Project Tasks:', 20, yPosition);
+    yPosition += 10;
+    doc.setFontSize(10);
+    swms.suggestedTasks.forEach((task, index) => {
+      if (yPosition > 250) {
+        doc.addPage();
+        yPosition = 20;
+      }
+      doc.text(`${index + 1}. ${task.activity} (${task.priority} priority)`, 25, yPosition);
+      yPosition += 6;
+    });
+
+    yPosition += 10;
+
+    // Risk assessments section
+    doc.setFontSize(14);
+    doc.text('Risk Assessments:', 20, yPosition);
+    yPosition += 10;
+    doc.setFontSize(8);
+    swms.riskAssessments.forEach((risk, index) => {
+      if (yPosition > 240) {
+        doc.addPage();
+        yPosition = 20;
+      }
+      doc.text(`Activity: ${risk.activity}`, 20, yPosition);
+      yPosition += 5;
+      doc.text(`Hazards: ${risk.hazards.join(', ')}`, 20, yPosition);
+      yPosition += 5;
+      doc.text(`Initial Risk: ${risk.initialRiskScore} | Residual Risk: ${risk.residualRiskScore}`, 20, yPosition);
+      yPosition += 5;
+      doc.text(`Responsible: ${risk.responsible}`, 20, yPosition);
+      yPosition += 8;
+    });
+
+    // Add footer
+    doc.setFontSize(8);
+    doc.setTextColor(100, 100, 100);
+    doc.text('Generated by Safety Sensei AI SWMS Generator', 20, 280);
+    doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 20, 285);
+
+    // Download the PDF
+    doc.save(`${swms.projectDetails.title.replace(/[^a-z0-9]/gi, '_')}_SWMS.pdf`);
+  });
 }
