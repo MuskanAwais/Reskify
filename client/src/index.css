@@ -3,27 +3,27 @@
 @tailwind utilities;
 
 :root {
-  --background: 0 0% 98%; /* #FAFAFA */
-  --foreground: 20 14.3% 4.1%;
-  --muted: 60 4.8% 95.9%;
-  --muted-foreground: 25 5.3% 44.7%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 20 14.3% 4.1%;
+  --background: 210 40% 98%; /* #F8FAFC - Very light blue-gray like SiteDew */
+  --foreground: 214 31% 31%; /* #475569 - Dark blue-gray */
+  --muted: 210 40% 96%; /* #F1F5F9 - Very light blue */
+  --muted-foreground: 215 16% 47%; /* #64748B - Medium blue-gray */
+  --popover: 0 0% 100%; /* #FFFFFF */
+  --popover-foreground: 214 31% 31%; /* #475569 */
   --card: 0 0% 100%; /* #FFFFFF */
-  --card-foreground: 20 14.3% 4.1%;
-  --border: 20 5.9% 90%;
-  --input: 20 5.9% 90%;
-  --primary: 120 40% 25%; /* Dark green */
-  --primary-foreground: 0 0% 100%;
-  --secondary: 120 35% 35%; /* Lighter green */
-  --secondary-foreground: 0 0% 100%;
-  --accent: 60 4.8% 95.9%;
-  --accent-foreground: 24 9.8% 10%;
+  --card-foreground: 214 31% 31%; /* #475569 */
+  --border: 214 32% 91%; /* #E2E8F0 - Light blue-gray */
+  --input: 214 32% 91%; /* #E2E8F0 */
+  --primary: 210 100% 56%; /* #3B82F6 - Clean blue like SiteDew */
+  --primary-foreground: 0 0% 100%; /* #FFFFFF */
+  --secondary: 214 32% 91%; /* #E2E8F0 - Light blue-gray */
+  --secondary-foreground: 214 31% 31%; /* #475569 */
+  --accent: 214 32% 91%; /* #E2E8F0 */
+  --accent-foreground: 214 31% 31%; /* #475569 */
   --destructive: 0 72% 51%; /* #C62828 */
   --destructive-foreground: 60 9.1% 97.8%;
-  --ring: 20 14.3% 4.1%;
+  --ring: 210 100% 56%; /* #3B82F6 - Clean blue */
   --radius: 0.5rem;
-  --success: 122 39% 49%; /* #2E7D32 */
+  --success: 210 100% 56%; /* #3B82F6 - Use blue for success too */
   --warning: 45 100% 52%; /* #F57F17 */
 }
 
