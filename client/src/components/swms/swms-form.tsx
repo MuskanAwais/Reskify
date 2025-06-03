@@ -37,6 +37,7 @@ export default function SwmsForm({ step, data, onDataChange }: SwmsFormProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
   const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [categoryActivities, setCategoryActivities] = useState<Record<string, string[]>>({});
 
   const { data: trades } = useQuery({
     queryKey: ["/api/trades"],
@@ -327,7 +328,11 @@ export default function SwmsForm({ step, data, onDataChange }: SwmsFormProps) {
                         {!isCollapsed && (
                           <div className="p-4">
                             <div className="activity-checkbox-group">
-                              {category.activities.map((activity: string) => {
+                              {/* Display expanded activities if loaded, otherwise show default activities */}
+                              {(expandedCategories.has(`${selectedTrade.name}-${category.name}`) 
+                                ? categoryActivities[`${selectedTrade.name}-${category.name}`] || category.activities
+                                : category.activities
+                              ).map((activity: string) => {
                                 const isSelected = formData.activities.includes(activity);
                                 return (
                                   <div 
@@ -359,7 +364,7 @@ export default function SwmsForm({ step, data, onDataChange }: SwmsFormProps) {
                             </div>
 
                             {/* Show More Button for categories with additional activities */}
-                            {category.hasMore && (
+                            {category.hasMore && !expandedCategories.has(`${selectedTrade.name}-${category.name}`) && (
                               <div className="mt-4 border-t pt-4">
                                 <Button
                                   type="button"
@@ -371,18 +376,28 @@ export default function SwmsForm({ step, data, onDataChange }: SwmsFormProps) {
                                       const response = await fetch(`/api/trades/${selectedTrade.name}/activities?category=${encodeURIComponent(category.name)}`);
                                       const data = await response.json();
                                       
-                                      // Update the category with all activities
-                                      const updatedCategories = selectedTrade.categories.map((cat: any) => 
-                                        cat.name === category.name 
-                                          ? { ...cat, activities: data.activities, hasMore: false }
-                                          : cat
-                                      );
-                                      
-                                      // Update the trades data locally
-                                      // This would need proper state management in a real app
-                                      console.log('Loaded all activities for', category.name, ':', data.activities.length);
+                                      if (data.activities) {
+                                        // Store all activities for this category
+                                        setCategoryActivities(prev => ({
+                                          ...prev,
+                                          [`${selectedTrade.name}-${category.name}`]: data.activities
+                                        }));
+                                        
+                                        // Mark category as expanded
+                                        setExpandedCategories(prev => new Set([...prev, `${selectedTrade.name}-${category.name}`]));
+                                        
+                                        toast({
+                                          title: "Activities Loaded",
+                                          description: `Loaded ${data.activities.length} activities for ${category.name}`,
+                                        });
+                                      }
                                     } catch (error) {
                                       console.error('Failed to load more activities:', error);
+                                      toast({
+                                        title: "Error",
+                                        description: "Failed to load additional activities",
+                                        variant: "destructive",
+                                      });
                                     }
                                   }}
                                 >

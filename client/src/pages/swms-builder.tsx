@@ -11,10 +11,10 @@ import { Link } from "wouter";
 
 const STEPS = [
   { id: 1, title: "Project Details", description: "Basic project information and trade selection" },
-  { id: 2, title: "Activities & Hazards", description: "Define work activities and identify hazards" },
-  { id: 3, title: "Risk Assessment", description: "Assess risks and control measures" },
-  { id: 4, title: "Safety Requirements", description: "Apply safety codes and requirements" },
-  { id: 5, title: "Review & Generate", description: "Review document and generate SWMS" }
+  { id: 2, title: "Select Activities", description: "Choose activities from 10,000+ task database" },
+  { id: 3, title: "SWMS Table", description: "Review generated risk assessment table and edit as needed" },
+  { id: 4, title: "Custom Items", description: "Add custom activities and modify control measures" },
+  { id: 5, title: "Final Document", description: "Generate complete SWMS document" }
 ];
 
 export default function SwmsBuilder() {

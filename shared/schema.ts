@@ -88,6 +88,79 @@ export const practiceCodeDownloads = pgTable("practice_code_downloads", {
   authority: text("authority").notNull(),
 });
 
+// Team collaboration tables for multi-trade projects
+export const teams = pgTable("teams", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description"),
+  projectName: text("project_name").notNull(),
+  projectLocation: text("project_location").notNull(),
+  createdBy: integer("created_by").references(() => users.id).notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+  status: text("status").default("active"), // active, completed, archived
+});
+
+export const teamMembers = pgTable("team_members", {
+  id: serial("id").primaryKey(),
+  teamId: integer("team_id").references(() => teams.id).notNull(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  role: text("role").notNull(), // project_manager, trade_supervisor, safety_officer, worker
+  tradeSpecialty: text("trade_specialty"), // their primary trade
+  permissions: text("permissions").array().default([]), // view, edit, approve, manage
+  joinedAt: timestamp("joined_at").defaultNow(),
+  status: text("status").default("active"), // active, inactive, pending
+});
+
+export const projectSwms = pgTable("project_swms", {
+  id: serial("id").primaryKey(),
+  teamId: integer("team_id").references(() => teams.id).notNull(),
+  swmsId: integer("swms_id").references(() => swmsDocuments.id).notNull(),
+  assignedTrades: text("assigned_trades").array().default([]),
+  status: text("status").default("draft"), // draft, under_review, approved, active, completed
+  approvedBy: integer("approved_by").references(() => users.id),
+  approvedAt: timestamp("approved_at"),
+  dueDate: timestamp("due_date"),
+  priority: text("priority").default("medium"), // low, medium, high, critical
+});
+
+export const swmsComments = pgTable("swms_comments", {
+  id: serial("id").primaryKey(),
+  swmsId: integer("swms_id").references(() => swmsDocuments.id).notNull(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  parentId: integer("parent_id").references(() => swmsComments.id), // for replies
+  content: text("content").notNull(),
+  commentType: text("comment_type").default("general"), // general, risk_concern, suggestion, approval
+  activityReference: text("activity_reference"), // specific activity being commented on
+  resolved: boolean("resolved").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const swmsApprovals = pgTable("swms_approvals", {
+  id: serial("id").primaryKey(),
+  swmsId: integer("swms_id").references(() => swmsDocuments.id).notNull(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  approvalType: text("approval_type").notNull(), // trade_review, safety_review, final_approval
+  status: text("status").notNull(), // pending, approved, rejected, requires_changes
+  comments: text("comments"),
+  approvedAt: timestamp("approved_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const activityAssignments = pgTable("activity_assignments", {
+  id: serial("id").primaryKey(),
+  swmsId: integer("swms_id").references(() => swmsDocuments.id).notNull(),
+  activity: text("activity").notNull(),
+  assignedTo: integer("assigned_to").references(() => users.id).notNull(),
+  assignedTrade: text("assigned_trade").notNull(),
+  status: text("status").default("assigned"), // assigned, in_progress, completed, reviewed
+  startDate: timestamp("start_date"),
+  completionDate: timestamp("completion_date"),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
@@ -110,6 +183,38 @@ export const insertAiInteractionSchema = createInsertSchema(aiInteractions).omit
   createdAt: true,
 });
 
+// Team collaboration schemas
+export const insertTeamSchema = createInsertSchema(teams).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertTeamMemberSchema = createInsertSchema(teamMembers).omit({
+  id: true,
+  joinedAt: true,
+});
+
+export const insertProjectSwmsSchema = createInsertSchema(projectSwms).omit({
+  id: true,
+});
+
+export const insertSwmsCommentSchema = createInsertSchema(swmsComments).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertSwmsApprovalSchema = createInsertSchema(swmsApprovals).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertActivityAssignmentSchema = createInsertSchema(activityAssignments).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -119,6 +224,20 @@ export type SafetyLibraryItem = typeof safetyLibrary.$inferSelect;
 export type InsertSafetyLibraryItem = z.infer<typeof insertSafetyLibrarySchema>;
 export type AiInteraction = typeof aiInteractions.$inferSelect;
 export type InsertAiInteraction = z.infer<typeof insertAiInteractionSchema>;
+
+// Team collaboration types
+export type Team = typeof teams.$inferSelect;
+export type InsertTeam = z.infer<typeof insertTeamSchema>;
+export type TeamMember = typeof teamMembers.$inferSelect;
+export type InsertTeamMember = z.infer<typeof insertTeamMemberSchema>;
+export type ProjectSwms = typeof projectSwms.$inferSelect;
+export type InsertProjectSwms = z.infer<typeof insertProjectSwmsSchema>;
+export type SwmsComment = typeof swmsComments.$inferSelect;
+export type InsertSwmsComment = z.infer<typeof insertSwmsCommentSchema>;
+export type SwmsApproval = typeof swmsApprovals.$inferSelect;
+export type InsertSwmsApproval = z.infer<typeof insertSwmsApprovalSchema>;
+export type ActivityAssignment = typeof activityAssignments.$inferSelect;
+export type InsertActivityAssignment = z.infer<typeof insertActivityAssignmentSchema>;
 
 // Risk assessment schema
 export const riskAssessmentSchema = z.object({
