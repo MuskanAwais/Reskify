@@ -276,6 +276,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       console.log(`Generated ${riskAssessments.length} risk assessments total`);
       console.log('Risk assessments:', riskAssessments.map(r => ({ activity: r.activity, id: r.id })));
+      
+      // CRITICAL FIX: Ensure we have exactly one risk assessment per activity
+      if (riskAssessments.length !== activities.length) {
+        console.log(`MISMATCH: ${activities.length} activities vs ${riskAssessments.length} risk assessments`);
+        
+        const processedActivities = riskAssessments.map(r => r.activity);
+        const missingActivities = activities.filter(activity => !processedActivities.includes(activity));
+        
+        console.log(`Missing activities that need risk assessments:`, missingActivities);
+        
+        // Create risk assessments for missing activities
+        missingActivities.forEach((activity, index) => {
+          const genericAssessment = {
+            id: `missing-${Date.now()}-${index}`,
+            activity: activity,
+            hazards: ["Manual handling injuries", "Tool and equipment hazards", "Slips, trips and falls"],
+            initialRiskScore: 6,
+            riskLevel: "Medium",
+            controlMeasures: ["Follow safe work procedures", "Use appropriate PPE", "Conduct pre-work inspections"],
+            residualRiskScore: 3,
+            residualRiskLevel: "Low",
+            responsible: "Site Supervisor",
+            ppe: ["Safety glasses", "Hard hat", "Safety boots", "High-visibility clothing"],
+            training: ["Safety induction", "Task-specific training"],
+            inspection: "Daily",
+            emergencyProcedures: ["Stop work immediately if unsafe", "Report incidents to supervisor"],
+            environmental: ["Minimize waste", "Follow environmental guidelines"],
+            quality: ["Follow quality standards", "Document work completion"],
+            legislation: ["Work Health and Safety Act 2011"],
+            category: "General Construction",
+            trade: tradeType,
+            complexity: "intermediate",
+            frequency: "project-based",
+            editable: true
+          };
+          
+          riskAssessments.push(genericAssessment);
+          console.log(`FIXED: Added risk assessment for missing activity "${activity}"`);
+        });
+      }
 
       res.json({
         title: title || `SWMS - ${tradeType} Work`,

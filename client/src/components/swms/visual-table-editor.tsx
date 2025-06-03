@@ -388,19 +388,22 @@ export default function VisualTableEditor({ formData, onDataChange }: VisualTabl
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 max-h-40 overflow-y-auto">
-              {selectedTrade.categories?.map((category: any) => 
-                category.activities?.slice(0, 5).map((activity: string) => (
-                  <Button
-                    key={activity}
-                    variant={selectedActivities.includes(activity) ? "default" : "outline"}
-                    size="sm"
-                    className="justify-start text-left h-auto py-2 px-3"
-                    onClick={() => addActivityFromTrade(activity)}
-                  >
-                    <span className="text-xs">{activity}</span>
-                  </Button>
-                ))
-              )}
+              {selectedTrade && selectedTrade.categories && Array.isArray(selectedTrade.categories) ? 
+                selectedTrade.categories.map((category: any) => 
+                  category.activities && Array.isArray(category.activities) ? 
+                    category.activities.slice(0, 5).map((activity: string) => (
+                      <Button
+                        key={activity}
+                        variant={selectedActivities.includes(activity) ? "default" : "outline"}
+                        size="sm"
+                        className="justify-start text-left h-auto py-2 px-3"
+                        onClick={() => addActivityFromTrade(activity)}
+                      >
+                        <span className="text-xs">{activity}</span>
+                      </Button>
+                    )) : null
+                ) : null
+              }
             </div>
           </CardContent>
         </Card>
