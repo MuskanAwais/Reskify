@@ -41,6 +41,37 @@ interface SwmsDocument {
   documentHash?: string;
 }
 
+// Add DEMO watermark function for trial documents
+function addDemoWatermark(pdf: jsPDF) {
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
+  
+  // Set transparency for watermark
+  pdf.saveGraphicsState();
+  pdf.setGState(pdf.GState({ opacity: 0.2 }));
+  
+  // Add large DEMO text diagonally across page
+  pdf.setFont('helvetica', 'bold');
+  pdf.setFontSize(80);
+  pdf.setTextColor(255, 0, 0); // Red color
+  
+  // Rotate and position DEMO text
+  pdf.text('DEMO', pageWidth / 2, pageHeight / 2, {
+    angle: 45,
+    align: 'center'
+  });
+  
+  // Add smaller trial text
+  pdf.setFontSize(24);
+  pdf.text('TRIAL DOCUMENT', pageWidth / 2, pageHeight / 2 + 30, {
+    angle: 45,
+    align: 'center'
+  });
+  
+  // Restore previous state
+  pdf.restoreGraphicsState();
+}
+
 export async function generateProtectedPDF(document: SwmsDocument, user: User | null, isTrialDocument: boolean = false): Promise<Blob> {
   try {
     const pdf = new jsPDF();
@@ -51,39 +82,6 @@ export async function generateProtectedPDF(document: SwmsDocument, user: User | 
     // Add DEMO watermark for trial documents
     if (isTrialDocument) {
       addDemoWatermark(pdf);
-    }
-
-    // Add DEMO watermark function for trial documents
-    function addDemoWatermark(pdf: jsPDF) {
-      const pageWidth = pdf.internal.pageSize.getWidth();
-      const pageHeight = pdf.internal.pageSize.getHeight();
-      
-      // Save current state
-      const currentAlpha = pdf.internal.getAlpha();
-      
-      // Set transparency for watermark
-      pdf.setGState(pdf.GState({ opacity: 0.15 }));
-      
-      // Add large DEMO text diagonally across page
-      pdf.setFont('helvetica', 'bold');
-      pdf.setFontSize(80);
-      pdf.setTextColor(255, 0, 0); // Red color
-      
-      // Rotate and position DEMO text
-      pdf.text('DEMO', pageWidth / 2, pageHeight / 2, {
-        angle: 45,
-        align: 'center'
-      });
-      
-      // Add smaller trial text
-      pdf.setFontSize(24);
-      pdf.text('TRIAL DOCUMENT', pageWidth / 2, pageHeight / 2 + 30, {
-        angle: 45,
-        align: 'center'
-      });
-      
-      // Restore previous alpha state
-      pdf.setGState(pdf.GState({ opacity: currentAlpha }));
     }
 
     // Add enhanced watermark with job details behind tables
