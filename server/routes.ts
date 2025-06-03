@@ -503,7 +503,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = 1; // Default user for now
       const documents = await storage.getSwmsDocumentsByUser(userId);
-      res.json(documents);
+      res.json(documents || []);
     } catch (error: any) {
       console.error("Get user documents error:", error);
       res.status(500).json({ error: "Failed to fetch documents" });

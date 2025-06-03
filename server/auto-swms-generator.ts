@@ -1,4 +1,5 @@
 // Comprehensive auto-SWMS generation system
+// Comprehensive SWMS risk database based on ACE Terminal requirements
 export const ACTIVITY_RISK_DATABASE = {
   // ELECTRICAL WORK
   "Power outlet installation": {
