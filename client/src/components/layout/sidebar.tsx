@@ -90,12 +90,10 @@ export default function Sidebar() {
   ];
 
   const adminNavigationItems = [
-    { icon: Shield, label: "Admin Dashboard", href: "/dashboard" },
     { icon: Users, label: "User Management", href: "/admin/user-management" },
     { icon: DollarSign, label: "Billing Analytics", href: "/admin/billing-analytics" },
     { icon: TrendingUp, label: "Usage Analytics", href: "/admin/usage-analytics" },
     { icon: Database, label: "Data Management", href: "/admin/data" },
-
     { icon: Archive, label: "All SWMS", href: "/admin/all-swms" },
     { icon: Activity, label: "System Health", href: "/admin/health" }
   ];

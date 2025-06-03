@@ -147,11 +147,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const complianceCodes = new Set();
 
       // Find exact matches in the comprehensive database for each selected activity
+      console.log(`Processing ${activities.length} activities for ${tradeType}:`, activities);
+      
       for (const activity of activities) {
+        console.log(`Processing activity: ${activity}`);
+        
         // Find exact task match in comprehensive database
         const exactTask = allTasks.find(task => 
           task.activity === activity && task.trade === tradeType
         );
+        
+        console.log(`Exact task found for "${activity}":`, !!exactTask);
         
         if (exactTask) {
           // Use authentic data from comprehensive database
@@ -254,6 +260,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }
         }
       }
+
+      console.log(`Generated ${riskAssessments.length} risk assessments total`);
+      console.log('Risk assessments:', riskAssessments.map(r => ({ activity: r.activity, id: r.id })));
 
       res.json({
         title: title || `SWMS - ${tradeType} Work`,
