@@ -138,7 +138,7 @@ function Router() {
         <Route path="/admin/usage-analytics" component={UsageAnalytics} />
         <Route path="/admin/all-swms" component={AllSwms} />
         <Route path="/admin/data" component={DataManagement} />
-        <Route path="/admin/contacts" component={ContactLists} />
+
         <Route path="/admin/health" component={SystemHealth} />
         
         <Route component={NotFound} />

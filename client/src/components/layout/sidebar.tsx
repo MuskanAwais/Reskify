@@ -95,7 +95,7 @@ export default function Sidebar() {
     { icon: DollarSign, label: "Billing Analytics", href: "/admin/billing-analytics" },
     { icon: TrendingUp, label: "Usage Analytics", href: "/admin/usage-analytics" },
     { icon: Database, label: "Data Management", href: "/admin/data" },
-    { icon: Contact, label: "Contact Lists", href: "/admin/contacts" },
+
     { icon: Archive, label: "All SWMS", href: "/admin/all-swms" },
     { icon: Activity, label: "System Health", href: "/admin/health" }
   ];

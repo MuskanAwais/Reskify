@@ -977,7 +977,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: 'Job description and trade are required' });
       }
       
-      const { generateComprehensiveAISwms } = require('./comprehensive-ai-swms-generator');
+      const { generateComprehensiveAISwms } = await import('./comprehensive-ai-swms-generator');
       
       const aiSwmsData = await generateComprehensiveAISwms({
         jobDescription,

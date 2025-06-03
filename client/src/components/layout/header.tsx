@@ -40,7 +40,7 @@ export default function Header() {
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 rounded-lg flex items-center justify-center">
               <img 
-                src="/attached_assets/Untitled design-2.png" 
+                src="/attached_assets/Untitled%20design-2.png" 
                 alt="Safety Sensei Logo" 
                 className="w-10 h-10 object-contain"
               />
