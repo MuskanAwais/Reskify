@@ -1560,6 +1560,71 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get("/api/admin/usage-analytics", async (req, res) => {
+    try {
+      const mockAnalytics = {
+        totalSwmsGenerated: 1847,
+        generalSwmsCount: 1352,
+        aiSwmsCount: 495,
+        weeklyGrowth: 23.5,
+        dailyData: [
+          { date: 'Mon', general: 45, ai: 12, total: 57 },
+          { date: 'Tue', general: 52, ai: 18, total: 70 },
+          { date: 'Wed', general: 38, ai: 15, total: 53 },
+          { date: 'Thu', general: 67, ai: 22, total: 89 },
+          { date: 'Fri', general: 71, ai: 25, total: 96 },
+          { date: 'Sat', general: 28, ai: 8, total: 36 },
+          { date: 'Sun', general: 31, ai: 9, total: 40 }
+        ],
+        tradeUsage: [
+          { trade: 'Electrical', count: 287, percentage: 15.5 },
+          { trade: 'Plumbing', count: 234, percentage: 12.7 },
+          { trade: 'Carpentry', count: 198, percentage: 10.7 },
+          { trade: 'Roofing', count: 176, percentage: 9.5 },
+          { trade: 'Concrete', count: 165, percentage: 8.9 },
+          { trade: 'Others', count: 787, percentage: 42.7 }
+        ],
+        featureUsage: [
+          { name: 'General SWMS', value: 73.2, color: '#3b82f6' },
+          { name: 'AI SWMS', value: 26.8, color: '#10b981' }
+        ]
+      };
+      res.json(mockAnalytics);
+    } catch (error: any) {
+      console.error("Get usage analytics error:", error);
+      res.status(500).json({ message: "Failed to fetch usage analytics" });
+    }
+  });
+
+  app.get("/api/admin/billing-analytics", async (req, res) => {
+    try {
+      const mockBillingData = {
+        totalRevenue: 127500,
+        monthlyRevenue: 12750,
+        activeSubscriptions: 255,
+        churnRate: 3.2,
+        revenueGrowth: 18.5,
+        monthlyData: [
+          { month: 'Jan', revenue: 8500, subscriptions: 170 },
+          { month: 'Feb', revenue: 9200, subscriptions: 184 },
+          { month: 'Mar', revenue: 10100, subscriptions: 202 },
+          { month: 'Apr', revenue: 11200, subscriptions: 224 },
+          { month: 'May', revenue: 12100, subscriptions: 242 },
+          { month: 'Jun', revenue: 12750, subscriptions: 255 }
+        ],
+        planDistribution: [
+          { plan: 'Basic', users: 98, revenue: 2940 },
+          { plan: 'Pro', users: 127, revenue: 6350 },
+          { plan: 'Enterprise', users: 30, revenue: 3000 }
+        ]
+      };
+      res.json(mockBillingData);
+    } catch (error: any) {
+      console.error("Get billing analytics error:", error);
+      res.status(500).json({ message: "Failed to fetch billing analytics" });
+    }
+  });
+
   app.get("/api/admin/trade-types", async (req, res) => {
     try {
       const tradeTypes = ["Electrical", "Plumbing", "Carpentry", "Roofing", "Concrete", "Painting"];
