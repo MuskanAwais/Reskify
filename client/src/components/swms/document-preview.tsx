@@ -307,39 +307,108 @@ export default function DocumentPreview({ formData }: DocumentPreviewProps) {
                     </div>
                   </div>
 
-                  {/* Risk Assessment Table */}
+                  {/* Risk Assessment Table - Task-based format */}
                   {documentToDisplay.riskAssessments && documentToDisplay.riskAssessments.length > 0 && (
                     <div className="mb-6">
                       <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
                         <AlertTriangle className="mr-2 h-5 w-5" />
                         Risk Assessment Matrix
                       </h3>
-                      <div className="overflow-x-auto">
-                        <table className="w-full border border-gray-300 text-sm">
-                          <thead className="bg-gray-50">
+                      <div className="overflow-x-auto" style={{ minWidth: '1200px' }}>
+                        <table className="w-full border-collapse border border-gray-300 text-xs">
+                          <thead className="bg-gray-100">
                             <tr>
-                              <th className="border border-gray-300 p-3 text-left">Hazard</th>
-                              <th className="border border-gray-300 p-3 text-left">Risk Level</th>
-                              <th className="border border-gray-300 p-3 text-left">Control Measures</th>
-                              <th className="border border-gray-300 p-3 text-left">Responsible Person</th>
+                              <th className="border border-gray-300 p-2 text-left font-medium" style={{ width: '15%' }}>
+                                Activity / Item
+                              </th>
+                              <th className="border border-gray-300 p-2 text-left font-medium" style={{ width: '20%' }}>
+                                Hazards / Risks
+                              </th>
+                              <th className="border border-gray-300 p-2 text-center font-medium" style={{ width: '8%' }}>
+                                Initial Risk Score
+                              </th>
+                              <th className="border border-gray-300 p-2 text-left font-medium" style={{ width: '30%' }}>
+                                Control Measures / Risk Treatment
+                              </th>
+                              <th className="border border-gray-300 p-2 text-left font-medium" style={{ width: '19%' }}>
+                                Legislation, Codes of Practice, and Guidelines
+                              </th>
+                              <th className="border border-gray-300 p-2 text-center font-medium" style={{ width: '8%' }}>
+                                Residual Risk Score
+                              </th>
                             </tr>
                           </thead>
                           <tbody>
-                            {documentToDisplay.riskAssessments.map((risk: any, index: number) => (
-                              <tr key={index}>
-                                <td className="border border-gray-300 p-3">{risk.hazard}</td>
-                                <td className="border border-gray-300 p-3">
-                                  <Badge className={getRiskLevelColor(risk.riskLevel)}>
-                                    {risk.riskLevel.toUpperCase()}
-                                  </Badge>
+                            {documentToDisplay.riskAssessments.map((assessment: any, index: number) => (
+                              <tr key={index} className="hover:bg-gray-50">
+                                <td className="border border-gray-300 p-2 align-top">
+                                  <div className="font-medium text-xs">
+                                    {assessment.activity}
+                                  </div>
                                 </td>
-                                <td className="border border-gray-300 p-3">
-                                  {Array.isArray(risk.controlMeasures) 
-                                    ? risk.controlMeasures.join(', ')
-                                    : risk.controlMeasures
-                                  }
+                                <td className="border border-gray-300 p-2 align-top">
+                                  <div className="space-y-1">
+                                    {assessment.hazards?.map((hazard: string, hIndex: number) => (
+                                      <div key={hIndex} className="text-xs">• {hazard}</div>
+                                    ))}
+                                  </div>
                                 </td>
-                                <td className="border border-gray-300 p-3">{risk.responsiblePerson}</td>
+                                <td className="border border-gray-300 p-2 text-center align-top">
+                                  <div className="flex flex-col items-center">
+                                    <span className="font-bold text-lg">{assessment.initialRiskScore}</span>
+                                    <Badge 
+                                      variant={
+                                        assessment.riskLevel === "High" || assessment.riskLevel === "Extreme" ? "destructive" : 
+                                        assessment.riskLevel === "Medium" ? "default" : 
+                                        "secondary"
+                                      }
+                                      className="text-xs mt-1"
+                                    >
+                                      {assessment.riskLevel}
+                                    </Badge>
+                                  </div>
+                                </td>
+                                <td className="border border-gray-300 p-2 align-top">
+                                  <div className="space-y-1">
+                                    {assessment.controlMeasures?.map((measure: string, mIndex: number) => (
+                                      <div key={mIndex} className="text-xs">• {measure}</div>
+                                    ))}
+                                  </div>
+                                  {assessment.ppe && assessment.ppe.length > 0 && (
+                                    <div className="mt-2 p-1 bg-blue-50 rounded">
+                                      <div className="font-medium text-xs text-blue-700">PPE Required:</div>
+                                      <div className="text-xs text-blue-600">{assessment.ppe.join(', ')}</div>
+                                    </div>
+                                  )}
+                                  {assessment.responsible && (
+                                    <div className="mt-2 p-1 bg-green-50 rounded">
+                                      <div className="font-medium text-xs text-green-700">Responsible:</div>
+                                      <div className="text-xs text-green-600">{assessment.responsible}</div>
+                                    </div>
+                                  )}
+                                </td>
+                                <td className="border border-gray-300 p-2 align-top">
+                                  <div className="space-y-1">
+                                    {assessment.legislation?.map((law: string, lIndex: number) => (
+                                      <div key={lIndex} className="text-xs">• {law}</div>
+                                    ))}
+                                  </div>
+                                </td>
+                                <td className="border border-gray-300 p-2 text-center align-top">
+                                  <div className="flex flex-col items-center">
+                                    <span className="font-bold text-lg">{assessment.residualRiskScore}</span>
+                                    <Badge 
+                                      variant={
+                                        assessment.residualRiskLevel === "High" || assessment.residualRiskLevel === "Extreme" ? "destructive" : 
+                                        assessment.residualRiskLevel === "Medium" ? "default" : 
+                                        "secondary"
+                                      }
+                                      className="text-xs mt-1"
+                                    >
+                                      {assessment.residualRiskLevel}
+                                    </Badge>
+                                  </div>
+                                </td>
                               </tr>
                             ))}
                           </tbody>

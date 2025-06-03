@@ -62,10 +62,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: 'Activities array is required' });
       }
 
-      // Use comprehensive database to get authentic risk assessments for each activity
-      const { getAllMegaTradeTasks } = await import('./mega-trades-database');
+      // Use comprehensive Ultimate Construction Database to get authentic risk assessments for each activity
+      const { getAllUltimateConstructionTasks } = await import('./ultimate-construction-database');
       
-      const allTasks = getAllMegaTradeTasks();
+      const allTasks = getAllUltimateConstructionTasks();
       const riskAssessments = [];
       const safetyMeasures = [];
       const complianceCodes = new Set();
