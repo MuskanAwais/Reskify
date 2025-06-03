@@ -148,9 +148,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Find exact matches in the comprehensive database for each selected activity
       console.log(`Processing ${activities.length} activities for ${tradeType}:`, activities);
+      console.log(`Database has ${allTasks.length} total tasks available`);
       
-      for (const activity of activities) {
-        console.log(`Processing activity: ${activity}`);
+      for (let i = 0; i < activities.length; i++) {
+        const activity = activities[i];
+        console.log(`Processing activity ${i + 1}/${activities.length}: "${activity}"`);
         
         // Find exact task match in comprehensive database
         const exactTask = allTasks.find(task => 
@@ -158,6 +160,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         );
         
         console.log(`Exact task found for "${activity}":`, !!exactTask);
+        
+        if (!exactTask) {
+          // Try to find any task with this trade to see what's available
+          const tradeTasksPreview = allTasks
+            .filter(task => task.trade === tradeType)
+            .slice(0, 3)
+            .map(task => task.activity);
+          console.log(`No exact match. Sample ${tradeType} tasks in database:`, tradeTasksPreview);
+        }
         
         if (exactTask) {
           // Use authentic data from comprehensive database
