@@ -33,20 +33,20 @@ export default function Header() {
   ];
 
   return (
-    <header className="bg-gradient-to-r from-green-800 to-green-900 text-white shadow-lg border-b border-green-700">
+    <header className="bg-white border-b border-border shadow-sm">
       <div className="container mx-auto px-6 py-3">
         <div className="flex justify-between items-center">
           {/* Logo and Title */}
           <div className="flex items-center space-x-3">
-            <div className="bg-white p-2 rounded-lg shadow-sm">
-              <svg className="h-6 w-6 text-green-700" viewBox="0 0 24 24" fill="currentColor">
+            <div className="bg-primary p-2 rounded-lg shadow-sm">
+              <svg className="h-6 w-6 text-primary-foreground" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M6.92 5L12 10.07L17.08 5H6.92M6.92 19L12 13.93L17.08 19H6.92M12 12.5L9.5 10H14.5L12 12.5Z"/>
               </svg>
             </div>
             <div>
-              <h1 className="text-xl font-bold tracking-tight">Safety Samurai</h1>
+              <h1 className="text-xl font-bold tracking-tight text-foreground">Safety Samurai</h1>
               <div className="flex items-center space-x-2">
-                <span className="text-sm text-green-100">Professional SWMS Builder</span>
+                <span className="text-sm text-muted-foreground">Professional SWMS Builder</span>
               </div>
             </div>
           </div>
@@ -57,8 +57,8 @@ export default function Header() {
               <Link key={item.path} href={item.path}>
                 <Button 
                   variant="ghost" 
-                  className={`text-green-100 hover:text-white hover:bg-green-700 ${
-                    location === item.path ? 'bg-green-700 text-white' : ''
+                  className={`text-muted-foreground hover:text-foreground hover:bg-accent ${
+                    location === item.path ? 'bg-accent text-foreground' : ''
                   }`}
                 >
                   {item.label}
@@ -71,14 +71,14 @@ export default function Header() {
           <div className="flex items-center space-x-3">
             {/* New SWMS Button */}
             <Link href="/swms-builder">
-              <Button className="bg-green-600 hover:bg-green-500 text-white text-sm px-4 py-2 font-medium shadow-sm">
+              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground text-sm px-4 py-2 font-medium shadow-sm">
                 <Plus className="mr-2 h-4 w-4" />
                 New SWMS
               </Button>
             </Link>
 
             {/* Notifications */}
-            <Button variant="ghost" size="sm" className="text-slate-300 hover:text-white hover:bg-slate-700 p-2">
+            <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground hover:bg-accent p-2">
               <Bell className="h-5 w-5" />
             </Button>
 
@@ -87,7 +87,7 @@ export default function Header() {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                   <Avatar className="h-8 w-8">
-                    <AvatarFallback className="bg-green-600 text-white text-sm">
+                    <AvatarFallback className="bg-primary text-primary-foreground text-sm">
                       {user ? getInitials(user.username) : 'U'}
                     </AvatarFallback>
                   </Avatar>
