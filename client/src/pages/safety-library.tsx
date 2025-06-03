@@ -9,9 +9,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Lock, Crown, Unlock, Search, ExternalLink, Filter, Shield } from "lucide-react";
 
 export default function SafetyLibrary() {
-  const { isAdmin } = useAdmin();
+  const { isAdminMode } = useAdmin();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [adminUnlocked, setAdminUnlocked] = useState(false);
 
   // Check if user has access to Safety Library
   const { data: subscription } = useQuery({
@@ -21,10 +22,10 @@ export default function SafetyLibrary() {
   // Get safety library data
   const { data: safetyLibrary = [] } = useQuery({
     queryKey: ['/api/safety-library'],
-    enabled: isAdmin || subscription?.features?.safetyLibrary
+    enabled: isAdminMode || adminUnlocked || subscription?.plan === "Pro Plan"
   });
 
-  const hasAccess = isAdmin || subscription?.features?.safetyLibrary || false;
+  const hasAccess = isAdminMode || adminUnlocked || subscription?.plan === "Pro Plan" || false;
 
   if (!hasAccess) {
     return (
@@ -87,7 +88,8 @@ export default function SafetyLibrary() {
   }
 
   // Filter data based on search and category
-  const filteredLibrary = safetyLibrary.filter((item: any) => {
+  const safetyData = Array.isArray(safetyLibrary) ? safetyLibrary : [];
+  const filteredLibrary = safetyData.filter((item: any) => {
     const matchesSearch = !searchTerm || 
       item.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.code?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -98,7 +100,7 @@ export default function SafetyLibrary() {
     return matchesSearch && matchesCategory;
   });
 
-  const categories = Array.from(new Set(safetyLibrary.map((item: any) => item.category)));
+  const categories = Array.from(new Set(safetyData.map((item: any) => item.category))).filter(cat => cat && cat.trim() !== '');
 
   // If user has access, show full Safety Library interface
   return (
@@ -154,7 +156,7 @@ export default function SafetyLibrary() {
           
           <div className="mt-4 flex items-center justify-between text-sm text-gray-600">
             <span>
-              Showing {filteredLibrary.length} of {safetyLibrary.length} safety standards
+              Showing {filteredLibrary.length} of {safetyData.length} safety standards
             </span>
             {(searchTerm || selectedCategory) && (
               <Button 

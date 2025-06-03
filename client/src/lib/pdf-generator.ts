@@ -68,9 +68,9 @@ export async function generateProtectedPDF(document: SwmsDocument, user: User | 
       pdf.setFont('helvetica', 'normal');
       
       const jobDetails = [
-        `Job: ${document.jobName || document.title || 'N/A'}`,
-        `Number: ${document.jobNumber || 'N/A'}`,
-        `Address: ${document.projectAddress || document.projectLocation || 'N/A'}`,
+        `Job: ${(document as any).jobName || document.title || 'N/A'}`,
+        `Number: ${(document as any).jobNumber || 'N/A'}`,
+        `Address: ${(document as any).projectAddress || document.projectLocation || 'N/A'}`,
         `Trade: ${document.tradeType || 'N/A'}`,
         `Generated: ${new Date().toLocaleDateString()}`
       ];
