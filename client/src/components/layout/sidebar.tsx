@@ -49,13 +49,17 @@ export default function Sidebar() {
   const navigationItems = [
     { icon: Home, label: "Dashboard", href: "/dashboard" },
     { icon: FileText, label: "My SWMS", href: "/my-swms" },
-    { icon: Book, label: "Safety Library", href: "/safety-library" },
+    { 
+      icon: Book, 
+      label: "Safety Library", 
+      href: "/safety-library",
+      requiresAccess: true,
+      hasAccess: subscription?.features?.safetyLibrary
+    },
     { 
       icon: BookOpen, 
       label: "Standard Practice Guide", 
-      href: "/standard-practice-guide",
-      requiresAccess: true,
-      hasAccess: subscription?.features?.standardPracticeGuide
+      href: "/standard-practice-guide"
     },
     { icon: BarChart3, label: "Analytics", href: "/analytics" },
     { icon: User, label: "Account", href: "/billing" }
