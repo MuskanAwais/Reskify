@@ -204,9 +204,27 @@ function enhanceWithDatabaseKnowledge(aiResponse: any, trade: string, tradeTasks
     "Safe Work Australia Codes of Practice"
   ];
 
+  // Add universal tasks that should be in every SWMS
+  const universalTasks = [
+    { activity: "Site setup and preparation", category: "Preparation", priority: "high", reasoning: "Essential for safe site operations" },
+    { activity: "Tool and equipment inspection", category: "Equipment", priority: "high", reasoning: "Critical safety requirement" },
+    { activity: "Material handling and storage", category: "Logistics", priority: "medium", reasoning: "Required for project materials" },
+    { activity: "Waste management and disposal", category: "Environmental", priority: "medium", reasoning: "Environmental compliance" },
+    { activity: "Emergency evacuation procedures", category: "Safety", priority: "high", reasoning: "Critical safety requirement" },
+    { activity: "Site cleanup and restoration", category: "Completion", priority: "medium", reasoning: "Project completion requirement" }
+  ];
+  
+  // Filter out universal tasks that are already included
+  const universalTasksToAdd = universalTasks.filter(newTask => 
+    !aiResponse.suggestedTasks.some((existing: any) => 
+      existing.activity.toLowerCase().includes(newTask.activity.toLowerCase().split(' ')[0]) ||
+      newTask.activity.toLowerCase().includes(existing.activity.toLowerCase().split(' ')[0])
+    )
+  );
+
   return {
     projectDetails: aiResponse.projectDetails,
-    suggestedTasks: [...aiResponse.suggestedTasks, ...additionalTasks],
+    suggestedTasks: [...aiResponse.suggestedTasks, ...additionalTasks, ...universalTasksToAdd],
     riskAssessments: enhancedRiskAssessments,
     safetyMeasures: aiResponse.safetyMeasures,
     complianceCodes: [...new Set([...aiResponse.complianceCodes, ...australianCodes])],
