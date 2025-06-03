@@ -293,6 +293,157 @@ export async function generateProtectedPDF(document: SwmsDocument, user: User | 
       yPosition = (pdf as any).lastAutoTable.finalY + 20;
     }
 
+    // Risk Matrix Section
+    if (yPosition > pageHeight - 120) {
+      pdf.addPage();
+      addFullPageWatermark();
+      yPosition = 20;
+    }
+
+    pdf.setFontSize(16);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Risk Assessment Matrix', 20, yPosition);
+    yPosition += 15;
+
+    // Comprehensive Risk Matrix based on provided image
+    const riskMatrixData = [
+      ['', '', 'Consequence/Impact', '', '', '', ''],
+      ['Likelihood', 'Qualitative Scale', 'Quantitative Scale', 'Magnitude', 'Probability Description', 'Likely', 'Possible', 'Unlikely', 'Very Rare'],
+      ['Extreme', 'Fatality, significant disability, catastrophic property damage', '$50,000+', 'Likely', 'Monthly in the industry', '16', '14', '11', '7'],
+      ['High', 'Minor amputation, minor permanent disability, moderate property damage', '$15,000 - $50,000', 'Possible', 'Yearly in the industry', '15', '12', '8', '5'],
+      ['Medium', 'Minor injury resulting in less than 5 Lost Time Injury or Medically Treated Injury', '$1,000 - $15,000', 'Unlikely', 'Every 10 years in the industry', '13', '9', '6', '3'],
+      ['Low', 'First Aid Treatment with no lost time', '$0 - $1,000', 'Very Rarely', 'Once in a lifetime in the industry', '10', '7', '4', '2']
+    ];
+
+    pdf.autoTable({
+      startY: yPosition,
+      body: riskMatrixData,
+      theme: 'grid',
+      margin: { left: 20, right: 20 },
+      styles: { fontSize: 8, cellPadding: 2 },
+      columnStyles: {
+        0: { cellWidth: 20, fontStyle: 'bold' },
+        1: { cellWidth: 35 },
+        2: { cellWidth: 25 },
+        3: { cellWidth: 20 },
+        4: { cellWidth: 30 },
+        5: { cellWidth: 15 },
+        6: { cellWidth: 15 },
+        7: { cellWidth: 15 },
+        8: { cellWidth: 15 }
+      },
+      didParseCell: function(data) {
+        // Color coding for risk levels
+        if (data.row.index >= 2) {
+          const cellValue = data.cell.text[0];
+          if (['16', '15', '14', '13'].includes(cellValue)) {
+            data.cell.styles.fillColor = [220, 53, 69]; // Red for extreme/high
+            data.cell.styles.textColor = [255, 255, 255];
+          } else if (['12', '11', '10', '9'].includes(cellValue)) {
+            data.cell.styles.fillColor = [255, 193, 7]; // Yellow for medium
+            data.cell.styles.textColor = [0, 0, 0];
+          } else if (['8', '7', '6', '5', '4', '3', '2'].includes(cellValue)) {
+            data.cell.styles.fillColor = [40, 167, 69]; // Green for low
+            data.cell.styles.textColor = [255, 255, 255];
+          }
+        }
+        // Header styling
+        if (data.row.index <= 1) {
+          data.cell.styles.fillColor = [21, 101, 192];
+          data.cell.styles.textColor = [255, 255, 255];
+          data.cell.styles.fontStyle = 'bold';
+        }
+      }
+    });
+
+    yPosition = (pdf as any).lastAutoTable.finalY + 20;
+
+    // Action Matrix
+    const actionMatrixData = [
+      ['Score', 'Ranking', 'Action'],
+      ['14 - 16', 'Severe (S)', 'Action Immediate (I)'],
+      ['11 - 13', 'High (H)', 'Action within 24 hrs'],
+      ['7 - 10', 'Medium (M)', 'Action within 48 hrs'],
+      ['2 - 6', 'Low (L)', 'Action when practicable']
+    ];
+
+    pdf.autoTable({
+      startY: yPosition,
+      head: [actionMatrixData[0]],
+      body: actionMatrixData.slice(1),
+      theme: 'grid',
+      headStyles: { fillColor: [21, 101, 192] },
+      margin: { left: 20, right: 20 },
+      styles: { fontSize: 10 },
+      columnStyles: {
+        0: { cellWidth: 30 },
+        1: { cellWidth: 30 },
+        2: { cellWidth: 50 }
+      },
+      didParseCell: function(data) {
+        if (data.section === 'body') {
+          const score = data.cell.text[0];
+          if (score === '14 - 16') {
+            data.cell.styles.fillColor = [220, 53, 69];
+            data.cell.styles.textColor = [255, 255, 255];
+          } else if (score === '11 - 13') {
+            data.cell.styles.fillColor = [255, 193, 7];
+            data.cell.styles.textColor = [0, 0, 0];
+          } else if (score === '7 - 10') {
+            data.cell.styles.fillColor = [40, 167, 69];
+            data.cell.styles.textColor = [255, 255, 255];
+          }
+        }
+      }
+    });
+
+    yPosition = (pdf as any).lastAutoTable.finalY + 30;
+
+    // Digital Signature Section
+    pdf.addPage();
+    addFullPageWatermark();
+    yPosition = 20;
+
+    pdf.setFontSize(16);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Digital Signatures & Approvals', 20, yPosition);
+    yPosition += 20;
+
+    // Signature table
+    const signatureData = [
+      ['Role', 'Name', 'Signature', 'Date'],
+      ['Project Manager', '', '_________________', '___________'],
+      ['Safety Officer', '', '_________________', '___________'],
+      ['Site Supervisor', '', '_________________', '___________'],
+      ['Worker Representative', '', '_________________', '___________']
+    ];
+
+    pdf.autoTable({
+      startY: yPosition,
+      head: [signatureData[0]],
+      body: signatureData.slice(1),
+      theme: 'grid',
+      headStyles: { fillColor: [21, 101, 192] },
+      margin: { left: 20, right: 20 },
+      styles: { fontSize: 12, cellPadding: 8 },
+      columnStyles: {
+        0: { cellWidth: 40, fontStyle: 'bold' },
+        1: { cellWidth: 40 },
+        2: { cellWidth: 50 },
+        3: { cellWidth: 30 }
+      }
+    });
+
+    yPosition = (pdf as any).lastAutoTable.finalY + 20;
+
+    // Legal disclaimer
+    pdf.setFontSize(10);
+    pdf.setFont('helvetica', 'normal');
+    const disclaimer = 'By signing this document, all parties acknowledge they have read, understood, and agree to comply with all safety requirements outlined in this SWMS. This document must be reviewed and updated as conditions change.';
+    
+    const disclaimerLines = pdf.splitTextToSize(disclaimer, pageWidth - 40);
+    pdf.text(disclaimerLines, 20, yPosition);
+
     // Footer with protection notice
     const totalPages = pdf.internal.getNumberOfPages();
     for (let i = 1; i <= totalPages; i++) {
