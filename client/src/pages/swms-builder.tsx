@@ -5,6 +5,7 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import SwmsForm from "@/components/swms/swms-form";
 import DocumentPreview from "@/components/swms/document-preview";
+import CreditCounter from "@/components/ui/credit-counter";
 import { ArrowLeft, ArrowRight, FileText, Shield, CheckCircle } from "lucide-react";
 import { Link } from "wouter";
 
@@ -71,6 +72,9 @@ export default function SwmsBuilder() {
           Step {currentStep} of {STEPS.length}
         </Badge>
       </div>
+
+      {/* Credit Counter */}
+      <CreditCounter />
 
       {/* Progress Bar */}
       <Card>
