@@ -74,7 +74,9 @@ export default function SwmsForm({ step, data, onDataChange }: SwmsFormProps) {
           activities: formData.activities,
           tradeType: formData.tradeType,
           projectLocation: formData.projectLocation,
-          title: formData.title
+          title: formData.title,
+          jobName: formData.jobName,
+          jobNumber: formData.jobNumber
         })
       });
 
