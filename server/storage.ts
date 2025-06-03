@@ -20,6 +20,12 @@ export interface IStorage {
   createUser(user: InsertUser): Promise<User>;
   updateUser(id: number, updates: Partial<InsertUser>): Promise<User | undefined>;
 
+  // User settings and security
+  updateUserNotifications(userId: number, enabled: boolean): Promise<boolean>;
+  updateUser2FA(userId: number, enabled: boolean, secret: string | null): Promise<boolean>;
+  updateUserPassword(userId: number, newPassword: string): Promise<boolean>;
+  updateUserProfile(userId: number, profileData: Partial<InsertUser>): Promise<boolean>;
+
   // SWMS document management
   getSwmsDocument(id: number): Promise<SwmsDocument | undefined>;
   getSwmsDocumentsByUser(userId: number): Promise<SwmsDocument[]>;
@@ -148,6 +154,46 @@ export class MemStorage implements IStorage {
     const updatedUser = { ...user, ...updates };
     this.users.set(id, updatedUser);
     return updatedUser;
+  }
+
+  async updateUserNotifications(userId: number, enabled: boolean): Promise<boolean> {
+    const user = this.users.get(userId);
+    if (!user) return false;
+    
+    const updatedUser = { ...user, notificationsEnabled: enabled };
+    this.users.set(userId, updatedUser);
+    return true;
+  }
+
+  async updateUser2FA(userId: number, enabled: boolean, secret: string | null): Promise<boolean> {
+    const user = this.users.get(userId);
+    if (!user) return false;
+    
+    const updatedUser = { 
+      ...user, 
+      twoFactorEnabled: enabled,
+      twoFactorSecret: secret
+    };
+    this.users.set(userId, updatedUser);
+    return true;
+  }
+
+  async updateUserPassword(userId: number, newPassword: string): Promise<boolean> {
+    const user = this.users.get(userId);
+    if (!user) return false;
+    
+    const updatedUser = { ...user, passwordHash: newPassword };
+    this.users.set(userId, updatedUser);
+    return true;
+  }
+
+  async updateUserProfile(userId: number, profileData: Partial<InsertUser>): Promise<boolean> {
+    const user = this.users.get(userId);
+    if (!user) return false;
+    
+    const updatedUser = { ...user, ...profileData };
+    this.users.set(userId, updatedUser);
+    return true;
   }
 
   async getSwmsDocument(id: number): Promise<SwmsDocument | undefined> {

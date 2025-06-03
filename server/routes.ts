@@ -11,6 +11,7 @@ import {
 import { generateAutoSwms } from "./auto-swms-generator";
 import { z } from "zod";
 import { generateSafetyContent, enhanceSwmsWithAI } from "./openai";
+import * as crypto from "crypto";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // User management
@@ -1030,6 +1031,162 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error('Enhanced trades error:', error);
       res.status(500).json({ error: "Failed to get enhanced trades data" });
+    }
+  });
+
+  // User Settings and Security
+  app.post("/api/user/toggle-notifications", async (req, res) => {
+    try {
+      const { enabled } = req.body;
+      const userId = 1; // Default user for now
+      
+      // Update user notification preferences
+      const success = await storage.updateUserNotifications(userId, enabled);
+      
+      if (!success) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      res.json({ 
+        success: true, 
+        message: enabled ? "Notifications enabled" : "Notifications disabled",
+        notificationsEnabled: enabled
+      });
+    } catch (error: any) {
+      console.error('Toggle notifications error:', error);
+      res.status(500).json({ message: 'Failed to update notification settings' });
+    }
+  });
+
+  app.post("/api/user/enable-2fa", async (req, res) => {
+    try {
+      const userId = 1; // Default user for now
+      
+      // Generate a secret for 2FA
+      const secret = crypto.randomBytes(32).toString('hex');
+      
+      // In production, you would:
+      // 1. Generate a proper TOTP secret
+      // 2. Show QR code to user
+      // 3. Verify initial code before enabling
+      
+      const success = await storage.updateUser2FA(userId, true, secret);
+      
+      if (!success) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      res.json({ 
+        success: true, 
+        message: "Two-factor authentication enabled",
+        secret: secret.substring(0, 8) + "...", // Don't expose full secret
+        qrCodeData: `otpauth://totp/SafetySamurai:user@example.com?secret=${secret}&issuer=SafetySamurai`
+      });
+    } catch (error: any) {
+      console.error('Enable 2FA error:', error);
+      res.status(500).json({ message: 'Failed to enable two-factor authentication' });
+    }
+  });
+
+  app.post("/api/user/disable-2fa", async (req, res) => {
+    try {
+      const userId = 1; // Default user for now
+      
+      const success = await storage.updateUser2FA(userId, false, null);
+      
+      if (!success) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      res.json({ 
+        success: true, 
+        message: "Two-factor authentication disabled"
+      });
+    } catch (error: any) {
+      console.error('Disable 2FA error:', error);
+      res.status(500).json({ message: 'Failed to disable two-factor authentication' });
+    }
+  });
+
+  app.post("/api/user/change-password", async (req, res) => {
+    try {
+      const { currentPassword, newPassword } = req.body;
+      const userId = 1; // Default user for now
+      
+      if (!newPassword || newPassword.length < 8) {
+        return res.status(400).json({ message: "Password must be at least 8 characters long" });
+      }
+      
+      // In production, you would verify the current password first
+      const success = await storage.updateUserPassword(userId, newPassword);
+      
+      if (!success) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      res.json({ 
+        success: true, 
+        message: "Password updated successfully"
+      });
+    } catch (error: any) {
+      console.error('Change password error:', error);
+      res.status(500).json({ message: 'Failed to change password' });
+    }
+  });
+
+  app.post("/api/user/update-profile", async (req, res) => {
+    try {
+      const { name, email, company, phone, address } = req.body;
+      const userId = 1; // Default user for now
+      
+      const profileData = {
+        username: name,
+        email,
+        companyName: company,
+        phone,
+        address
+      };
+      
+      const success = await storage.updateUserProfile(userId, profileData);
+      
+      if (!success) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      res.json({ 
+        success: true, 
+        message: "Profile updated successfully",
+        profile: profileData
+      });
+    } catch (error: any) {
+      console.error('Update profile error:', error);
+      res.status(500).json({ message: 'Failed to update profile' });
+    }
+  });
+
+  app.get("/api/user/settings", async (req, res) => {
+    try {
+      const userId = 1; // Default user for now
+      const user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      res.json({
+        notificationsEnabled: user.notificationsEnabled || false,
+        twoFactorEnabled: user.twoFactorEnabled || false,
+        profile: {
+          name: user.username,
+          email: user.email,
+          company: user.companyName,
+          phone: user.phone || "",
+          address: user.address || ""
+        }
+      });
+    } catch (error: any) {
+      console.error('Get user settings error:', error);
+      res.status(500).json({ message: 'Failed to fetch user settings' });
     }
   });
 
