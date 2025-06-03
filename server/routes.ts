@@ -8,6 +8,7 @@ import {
   riskAssessmentSchema,
   safetyMeasureSchema
 } from "@shared/schema";
+import { generateAutoSwms } from "./auto-swms-generator";
 import { z } from "zod";
 import { generateSafetyContent, enhanceSwmsWithAI } from "./openai";
 
@@ -242,7 +243,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Trade types and activities
+  // Auto-generate SWMS based on selected activities
+  app.post("/api/auto-generate-swms", async (req, res) => {
+    try {
+      const { activities, tradeType, projectLocation, title } = req.body;
+      
+      // Get pre-built risk assessments and safety measures for selected activities
+      const autoSwms = await generateAutoSwms(activities, tradeType);
+      
+      res.json({
+        title: title || `SWMS - ${tradeType} Work`,
+        projectLocation,
+        tradeType,
+        activities,
+        riskAssessments: autoSwms.risks,
+        safetyMeasures: autoSwms.safetyMeasures,
+        complianceCodes: autoSwms.complianceCodes,
+        aiEnhanced: false,
+        status: 'draft'
+      });
+    } catch (error) {
+      console.error('Auto-generate SWMS error:', error);
+      res.status(500).json({ message: 'Failed to auto-generate SWMS' });
+    }
+  });
+
+  // Trade types and activities with comprehensive database
   app.get("/api/trades", async (req, res) => {
     const trades = [
       {
@@ -256,33 +282,746 @@ export async function registerRoutes(app: Express): Promise<Server> {
               "Switchboard installation",
               "Cable tray installation",
               "Conduit installation",
-              "Earthing system installation"
+              "Earthing system installation",
+              "Motor control installation",
+              "Distribution board installation",
+              "Emergency lighting installation",
+              "Exit sign installation",
+              "Data point installation",
+              "Antenna installation",
+              "Solar panel installation",
+              "Battery system installation",
+              "Generator installation",
+              "Transformer installation"
             ]
           },
           {
             name: "Maintenance & Repair",
             activities: [
               "Fault finding and diagnostics",
-              "Circuit breaker replacement",
-              "Cable repair and replacement",
-              "Electrical testing",
-              "Equipment maintenance",
-              "Emergency repairs"
+              "Circuit breaker maintenance",
+              "Motor rewinding",
+              "Cable fault location",
+              "Transformer maintenance",
+              "Emergency lighting testing",
+              "PAT testing",
+              "Electrical equipment calibration",
+              "Power factor correction",
+              "Switchboard upgrades"
             ]
           },
           {
             name: "Testing & Commissioning",
             activities: [
-              "Installation testing",
-              "Insulation resistance testing",
+              "Electrical installation testing",
               "RCD testing",
-              "Loop impedance testing",
-              "System commissioning",
-              "Compliance certification"
+              "Insulation resistance testing",
+              "Earth loop impedance testing",
+              "Thermal imaging inspection",
+              "Load testing",
+              "Commissioning procedures",
+              "Safety switch testing"
             ]
           }
-        ],
-        codes: ["AS/NZS 3000:2018", "AS/NZS 3012:2010"]
+        ]
+      },
+      {
+        name: "Plumbing",
+        categories: [
+          {
+            name: "Water Systems",
+            activities: [
+              "Hot water system installation",
+              "Cold water system installation",
+              "Water tank installation",
+              "Pump installation",
+              "Pipe installation and repair",
+              "Tap and fixture installation",
+              "Water meter installation",
+              "Backflow prevention device installation",
+              "Water filtration system installation",
+              "Irrigation system installation"
+            ]
+          },
+          {
+            name: "Drainage & Sewerage",
+            activities: [
+              "Sewer line installation",
+              "Stormwater drainage",
+              "Septic system installation",
+              "Grease trap installation",
+              "Floor waste installation",
+              "Downpipe installation",
+              "Gutter installation",
+              "Roof drainage systems",
+              "Detention tank installation",
+              "Sewer camera inspection"
+            ]
+          },
+          {
+            name: "Gas Fitting",
+            activities: [
+              "Gas appliance installation",
+              "Gas meter installation",
+              "Gas line installation",
+              "LPG system installation",
+              "Gas leak detection and repair",
+              "Pressure testing",
+              "Gas regulator installation",
+              "Commercial gas systems"
+            ]
+          }
+        ]
+      },
+      {
+        name: "Carpentry",
+        categories: [
+          {
+            name: "Structural Work",
+            activities: [
+              "Wall framing",
+              "Roof framing",
+              "Floor framing",
+              "Beam installation",
+              "Stud wall construction",
+              "Truss installation",
+              "Structural bracing",
+              "Load bearing modifications",
+              "Foundation formwork",
+              "Structural repairs"
+            ]
+          },
+          {
+            name: "Finishing Work",
+            activities: [
+              "Door installation",
+              "Window installation",
+              "Skirting board installation",
+              "Architrave installation",
+              "Built-in cupboard construction",
+              "Staircase construction",
+              "Deck construction",
+              "Pergola construction",
+              "Kitchen cabinet installation",
+              "Bathroom vanity installation"
+            ]
+          },
+          {
+            name: "External Work",
+            activities: [
+              "Fence construction",
+              "Gazebo construction",
+              "Carport construction",
+              "Shed construction",
+              "Retaining wall construction",
+              "Outdoor furniture construction",
+              "Garden bed construction"
+            ]
+          }
+        ]
+      },
+      {
+        name: "Roofing",
+        categories: [
+          {
+            name: "Roof Installation",
+            activities: [
+              "Tile roof installation",
+              "Metal roof installation",
+              "Slate roof installation",
+              "Membrane roofing",
+              "Shingle installation",
+              "Roof sheeting installation",
+              "Insulation installation",
+              "Roof ventilation installation",
+              "Solar panel mounting",
+              "Skylight installation"
+            ]
+          },
+          {
+            name: "Roof Maintenance",
+            activities: [
+              "Roof cleaning",
+              "Gutter cleaning",
+              "Roof repair",
+              "Tile replacement",
+              "Leak repair",
+              "Flashing repair",
+              "Gutter repair",
+              "Downpipe repair",
+              "Ridge capping repair",
+              "Roof painting"
+            ]
+          }
+        ]
+      },
+      {
+        name: "Demolition",
+        categories: [
+          {
+            name: "Structural Demolition",
+            activities: [
+              "Building demolition",
+              "Wall removal",
+              "Roof demolition",
+              "Floor removal",
+              "Concrete breaking",
+              "Brick wall demolition",
+              "Steel structure demolition",
+              "Foundation removal",
+              "Partial demolition",
+              "Strip out work"
+            ]
+          },
+          {
+            name: "Hazardous Material Removal",
+            activities: [
+              "Asbestos removal",
+              "Lead paint removal",
+              "Contaminated soil removal",
+              "Chemical storage removal",
+              "Underground tank removal",
+              "PCB removal",
+              "Mould remediation"
+            ]
+          }
+        ]
+      },
+      {
+        name: "Concrete Work",
+        categories: [
+          {
+            name: "Concrete Placement",
+            activities: [
+              "Concrete pouring",
+              "Slab construction",
+              "Foundation pouring",
+              "Footpath construction",
+              "Driveway construction",
+              "Retaining wall construction",
+              "Precast concrete installation",
+              "Concrete pumping",
+              "Concrete finishing",
+              "Curing procedures"
+            ]
+          },
+          {
+            name: "Reinforcement Work",
+            activities: [
+              "Rebar installation",
+              "Mesh reinforcement",
+              "Post-tensioning",
+              "Structural steel placement",
+              "Anchor bolt installation",
+              "Dowel bar installation"
+            ]
+          }
+        ]
+      },
+      {
+        name: "Steelwork",
+        categories: [
+          {
+            name: "Structural Steel",
+            activities: [
+              "Steel frame erection",
+              "Beam installation",
+              "Column installation",
+              "Truss installation",
+              "Welding operations",
+              "Bolting operations",
+              "Steel fabrication",
+              "Crane operations",
+              "Rigging operations",
+              "Fall protection installation"
+            ]
+          },
+          {
+            name: "Metal Fabrication",
+            activities: [
+              "Custom metalwork",
+              "Handrail installation",
+              "Staircase fabrication",
+              "Platform construction",
+              "Balustrade installation",
+              "Security grille installation"
+            ]
+          }
+        ]
+      },
+      {
+        name: "Painting",
+        categories: [
+          {
+            name: "Interior Painting",
+            activities: [
+              "Wall painting",
+              "Ceiling painting",
+              "Door painting",
+              "Window frame painting",
+              "Trim painting",
+              "Cabinet painting",
+              "Wallpaper installation",
+              "Texture application"
+            ]
+          },
+          {
+            name: "Exterior Painting",
+            activities: [
+              "House exterior painting",
+              "Roof painting",
+              "Fence painting",
+              "Deck staining",
+              "Metal surface painting",
+              "Render painting",
+              "Line marking",
+              "Graffiti removal"
+            ]
+          }
+        ]
+      },
+      {
+        name: "Landscaping",
+        categories: [
+          {
+            name: "Garden Construction",
+            activities: [
+              "Garden bed preparation",
+              "Retaining wall construction",
+              "Pathway construction",
+              "Patio construction",
+              "Water feature installation",
+              "Irrigation system installation",
+              "Drainage installation",
+              "Soil preparation",
+              "Mulching",
+              "Plant installation"
+            ]
+          },
+          {
+            name: "Hardscaping",
+            activities: [
+              "Paver installation",
+              "Stone work",
+              "Concrete work",
+              "Timber structures",
+              "Fencing installation",
+              "Gate installation",
+              "Outdoor lighting"
+            ]
+          }
+        ]
+      },
+      {
+        name: "Bricklaying",
+        categories: [
+          {
+            name: "Masonry Work",
+            activities: [
+              "Brick wall construction",
+              "Block wall construction",
+              "Stone wall construction",
+              "Chimney construction",
+              "Fireplace construction",
+              "Arch construction",
+              "Retaining wall construction",
+              "Pointing and repointing",
+              "Brick repair",
+              "Heritage restoration"
+            ]
+          }
+        ]
+      },
+      {
+        name: "Tiling",
+        categories: [
+          {
+            name: "Interior Tiling",
+            activities: [
+              "Floor tiling",
+              "Wall tiling",
+              "Bathroom tiling",
+              "Kitchen tiling",
+              "Shower installation",
+              "Mosaic installation",
+              "Tile repair",
+              "Grout repair",
+              "Waterproofing",
+              "Substrate preparation"
+            ]
+          },
+          {
+            name: "External Tiling",
+            activities: [
+              "Pool tiling",
+              "External wall tiling",
+              "Balcony tiling",
+              "Courtyard tiling",
+              "Steps tiling"
+            ]
+          }
+        ]
+      },
+      {
+        name: "HVAC",
+        categories: [
+          {
+            name: "Air Conditioning",
+            activities: [
+              "Split system installation",
+              "Ducted system installation",
+              "Commercial HVAC installation",
+              "Refrigeration installation",
+              "Heat pump installation",
+              "Ventilation system installation",
+              "Ductwork installation",
+              "Maintenance and servicing",
+              "Gas heating installation",
+              "Evaporative cooling installation"
+            ]
+          }
+        ]
+      },
+      {
+        name: "Glazing",
+        categories: [
+          {
+            name: "Window Installation",
+            activities: [
+              "Window installation",
+              "Door installation",
+              "Shopfront installation",
+              "Curtain wall installation",
+              "Skylight installation",
+              "Glass balustrade installation",
+              "Mirror installation",
+              "Glass repair",
+              "Glazing compound application",
+              "Sealed unit replacement"
+            ]
+          }
+        ]
+      },
+      {
+        name: "Flooring",
+        categories: [
+          {
+            name: "Hard Flooring",
+            activities: [
+              "Timber flooring installation",
+              "Laminate flooring installation",
+              "Vinyl flooring installation",
+              "Polished concrete",
+              "Epoxy flooring",
+              "Floor sanding",
+              "Floor polishing",
+              "Subfloor preparation"
+            ]
+          },
+          {
+            name: "Soft Flooring",
+            activities: [
+              "Carpet installation",
+              "Carpet repair",
+              "Underlay installation",
+              "Rug installation"
+            ]
+          }
+        ]
+      },
+      {
+        name: "Insulation",
+        categories: [
+          {
+            name: "Thermal Insulation",
+            activities: [
+              "Bulk insulation installation",
+              "Reflective insulation installation",
+              "Wall insulation",
+              "Roof insulation",
+              "Floor insulation",
+              "Acoustic insulation",
+              "Pipe insulation",
+              "Duct insulation"
+            ]
+          }
+        ]
+      },
+      {
+        name: "Security Systems",
+        categories: [
+          {
+            name: "Electronic Security",
+            activities: [
+              "Alarm system installation",
+              "CCTV installation",
+              "Access control installation",
+              "Intercom installation",
+              "Motion detector installation",
+              "Security lighting installation",
+              "Gate automation",
+              "Monitoring system setup"
+            ]
+          }
+        ]
+      },
+      {
+        name: "Earthworks",
+        categories: [
+          {
+            name: "Excavation",
+            activities: [
+              "Site excavation",
+              "Trenching",
+              "Foundation excavation",
+              "Bulk earthworks",
+              "Cut and fill",
+              "Drainage excavation",
+              "Utility trenching",
+              "Site preparation",
+              "Compaction",
+              "Backfilling"
+            ]
+          }
+        ]
+      },
+      {
+        name: "Fire Protection",
+        categories: [
+          {
+            name: "Fire Systems",
+            activities: [
+              "Sprinkler system installation",
+              "Fire alarm installation",
+              "Emergency lighting installation",
+              "Exit sign installation",
+              "Fire extinguisher installation",
+              "Smoke detector installation",
+              "Fire door installation",
+              "Hydrant installation",
+              "Fire pump installation",
+              "System testing and commissioning"
+            ]
+          }
+        ]
+      },
+      {
+        name: "Scaffolding",
+        categories: [
+          {
+            name: "Access Systems",
+            activities: [
+              "Scaffolding erection",
+              "Scaffolding dismantling",
+              "Mobile scaffold setup",
+              "Suspended scaffold installation",
+              "Formwork scaffolding",
+              "Inspection and tagging",
+              "Edge protection installation",
+              "Temporary stairs installation"
+            ]
+          }
+        ]
+      },
+      {
+        name: "Communications",
+        categories: [
+          {
+            name: "Data & Communications",
+            activities: [
+              "Data cabling installation",
+              "Phone system installation",
+              "Fibre optic installation",
+              "Network equipment installation",
+              "Antenna installation",
+              "Satellite dish installation",
+              "Audio visual installation",
+              "Public address system installation"
+            ]
+          }
+        ]
+      },
+      {
+        name: "Pool Construction",
+        categories: [
+          {
+            name: "Pool Installation",
+            activities: [
+              "Pool excavation",
+              "Pool shell construction",
+              "Pool equipment installation",
+              "Pool plumbing",
+              "Pool electrical work",
+              "Pool tiling",
+              "Pool fencing",
+              "Pool heating installation",
+              "Water feature installation",
+              "Pool maintenance setup"
+            ]
+          }
+        ]
+      },
+      {
+        name: "Solar & Renewable",
+        categories: [
+          {
+            name: "Solar Systems",
+            activities: [
+              "Solar panel installation",
+              "Solar inverter installation",
+              "Battery storage installation",
+              "Solar hot water installation",
+              "Grid connection",
+              "Monitoring system setup",
+              "Electrical upgrades",
+              "System commissioning"
+            ]
+          }
+        ]
+      }
+    ];
+
+    res.json(trades);
+  });
+
+  // Get comprehensive safety library
+  app.get("/api/safety-library", async (req, res) => {
+    try {
+      const items = await storage.getSafetyLibraryItems();
+      res.json(items);
+    } catch (error) {
+      console.error('Safety library error:', error);
+      res.status(500).json({ message: 'Failed to fetch safety library' });
+    }
+  });
+
+  // Search safety library
+  app.get("/api/safety-library/search", async (req, res) => {
+    try {
+      const { q: query, category } = req.query;
+      const items = await storage.searchSafetyLibrary(
+        query as string, 
+        category as string
+      );
+      res.json(items);
+    } catch (error) {
+      console.error('Safety library search error:', error);
+      res.status(500).json({ message: 'Failed to search safety library' });
+    }
+  });
+
+  // SWMS management routes
+  app.get("/api/swms", async (req, res) => {
+    try {
+      if (!req.user) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+      const documents = await storage.getSwmsDocumentsByUser(req.user.id);
+      res.json(documents);
+    } catch (error) {
+      console.error('Get SWMS error:', error);
+      res.status(500).json({ message: 'Failed to fetch SWMS documents' });
+    }
+  });
+
+  app.get("/api/swms/:id", async (req, res) => {
+    try {
+      const document = await storage.getSwmsDocument(parseInt(req.params.id));
+      if (!document) {
+        return res.status(404).json({ message: "SWMS document not found" });
+      }
+      res.json(document);
+    } catch (error) {
+      console.error('Get SWMS by ID error:', error);
+      res.status(500).json({ message: 'Failed to fetch SWMS document' });
+    }
+  });
+
+  app.post("/api/swms", async (req, res) => {
+    try {
+      if (!req.user) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      const swmsData = insertSwmsSchema.parse({
+        ...req.body,
+        userId: req.user.id,
+        status: req.body.status || 'draft',
+        aiEnhanced: req.body.aiEnhanced || false
+      });
+
+      const document = await storage.createSwmsDocument(swmsData);
+      res.status(201).json(document);
+    } catch (error) {
+      console.error('Create SWMS error:', error);
+      res.status(500).json({ message: 'Failed to create SWMS document' });
+    }
+  });
+
+  app.patch("/api/swms/:id", async (req, res) => {
+    try {
+      const updates = req.body;
+      const document = await storage.updateSwmsDocument(parseInt(req.params.id), updates);
+      if (!document) {
+        return res.status(404).json({ message: "SWMS document not found" });
+      }
+      res.json(document);
+    } catch (error) {
+      console.error('Update SWMS error:', error);
+      res.status(500).json({ message: 'Failed to update SWMS document' });
+    }
+  });
+
+  app.delete("/api/swms/:id", async (req, res) => {
+    try {
+      const success = await storage.deleteSwmsDocument(parseInt(req.params.id));
+      if (!success) {
+        return res.status(404).json({ message: "SWMS document not found" });
+      }
+      res.status(204).send();
+    } catch (error) {
+      console.error('Delete SWMS error:', error);
+      res.status(500).json({ message: 'Failed to delete SWMS document' });
+    }
+  });
+
+  // AI enhancement routes
+  app.post("/api/ai/enhance-swms", async (req, res) => {
+    try {
+      const { activities, tradeType, projectLocation } = req.body;
+      const enhancement = await enhanceSwmsWithAI(activities, tradeType, projectLocation);
+      res.json(enhancement);
+    } catch (error) {
+      console.error('AI enhance SWMS error:', error);
+      res.status(500).json({ message: 'Failed to enhance SWMS with AI' });
+    }
+  });
+
+  app.post("/api/ai/safety-content", async (req, res) => {
+    try {
+      const { query, context } = req.body;
+      const content = await generateSafetyContent(query, context);
+      
+      // Save AI interaction if user is authenticated
+      if (req.user) {
+        await storage.createAiInteraction({
+          userId: req.user.id,
+          query,
+          response: content,
+          swmsId: context?.swmsId || null
+        });
+      }
+
+      res.json({ content });
+    } catch (error) {
+      console.error('AI safety content error:', error);
+      res.status(500).json({ message: 'Failed to generate safety content' });
+    }
+  });
+
+  const server = createServer(app);
+  return server;
+}
       },
       {
         name: "Plumbing",
