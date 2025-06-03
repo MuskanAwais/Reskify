@@ -302,7 +302,7 @@ export default function SwmsForm({ step, data, onDataChange }: SwmsFormProps) {
                       <Button
                         type="button"
                         onClick={autoGenerateSwms}
-                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 text-sm"
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 text-sm font-medium shadow-sm"
                       >
                         <Shield className="h-4 w-4 mr-2" />
                         Auto-Generate SWMS

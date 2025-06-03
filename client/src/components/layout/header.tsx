@@ -37,7 +37,7 @@ export default function Header() {
         <div className="flex justify-between items-center">
           {/* Logo and Title */}
           <div className="flex items-center space-x-3">
-            <div className="bg-orange-500 p-2 rounded-lg">
+            <div className="bg-blue-600 p-2 rounded-lg">
               <HardHat className="h-6 w-6 text-white" />
             </div>
             <div>
@@ -56,8 +56,8 @@ export default function Header() {
             {navItems.map((item) => (
               <Link key={item.path} href={item.path}>
                 <a
-                  className={`text-sm font-medium hover:text-orange-300 transition-colors ${
-                    location === item.path ? 'text-orange-300 border-b-2 border-orange-300 pb-1' : 'text-slate-300'
+                  className={`text-sm font-medium hover:text-blue-300 transition-colors ${
+                    location === item.path ? 'text-blue-300 border-b-2 border-blue-300 pb-1' : 'text-slate-300'
                   }`}
                 >
                   {item.label}
@@ -70,7 +70,7 @@ export default function Header() {
           <div className="flex items-center space-x-3">
             {/* New SWMS Button */}
             <Link href="/swms-builder">
-              <Button className="bg-orange-500 hover:bg-orange-600 text-white text-sm px-4 py-2 font-medium shadow-sm">
+              <Button className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 font-medium shadow-sm">
                 <Plus className="mr-2 h-4 w-4" />
                 New SWMS
               </Button>
@@ -86,7 +86,7 @@ export default function Header() {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative h-9 w-9 rounded-full p-0 hover:bg-slate-700">
                   <Avatar className="h-9 w-9">
-                    <AvatarFallback className="bg-orange-500 text-white text-sm font-semibold">
+                    <AvatarFallback className="bg-blue-600 text-white text-sm font-semibold">
                       {user ? getInitials(user.username) : 'U'}
                     </AvatarFallback>
                   </Avatar>
