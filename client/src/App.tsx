@@ -175,7 +175,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <UserContext.Provider value={{ user, setUser }}>
-        <AdminContext.Provider value={{ isAdmin, setIsAdmin }}>
+        <AdminContext.Provider value={adminState}>
           <TooltipProvider>
             <Toaster />
             <Router />

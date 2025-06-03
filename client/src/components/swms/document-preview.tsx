@@ -36,22 +36,26 @@ export default function DocumentPreview({ formData }: DocumentPreviewProps) {
 
   const createSwmsMutation = useMutation({
     mutationFn: async (data: any) => {
-      // Ensure selected activities are properly formatted for the SWMS document
+      // Format data to match current database schema
+      console.log('Original formData:', data);
+      
       const formattedData = {
-        projectName: data.title || data.jobName || "Untitled Project",
+        title: data.title || data.jobName || "Untitled Project",
+        jobName: data.jobName || data.title || "Untitled Project", 
+        jobNumber: data.jobNumber || "AUTO-" + Date.now(),
+        projectAddress: data.projectAddress || data.projectLocation || "",
         projectLocation: data.projectLocation || data.projectAddress || "",
-        primaryTrade: data.tradeType || "",
-        activities: data.activities || [],
+        tradeType: data.tradeType || "",
+        activities: Array.isArray(data.activities) ? data.activities : [],
         riskAssessments: data.riskAssessments || [],
         safetyMeasures: data.safetyMeasures || [],
-        complianceCodes: data.complianceCodes || [],
-        emergencyProcedures: data.emergencyProcedures || [],
-        generalRequirements: data.generalRequirements || [],
-        overallRiskLevel: 3, // Default medium risk
+        complianceCodes: Array.isArray(data.complianceCodes) ? data.complianceCodes : [],
         userId: user?.id,
         status: "draft",
         aiEnhanced: data.aiEnhanced || false
       };
+      
+      console.log('Formatted data for SWMS creation:', formattedData);
       
       console.log('Creating SWMS with data:', formattedData);
       
