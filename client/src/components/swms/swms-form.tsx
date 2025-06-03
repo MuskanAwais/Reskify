@@ -877,6 +877,46 @@ export default function SwmsForm({ step, data, onDataChange }: SwmsFormProps) {
     case 5:
       return (
         <div className="space-y-6">
+          <Card className="border-2 border-red-200">
+            <CardHeader className="bg-red-50">
+              <CardTitle className="flex items-center text-red-800">
+                <Shield className="mr-2 h-5 w-5" />
+                Legal Disclaimer & Terms
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-6 space-y-4">
+              <div className="bg-red-50 border-2 border-red-200 rounded-lg p-4">
+                <h4 className="font-bold text-red-800 mb-3">IMPORTANT LEGAL DISCLAIMER</h4>
+                <div className="text-sm text-red-700 space-y-2">
+                  <p><strong>NO LIABILITY:</strong> Safety Samurai and its operators are NOT LIABLE for any incidents, accidents, injuries, property damage, or fatalities arising from the use of this SWMS document.</p>
+                  <p><strong>TEMPLATE ONLY:</strong> This document is a TEMPLATE and must be reviewed, modified, and approved by qualified safety professionals before use.</p>
+                  <p><strong>CONTRACTOR RESPONSIBILITY:</strong> You are solely responsible for ensuring this SWMS complies with all applicable laws, regulations, and safety requirements.</p>
+                  <p><strong>SITE-SPECIFIC REQUIREMENTS:</strong> This document must be adapted to site-specific conditions and hazards.</p>
+                  <p><strong>PROFESSIONAL REVIEW REQUIRED:</strong> A qualified safety professional must review and approve this SWMS before work commences.</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start space-x-3 p-4 border rounded-lg">
+                <Checkbox
+                  id="legal-agreement"
+                  checked={formData.legalAgreementAccepted || false}
+                  onCheckedChange={(checked) => updateFormData({ legalAgreementAccepted: checked })}
+                  className="mt-1"
+                />
+                <div className="flex-1">
+                  <label htmlFor="legal-agreement" className="text-sm font-medium cursor-pointer">
+                    I acknowledge and accept the legal disclaimer above. I understand that Safety Samurai is not liable for any incidents or damages arising from the use of this SWMS document, and that I am responsible for ensuring compliance with all applicable safety regulations.
+                  </label>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      );
+
+    case 6:
+      return (
+        <div className="space-y-6">
           <Card>
             <CardHeader>
               <CardTitle>Review Your SWMS</CardTitle>
