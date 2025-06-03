@@ -203,9 +203,33 @@ export default function AISwmsGenerator() {
     },
     onSuccess: (data) => {
       toast({
-        title: "SWMS Created Successfully",
-        description: "Your AI-generated SWMS has been saved to My SWMS.",
+        title: "AI SWMS Generated Successfully",
+        description: "Redirecting to visual table editor for customization...",
       });
+      
+      // Redirect to SWMS builder with AI-generated data for visual editing
+      setTimeout(() => {
+        const swmsData = {
+          title: generatedSWMS?.projectDetails?.title || formData.jobDescription,
+          jobName: generatedSWMS?.projectDetails?.title || formData.jobDescription,
+          jobNumber: `AI-${Date.now()}`,
+          projectAddress: generatedSWMS?.projectDetails?.location || formData.location,
+          projectLocation: generatedSWMS?.projectDetails?.location || formData.location,
+          tradeType: formData.trade,
+          activities: generatedSWMS?.suggestedTasks?.map(task => task.activity) || [],
+          riskAssessments: generatedSWMS?.riskAssessments || [],
+          safetyMeasures: generatedSWMS?.safetyMeasures || [],
+          complianceCodes: generatedSWMS?.complianceCodes || [],
+          emergencyProcedures: generatedSWMS?.emergencyProcedures || [],
+          generalRequirements: generatedSWMS?.generalRequirements || [],
+          aiGenerated: true,
+          step: 3 // Start at visual table editor
+        };
+        
+        // Store in session storage for SWMS builder
+        sessionStorage.setItem('aiGeneratedSwmsData', JSON.stringify(swmsData));
+        window.location.href = '/swms-builder?ai=true&step=3';
+      }, 2000);
     },
     onError: (error) => {
       toast({

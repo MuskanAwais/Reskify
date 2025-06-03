@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -41,6 +41,27 @@ export default function SwmsBuilder() {
       setCurrentStep(currentStep + 1);
     }
   };
+
+  // Handle AI-generated SWMS data on component mount
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const isAiGenerated = urlParams.get('ai') === 'true';
+    const startStep = parseInt(urlParams.get('step') || '1');
+    
+    if (isAiGenerated) {
+      const aiData = sessionStorage.getItem('aiGeneratedSwmsData');
+      if (aiData) {
+        try {
+          const parsedData = JSON.parse(aiData);
+          setFormData(parsedData);
+          setCurrentStep(startStep);
+          sessionStorage.removeItem('aiGeneratedSwmsData');
+        } catch (error) {
+          console.error('Failed to parse AI-generated SWMS data:', error);
+        }
+      }
+    }
+  }, []);
 
   const handlePrevious = () => {
     if (currentStep > 1) {

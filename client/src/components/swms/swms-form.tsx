@@ -29,9 +29,10 @@ interface SwmsFormProps {
   step: number;
   data: any;
   onDataChange: (data: any) => void;
+  onNext?: () => void;
 }
 
-export default function SwmsForm({ step, data, onDataChange }: SwmsFormProps) {
+export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormProps) {
   const { toast } = useToast();
   const [formData, setFormData] = useState(data);
   const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set());
@@ -591,8 +592,12 @@ export default function SwmsForm({ step, data, onDataChange }: SwmsFormProps) {
                             });
                             toast({
                               title: "AI Analysis Complete",
-                              description: `Generated ${aiData.riskAssessments.length} risk assessments and ${aiData.safetyMeasures.length} safety measures`,
+                              description: `Generated ${aiData.riskAssessments.length} risk assessments. Proceeding to visual table editor.`,
                             });
+                            // Automatically advance to step 3 (Visual Table Editor) after AI generation
+                            setTimeout(() => {
+                              if (onNext) onNext();
+                            }, 1500);
                           } else {
                             throw new Error('AI analysis failed');
                           }
