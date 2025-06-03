@@ -168,7 +168,7 @@ export default function Landing() {
         <motion.img
           src={logoImage}
           alt="Safety Sensei Background"
-          className="absolute w-96 h-96 object-contain opacity-5"
+          className="absolute w-[48rem] h-[48rem] object-contain opacity-5"
           animate={{
             x: [100, -100, 100],
             y: [50, -50, 50],
