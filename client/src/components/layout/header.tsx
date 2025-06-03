@@ -50,13 +50,12 @@ export default function Header() {
 
 
 
-          {/* Credit Counter */}
-          <div className="hidden md:block">
-            <CreditCounter className="compact" />
-          </div>
-
           {/* Actions and User Menu */}
           <div className="flex items-center space-x-3">
+            {/* Credit Counter */}
+            <div className="hidden md:block">
+              <CreditCounter className="compact" />
+            </div>
             {/* New SWMS Button */}
             <Link href="/swms-builder">
               <Button className="bg-primary hover:bg-primary/90 text-primary-foreground text-sm px-4 py-2 font-medium shadow-sm">
