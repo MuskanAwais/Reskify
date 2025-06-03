@@ -104,10 +104,68 @@ export const MEGA_CONSTRUCTION_DATABASE: Record<string, MegaTaskAssessment> = {
     taskId: "scaffold-erection-001",
     activity: "Scaffold erection and installation",
     category: "Access Equipment",
+    subcategory: "Scaffold Systems",
+    trade: "Scaffolding",
+    hazards: ["Falls from height", "Structural collapse", "Struck by falling objects", "Inadequate support"],
+    initialRiskScore: 15,
+    riskLevel: "High",
+    controlMeasures: [
+      "Conduct pre-erection inspection of components – L2",
+      "Use certified scaffolding materials and equipment – L2", 
+      "Follow manufacturer specifications for assembly – L2",
+      "Install fall protection systems during erection – L2",
+      "Implement exclusion zones around work area – L2",
+      "Conduct structural integrity checks at each level – L3"
+    ],
+    legislation: [
+      "Work Health and Safety Act 2011",
+      "NSW WH&S Regulation 2017, Part 3.6",
+      "AS/NZS 4576:1995 Guidelines for scaffolding"
+    ],
+    residualRiskScore: 6,
+    residualRiskLevel: "Medium",
+    responsible: "Scaffolding Supervisor",
+    ppe: [
+      "Safety harness and lanyard",
+      "Hard hat with chin strap",
+      "Safety boots with grip sole",
+      "High-visibility vest",
+      "Work gloves"
+    ],
+    trainingRequired: [
+      "Scaffolding erection certification",
+      "Working at heights training",
+      "Structural inspection competency"
+    ],
+    inspectionFrequency: "Daily before use and after weather events",
+    emergencyProcedures: [
+      "Immediate evacuation procedures",
+      "Structural failure response protocol",
+      "Emergency contact procedures"
+    ],
+    environmentalControls: [
+      "Weather monitoring and restrictions",
+      "Wind speed limitations",
+      "Material securing requirements"
+    ],
+    qualityRequirements: [
+      "Structural engineering sign-off",
+      "Component inspection records",
+      "Load capacity verification"
+    ],
+    frequency: "project-based",
+    complexity: "advanced"
+  },
+
+  "site-access-control-001": {
+    taskId: "site-access-control-001",
+    activity: "Site access control and security management",
+    category: "Site Management",
     subcategory: "Site Security",
     trade: "All Trades",
     hazards: ["Unauthorized access", "Security breaches", "Theft", "Vandalism"],
     initialRiskScore: 8,
+    riskLevel: "Medium",
     controlMeasures: [
       "Implement site access control systems with electronic cards or keys – L2",
       "Conduct identity verification for all visitors and contractors – L2",
@@ -123,7 +181,32 @@ export const MEGA_CONSTRUCTION_DATABASE: Record<string, MegaTaskAssessment> = {
       "Privacy and Personal Information Protection Act 1998"
     ],
     residualRiskScore: 3,
+    residualRiskLevel: "Low",
     responsible: "Site Security Officer",
+    ppe: [
+      "High-visibility identification vest",
+      "Security equipment as required"
+    ],
+    trainingRequired: [
+      "Site security protocols",
+      "Emergency response procedures",
+      "Access control system operation"
+    ],
+    inspectionFrequency: "Daily security system checks",
+    emergencyProcedures: [
+      "Security breach response protocol",
+      "Emergency lockdown procedures",
+      "Incident reporting procedures"
+    ],
+    environmentalControls: [
+      "Dust minimisation at entry points",
+      "Noise control during peak hours"
+    ],
+    qualityRequirements: [
+      "Security log maintenance",
+      "Visitor register completion",
+      "Induction record keeping"
+    ],
     applicableToAllTrades: true,
     frequency: "daily",
     complexity: "basic"
