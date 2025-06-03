@@ -93,7 +93,11 @@ export default function Sidebar() {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setIsAdmin(!isAdmin)}
+              onClick={() => {
+                console.log('Admin button clicked, current state:', isAdmin);
+                setIsAdmin(!isAdmin);
+                console.log('Admin state should now be:', !isAdmin);
+              }}
               className={`px-3 py-1 text-xs ${
                 isAdmin 
                   ? 'bg-red-50 border-red-200 text-red-700 hover:bg-red-100' 
