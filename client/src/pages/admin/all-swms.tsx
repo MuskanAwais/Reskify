@@ -88,9 +88,9 @@ export default function AllSwms() {
     }
   ];
 
-  const swmsData = allSwms || mockSwmsData;
+  const swmsData = Array.isArray(allSwms) ? allSwms : mockSwmsData;
 
-  const filteredData = swmsData.filter(swms => {
+  const filteredData = swmsData.filter((swms: any) => {
     const matchesSearch = swms.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          swms.user.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          swms.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -104,9 +104,9 @@ export default function AllSwms() {
   });
 
   const totalSwms = swmsData.length;
-  const generalCount = swmsData.filter(s => s.type === "General SWMS").length;
-  const aiCount = swmsData.filter(s => s.type === "AI SWMS").length;
-  const activeCount = swmsData.filter(s => s.status === "active").length;
+  const generalCount = swmsData.filter((s: any) => s.type === "General SWMS").length;
+  const aiCount = swmsData.filter((s: any) => s.type === "AI SWMS").length;
+  const activeCount = swmsData.filter((s: any) => s.status === "active").length;
 
   return (
     <div className="p-6 space-y-6">
