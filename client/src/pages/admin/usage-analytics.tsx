@@ -64,7 +64,7 @@ export default function UsageAnalytics() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Total SWMS</p>
-                <p className="text-2xl font-bold">{data.totalSwmsGenerated.toLocaleString()}</p>
+                <p className="text-2xl font-bold">{data?.totalSwmsGenerated?.toLocaleString() || '0'}</p>
               </div>
               <FileText className="h-8 w-8 text-blue-500" />
             </div>
@@ -75,7 +75,7 @@ export default function UsageAnalytics() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">General SWMS</p>
-                <p className="text-2xl font-bold">{data.generalSwmsCount.toLocaleString()}</p>
+                <p className="text-2xl font-bold">{data?.generalSwmsCount?.toLocaleString() || '0'}</p>
               </div>
               <Activity className="h-8 w-8 text-green-500" />
             </div>
@@ -86,7 +86,7 @@ export default function UsageAnalytics() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">AI SWMS</p>
-                <p className="text-2xl font-bold">{data.aiSwmsCount.toLocaleString()}</p>
+                <p className="text-2xl font-bold">{data?.aiSwmsCount?.toLocaleString() || '0'}</p>
               </div>
               <Brain className="h-8 w-8 text-purple-500" />
             </div>
@@ -97,7 +97,7 @@ export default function UsageAnalytics() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Weekly Growth</p>
-                <p className="text-2xl font-bold">+{data.weeklyGrowth}%</p>
+                <p className="text-2xl font-bold">+{data?.weeklyGrowth || 0}%</p>
               </div>
               <TrendingUp className="h-8 w-8 text-orange-500" />
             </div>

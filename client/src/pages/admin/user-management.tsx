@@ -70,7 +70,7 @@ export default function UserManagement() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Pro Users</p>
-                <p className="text-2xl font-bold">{userData.filter(u => u.plan.includes('Pro')).length}</p>
+                <p className="text-2xl font-bold">{userData.filter(u => u.plan && u.plan.includes('Pro')).length}</p>
               </div>
               <Crown className="h-8 w-8 text-yellow-500" />
             </div>
@@ -81,7 +81,7 @@ export default function UserManagement() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Total SWMS</p>
-                <p className="text-2xl font-bold">{userData.reduce((sum, u) => sum + u.swmsCount, 0)}</p>
+                <p className="text-2xl font-bold">{userData.reduce((sum, u) => sum + (u.swmsCount || 0), 0)}</p>
               </div>
               <Settings className="h-8 w-8 text-purple-500" />
             </div>
