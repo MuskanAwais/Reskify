@@ -337,6 +337,47 @@ export class DatabaseStorage implements IStorage {
     return user || undefined;
   }
 
+  async updateUserNotifications(userId: number, enabled: boolean): Promise<boolean> {
+    const result = await db
+      .update(users)
+      .set({ notificationsEnabled: enabled })
+      .where(eq(users.id, userId));
+    return (result.rowCount || 0) > 0;
+  }
+
+  async updateUser2FA(userId: number, enabled: boolean, secret: string | null): Promise<boolean> {
+    const result = await db
+      .update(users)
+      .set({ 
+        twoFactorEnabled: enabled,
+        twoFactorSecret: secret
+      })
+      .where(eq(users.id, userId));
+    return (result.rowCount || 0) > 0;
+  }
+
+  async updateUserPassword(userId: number, newPassword: string): Promise<boolean> {
+    const result = await db
+      .update(users)
+      .set({ passwordHash: newPassword })
+      .where(eq(users.id, userId));
+    return (result.rowCount || 0) > 0;
+  }
+
+  async updateUserProfile(userId: number, profileData: Partial<InsertUser>): Promise<boolean> {
+    const result = await db
+      .update(users)
+      .set({
+        ...profileData,
+        abn: profileData.abn || null,
+        phone: profileData.phone || null,
+        address: profileData.address || null,
+        licenseNumber: profileData.licenseNumber || null
+      })
+      .where(eq(users.id, userId));
+    return (result.rowCount || 0) > 0;
+  }
+
   async getSwmsDocument(id: number): Promise<SwmsDocument | undefined> {
     const [document] = await db.select().from(swmsDocuments).where(eq(swmsDocuments.id, id));
     return document || undefined;

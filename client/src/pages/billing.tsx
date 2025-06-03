@@ -48,8 +48,15 @@ interface UserProfile {
 export default function Billing() {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("billing");
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Mock data - replace with real API calls
+  // Fetch user settings with real API
+  const { data: userSettings, refetch: refetchSettings } = useQuery({
+    queryKey: ['/api/user/settings'],
+    queryFn: () => apiRequest('GET', '/api/user/settings')
+  });
+
+  // Mock billing data - replace with real API calls
   const billingData: BillingData = {
     currentPlan: "Professional",
     credits: 8,
@@ -61,14 +68,89 @@ export default function Billing() {
   };
 
   const userProfile: UserProfile = {
-    name: "John Smith",
-    email: "john@constructco.com.au",
-    company: "ConstructCo Pty Ltd",
-    phone: "+61 412 345 678",
-    address: "123 Builder St, Sydney NSW 2000",
+    name: userSettings?.profile?.name || "John Smith",
+    email: userSettings?.profile?.email || "john@constructco.com.au",
+    company: userSettings?.profile?.company || "ConstructCo Pty Ltd",
+    phone: userSettings?.profile?.phone || "+61 412 345 678",
+    address: userSettings?.profile?.address || "123 Builder St, Sydney NSW 2000",
     subscriptionType: "professional",
-    notificationsEnabled: true
+    notificationsEnabled: userSettings?.notificationsEnabled ?? true
   };
+
+  // Mutations for user settings
+  const toggleNotificationsMutation = useMutation({
+    mutationFn: (enabled: boolean) => 
+      apiRequest('POST', '/api/user/toggle-notifications', { enabled }),
+    onSuccess: () => {
+      toast({
+        title: "Settings Updated",
+        description: "Notification preferences have been saved"
+      });
+      refetchSettings();
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to update notification settings",
+        variant: "destructive"
+      });
+    }
+  });
+
+  const enable2FAMutation = useMutation({
+    mutationFn: () => apiRequest('POST', '/api/user/enable-2fa'),
+    onSuccess: (data) => {
+      toast({
+        title: "2FA Enabled",
+        description: data.message || "Two-factor authentication has been enabled"
+      });
+      refetchSettings();
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to enable two-factor authentication",
+        variant: "destructive"
+      });
+    }
+  });
+
+  const disable2FAMutation = useMutation({
+    mutationFn: () => apiRequest('POST', '/api/user/disable-2fa'),
+    onSuccess: (data) => {
+      toast({
+        title: "2FA Disabled",
+        description: data.message || "Two-factor authentication has been disabled"
+      });
+      refetchSettings();
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to disable two-factor authentication",
+        variant: "destructive"
+      });
+    }
+  });
+
+  const updateProfileMutation = useMutation({
+    mutationFn: (profileData: any) => 
+      apiRequest('POST', '/api/user/update-profile', profileData),
+    onSuccess: () => {
+      toast({
+        title: "Profile Updated",
+        description: "Your profile has been successfully updated"
+      });
+      refetchSettings();
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to update profile",
+        variant: "destructive"
+      });
+    }
+  });
 
   const plans = [
     {
@@ -352,9 +434,15 @@ export default function Billing() {
                     <Label>Email Notifications</Label>
                     <p className="text-sm text-muted-foreground">Receive updates about your account</p>
                   </div>
-                  <Button variant="outline" size="sm">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => toggleNotificationsMutation.mutate(!userProfile.notificationsEnabled)}
+                    disabled={toggleNotificationsMutation.isPending}
+                  >
                     <Bell className="w-4 h-4 mr-1" />
-                    {userProfile.notificationsEnabled ? "Enabled" : "Disabled"}
+                    {toggleNotificationsMutation.isPending ? "Updating..." : 
+                     userProfile.notificationsEnabled ? "Enabled" : "Disabled"}
                   </Button>
                 </div>
                 
@@ -365,9 +453,21 @@ export default function Billing() {
                     <Label>Two-Factor Authentication</Label>
                     <p className="text-sm text-muted-foreground">Add extra security to your account</p>
                   </div>
-                  <Button variant="outline" size="sm">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => {
+                      if (userSettings?.twoFactorEnabled) {
+                        disable2FAMutation.mutate();
+                      } else {
+                        enable2FAMutation.mutate();
+                      }
+                    }}
+                    disabled={enable2FAMutation.isPending || disable2FAMutation.isPending}
+                  >
                     <Lock className="w-4 h-4 mr-1" />
-                    Enable 2FA
+                    {enable2FAMutation.isPending || disable2FAMutation.isPending ? "Updating..." : 
+                     userSettings?.twoFactorEnabled ? "Disable 2FA" : "Enable 2FA"}
                   </Button>
                 </div>
                 
