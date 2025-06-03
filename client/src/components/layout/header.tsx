@@ -51,20 +51,7 @@ export default function Header() {
             </div>
           </div>
 
-          {/* Navigation */}
-          <nav className="hidden md:flex space-x-8">
-            {navItems.map((item) => (
-              <Link key={item.path} href={item.path}>
-                <a
-                  className={`text-sm font-medium hover:text-blue-300 transition-colors ${
-                    location === item.path ? 'text-blue-300 border-b-2 border-blue-300 pb-1' : 'text-slate-300'
-                  }`}
-                >
-                  {item.label}
-                </a>
-              </Link>
-            ))}
-          </nav>
+
 
           {/* Actions and User Menu */}
           <div className="flex items-center space-x-3">

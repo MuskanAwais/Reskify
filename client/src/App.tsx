@@ -10,6 +10,8 @@ import Dashboard from "@/pages/dashboard";
 import SwmsBuilder from "@/pages/swms-builder";
 import Profile from "@/pages/profile";
 import SafetyLibrary from "@/pages/safety-library";
+import MySwms from "@/pages/my-swms";
+import Analytics from "@/pages/analytics";
 import NotFound from "@/pages/not-found";
 
 // User context for demo purposes
@@ -52,6 +54,8 @@ function Router() {
         <Route path="/" component={Dashboard} />
         <Route path="/dashboard" component={Dashboard} />
         <Route path="/swms-builder" component={SwmsBuilder} />
+        <Route path="/my-swms" component={MySwms} />
+        <Route path="/analytics" component={Analytics} />
         <Route path="/profile" component={Profile} />
         <Route path="/safety-library" component={SafetyLibrary} />
         <Route component={NotFound} />
