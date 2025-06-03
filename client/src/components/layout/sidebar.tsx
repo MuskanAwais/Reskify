@@ -56,11 +56,6 @@ export default function Sidebar() {
       requiresAccess: true,
       hasAccess: subscription?.features?.safetyLibrary
     },
-    { 
-      icon: BookOpen, 
-      label: "Standard Practice Guide", 
-      href: "/standard-practice-guide"
-    },
     { icon: BarChart3, label: "Analytics", href: "/analytics" },
     { icon: User, label: "Account", href: "/billing" }
   ];

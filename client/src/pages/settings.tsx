@@ -41,7 +41,6 @@ export default function Settings() {
     
     // SWMS Settings
     autoSaveEnabled: true,
-    defaultRiskLevel: "medium",
     requireApproval: false,
     includePhotos: true,
     
@@ -249,20 +248,7 @@ export default function Settings() {
               />
             </div>
             <Separator />
-            <div>
-              <Label htmlFor="defaultRiskLevel">Default Risk Level</Label>
-              <Select value={settings.defaultRiskLevel} onValueChange={(value) => handleSettingChange("defaultRiskLevel", value)}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="low">Low Risk</SelectItem>
-                  <SelectItem value="medium">Medium Risk</SelectItem>
-                  <SelectItem value="high">High Risk</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <Separator />
+
             <div className="flex items-center justify-between">
               <div>
                 <Label htmlFor="requireApproval">Require Approval</Label>

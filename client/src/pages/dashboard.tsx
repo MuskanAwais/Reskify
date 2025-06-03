@@ -130,10 +130,10 @@ export default function Dashboard() {
             <div className="space-y-3">
               <h4 className="font-medium text-gray-800">Quick Actions</h4>
               <div className="grid grid-cols-2 gap-3">
-                <Link href="/safety-library">
+                <Link href="/my-swms">
                   <Button variant="outline" className="w-full justify-start">
-                    <Search className="mr-2 h-4 w-4" />
-                    Search Codes
+                    <FileText className="mr-2 h-4 w-4" />
+                    View SWMS
                   </Button>
                 </Link>
                 <Button variant="outline" className="w-full justify-start">

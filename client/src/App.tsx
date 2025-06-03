@@ -10,7 +10,7 @@ import Dashboard from "@/pages/dashboard";
 import SwmsBuilder from "@/pages/swms-builder";
 import Profile from "@/pages/profile";
 import SafetyLibrary from "@/pages/safety-library";
-import StandardPracticeGuide from "@/pages/standard-practice-guide";
+
 import MySwms from "@/pages/my-swms";
 import Analytics from "@/pages/analytics";
 import AiAssistant from "@/pages/ai-assistant";
@@ -63,7 +63,7 @@ function Router() {
         <Route path="/ai-assistant" component={AiAssistant} />
         <Route path="/profile" component={Profile} />
         <Route path="/safety-library" component={SafetyLibrary} />
-        <Route path="/standard-practice-guide" component={StandardPracticeGuide} />
+
         <Route path="/billing" component={Billing} />
         <Route path="/settings" component={Settings} />
         <Route component={NotFound} />
