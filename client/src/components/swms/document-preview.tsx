@@ -100,22 +100,6 @@ export default function DocumentPreview({ formData }: DocumentPreviewProps) {
       return;
     }
 
-    // Show legal disclaimer before generating
-    const userAccepted = window.confirm(
-      "IMPORTANT LEGAL DISCLAIMER:\n\n" +
-      "By clicking OK, you acknowledge that:\n\n" +
-      "• Safety Samurai and its operators are NOT LIABLE for any incidents, accidents, injuries, or damages arising from the use of this SWMS document\n\n" +
-      "• This document is a TEMPLATE ONLY and must be reviewed, modified, and approved by qualified safety professionals before use\n\n" +
-      "• You are responsible for ensuring this SWMS complies with all applicable laws and regulations in your jurisdiction\n\n" +
-      "• You must conduct your own risk assessments and site-specific safety evaluations\n\n" +
-      "• You must verify all control measures are appropriate for your specific work conditions\n\n" +
-      "Do you accept these terms and wish to proceed?"
-    );
-
-    if (!userAccepted) {
-      return;
-    }
-
     // Try to enhance with AI first, then fallback to regular creation
     enhanceWithAiMutation.mutate();
   };

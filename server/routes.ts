@@ -267,13 +267,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
           return acc;
         }, {} as Record<string, any>);
         
-        const categoryArray = Object.values(categories).map((cat: any) => ({
-          name: cat.name,
-          isPrimary: cat.isPrimary,
-          activities: cat.tasks, // Show all unique activities from real database
-          totalActivities: cat.tasks.length,
-          hasMore: false
-        }));
+        const categoryArray = Object.values(categories).map((cat: any) => {
+          const uniqueTasks = Array.from(new Set(cat.tasks));
+          return {
+            name: cat.name,
+            isPrimary: cat.isPrimary,
+            activities: uniqueTasks,
+            totalActivities: uniqueTasks.length,
+            hasMore: false
+          };
+        });
         
         return {
           name: tradeName,

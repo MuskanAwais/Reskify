@@ -10,10 +10,11 @@ import { Link } from "wouter";
 
 const STEPS = [
   { id: 1, title: "Project Details", description: "Basic project information and trade selection" },
-  { id: 2, title: "Select Activities", description: "Choose activities from 10,000+ task database" },
+  { id: 2, title: "Select Activities", description: "Choose activities from comprehensive task database" },
   { id: 3, title: "SWMS Table", description: "Review generated risk assessment table and edit as needed" },
   { id: 4, title: "Custom Items", description: "Add custom activities and modify control measures" },
-  { id: 5, title: "Final Document", description: "Generate complete SWMS document" }
+  { id: 5, title: "Legal Disclaimer", description: "Accept terms and liability disclaimer" },
+  { id: 6, title: "Final Document", description: "Generate complete SWMS document" }
 ];
 
 export default function SwmsBuilder() {

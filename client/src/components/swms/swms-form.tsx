@@ -49,7 +49,7 @@ export default function SwmsForm({ step, data, onDataChange }: SwmsFormProps) {
 
   useEffect(() => {
     onDataChange(formData);
-  }, [formData, onDataChange]);
+  }, [formData]);
 
   const updateFormData = (updates: any) => {
     setFormData((prev: any) => ({ ...prev, ...updates }));
