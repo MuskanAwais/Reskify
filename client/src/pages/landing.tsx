@@ -157,28 +157,9 @@ export default function Landing() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 relative">
-      {/* Background Safety Sensei Watermark */}
-      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        <div className="absolute top-1/4 left-1/4 transform -rotate-45 text-6xl font-bold text-blue-600/5">
-          Safety Sensei
-        </div>
-        <div className="absolute top-3/4 right-1/4 transform rotate-45 text-6xl font-bold text-blue-600/5">
-          Safety Sensei
-        </div>
-        <div className="absolute bottom-1/4 left-1/2 transform -translate-x-1/2 rotate-12 text-5xl font-bold text-blue-600/5">
-          SWMS Builder
-        </div>
-        <div className="absolute top-1/2 right-1/6 transform -rotate-12 text-4xl font-bold text-blue-600/5">
-          Australia
-        </div>
-        <div className="absolute bottom-1/3 left-1/6 transform rotate-45 text-4xl font-bold text-blue-600/5">
-          Professional
-        </div>
-      </div>
-
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
       {/* Hero Section with 3D Effects */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden z-10">
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         <motion.div 
           style={{ y, opacity }}
           className="absolute inset-0 bg-gradient-to-br from-blue-600/10 via-transparent to-blue-800/10"
@@ -190,8 +171,16 @@ export default function Landing() {
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ duration: 1, ease: "easeOut" }}
-              className="mb-12"
+              className="mb-16"
             >
+              {/* Big Safety Sensei Logo */}
+              <div className="flex justify-center items-center mb-8">
+                <img 
+                  src={logoImage} 
+                  alt="Safety Sensei" 
+                  className="w-80 h-80 object-contain drop-shadow-2xl"
+                />
+              </div>
               <Logo size="xl" className="justify-center" />
             </motion.div>
           </AnimatedSection>
