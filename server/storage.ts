@@ -436,6 +436,35 @@ export class DatabaseStorage implements IStorage {
     return result.rowCount > 0;
   }
 
+  async signSwmsDocument(id: number, signatureData: any): Promise<SwmsDocument | undefined> {
+    const [document] = await db
+      .update(swmsDocuments)
+      .set({
+        signedBy: signatureData.signedBy,
+        signatureTitle: signatureData.signatureTitle,
+        signatureData: signatureData.signatureData,
+        signatureHash: signatureData.signatureHash,
+        signedAt: signatureData.signedAt,
+        signatureStatus: signatureData.signatureStatus
+      })
+      .where(eq(swmsDocuments.id, id))
+      .returning();
+    return document || undefined;
+  }
+
+  async addWitnessSignature(id: number, witnessData: any): Promise<SwmsDocument | undefined> {
+    const [document] = await db
+      .update(swmsDocuments)
+      .set({
+        witnessName: witnessData.witnessName,
+        witnessSignature: witnessData.witnessSignature,
+        witnessSignedAt: witnessData.witnessSignedAt
+      })
+      .where(eq(swmsDocuments.id, id))
+      .returning();
+    return document || undefined;
+  }
+
   async getSafetyLibraryItems(): Promise<SafetyLibraryItem[]> {
     return await db.select().from(safetyLibrary);
   }
