@@ -230,6 +230,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             safetyMeasures.push(...similarTask.controlMeasures);
           } else {
             // Generic fallback for unmatched activities
+            console.log(`No match found for activity "${activity}" in trade "${tradeType}", using generic fallback`);
             const riskAssessment = {
               id: `generic-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
               activity: activity,
@@ -257,6 +258,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             riskAssessments.push(riskAssessment);
             complianceCodes.add("Work Health and Safety Act 2011");
             safetyMeasures.push(...riskAssessment.controlMeasures);
+            console.log(`Added generic risk assessment for "${activity}"`);
           }
         }
       }

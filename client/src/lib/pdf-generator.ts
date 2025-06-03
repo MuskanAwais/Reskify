@@ -48,10 +48,27 @@ export async function generateProtectedPDF(document: SwmsDocument, user: User | 
     const pageHeight = pdf.internal.pageSize.getHeight();
     let yPosition = 20;
 
-    // Add watermark/protection notice
-    pdf.setFontSize(8);
-    pdf.setTextColor(200, 200, 200);
-    pdf.text('PROTECTED DOCUMENT - UNAUTHORIZED COPYING PROHIBITED', pageWidth / 2, pageHeight - 10, { align: 'center' });
+    // Add full-page watermark pattern
+    const addFullPageWatermark = () => {
+      pdf.setFontSize(12);
+      pdf.setTextColor(240, 240, 240); // Very light gray
+      pdf.setFont('helvetica', 'bold');
+      
+      const watermarkText = `${document.title || 'SWMS'} - ${document.id || 'N/A'} - ${document.projectLocation || 'Location'}`;
+      
+      // Create diagonal watermark pattern across the page
+      for (let x = -100; x < pageWidth + 100; x += 120) {
+        for (let y = 0; y < pageHeight + 100; y += 80) {
+          pdf.text(watermarkText, x, y, { 
+            angle: 45,
+            align: 'left'
+          });
+        }
+      }
+    };
+    
+    // Apply watermark to current page
+    addFullPageWatermark();
     
     // Reset text color for main content
     pdf.setTextColor(0, 0, 0);
