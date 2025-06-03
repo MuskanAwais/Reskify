@@ -26,6 +26,8 @@ import {
 } from "lucide-react";
 import Logo from "@/components/ui/logo";
 import logoImage from "@assets/Untitled design-2.png";
+import { useFirebaseAuth } from "@/hooks/useFirebaseAuth";
+import { useToast } from "@/hooks/use-toast";
 
 const AnimatedSection = ({ children, className = "", delay = 0 }: any) => {
   const ref = React.useRef<HTMLDivElement>(null);
@@ -63,6 +65,24 @@ export default function Landing() {
   const { scrollYProgress } = useScroll();
   const y = useTransform(scrollYProgress, [0, 1], ['0%', '-50%']);
   const opacity = useTransform(scrollYProgress, [0, 0.5, 1], [1, 0.8, 0.6]);
+  const { user, isLoading, signIn } = useFirebaseAuth();
+  const { toast } = useToast();
+
+  const handleGetStarted = async () => {
+    try {
+      await signIn();
+      toast({
+        title: "Welcome to Safety Sensei!",
+        description: "You've successfully signed in with Google.",
+      });
+    } catch (error) {
+      toast({
+        title: "Sign In Error",
+        description: "Failed to sign in with Google. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
 
   const features = [
     {
@@ -228,9 +248,8 @@ export default function Landing() {
                 <Button 
                   size="lg" 
                   className="w-full bg-white hover:bg-gray-50 text-gray-800 border-2 border-gray-300 hover:border-gray-400 px-8 py-4 text-lg shadow-lg"
-                  onClick={() => {
-                    window.location.href = '/api/auth/google';
-                  }}
+                  onClick={handleGetStarted}
+                  disabled={isLoading}
                 >
                   <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
                     <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
