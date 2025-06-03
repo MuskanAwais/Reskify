@@ -818,9 +818,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/swms", async (req, res) => {
     try {
+      // Ensure user exists or create one
+      let user = await storage.getUser(1);
+      if (!user) {
+        user = await storage.createUser({
+          username: "John Doe",
+          email: "john.doe@example.com",
+          companyName: "ABC Construction",
+          primaryTrade: "Electrical"
+        });
+      }
+
       const swmsData = insertSwmsSchema.parse({
         ...req.body,
-        userId: 1, // Default user for now
+        userId: user.id,
         status: req.body.status || 'draft',
         aiEnhanced: req.body.aiEnhanced || false
       });

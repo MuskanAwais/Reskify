@@ -36,11 +36,26 @@ export default function DocumentPreview({ formData }: DocumentPreviewProps) {
 
   const createSwmsMutation = useMutation({
     mutationFn: async (data: any) => {
-      const response = await apiRequest("POST", "/api/swms", {
-        ...data,
+      // Ensure selected activities are properly formatted for the SWMS document
+      const formattedData = {
+        projectName: data.title || data.jobName || "Untitled Project",
+        projectLocation: data.projectLocation || data.projectAddress || "",
+        primaryTrade: data.tradeType || "",
+        activities: data.activities || [],
+        riskAssessments: data.riskAssessments || [],
+        safetyMeasures: data.safetyMeasures || [],
+        complianceCodes: data.complianceCodes || [],
+        emergencyProcedures: data.emergencyProcedures || [],
+        generalRequirements: data.generalRequirements || [],
+        overallRiskLevel: 3, // Default medium risk
         userId: user?.id,
-        status: "draft"
-      });
+        status: "draft",
+        aiEnhanced: data.aiEnhanced || false
+      };
+      
+      console.log('Creating SWMS with data:', formattedData);
+      
+      const response = await apiRequest("POST", "/api/swms", formattedData);
       return response.json();
     },
     onSuccess: (data) => {

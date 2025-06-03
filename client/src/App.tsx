@@ -46,8 +46,41 @@ const UserContext = createContext<{
   setUser: () => {}
 });
 
-// Admin context for admin features
+// Admin context for admin features with persistent state
 const AdminContext = createContext<{
+  isAdminMode: boolean;
+  setIsAdminMode: (mode: boolean) => void;
+}>({
+  isAdminMode: false,
+  setIsAdminMode: () => {}
+});
+
+// Admin state hook
+const useAdminState = () => {
+  const [isAdminMode, setIsAdminModeState] = useState(() => {
+    try {
+      const saved = localStorage.getItem('adminMode');
+      return saved === 'true';
+    } catch {
+      return false;
+    }
+  });
+
+  const setIsAdminMode = (mode: boolean) => {
+    try {
+      localStorage.setItem('adminMode', mode.toString());
+      setIsAdminModeState(mode);
+    } catch (error) {
+      console.error('Failed to save admin state:', error);
+      setIsAdminModeState(mode);
+    }
+  };
+
+  return { isAdminMode, setIsAdminMode };
+};
+
+// Legacy admin context for compatibility
+const LegacyAdminContext = createContext<{
   isAdmin: boolean;
   setIsAdmin: (isAdmin: boolean) => void;
 }>({
@@ -115,6 +148,9 @@ function App() {
     companyName: "ABC Construction",
     primaryTrade: "Electrical"
   });
+
+  // Use the persistent admin state
+  const adminState = useAdminState();
 
   // Admin state for temporary admin features - persist in localStorage
   const [isAdmin, setIsAdmin] = useState<boolean>(() => {
