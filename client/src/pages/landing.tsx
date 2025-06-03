@@ -230,7 +230,25 @@ export default function Landing() {
         </div>
 
         {/* Floating Elements */}
-
+        <motion.div
+          animate={{ 
+            y: [0, -20, 0],
+            rotate: [0, 5, 0]
+          }}
+          transition={{ 
+            duration: 6,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+          className="absolute top-20 left-10 opacity-20"
+        >
+          <img 
+            src={logoImage} 
+            alt="Safety Sensei Background Logo" 
+            className="object-contain"
+            style={{ height: '480px', width: '480px' }}
+          />
+        </motion.div>
 
         <motion.div
           animate={{ 
