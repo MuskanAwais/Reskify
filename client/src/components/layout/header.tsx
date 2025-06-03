@@ -32,27 +32,32 @@ export default function Header() {
   ];
 
   return (
-    <header className="bg-primary text-white shadow-lg">
-      <div className="container mx-auto px-4 py-4">
+    <header className="bg-gradient-to-r from-slate-800 to-slate-900 text-white shadow-lg border-b border-slate-700">
+      <div className="container mx-auto px-6 py-3">
         <div className="flex justify-between items-center">
           {/* Logo and Title */}
-          <div className="flex items-center space-x-4">
-            <HardHat className="h-8 w-8" />
+          <div className="flex items-center space-x-3">
+            <div className="bg-orange-500 p-2 rounded-lg">
+              <HardHat className="h-6 w-6 text-white" />
+            </div>
             <div>
-              <h1 className="text-2xl font-bold">SWMS Builder Pro</h1>
-              <Badge className="bg-blue-600 hover:bg-blue-600 text-xs">
-                Australian Construction
-              </Badge>
+              <h1 className="text-xl font-bold tracking-tight">SWMS Builder</h1>
+              <div className="flex items-center space-x-2">
+                <span className="text-lg font-semibold">Pro</span>
+                <Badge className="bg-slate-700 hover:bg-slate-700 text-white text-xs px-2 py-0.5 border-slate-600">
+                  Australian Construction
+                </Badge>
+              </div>
             </div>
           </div>
 
           {/* Navigation */}
-          <nav className="hidden md:flex space-x-6">
+          <nav className="hidden md:flex space-x-8">
             {navItems.map((item) => (
               <Link key={item.path} href={item.path}>
                 <a
-                  className={`hover:text-blue-200 transition-colors ${
-                    location === item.path ? 'text-blue-200 font-medium' : ''
+                  className={`text-sm font-medium hover:text-orange-300 transition-colors ${
+                    location === item.path ? 'text-orange-300 border-b-2 border-orange-300 pb-1' : 'text-slate-300'
                   }`}
                 >
                   {item.label}
@@ -62,26 +67,26 @@ export default function Header() {
           </nav>
 
           {/* Actions and User Menu */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-3">
             {/* New SWMS Button */}
             <Link href="/swms-builder">
-              <Button className="bg-secondary hover:bg-secondary/90 text-white">
+              <Button className="bg-orange-500 hover:bg-orange-600 text-white text-sm px-4 py-2 font-medium shadow-sm">
                 <Plus className="mr-2 h-4 w-4" />
                 New SWMS
               </Button>
             </Link>
 
             {/* Notifications */}
-            <Button variant="ghost" size="sm" className="text-white hover:bg-white/10">
+            <Button variant="ghost" size="sm" className="text-slate-300 hover:text-white hover:bg-slate-700 p-2">
               <Bell className="h-5 w-5" />
             </Button>
 
             {/* User Menu */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-8 w-8 rounded-full p-0">
-                  <Avatar className="h-8 w-8">
-                    <AvatarFallback className="bg-blue-600 text-white text-sm font-medium">
+                <Button variant="ghost" className="relative h-9 w-9 rounded-full p-0 hover:bg-slate-700">
+                  <Avatar className="h-9 w-9">
+                    <AvatarFallback className="bg-orange-500 text-white text-sm font-semibold">
                       {user ? getInitials(user.username) : 'U'}
                     </AvatarFallback>
                   </Avatar>

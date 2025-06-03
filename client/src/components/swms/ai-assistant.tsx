@@ -40,8 +40,12 @@ export default function AiAssistant({ tradeType, activities, currentStep }: AiAs
     mutationFn: async (query: string) => {
       const response = await apiRequest("POST", "/api/ai/safety-content", {
         query,
-        tradeType,
-        context: `SWMS building for ${tradeType} trade. Current activities: ${activities?.join(', ') || 'None selected'}. User is on step ${currentStep} of SWMS creation.`
+        context: {
+          tradeType,
+          activities: activities || [],
+          currentStep,
+          contextDescription: `SWMS building for ${tradeType} trade. Current activities: ${activities?.join(', ') || 'None selected'}. User is on step ${currentStep} of SWMS creation.`
+        }
       });
       return response.json();
     },
