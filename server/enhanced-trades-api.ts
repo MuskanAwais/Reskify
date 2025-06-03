@@ -182,10 +182,19 @@ export function generateEnhancedTradesData(): EnhancedTradeStructure[] {
     // Create categories with primary flag
     const categories = Array.from(categoryMap.entries()).map(([categoryName, activities]) => {
       const isPrimary = activities.some(activity => primaryTasks.includes(activity));
+      // Sort activities with primary tasks first
+      const sortedActivities = activities.sort((a, b) => {
+        const aIsPrimary = primaryTasks.includes(a);
+        const bIsPrimary = primaryTasks.includes(b);
+        if (aIsPrimary && !bIsPrimary) return -1;
+        if (!aIsPrimary && bIsPrimary) return 1;
+        return a.localeCompare(b);
+      });
+      
       return {
         name: categoryName,
         isPrimary,
-        activities: activities.sort(),
+        activities: sortedActivities,
         totalActivities: activities.length
       };
     });
