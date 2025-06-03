@@ -23,6 +23,7 @@ import {
   Layers,
   Search
 } from "lucide-react";
+import VisualTableEditor from "./visual-table-editor";
 
 interface SwmsFormProps {
   step: number;
@@ -747,134 +748,17 @@ export default function SwmsForm({ step, data, onDataChange }: SwmsFormProps) {
       return (
         <div className="space-y-6">
           <div className="text-center">
-            <Shield className="mx-auto h-12 w-12 text-green-500 mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Safety Measures</h3>
+            <Shield className="mx-auto h-12 w-12 text-blue-500 mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Visual SWMS Table Editor</h3>
             <p className="text-gray-600 text-sm">
-              Define safety procedures and protective measures for your work
+              Select activities and edit your risk assessment table directly with dropdowns and interactive cells
             </p>
           </div>
 
-          {formData.safetyMeasures && formData.safetyMeasures.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">AI-Generated Safety Measures</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {formData.safetyMeasures.map((measure: any, index: number) => (
-                    <div key={index} className="border border-gray-200 rounded-lg p-4">
-                      <div className="flex items-start justify-between mb-3">
-                        <h4 className="font-medium text-gray-900">{measure.category}</h4>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => {
-                            const updatedMeasures = formData.safetyMeasures.filter((_: any, i: number) => i !== index);
-                            updateFormData({ safetyMeasures: updatedMeasures });
-                          }}
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </div>
-                      
-                      <div className="space-y-3">
-                        {measure.measures && measure.measures.length > 0 && (
-                          <div>
-                            <Label className="text-xs font-medium text-gray-700">Safety Procedures</Label>
-                            <div className="space-y-1 mt-1">
-                              {measure.measures.map((item: string, itemIndex: number) => (
-                                <div key={itemIndex} className="text-sm text-gray-600 flex items-start">
-                                  <CheckSquare className="h-3 w-3 mt-0.5 mr-2 text-green-500 flex-shrink-0" />
-                                  {item}
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                        
-                        {measure.equipment && measure.equipment.length > 0 && (
-                          <div>
-                            <Label className="text-xs font-medium text-gray-700">Required Equipment</Label>
-                            <div className="space-y-1 mt-1">
-                              {measure.equipment.map((item: string, itemIndex: number) => (
-                                <div key={itemIndex} className="text-sm text-gray-600 flex items-start">
-                                  <Shield className="h-3 w-3 mt-0.5 mr-2 text-blue-500 flex-shrink-0" />
-                                  {item}
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                        
-                        {measure.procedures && measure.procedures.length > 0 && (
-                          <div>
-                            <Label className="text-xs font-medium text-gray-700">Work Procedures</Label>
-                            <div className="space-y-1 mt-1">
-                              {measure.procedures.map((item: string, itemIndex: number) => (
-                                <div key={itemIndex} className="text-sm text-gray-600 flex items-start">
-                                  <FileText className="h-3 w-3 mt-0.5 mr-2 text-orange-500 flex-shrink-0" />
-                                  {item}
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Add Custom Safety Measure</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="safetyCategory">Safety Category</Label>
-                  <Input
-                    id="safetyCategory"
-                    placeholder="e.g., Personal Protective Equipment"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="safetyProcedures">Safety Procedures</Label>
-                  <Textarea
-                    id="safetyProcedures"
-                    placeholder="List the safety procedures and measures..."
-                    rows={4}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="requiredEquipment">Required Equipment</Label>
-                  <Textarea
-                    id="requiredEquipment"
-                    placeholder="List required safety equipment..."
-                    rows={3}
-                  />
-                </div>
-                <Button type="button" className="w-full">
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add Safety Measure
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          {(formData.activities.length === 0 || !formData.riskAssessments || formData.riskAssessments.length === 0) && (
-            <Card>
-              <CardContent className="text-center py-8">
-                <Shield className="mx-auto h-8 w-8 text-gray-400 mb-3" />
-                <p className="text-gray-500">
-                  Complete risk assessments in Step 2 to get AI-generated safety measures
-                </p>
-              </CardContent>
-            </Card>
-          )}
+          <VisualTableEditor 
+            formData={formData}
+            onDataChange={(data) => updateFormData(data)}
+          />
         </div>
       );
 

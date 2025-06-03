@@ -12,7 +12,7 @@ import { Link } from "wouter";
 const STEPS = [
   { id: 1, title: "Project Details", description: "Basic project information and trade selection" },
   { id: 2, title: "Select Activities", description: "Choose activities from comprehensive task database" },
-  { id: 3, title: "SWMS Table", description: "Review generated risk assessment table and edit as needed" },
+  { id: 3, title: "Visual Table Editor", description: "Interactive risk assessment table with dropdowns and editable cells" },
   { id: 4, title: "Safety Codes", description: "Select applicable safety codes and compliance requirements" },
   { id: 5, title: "Legal Disclaimer", description: "Accept terms and liability disclaimer" },
   { id: 6, title: "Final Document", description: "Generate complete SWMS document" }
