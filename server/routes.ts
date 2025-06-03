@@ -1190,6 +1190,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // User subscription endpoint
+  app.get("/api/user/subscription", async (req, res) => {
+    try {
+      const userId = 1; // Default user for now
+      const user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const subscriptionType = user.subscriptionType || "basic";
+      const hasAccess = subscriptionType === "professional" || subscriptionType === "enterprise";
+
+      res.json({
+        subscriptionType,
+        hasAccess,
+        features: {
+          standardPracticeGuide: hasAccess,
+          teamCollaboration: subscriptionType === "enterprise",
+          advancedReporting: hasAccess,
+          aiEnhancements: hasAccess
+        }
+      });
+    } catch (error: any) {
+      console.error('Get user subscription error:', error);
+      res.status(500).json({ message: 'Failed to fetch subscription details' });
+    }
+  });
+
   const server = createServer(app);
   return server;
 }

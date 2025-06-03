@@ -63,6 +63,7 @@ function Router() {
         <Route path="/ai-assistant" component={AiAssistant} />
         <Route path="/profile" component={Profile} />
         <Route path="/safety-library" component={SafetyLibrary} />
+        <Route path="/standard-practice-guide" component={StandardPracticeGuide} />
         <Route path="/billing" component={Billing} />
         <Route path="/settings" component={Settings} />
         <Route component={NotFound} />
