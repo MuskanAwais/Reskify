@@ -20,7 +20,8 @@ import {
   X,
   ChevronDown,
   ChevronUp,
-  Layers
+  Layers,
+  Search
 } from "lucide-react";
 
 interface SwmsFormProps {
@@ -187,12 +188,27 @@ export default function SwmsForm({ step, data, onDataChange }: SwmsFormProps) {
                 <p className="text-sm text-gray-600">Choose all applicable work activities for this project</p>
               </CardHeader>
               <CardContent className="space-y-4">
+                {/* Activity Search */}
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Search Activities</Label>
+                  <div className="relative">
+                    <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    <Input
+                      placeholder="Search for specific activities..."
+                      className="pl-10"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                  </div>
+                </div>
+
                 {selectedTrade.categories?.map((category: any) => {
                   const isCollapsed = collapsedCategories.has(category.name);
                   const selectedCount = category.activities.filter((activity: string) => 
                     formData.activities.includes(activity)
                   ).length;
-                  const totalCount = category.activities.length;
+                  const totalCount = category.totalActivities || category.activities.length;
+                  const displayedCount = category.activities.length;
                   
                   return (
                     <div key={category.name} className="border border-gray-200 rounded-lg overflow-hidden">
@@ -720,7 +736,7 @@ export default function SwmsForm({ step, data, onDataChange }: SwmsFormProps) {
                 <div className="space-y-4">
                   <h4 className="font-medium text-gray-800">Recommended for {selectedTrade.name}</h4>
                   <div className="space-y-3">
-                    {selectedTrade.codes.map((code: string) => {
+                    {selectedTrade?.codes?.map((code: string) => {
                       const safetyItem = safetyLibrary?.find((item: any) => item.code === code);
                       return (
                         <div key={code} className="flex items-center space-x-3 p-3 border rounded-lg">

@@ -78,6 +78,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Search activities across all trades
+  app.get("/api/search-activities", async (req, res) => {
+    try {
+      const { q: searchTerm, trade } = req.query;
+      
+      if (!searchTerm || typeof searchTerm !== 'string') {
+        return res.status(400).json({ message: 'Search term required' });
+      }
+
+      const { searchAllTasks } = await import('./enhanced-trades-api');
+      const results = searchAllTasks(searchTerm, trade as string);
+      res.json(results);
+    } catch (error: any) {
+      console.error('Search activities error:', error);
+      res.status(500).json({ message: 'Failed to search activities' });
+    }
+  });
+
+  // Get all activities for a specific trade
+  app.get("/api/trades/:tradeName/activities", async (req, res) => {
+    try {
+      const { tradeName } = req.params;
+      const { category } = req.query;
+      
+      const { getCategoriesForTrade } = await import('./comprehensive-trades-data');
+      const categories = getCategoriesForTrade(tradeName);
+      
+      if (category) {
+        const specificCategory = categories.find(cat => cat.name === category);
+        if (specificCategory) {
+          res.json({ activities: specificCategory.tasks });
+        } else {
+          res.status(404).json({ message: 'Category not found' });
+        }
+      } else {
+        // Return all activities for the trade
+        const allActivities = categories.flatMap(cat => cat.tasks);
+        res.json({ activities: allActivities });
+      }
+    } catch (error: any) {
+      console.error('Trade activities error:', error);
+      res.status(500).json({ message: 'Failed to fetch trade activities' });
+    }
+  });
+
   // Trade types and comprehensive activities
   app.get("/api/trades", async (req, res) => {
     try {
@@ -93,8 +138,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           categories: categories.map(cat => ({
             name: cat.name,
             isPrimary: cat.isPrimary,
-            activities: cat.tasks
-          }))
+            activities: cat.isPrimary ? cat.tasks : cat.tasks.slice(0, 10), // Show all primary, limit others
+            totalActivities: cat.tasks.length,
+            hasMore: !cat.isPrimary && cat.tasks.length > 10
+          })),
+          totalTasks: categories.reduce((sum, cat) => sum + cat.tasks.length, 0)
         };
       });
       
