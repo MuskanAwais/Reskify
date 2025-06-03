@@ -14,9 +14,9 @@ export default function CreditCounter({ className }: CreditCounterProps) {
 
   if (!user) return null;
 
-  const credits = user.swmsCredits || 0;
-  const subscriptionType = user.subscriptionType || "basic";
-  const isExpired = user.subscriptionExpiresAt ? new Date(user.subscriptionExpiresAt) < new Date() : true;
+  const credits = (user as any).swmsCredits || 0;
+  const subscriptionType = (user as any).subscriptionType || "basic";
+  const isExpired = (user as any).subscriptionExpiresAt ? new Date((user as any).subscriptionExpiresAt) < new Date() : true;
 
   const getSubscriptionDetails = () => {
     switch (subscriptionType) {
@@ -29,6 +29,29 @@ export default function CreditCounter({ className }: CreditCounterProps) {
 
   const subscription = getSubscriptionDetails();
 
+  // Compact header version
+  if (className === "compact") {
+    return (
+      <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-3 py-2 shadow-sm">
+        <CreditCard className="h-4 w-4 text-blue-600" />
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-medium text-gray-900">{credits} Credits</span>
+          {credits <= 2 && (
+            <Badge variant="destructive" className="text-xs px-1 py-0">
+              Low
+            </Badge>
+          )}
+          {!isExpired && credits > 2 && (
+            <Badge variant="outline" className="text-xs px-1 py-0">
+              {subscription.name}
+            </Badge>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // Full card version for other pages
   return (
     <Card className={`border-l-4 ${credits <= 2 ? 'border-l-red-500' : credits <= 5 ? 'border-l-yellow-500' : 'border-l-green-500'} ${className}`}>
       <CardContent className="p-4">

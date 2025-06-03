@@ -27,11 +27,7 @@ export default function Header() {
       .slice(0, 2);
   };
 
-  const navItems = [
-    { path: "/dashboard", label: "Dashboard" },
-    { path: "/safety-library", label: "Safety Codes" },
-    { path: "/profile", label: "Profile" },
-  ];
+
 
   return (
     <header className="bg-white border-b border-border shadow-sm">
@@ -52,21 +48,7 @@ export default function Header() {
             </div>
           </div>
 
-          {/* Navigation */}
-          <nav className="hidden md:flex space-x-6">
-            {navItems.map((item) => (
-              <Link key={item.path} href={item.path}>
-                <Button 
-                  variant="ghost" 
-                  className={`text-muted-foreground hover:text-foreground hover:bg-accent ${
-                    location === item.path ? 'bg-accent text-foreground' : ''
-                  }`}
-                >
-                  {item.label}
-                </Button>
-              </Link>
-            ))}
-          </nav>
+
 
           {/* Credit Counter */}
           <div className="hidden md:block">
