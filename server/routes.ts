@@ -319,6 +319,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // AI-Enhanced SWMS Generation with Unique Risk Assessments
+  app.post('/api/ai/enhance-swms', async (req, res) => {
+    try {
+      const { tradeType, activities, projectDetails } = req.body;
+      
+      if (!process.env.OPENAI_API_KEY) {
+        return res.status(400).json({ 
+          error: 'OpenAI API key not configured. Please configure your API key to use AI-powered risk assessments.' 
+        });
+      }
+      
+      // Import AI risk assessment functions
+      const { generateUniqueRiskAssessment, generateDetailedFallbackAssessment } = await import('./ai-risk-assessments');
+      const { generateAutoSwms } = await import('./auto-swms-generator');
+      
+      // Generate unique AI-powered risk assessments for each activity
+      const enhancedRiskAssessments = await Promise.all(
+        activities.map(async (activity: string) => {
+          try {
+            const uniqueAssessment = await generateUniqueRiskAssessment(activity, tradeType, projectDetails);
+            return uniqueAssessment;
+          } catch (error) {
+            console.error(`Failed to generate AI assessment for ${activity}:`, error);
+            // Fallback to database assessment if AI fails
+            return generateDetailedFallbackAssessment(activity, tradeType);
+          }
+        })
+      );
+      
+      // Generate comprehensive safety measures and compliance codes
+      const autoSwmsData = await generateAutoSwms(activities, tradeType);
+      const safetyMeasures = autoSwmsData.safetyMeasures || [];
+      const complianceCodes = autoSwmsData.complianceCodes || [];
+      
+      const enhancedData = {
+        riskAssessments: enhancedRiskAssessments,
+        safetyMeasures,
+        complianceCodes,
+        aiEnhanced: true
+      };
+      
+      res.json(enhancedData);
+    } catch (error) {
+      console.error('AI enhancement error:', error);
+      res.status(500).json({ error: 'Failed to enhance SWMS with AI' });
+    }
+  });
+
   // Usage analytics endpoint
   app.get("/api/analytics/usage", async (req, res) => {
     try {

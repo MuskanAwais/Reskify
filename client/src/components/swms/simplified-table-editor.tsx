@@ -198,6 +198,15 @@ export default function SimplifiedTableEditor({ formData, onDataChange }: Simpli
         <div className="space-y-2">
           <Textarea
             value={Array.isArray(editValue) ? editValue.join('\n') : editValue}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                const currentValue = e.currentTarget.value;
+                const lines = currentValue.split('\n').filter(line => line.trim());
+                setEditValue(lines);
+                handleSave();
+              }
+            }}
             onChange={(e) => setEditValue(e.target.value.split('\n').filter(Boolean))}
             placeholder="Enter items, one per line"
             className="min-h-[80px]"
