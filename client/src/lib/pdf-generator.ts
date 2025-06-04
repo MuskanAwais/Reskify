@@ -585,10 +585,13 @@ export async function generateProtectedPDF(document: SwmsDocument, user: User | 
     const disclaimerLines = pdf.splitTextToSize(disclaimer, pageWidth - 40);
     pdf.text(disclaimerLines, 20, yPosition);
 
-    // Footer with protection notice
+    // Enhanced footer with comprehensive project watermarks on every page
     const totalPages = pdf.internal.getNumberOfPages();
     for (let i = 1; i <= totalPages; i++) {
       pdf.setPage(i);
+      
+      // Add comprehensive watermark to every page
+      addComprehensiveProjectWatermark(pdf, document, 'en');
       
       // Page number
       pdf.setFontSize(10);
@@ -683,4 +686,123 @@ export function addWatermark(pdf: jsPDF, text: string = 'PROTECTED DOCUMENT'): v
     // Restore graphics state
     pdf.restoreGraphicsState();
   }
+}
+
+// Comprehensive project watermark function for every page
+function addComprehensiveProjectWatermark(pdf: any, document: any, language: string = 'en') {
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
+  
+  // Get translations
+  const translations = getWatermarkTranslations(language);
+  
+  // Save current state
+  pdf.saveGraphicsState();
+  
+  // Set watermark opacity
+  pdf.setGState(pdf.GState({ opacity: 0.15 }));
+  
+  // Main diagonal watermark - "Safety Sensei" always in English
+  pdf.setFont('helvetica', 'bold');
+  pdf.setFontSize(48);
+  pdf.setTextColor(59, 130, 246); // Blue color
+  
+  // Rotate and center the main watermark
+  const centerX = pageWidth / 2;
+  const centerY = pageHeight / 2;
+  
+  pdf.text('Safety Sensei', centerX, centerY, {
+    angle: 45,
+    align: 'center'
+  });
+  
+  // Add comprehensive project details watermarks throughout the page
+  pdf.setFont('helvetica', 'normal');
+  pdf.setFontSize(10);
+  pdf.setTextColor(100, 100, 100, 0.18);
+  
+  // Collect all project information
+  const projectDetails = [];
+  if (document.jobName) projectDetails.push(`Project: ${document.jobName}`);
+  if (document.jobNumber) projectDetails.push(`Job #: ${document.jobNumber}`);
+  if (document.projectAddress) projectDetails.push(`Location: ${document.projectAddress}`);
+  if (document.projectLocation) projectDetails.push(`Area: ${document.projectLocation}`);
+  if (document.tradeType) projectDetails.push(`Trade: ${document.tradeType}`);
+  if (document.title) projectDetails.push(`Title: ${document.title}`);
+  
+  // Add date and document info
+  const currentDate = new Date().toLocaleDateString();
+  projectDetails.push(`Generated: ${currentDate}`);
+  projectDetails.push(`Document: SWMS`);
+  projectDetails.push(`Safety Sensei Pro`);
+  
+  // Position watermarks strategically throughout the page
+  const positions = [
+    { x: 20, y: 25, angle: 0 },      // Top left
+    { x: pageWidth - 20, y: 25, angle: 0, align: 'right' },  // Top right
+    { x: 20, y: pageHeight - 25, angle: 0 },  // Bottom left
+    { x: pageWidth - 20, y: pageHeight - 25, angle: 0, align: 'right' },  // Bottom right
+    { x: 20, y: centerY - 80, angle: 90 },   // Left side vertical
+    { x: pageWidth - 20, y: centerY + 80, angle: -90, align: 'right' },  // Right side vertical
+    { x: centerX, y: 40, angle: 0, align: 'center' },  // Top center
+    { x: centerX, y: pageHeight - 40, angle: 0, align: 'center' }  // Bottom center
+  ];
+  
+  // Distribute project details across positions
+  positions.forEach((pos, index) => {
+    if (projectDetails[index % projectDetails.length]) {
+      const detail = projectDetails[index % projectDetails.length];
+      pdf.text(detail, pos.x, pos.y, {
+        angle: pos.angle || 0,
+        align: pos.align || 'left'
+      });
+    }
+  });
+  
+  // Add additional scattered project info for comprehensive coverage
+  if (projectDetails.length > 0) {
+    pdf.setFontSize(8);
+    pdf.setTextColor(80, 80, 80, 0.10);
+    
+    // Create a grid pattern of project details throughout the page
+    const gridSpacingX = pageWidth / 4;
+    const gridSpacingY = pageHeight / 6;
+    
+    for (let x = gridSpacingX; x < pageWidth; x += gridSpacingX) {
+      for (let y = gridSpacingY; y < pageHeight; y += gridSpacingY) {
+        // Skip center area where main watermark is
+        if (Math.abs(x - centerX) > 80 || Math.abs(y - centerY) > 40) {
+          const detailIndex = Math.floor((x + y) / 100) % projectDetails.length;
+          const detail = projectDetails[detailIndex];
+          if (detail && detail.length < 50) { // Only show shorter details in grid
+            pdf.text(detail, x, y, {
+              angle: 15,
+              align: 'center'
+            });
+          }
+        }
+      }
+    }
+  }
+  
+  // Add translated secondary watermarks if language is not English
+  if (language !== 'en') {
+    pdf.setFontSize(24);
+    pdf.setTextColor(59, 130, 246, 0.08);
+    
+    // Top watermark with translation
+    pdf.text(translations.safetyDocument, centerX, centerY - 80, {
+      angle: 45,
+      align: 'center'
+    });
+    
+    // Bottom watermark with translation
+    pdf.text(translations.authorizedPersonnel, centerX, centerY + 80, {
+      angle: 45,
+      align: 'center'
+    });
+  }
+  
+  // Restore graphics state
+  pdf.restoreGraphicsState();
 }
