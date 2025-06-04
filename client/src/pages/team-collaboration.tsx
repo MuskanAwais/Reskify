@@ -64,7 +64,16 @@ export default function TeamCollaboration() {
     queryKey: ["/api/user/subscription"],
   });
 
-  const hasTeamAccess = subscription?.plan === "Enterprise";
+  // Check for Enterprise mode toggle
+  const [enterpriseMode, setEnterpriseMode] = useState(() => {
+    try {
+      return localStorage.getItem('enterpriseMode') === 'true';
+    } catch {
+      return false;
+    }
+  });
+
+  const hasTeamAccess = subscription?.plan === "Enterprise" || enterpriseMode;
 
   // Team members query
   const { data: teamMembers = [], isLoading: membersLoading } = useQuery({
