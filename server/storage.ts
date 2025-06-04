@@ -90,57 +90,57 @@ export class MemStorage implements IStorage {
   }
 
   private initializeSafetyLibrary() {
-    // Initialize with common Australian safety codes
+    // Initialize with NSW Code of Practice documents only
     const safetyItems: Omit<SafetyLibraryItem, 'id'>[] = [
       {
-        code: "AS/NZS 3000:2018",
-        title: "Electrical installations (Australian/New Zealand Wiring Rules)",
-        description: "This Standard applies to electrical installations in buildings, structures, and premises.",
-        category: "Electrical",
-        authority: "Standards Australia",
-        effectiveDate: new Date("2018-04-27"),
-        url: "https://www.standards.org.au/standards-catalogue/sa-snz/electrotechnology/te-001/as-slash-nzs-3000-colon-2018",
-        tags: ["electrical", "wiring", "installation", "safety"]
+        code: "NSW-COP-CONSTRUCTION",
+        title: "Construction Work",
+        description: "NSW Code of Practice for construction work - comprehensive guidance for managing construction risks including SWMS, WHS Management Plans, and High Risk Construction Work",
+        category: "NSW Code of Practice",
+        authority: "SafeWork NSW",
+        effectiveDate: new Date("2019-08-01"),
+        url: "/safety-docs/nsw/Construction-work-COP.pdf",
+        tags: ["construction", "swms", "whs", "management", "high-risk", "induction"]
       },
       {
-        code: "AS/NZS 1891.1:2007",
-        title: "Industrial fall-arrest systems and devices - Harnesses and ancillary equipment",
-        description: "This Standard specifies requirements for full body harnesses and ancillary equipment for industrial fall-arrest systems.",
-        category: "Height Safety",
-        authority: "Standards Australia",
-        effectiveDate: new Date("2007-12-07"),
-        url: "https://www.standards.org.au/standards-catalogue/sa-snz/other/sf-010/as-slash-nzs-1891-dot-1-colon-2007",
-        tags: ["fall-arrest", "harness", "height", "safety", "equipment"]
+        code: "NSW-COP-MANUAL-TASKS",
+        title: "Hazardous Manual Tasks",
+        description: "NSW Code of Practice for managing risks associated with hazardous manual tasks and musculoskeletal disorders",
+        category: "NSW Code of Practice",
+        authority: "SafeWork NSW",
+        effectiveDate: new Date("2019-08-01"),
+        url: "/safety-docs/nsw/Hazardous-manual-tasks-COP.pdf",
+        tags: ["manual", "tasks", "musculoskeletal", "disorders", "risk", "assessment"]
       },
       {
-        code: "SWA-COP-PLANT",
-        title: "Managing risks of plant in the workplace",
-        description: "This Code provides practical guidance on how to manage risks associated with plant in the workplace.",
-        category: "General Safety",
-        authority: "Safe Work Australia",
-        effectiveDate: new Date("2021-06-01"),
-        url: "https://www.safeworkaustralia.gov.au/resources-and-publications/guidance-materials/model-codes-practice",
-        tags: ["plant", "machinery", "risk", "management", "workplace"]
+        code: "NSW-COP-ELECTRICAL",
+        title: "Managing Electrical Risks in the Workplace",
+        description: "NSW Code of Practice for managing electrical risks and electrical safety in workplaces",
+        category: "NSW Code of Practice",
+        authority: "SafeWork NSW",
+        effectiveDate: new Date("2019-08-01"),
+        url: "/safety-docs/nsw/Managing-electrical-risks-in-the-workplace-COP.pdf",
+        tags: ["electrical", "safety", "isolation", "testing", "ppe", "high-voltage"]
       },
       {
-        code: "AS 2865:2009",
-        title: "Confined spaces",
-        description: "This Standard provides requirements for safe work in confined spaces.",
-        category: "Confined Spaces",
-        authority: "Standards Australia",
-        effectiveDate: new Date("2009-09-04"),
-        url: "https://www.standards.org.au/standards-catalogue/sa-snz/other/sf-001/as-2865-colon-2009",
-        tags: ["confined", "spaces", "entry", "safety", "atmosphere"]
+        code: "NSW-COP-FALLS",
+        title: "Managing the Risk of Falls at Workplaces",
+        description: "NSW Code of Practice for preventing falls from height and managing fall risks in workplaces",
+        category: "NSW Code of Practice",
+        authority: "SafeWork NSW",
+        effectiveDate: new Date("2019-08-01"),
+        url: "/safety-docs/nsw/Managing-the-risk-of-falls-at-workplaces-COP.pdf",
+        tags: ["falls", "height", "prevention", "scaffolding", "ladders", "harnesses"]
       },
       {
-        code: "AS/NZS 4801:2001",
-        title: "Occupational health and safety management systems",
-        description: "This Standard specifies requirements for an occupational health and safety management system.",
-        category: "Management Systems",
-        authority: "Standards Australia",
-        effectiveDate: new Date("2001-10-19"),
-        url: "https://www.standards.org.au/standards-catalogue/sa-snz/other/ob-007/as-slash-nzs-4801-colon-2001",
-        tags: ["management", "system", "ohs", "workplace", "safety"]
+        code: "NSW-GUIDE-POCKET",
+        title: "The Pocket Guide to Construction Safety",
+        description: "SafeWork NSW pocket guide for small construction businesses and subcontractors with practical safety guidance",
+        category: "NSW Safety Guide",
+        authority: "SafeWork NSW",
+        effectiveDate: new Date("2024-10-01"),
+        url: "/safety-docs/nsw/pocketguide-to-construction-safety.pdf",
+        tags: ["construction", "small-business", "subcontractors", "hazards", "checklists", "mental-health"]
       }
     ];
 
