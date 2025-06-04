@@ -26,6 +26,9 @@ import {
 import { SimplifiedTableEditor } from "./simplified-table-editor";
 import SmartTooltip from "@/components/ui/smart-tooltip";
 import QuickActionTooltip, { presetTooltips } from "@/components/ui/quick-action-tooltip";
+import { ComprehensiveProjectDetails } from "./comprehensive-project-details";
+import { PlantEquipmentManager } from "./plant-equipment-manager";
+import { ReviewMonitoringManager } from "./review-monitoring-manager";
 
 interface SwmsFormProps {
   step: number;

@@ -226,10 +226,10 @@ export default function Landing() {
   ];
 
   const stats = [
-    { number: "10,000+", label: "Construction Tasks", icon: <FileText className="h-6 w-6" /> },
-    { number: "500+", label: "Australian Standards", icon: <Shield className="h-6 w-6" /> },
-    { number: "12", label: "Languages Supported", icon: <Globe className="h-6 w-6" /> },
-    { number: "99.9%", label: "Uptime Guarantee", icon: <Zap className="h-6 w-6" /> }
+    { number: "200+", label: "Construction Tasks", icon: <FileText className="h-6 w-6" /> },
+    { number: "50+", label: "Australian Standards", icon: <Shield className="h-6 w-6" /> },
+    { number: "2", label: "Languages Supported", icon: <Globe className="h-6 w-6" /> },
+    { number: "AI-Powered", label: "Risk Assessment", icon: <Zap className="h-6 w-6" /> }
   ];
 
   return (
