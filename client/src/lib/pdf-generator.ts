@@ -732,7 +732,7 @@ function addComprehensiveProjectWatermark(pdf: any, document: any, language: str
   // Add comprehensive project details watermarks throughout the page
   pdf.setFont('helvetica', 'normal');
   pdf.setFontSize(10);
-  pdf.setTextColor(100, 100, 100, 0.18);
+  pdf.setTextColor(120, 120, 120);
   
   // Collect all project information
   const projectDetails: string[] = [];
@@ -775,7 +775,7 @@ function addComprehensiveProjectWatermark(pdf: any, document: any, language: str
   // Add additional scattered project info for comprehensive coverage
   if (projectDetails.length > 0) {
     pdf.setFontSize(8);
-    pdf.setTextColor(80, 80, 80, 0.10);
+    pdf.setTextColor(140, 140, 140);
     
     // Create a grid pattern of project details throughout the page
     const gridSpacingX = pageWidth / 4;
