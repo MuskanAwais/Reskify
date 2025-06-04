@@ -48,20 +48,20 @@ export function Tour({ steps, isActive, onComplete, onSkip }: TourProps) {
 
       switch (position) {
         case 'top':
-          top = rect.top - 80; // Move further up to avoid covering dropdowns
-          left = rect.left + rect.width / 2;
+          top = Math.max(20, rect.top - 120); // Ensure enough space above
+          left = Math.max(20, Math.min(window.innerWidth - 400, rect.left + rect.width / 2 - 200));
           break;
         case 'bottom':
-          top = rect.bottom + 20; // More space below
-          left = rect.left + rect.width / 2;
+          top = Math.min(window.innerHeight - 200, rect.bottom + 30); // Ensure fits on screen
+          left = Math.max(20, Math.min(window.innerWidth - 400, rect.left + rect.width / 2 - 200));
           break;
         case 'left':
-          top = rect.top + rect.height / 2;
-          left = Math.max(350, rect.left - 20); // Ensure tooltip doesn't go off-screen left
+          top = Math.max(20, Math.min(window.innerHeight - 200, rect.top + rect.height / 2 - 100));
+          left = Math.max(20, rect.left - 420); // Position well to the left
           break;
         case 'right':
-          top = rect.top + rect.height / 2;
-          left = Math.min(window.innerWidth - 450, rect.right + 20); // Ensure tooltip fits on screen
+          top = Math.max(20, Math.min(window.innerHeight - 200, rect.top + rect.height / 2 - 100));
+          left = Math.min(window.innerWidth - 420, rect.right + 30); // Position well to the right
           break;
       }
 
@@ -178,34 +178,39 @@ export function Tour({ steps, isActive, onComplete, onSkip }: TourProps) {
 // CSS for highlighting
 const tourStyles = `
 .tour-highlight {
-  box-shadow: 0 0 0 4px #3b82f6 !important;
+  position: relative !important;
+  z-index: 9999 !important;
+  outline: 3px solid #3b82f6 !important;
+  outline-offset: 2px !important;
   border-radius: 8px !important;
   transition: all 0.3s ease !important;
 }
 
-.tour-highlight::after {
-  content: '';
-  position: absolute;
-  top: -8px;
-  left: -8px;
-  right: -8px;
-  bottom: -8px;
-  border: 2px solid #3b82f6;
-  border-radius: 12px;
-  pointer-events: none;
-  animation: pulse 2s infinite;
+.tour-overlay {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background: rgba(0, 0, 0, 0.5) !important;
+  z-index: 9998 !important;
+  pointer-events: none !important;
 }
 
-@keyframes pulse {
+@keyframes tour-pulse {
   0% {
-    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+    outline-color: rgba(59, 130, 246, 1);
   }
-  70% {
-    box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+  50% {
+    outline-color: rgba(59, 130, 246, 0.5);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+    outline-color: rgba(59, 130, 246, 1);
   }
+}
+
+.tour-highlight {
+  animation: tour-pulse 2s infinite;
 }
 `;
 

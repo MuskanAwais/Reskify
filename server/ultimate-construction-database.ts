@@ -698,6 +698,276 @@ export const ULTIMATE_CONSTRUCTION_DATABASE = {
       "Mill test certificates", "Fabrication inspection", "Installation inspection",
       "Load testing", "Proof loading", "Non-destructive testing", "Documentation", "As-built drawings"
     ]
+  },
+
+  "Painting": {
+    "Primary Tasks": [
+      "Interior painting", "Exterior painting", "Commercial painting", "Industrial painting",
+      "Residential painting", "Surface preparation", "Primer application", "Paint application",
+      "Protective coating application", "Decorative finishes", "Line marking", "Sign painting",
+      "Spray painting", "Brush painting", "Roller painting", "Wallpaper installation",
+      "Texture coating", "Anti-graffiti coating", "Fire retardant coating", "Lead paint removal"
+    ],
+    "Interior Painting": [
+      "Wall painting", "Ceiling painting", "Trim painting", "Door painting", "Window painting",
+      "Kitchen painting", "Bathroom painting", "Bedroom painting", "Living room painting",
+      "Office painting", "Commercial interior", "Hospital painting", "School painting",
+      "Retail painting", "Restaurant painting", "Hotel painting", "Apartment painting"
+    ],
+    "Exterior Painting": [
+      "House exterior", "Building facade", "Roof painting", "Fence painting", "Deck painting",
+      "Balcony painting", "Carport painting", "Shed painting", "Garage painting",
+      "Commercial exterior", "Industrial exterior", "Bridge painting", "Tank painting",
+      "Pipeline painting", "Marine painting", "Swimming pool painting", "Tennis court painting"
+    ],
+    "Specialized Coatings": [
+      "Epoxy coatings", "Polyurethane coatings", "Acrylic coatings", "Elastomeric coatings",
+      "Intumescent coatings", "Anti-corrosion coatings", "Chemical resistant coatings",
+      "Food grade coatings", "Marine coatings", "High temperature coatings", "Low temperature coatings",
+      "Conductive coatings", "Anti-static coatings", "Non-slip coatings", "Waterproof coatings"
+    ],
+    "Surface Preparation": [
+      "Pressure washing", "Sandblasting", "Chemical stripping", "Heat gun stripping",
+      "Scraping", "Sanding", "Wire brushing", "Power tool cleaning", "Primer application",
+      "Filler application", "Crack repair", "Hole repair", "Surface profiling",
+      "Degreasing", "Dust removal", "Masking", "Protection of adjacent surfaces"
+    ]
+  },
+
+  "Glazing": {
+    "Primary Tasks": [
+      "Window installation", "Door installation", "Curtain wall installation", "Skylight installation",
+      "Shopfront installation", "Glass replacement", "Glazing repairs", "Sealed unit replacement",
+      "Mirror installation", "Shower screen installation", "Balustrade installation",
+      "Structural glazing", "Security glazing", "Fire rated glazing", "Acoustic glazing"
+    ],
+    "Commercial Glazing": [
+      "Office building glazing", "Shopping center glazing", "Hospital glazing", "School glazing",
+      "Hotel glazing", "Restaurant glazing", "Retail glazing", "Industrial glazing",
+      "Warehouse glazing", "Factory glazing", "Laboratory glazing", "Clean room glazing",
+      "Data center glazing", "Airport glazing", "Stadium glazing", "Exhibition glazing"
+    ],
+    "Residential Glazing": [
+      "House windows", "Apartment windows", "Unit windows", "Townhouse windows",
+      "Villa windows", "Cottage windows", "Modern home glazing", "Heritage glazing",
+      "Energy efficient glazing", "Double glazing", "Triple glazing", "Low-E glazing",
+      "Tinted glazing", "Laminated glazing", "Tempered glazing", "Obscure glazing"
+    ],
+    "Specialist Applications": [
+      "Structural glazing", "Spider glazing", "Point fixed glazing", "Tension cable glazing",
+      "Overhead glazing", "Sloped glazing", "Curved glazing", "Laminated glazing",
+      "Security glazing", "Bullet resistant glazing", "Bomb blast glazing", "Hurricane glazing",
+      "Cyclone glazing", "Seismic glazing", "Thermal glazing", "Solar control glazing"
+    ],
+    "Installation Methods": [
+      "Wet glazing", "Dry glazing", "Structural glazing", "Pressure plate glazing",
+      "Clip-in glazing", "Gasket glazing", "Silicone glazing", "Tape glazing",
+      "Mechanical fixing", "Chemical fixing", "Thermal glazing", "Cold glazing",
+      "Pre-glazed installation", "Site glazing", "Factory glazing", "Modular glazing"
+    ]
+  },
+
+  "Flooring": {
+    "Primary Tasks": [
+      "Timber flooring installation", "Carpet installation", "Vinyl flooring installation",
+      "Laminate flooring installation", "Polished concrete", "Epoxy flooring",
+      "Rubber flooring installation", "Linoleum installation", "Cork flooring installation",
+      "Bamboo flooring installation", "Stone flooring installation", "Terrazzo installation",
+      "Floor preparation", "Subfloor installation", "Underlay installation", "Floor repairs"
+    ],
+    "Timber Flooring": [
+      "Hardwood flooring", "Engineered flooring", "Bamboo flooring", "Cork flooring",
+      "Parquet flooring", "Strip flooring", "Plank flooring", "Block flooring",
+      "Herringbone flooring", "Chevron flooring", "Wide board flooring", "Narrow strip flooring",
+      "Solid timber flooring", "Pre-finished flooring", "Site finished flooring", "Reclaimed timber flooring"
+    ],
+    "Resilient Flooring": [
+      "Vinyl sheet flooring", "Vinyl tile flooring", "Luxury vinyl plank", "Rubber sheet flooring",
+      "Rubber tile flooring", "Linoleum sheet", "Linoleum tile", "Cork sheet flooring",
+      "Cork tile flooring", "PVC flooring", "Polyurethane flooring", "Epoxy flooring",
+      "Anti-static flooring", "Conductive flooring", "Safety flooring", "Sport flooring"
+    ],
+    "Carpet and Textiles": [
+      "Broadloom carpet", "Carpet tiles", "Entrance matting", "Artificial turf",
+      "Needle punch carpet", "Tufted carpet", "Woven carpet", "Printed carpet",
+      "Loop pile carpet", "Cut pile carpet", "Cut and loop carpet", "Berber carpet",
+      "Frieze carpet", "Saxony carpet", "Plush carpet", "Textured carpet"
+    ],
+    "Industrial Flooring": [
+      "Warehouse flooring", "Factory flooring", "Laboratory flooring", "Clean room flooring",
+      "Food processing flooring", "Chemical resistant flooring", "Anti-slip flooring",
+      "Heavy duty flooring", "Forklift rated flooring", "ESD flooring", "Seamless flooring",
+      "Hygienic flooring", "Drainage flooring", "Raised access flooring", "Underfloor heating compatible"
+    ]
+  },
+
+  "Drywall": {
+    "Primary Tasks": [
+      "Stud wall framing", "Plasterboard installation", "Plaster skimming", "Texture application",
+      "Ceiling installation", "Partition walls", "Feature walls", "Bulkheads",
+      "Cornices and moldings", "Acoustic walls", "Fire rated walls", "Wet area lining",
+      "External wall lining", "Insulation installation", "Vapor barrier installation", "Joint finishing"
+    ],
+    "Framing Systems": [
+      "Steel stud framing", "Timber stud framing", "Metal track systems", "Load bearing walls",
+      "Non-load bearing walls", "Shaft walls", "Area separation walls", "Demountable walls",
+      "Movable walls", "Folding walls", "Sliding walls", "Curved walls",
+      "Angled walls", "High walls", "Double height walls", "Suspended ceilings"
+    ],
+    "Plasterboard Types": [
+      "Standard plasterboard", "Fire rated plasterboard", "Water resistant plasterboard",
+      "Impact resistant plasterboard", "Acoustic plasterboard", "Insulated plasterboard",
+      "Vapor barrier plasterboard", "Mold resistant plasterboard", "High impact plasterboard",
+      "Flexible plasterboard", "Curved plasterboard", "Perforated plasterboard",
+      "Decorative plasterboard", "Cement board", "Fiber cement board", "Magnesium oxide board"
+    ],
+    "Finishing Techniques": [
+      "Tape and joint", "Mesh and set", "Paper tape finishing", "Fiberglass mesh finishing",
+      "Level 1 finish", "Level 2 finish", "Level 3 finish", "Level 4 finish",
+      "Level 5 finish", "Texture spraying", "Knockdown texture", "Orange peel texture",
+      "Popcorn texture", "Skip trowel texture", "Smooth finish", "Primer application"
+    ],
+    "Specialty Applications": [
+      "Clean room walls", "X-ray room walls", "MRI room walls", "Operating theater walls",
+      "Laboratory walls", "Prison cell walls", "Psychiatric unit walls", "School walls",
+      "Hospital walls", "Food processing walls", "Cold storage walls", "Blast resistant walls",
+      "Ballistic resistant walls", "Sound proof walls", "Recording studio walls", "Theater walls"
+    ]
+  },
+
+  "Earthworks": {
+    "Primary Tasks": [
+      "Site excavation", "Foundation excavation", "Trenching", "Bulk earthworks",
+      "Cut and fill operations", "Site preparation", "Grading and leveling", "Compaction",
+      "Drainage excavation", "Road construction", "Car park construction", "Retaining walls",
+      "Landscaping earthworks", "Utility trenching", "Pipeline trenching", "Stockpiling"
+    ],
+    "Excavation Work": [
+      "Building excavation", "Swimming pool excavation", "Basement excavation", "Lift pit excavation",
+      "Tank excavation", "Septic tank excavation", "Drainage excavation", "Service trenching",
+      "Cable trenching", "Pipe trenching", "Footing excavation", "Pad excavation",
+      "Strip footing excavation", "Pile hole excavation", "Rock excavation", "Contaminated soil excavation"
+    ],
+    "Road Construction": [
+      "Road base preparation", "Subgrade preparation", "Pavement construction", "Asphalt laying",
+      "Concrete pavement", "Gravel road construction", "Unsealed road construction",
+      "Footpath construction", "Cycleway construction", "Car park construction",
+      "Driveway construction", "Loading dock construction", "Hardstand construction", "Turning circle construction"
+    ],
+    "Drainage and Utilities": [
+      "Stormwater drainage", "Sewer line installation", "Water main installation",
+      "Gas line installation", "Electrical conduit installation", "Telecommunications trenching",
+      "NBN trenching", "Fiber optic trenching", "Detention basin construction",
+      "Bioswale construction", "Infiltration basin construction", "Culvert installation",
+      "Headwall construction", "Catch basin installation", "Manhole installation", "Pump station excavation"
+    ],
+    "Environmental Work": [
+      "Contaminated soil removal", "Hazardous material excavation", "Asbestos soil removal",
+      "Underground tank removal", "Remediation excavation", "Waste pit excavation",
+      "Landfill construction", "Capping layer installation", "Liner installation",
+      "Erosion control", "Sediment control", "Dust suppression", "Water quality protection",
+      "Rehabilitation work", "Revegetation preparation", "Topsoil placement"
+    ]
+  },
+
+  "Welding": {
+    "Primary Tasks": [
+      "Structural welding", "Pipe welding", "Sheet metal welding", "Fabrication welding",
+      "Repair welding", "Maintenance welding", "Underwater welding", "Pressure vessel welding",
+      "Pipeline welding", "Tank welding", "Boiler welding", "Heat exchanger welding",
+      "Stainless steel welding", "Aluminum welding", "Cast iron welding", "Exotic alloy welding"
+    ],
+    "Welding Processes": [
+      "SMAW (Stick welding)", "GMAW (MIG welding)", "GTAW (TIG welding)", "FCAW (Flux core)",
+      "SAW (Submerged arc)", "PAW (Plasma arc)", "OFW (Oxy-fuel)", "ESW (Electroslag)",
+      "LBW (Laser beam)", "EBW (Electron beam)", "RSW (Resistance spot)", "SW (Stud welding)",
+      "FSW (Friction stir)", "USW (Ultrasonic)", "DFW (Diffusion)", "EGW (Electrogas)"
+    ],
+    "Material Types": [
+      "Carbon steel", "Stainless steel", "Aluminum alloys", "Copper alloys", "Nickel alloys",
+      "Titanium alloys", "Magnesium alloys", "Cast iron", "Ductile iron", "Tool steel",
+      "High strength steel", "Weathering steel", "Cryogenic steel", "Heat resistant steel",
+      "Duplex stainless", "Super duplex", "Inconel", "Hastelloy", "Monel", "Incoloy"
+    ],
+    "Applications": [
+      "Building construction", "Bridge construction", "Ship building", "Aerospace",
+      "Automotive", "Railway", "Oil and gas", "Chemical processing", "Power generation",
+      "Mining equipment", "Agricultural equipment", "Construction equipment", "Marine",
+      "Nuclear", "Defense", "Art and sculpture", "Custom fabrication", "Repair work"
+    ],
+    "Quality Standards": [
+      "AWS D1.1 Structural", "AWS D1.2 Aluminum", "AWS D1.3 Sheet steel", "AWS D1.5 Bridge",
+      "ASME IX Pressure vessel", "API 1104 Pipeline", "AS/NZS 1554 Australian standard",
+      "ISO 3834 Quality requirements", "EN 1090 Structural", "AISC 360 Steel construction",
+      "WPS development", "PQR testing", "Welder qualification", "NDT requirements"
+    ]
+  },
+
+  "Fire Protection": {
+    "Primary Tasks": [
+      "Fire sprinkler installation", "Fire alarm installation", "Emergency lighting installation",
+      "Exit sign installation", "Fire extinguisher installation", "Fire door installation",
+      "Smoke detection systems", "Fire suppression systems", "Emergency evacuation systems",
+      "Fire hydrant installation", "Fire pump installation", "Deluge system installation",
+      "Dry chemical systems", "Foam systems", "CO2 systems", "Clean agent systems"
+    ],
+    "Sprinkler Systems": [
+      "Wet pipe systems", "Dry pipe systems", "Pre-action systems", "Deluge systems",
+      "Water mist systems", "Foam water systems", "ESFR systems", "Residential systems",
+      "Commercial systems", "Industrial systems", "High-rise systems", "Underground systems",
+      "Exposed systems", "Concealed systems", "Seismic bracing", "Freeze protection"
+    ],
+    "Detection Systems": [
+      "Smoke detectors", "Heat detectors", "Flame detectors", "Gas detectors",
+      "Aspirating systems", "Beam detectors", "Multi-sensor detectors", "Video analytics",
+      "Manual call points", "Break glass units", "Fire alarm panels", "Repeater panels",
+      "Remote annunciators", "Voice evacuation", "Mass notification", "Emergency communication"
+    ],
+    "Suppression Systems": [
+      "Water sprinklers", "Water mist", "Foam systems", "Dry chemical", "Wet chemical",
+      "CO2 systems", "Inert gas systems", "Clean agents", "Kitchen hood systems",
+      "Paint booth systems", "Computer room systems", "Archive protection", "Vehicle systems",
+      "Aircraft hangars", "Power plants", "Chemical facilities", "Marine systems"
+    ],
+    "Special Applications": [
+      "Clean rooms", "Data centers", "Hospitals", "Schools", "Hotels", "High-rise buildings",
+      "Underground facilities", "Tunnels", "Parking garages", "Warehouses", "Manufacturing",
+      "Food processing", "Cold storage", "Hazardous areas", "Nuclear facilities", "Offshore platforms"
+    ]
+  },
+
+  "Security Systems": {
+    "Primary Tasks": [
+      "CCTV installation", "Access control installation", "Intrusion detection installation",
+      "Intercom system installation", "Perimeter security installation", "Barrier installation",
+      "Turnstile installation", "Security lighting installation", "Panic button installation",
+      "Card reader installation", "Biometric system installation", "Vehicle access control",
+      "Visitor management systems", "Security command centers", "Integration systems", "Maintenance"
+    ],
+    "CCTV Systems": [
+      "Analog cameras", "IP cameras", "HD cameras", "4K cameras", "Thermal cameras",
+      "PTZ cameras", "Fixed cameras", "Dome cameras", "Bullet cameras", "Covert cameras",
+      "License plate recognition", "Facial recognition", "Video analytics", "NVR systems",
+      "DVR systems", "Video management", "Remote monitoring", "Mobile access"
+    ],
+    "Access Control": [
+      "Card access systems", "Biometric access", "Keypad access", "Proximity readers",
+      "Smart card readers", "Mobile access", "Visitor management", "Time attendance",
+      "Anti-passback", "Multi-level security", "Emergency lockdown", "Integration systems",
+      "Door controllers", "Turnstiles", "Barriers", "Revolving doors", "Security doors"
+    ],
+    "Intrusion Detection": [
+      "Motion detectors", "Door contacts", "Window contacts", "Glass break detectors",
+      "Vibration detectors", "Beam break detectors", "Perimeter detection", "Fence sensors",
+      "Underground sensors", "Microwave detectors", "PIR detectors", "Dual technology",
+      "Pet immune detectors", "Outdoor detectors", "Wireless systems", "Hybrid systems"
+    ],
+    "Integrated Systems": [
+      "Building management", "Fire alarm integration", "HVAC integration", "Lighting control",
+      "Emergency systems", "Mass notification", "Intercom integration", "Elevator control",
+      "Parking systems", "Gate automation", "Security monitoring", "Central stations",
+      "Mobile apps", "Web interfaces", "Reporting systems", "Analytics platforms"
+    ]
   }
 };
 
