@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import SimplifiedTableEditor from "./simplified-table-editor";
 import SmartTooltip from "@/components/ui/smart-tooltip";
+import QuickActionTooltip, { presetTooltips } from "@/components/ui/quick-action-tooltip";
 
 interface SwmsFormProps {
   step: number;
@@ -704,8 +705,15 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
             <Card>
               <CardHeader>
                 <CardTitle className="text-sm flex items-center">
-                  <Shield className="mr-2 h-4 w-4 text-blue-500" />
-                  Risk Assessment Matrix
+                  <QuickActionTooltip
+                    {...presetTooltips.riskMatrix}
+                    side="right"
+                  >
+                    <div className="flex items-center cursor-help">
+                      <Shield className="mr-2 h-4 w-4 text-blue-500" />
+                      Risk Assessment Matrix
+                    </div>
+                  </QuickActionTooltip>
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -833,51 +841,110 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
                       </div>
                     </div>
                     
-                    <Button
-                      type="button"
-                      className="w-full"
-                      onClick={async () => {
-                        try {
-                          const response = await fetch('/api/ai/enhance-swms', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                              activities: formData.activities,
-                              tradeType: formData.tradeType,
-                              projectLocation: formData.projectLocation
-                            })
-                          });
-                          
-                          if (response.ok) {
-                            const aiData = await response.json();
-                            updateFormData({
-                              riskAssessments: aiData.riskAssessments,
-                              safetyMeasures: aiData.safetyMeasures,
-                              complianceCodes: [...(formData.complianceCodes || []), ...aiData.complianceRecommendations]
-                            });
-                            toast({
-                              title: "AI Analysis Complete",
-                              description: `Generated ${aiData.riskAssessments.length} risk assessments. Proceeding to visual table editor.`,
-                            });
-                            // Automatically advance to step 3 (Visual Table Editor) after AI generation
-                            setTimeout(() => {
-                              if (onNext) onNext();
-                            }, 1500);
-                          } else {
-                            throw new Error('AI analysis failed');
-                          }
-                        } catch (error) {
-                          toast({
-                            title: "AI Analysis Error",
-                            description: "Unable to generate AI risk assessment. Please check your connection.",
-                            variant: "destructive"
-                          });
+                    <QuickActionTooltip
+                      title="AI Risk Assessment Generator"
+                      description="Automatically generate comprehensive risk assessments for your selected activities using advanced AI analysis"
+                      category="creation"
+                      shortcuts={[
+                        { key: "Ctrl + G", action: "Generate AI assessment" }
+                      ]}
+                      tips={[
+                        "AI considers trade-specific hazards and regulations",
+                        "Generated assessments follow Australian safety standards",
+                        "Results automatically advance to the visual editor",
+                        "You can customize all generated content afterward"
+                      ]}
+                      actions={[
+                        {
+                          label: "Quick Generate",
+                          icon: <Shield className="h-3 w-3" />,
+                          onClick: async () => {
+                            try {
+                              const response = await fetch('/api/ai/enhance-swms', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                  activities: formData.activities,
+                                  tradeType: formData.tradeType,
+                                  projectLocation: formData.projectLocation
+                                })
+                              });
+                              
+                              if (response.ok) {
+                                const aiData = await response.json();
+                                updateFormData({
+                                  riskAssessments: aiData.riskAssessments,
+                                  safetyMeasures: aiData.safetyMeasures,
+                                  complianceCodes: [...(formData.complianceCodes || []), ...aiData.complianceRecommendations]
+                                });
+                                toast({
+                                  title: "AI Analysis Complete",
+                                  description: `Generated ${aiData.riskAssessments.length} risk assessments. Proceeding to visual table editor.`,
+                                });
+                                setTimeout(() => {
+                                  if (onNext) onNext();
+                                }, 1500);
+                              } else {
+                                throw new Error('AI analysis failed');
+                              }
+                            } catch (error) {
+                              toast({
+                                title: "AI Analysis Error",
+                                description: "Unable to generate AI risk assessment. Please check your connection.",
+                                variant: "destructive"
+                              });
+                            }
+                          },
+                          variant: "default"
                         }
-                      }}
+                      ]}
                     >
-                      <Shield className="mr-2 h-4 w-4" />
-                      Generate AI Risk Assessment
-                    </Button>
+                      <Button
+                        type="button"
+                        className="w-full"
+                        onClick={async () => {
+                          try {
+                            const response = await fetch('/api/ai/enhance-swms', {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({
+                                activities: formData.activities,
+                                tradeType: formData.tradeType,
+                                projectLocation: formData.projectLocation
+                              })
+                            });
+                            
+                            if (response.ok) {
+                              const aiData = await response.json();
+                              updateFormData({
+                                riskAssessments: aiData.riskAssessments,
+                                safetyMeasures: aiData.safetyMeasures,
+                                complianceCodes: [...(formData.complianceCodes || []), ...aiData.complianceRecommendations]
+                              });
+                              toast({
+                                title: "AI Analysis Complete",
+                                description: `Generated ${aiData.riskAssessments.length} risk assessments. Proceeding to visual table editor.`,
+                              });
+                              // Automatically advance to step 3 (Visual Table Editor) after AI generation
+                              setTimeout(() => {
+                                if (onNext) onNext();
+                              }, 1500);
+                            } else {
+                              throw new Error('AI analysis failed');
+                            }
+                          } catch (error) {
+                            toast({
+                              title: "AI Analysis Error",
+                              description: "Unable to generate AI risk assessment. Please check your connection.",
+                              variant: "destructive"
+                            });
+                          }
+                        }}
+                      >
+                        <Shield className="mr-2 h-4 w-4" />
+                        Generate AI Risk Assessment
+                      </Button>
+                    </QuickActionTooltip>
                   </div>
                 </CardContent>
               </Card>
