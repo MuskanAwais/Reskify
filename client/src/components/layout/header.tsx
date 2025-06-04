@@ -71,7 +71,9 @@ export default function Header() {
             <VoiceAssistant />
             
             {/* Language Switcher */}
-            <ComprehensiveLanguageSwitcher />
+            <div data-tour="language-switcher">
+              <ComprehensiveLanguageSwitcher />
+            </div>
 
 
 

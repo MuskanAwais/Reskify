@@ -92,6 +92,8 @@ export default function Sidebar() {
     setDemoMode(newMode);
     try {
       localStorage.setItem('demoMode', newMode.toString());
+      // Dispatch custom event for real-time updates
+      window.dispatchEvent(new CustomEvent('demoModeChanged', { detail: { enabled: newMode } }));
     } catch (error) {
       console.error('Failed to save demo state:', error);
     }
@@ -172,6 +174,20 @@ export default function Sidebar() {
       title: 'Subscription Status',
       content: 'Monitor your current plan and credit usage. Demo mode is limited to 2 SWMS documents.',
       position: 'right' as const,
+      spotlight: true
+    },
+    {
+      target: '[data-tour="language-switcher"]',
+      title: 'Language Settings',
+      content: 'Change the interface language between English, Spanish, and French. Your language preference is saved automatically.',
+      position: 'left' as const,
+      spotlight: true
+    },
+    {
+      target: '[data-tour="contact-support"]',
+      title: 'Contact Support',
+      content: 'Get help with any questions or issues. Our support team can assist with technical problems, billing, or general usage questions.',
+      position: 'left' as const,
       spotlight: true
     }
   ];
