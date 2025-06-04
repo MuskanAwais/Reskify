@@ -48,20 +48,20 @@ export function Tour({ steps, isActive, onComplete, onSkip }: TourProps) {
 
       switch (position) {
         case 'top':
-          top = rect.top - 10;
+          top = rect.top - 80; // Move further up to avoid covering dropdowns
           left = rect.left + rect.width / 2;
           break;
         case 'bottom':
-          top = rect.bottom + 10;
+          top = rect.bottom + 20; // More space below
           left = rect.left + rect.width / 2;
           break;
         case 'left':
           top = rect.top + rect.height / 2;
-          left = rect.left - 10;
+          left = rect.left - 300; // Move further left for wider tooltips
           break;
         case 'right':
           top = rect.top + rect.height / 2;
-          left = rect.right + 10;
+          left = rect.right + 20; // More space to the right
           break;
       }
 

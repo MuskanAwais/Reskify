@@ -55,11 +55,22 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
     queryKey: ["/api/user/subscription"],
   });
 
-  // Task limits based on subscription
+  // Check if demo mode is active
+  const isDemoMode = (() => {
+    try {
+      return localStorage.getItem('demoMode') === 'true';
+    } catch {
+      return false;
+    }
+  })();
+
+  // Task limits based on subscription and demo mode
   const getTaskLimit = () => {
+    // Demo mode restrictions
+    if (isDemoMode || !subscription?.plan) return 2;
     // All paid plans have unlimited tasks
     if (subscription?.plan === "Pro" || subscription?.plan === "Enterprise") return 999;
-    return 2; // Demo mode limit only
+    return 2; // Fallback for Basic plan
   };
 
   const taskLimit = getTaskLimit();
@@ -266,12 +277,12 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
                       Limit Reached
                     </Badge>
                   )}
-                  {!subscription?.plan && (
+                  {(isDemoMode || !subscription?.plan) && (
                     <Badge variant="outline" className="text-xs">
                       Demo Mode - 2 Tasks Max
                     </Badge>
                   )}
-                  {subscription?.plan && (
+                  {subscription?.plan && !isDemoMode && (
                     <Badge variant="default" className="text-xs bg-green-100 text-green-800">
                       {subscription.plan} Plan
                     </Badge>
