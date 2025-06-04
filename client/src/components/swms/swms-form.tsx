@@ -41,6 +41,7 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [categoryActivities, setCategoryActivities] = useState<Record<string, string[]>>({});
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
 
   const { data: trades } = useQuery({
     queryKey: ["/api/trades"],
