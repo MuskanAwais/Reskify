@@ -141,15 +141,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get comprehensive task database with safety data
+  // Get comprehensive task database with full safety data
   app.get("/api/tasks/comprehensive", async (req, res) => {
     try {
-      const { getAllAustralianTasks } = await import('./australian-construction-database');
-      const australianTasks = getAllAustralianTasks();
+      const { getAllComprehensiveSafetyTasks } = await import('./comprehensive-safety-task-database');
+      const safetyTasks = getAllComprehensiveSafetyTasks();
       
       res.json({
-        totalTasks: australianTasks.length,
-        tasks: australianTasks
+        totalTasks: safetyTasks.length,
+        tasks: safetyTasks,
+        metadata: {
+          includesRiskAssessments: true,
+          includesAustralianLegislation: true,
+          includesEmergencyProcedures: true,
+          includesHRCWIdentification: true,
+          compliantWithWHSRegulation291: true
+        }
       });
     } catch (error: any) {
       console.error('Get comprehensive tasks error:', error);
@@ -157,22 +164,93 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get tasks by trade with comprehensive safety data
+  // Get tasks by trade with comprehensive safety data including HRCW identification
   app.get("/api/tasks/trade/:tradeName", async (req, res) => {
     try {
       const { tradeName } = req.params;
-      const { getAustralianTasksByTrade } = await import('./australian-construction-database');
+      const { getComprehensiveSafetyTasksByTrade } = await import('./comprehensive-safety-task-database');
       
-      const tradeTasks = getAustralianTasksByTrade(tradeName);
+      const tradeTasks = getComprehensiveSafetyTasksByTrade(tradeName);
       
       res.json({
         trade: tradeName,
         totalTasks: tradeTasks.length,
-        tasks: tradeTasks
+        tasks: tradeTasks,
+        highRiskTasks: tradeTasks.filter(task => task.highRiskWork).length,
+        riskDistribution: {
+          low: tradeTasks.filter(task => task.riskLevel === "Low").length,
+          medium: tradeTasks.filter(task => task.riskLevel === "Medium").length,
+          high: tradeTasks.filter(task => task.riskLevel === "High").length,
+          extreme: tradeTasks.filter(task => task.riskLevel === "Extreme").length
+        }
       });
     } catch (error: any) {
       console.error('Get trade tasks error:', error);
       res.status(500).json({ message: 'Failed to fetch trade tasks' });
+    }
+  });
+
+  // Get specific activity with complete safety data
+  app.get("/api/activities/:activityName/safety", async (req, res) => {
+    try {
+      const { activityName } = req.params;
+      const { getComprehensiveSafetyTasksByActivity } = await import('./comprehensive-safety-task-database');
+      
+      const safetyTask = getComprehensiveSafetyTasksByActivity(activityName);
+      
+      if (!safetyTask) {
+        return res.status(404).json({ message: 'Activity not found' });
+      }
+      
+      res.json({
+        activity: safetyTask.activity,
+        trade: safetyTask.trade,
+        safetyData: safetyTask,
+        swmsCompliance: {
+          hasHazardIdentification: safetyTask.hazards.length > 0,
+          hasRiskAssessment: safetyTask.initialRiskScore > 0,
+          hasControlMeasures: safetyTask.controlMeasures.length > 0,
+          hasAustralianLegislation: safetyTask.legislation.length > 0,
+          hasPPERequirements: safetyTask.ppe.length > 0,
+          hasTrainingRequirements: safetyTask.trainingRequired.length > 0,
+          hasEmergencyProcedures: safetyTask.emergencyProcedures.length > 0,
+          isHighRiskWork: safetyTask.highRiskWork
+        }
+      });
+    } catch (error: any) {
+      console.error('Get activity safety data error:', error);
+      res.status(500).json({ message: 'Failed to fetch activity safety data' });
+    }
+  });
+
+  // Get High-Risk Construction Work (HRCW) tasks per WHS Regulation 291
+  app.get("/api/tasks/high-risk", async (req, res) => {
+    try {
+      const { getHighRiskSafetyTasks } = await import('./comprehensive-safety-task-database');
+      const highRiskTasks = getHighRiskSafetyTasks();
+      
+      res.json({
+        totalHighRiskTasks: highRiskTasks.length,
+        tasks: highRiskTasks,
+        regulationCompliance: "WHS Regulation 291 - High-Risk Construction Work",
+        categories: {
+          workAtHeight: highRiskTasks.filter(task => 
+            task.hazards.some(hazard => hazard.toLowerCase().includes('height') || hazard.toLowerCase().includes('fall'))
+          ).length,
+          electricalWork: highRiskTasks.filter(task => 
+            task.hazards.some(hazard => hazard.toLowerCase().includes('electric') || hazard.toLowerCase().includes('shock'))
+          ).length,
+          confinedSpaces: highRiskTasks.filter(task => 
+            task.hazards.some(hazard => hazard.toLowerCase().includes('confined'))
+          ).length,
+          demolition: highRiskTasks.filter(task => 
+            task.activity.toLowerCase().includes('demolition')
+          ).length
+        }
+      });
+    } catch (error: any) {
+      console.error('Get high-risk tasks error:', error);
+      res.status(500).json({ message: 'Failed to fetch high-risk tasks' });
     }
   });
 
