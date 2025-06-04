@@ -226,11 +226,8 @@ export default function Billing() {
   };
 
   const shouldShowButton = (planName: string) => {
-    const currentTier = getCurrentPlanTier(billingData.currentPlan);
-    const planTier = getCurrentPlanTier(planName);
-    
-    // Show button for current plan (disabled) or higher tiers only
-    return planName === billingData.currentPlan || planTier > currentTier;
+    // Show button for all plans (current plan will be disabled)
+    return true;
   };
 
   const calculateProgress = () => {
