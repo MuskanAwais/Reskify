@@ -997,8 +997,9 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
                   </CardHeader>
                   <CardContent>
                     <SimplifiedTableEditor 
-                      formData={formData} 
-                      onDataChange={onDataChange}
+                      riskAssessments={formData?.riskAssessments || []}
+                      onUpdate={(assessments) => onDataChange({ ...formData, riskAssessments: assessments })}
+                      tradeType={formData?.tradeType || 'General'}
                     />
                   </CardContent>
                 </Card>

@@ -27,7 +27,7 @@ interface SimplifiedTableEditorProps {
   tradeType: string;
 }
 
-export function SimplifiedTableEditor({ riskAssessments, onUpdate, tradeType }: SimplifiedTableEditorProps) {
+export function SimplifiedTableEditor({ riskAssessments = [], onUpdate, tradeType }: SimplifiedTableEditorProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [newAssessment, setNewAssessment] = useState<Partial<RiskAssessment>>({
     activity: '',
