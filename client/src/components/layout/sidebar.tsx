@@ -61,6 +61,14 @@ export default function Sidebar() {
     }
   });
 
+  const [enterpriseMode, setEnterpriseMode] = useState(() => {
+    try {
+      return localStorage.getItem('enterpriseMode') === 'true';
+    } catch {
+      return false;
+    }
+  });
+
   const toggleAdminMode = () => {
     const newMode = !adminMode;
     setAdminMode(newMode);
@@ -79,6 +87,16 @@ export default function Sidebar() {
       localStorage.setItem('demoMode', newMode.toString());
     } catch (error) {
       console.error('Failed to save demo state:', error);
+    }
+  };
+
+  const toggleEnterpriseMode = () => {
+    const newMode = !enterpriseMode;
+    setEnterpriseMode(newMode);
+    try {
+      localStorage.setItem('enterpriseMode', newMode.toString());
+    } catch (error) {
+      console.error('Failed to save enterprise state:', error);
     }
   };
   
@@ -102,8 +120,8 @@ export default function Sidebar() {
       label: "Team", 
       href: "/team-collaboration",
       requiresAccess: true,
-      hasAccess: subscription?.plan === "Enterprise" || adminMode,
-      badge: subscription?.plan === "Enterprise" ? "Enterprise" : null
+      hasAccess: subscription?.plan === "Enterprise" || adminMode || enterpriseMode,
+      badge: subscription?.plan === "Enterprise" || enterpriseMode ? "Enterprise" : null
     },
     { icon: BarChart3, label: "Analytics", href: "/analytics" },
     { icon: User, label: "Account", href: "/billing" }
@@ -147,22 +165,41 @@ export default function Sidebar() {
           </div>
 
           {adminMode && (
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">Demo Mode</span>
-              <Button
-                variant={demoMode ? "default" : "outline"}
-                size="sm"
-                onClick={toggleDemoMode}
-                className={`px-3 py-1 text-xs ${
-                  demoMode 
-                    ? 'bg-blue-600 text-white hover:bg-blue-700' 
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                <Bot className="mr-1 h-3 w-3" />
-                {demoMode ? 'ON' : 'OFF'}
-              </Button>
-            </div>
+            <>
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">Demo Mode</span>
+                <Button
+                  variant={demoMode ? "default" : "outline"}
+                  size="sm"
+                  onClick={toggleDemoMode}
+                  className={`px-3 py-1 text-xs ${
+                    demoMode 
+                      ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  <Bot className="mr-1 h-3 w-3" />
+                  {demoMode ? 'ON' : 'OFF'}
+                </Button>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">Enterprise Mode</span>
+                <Button
+                  variant={enterpriseMode ? "default" : "outline"}
+                  size="sm"
+                  onClick={toggleEnterpriseMode}
+                  className={`px-3 py-1 text-xs ${
+                    enterpriseMode 
+                      ? 'bg-purple-600 text-white hover:bg-purple-700' 
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  <Users className="mr-1 h-3 w-3" />
+                  {enterpriseMode ? 'ON' : 'OFF'}
+                </Button>
+              </div>
+            </>
           )}
         </div>
 
