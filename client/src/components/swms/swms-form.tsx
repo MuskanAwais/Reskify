@@ -732,7 +732,15 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
     case 2:
       return (
         <div className="space-y-6">
-          {/* Risk Matrix and Safety Hierarchy Reference - Only shown in Step 2 */}
+          <div className="text-center">
+            <AlertTriangle className="mx-auto h-12 w-12 text-orange-500 mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Risk Assessment</h3>
+            <p className="text-gray-600 text-sm">
+              Identify and assess potential hazards for your work activities
+            </p>
+          </div>
+
+          {/* Risk Matrix and Safety Hierarchy Reference */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
             <Card>
               <CardHeader>
@@ -836,14 +844,6 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
                 </div>
               </CardContent>
             </Card>
-          </div>
-
-          <div className="text-center">
-            <AlertTriangle className="mx-auto h-12 w-12 text-orange-500 mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Risk Assessment</h3>
-            <p className="text-gray-600 text-sm">
-              Identify and assess potential hazards for your work activities
-            </p>
           </div>
 
           {formData.activities.length > 0 && (
