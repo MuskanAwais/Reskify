@@ -97,6 +97,14 @@ export default function Sidebar() {
       requiresAccess: true,
       hasAccess: subscription?.features?.safetyLibrary || adminMode
     },
+    { 
+      icon: Users, 
+      label: "Team", 
+      href: "/team-collaboration",
+      requiresAccess: true,
+      hasAccess: subscription?.plan === "Enterprise" || adminMode,
+      badge: subscription?.plan === "Enterprise" ? "Enterprise" : null
+    },
     { icon: BarChart3, label: "Analytics", href: "/analytics" },
     { icon: User, label: "Account", href: "/billing" }
   ];
@@ -206,6 +214,14 @@ export default function Sidebar() {
                 >
                   <Icon className="mr-3 h-4 w-4" />
                   {item.label}
+                  {item.badge && (
+                    <Badge variant="secondary" className="ml-auto text-xs bg-purple-100 text-purple-800">
+                      {item.badge}
+                    </Badge>
+                  )}
+                  {item.requiresAccess && !item.hasAccess && (
+                    <Lock className="ml-auto h-3 w-3 text-gray-400" />
+                  )}
                 </Button>
               </Link>
             );

@@ -57,9 +57,9 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
 
   // Task limits based on subscription
   const getTaskLimit = () => {
-    if (subscription?.plan === "Pro") return 10;
-    if (subscription?.plan === "Enterprise") return 25;
-    return 2; // Basic/Demo mode limit
+    // All paid plans have unlimited tasks
+    if (subscription?.plan === "Pro" || subscription?.plan === "Enterprise") return 999;
+    return 2; // Demo mode limit only
   };
 
   const taskLimit = getTaskLimit();
@@ -257,17 +257,23 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
                   <div className="flex items-center gap-2">
                     <FileText className="h-4 w-4 text-blue-600" />
                     <span className="text-sm font-medium text-blue-800">
-                      Tasks Selected: {formData.activities?.length || 0} / {taskLimit}
+                      Tasks Selected: {formData.activities?.length || 0} 
+                      {taskLimit === 999 ? " (Unlimited)" : ` / ${taskLimit}`}
                     </span>
                   </div>
-                  {isTaskLimitReached && (
+                  {isTaskLimitReached && taskLimit !== 999 && (
                     <Badge variant="destructive" className="text-xs">
                       Limit Reached
                     </Badge>
                   )}
-                  {subscription?.plan === "Basic" && (
+                  {!subscription?.plan && (
                     <Badge variant="outline" className="text-xs">
-                      Upgrade for more tasks
+                      Demo Mode - 2 Tasks Max
+                    </Badge>
+                  )}
+                  {subscription?.plan && (
+                    <Badge variant="default" className="text-xs bg-green-100 text-green-800">
+                      {subscription.plan} Plan
                     </Badge>
                   )}
                 </div>
@@ -399,20 +405,25 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
                                   if (index > -1) removeArrayItem('activities', index);
                                 });
                               } else {
-                                // Select all with task limit enforcement
+                                // Select all with task limit enforcement (only for demo mode)
                                 const currentCount = formData.activities?.length || 0;
-                                const availableSlots = taskLimit - currentCount;
                                 
-                                if (availableSlots <= 0) {
-                                  toast({
-                                    title: "Task Limit Reached",
-                                    description: `You can only select ${taskLimit} tasks with your current plan. Upgrade to Pro for more tasks.`,
-                                    variant: "destructive",
-                                  });
-                                  return;
+                                if (taskLimit !== 999) { // Only enforce limits for demo mode
+                                  const availableSlots = taskLimit - currentCount;
+                                  
+                                  if (availableSlots <= 0) {
+                                    toast({
+                                      title: "Task Limit Reached",
+                                      description: `Demo mode limited to ${taskLimit} tasks. Sign up for unlimited tasks.`,
+                                      variant: "destructive",
+                                    });
+                                    return;
+                                  }
                                 }
                                 
                                 let addedCount = 0;
+                                const availableSlots = taskLimit === 999 ? Infinity : (taskLimit - currentCount);
+                                
                                 category.activities.forEach((activity: string) => {
                                   if (!formData.activities.includes(activity) && addedCount < availableSlots) {
                                     addArrayItem('activities', activity);
