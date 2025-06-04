@@ -69,6 +69,49 @@ export default function Landing() {
   const opacity = useTransform(scrollYProgress, [0, 0.5, 1], [1, 0.8, 0.6]);
   const { user, isLoading, signIn } = useFirebaseAuth();
   const { toast } = useToast();
+  const { 
+    isActive: isWalkthroughActive, 
+    startWalkthrough, 
+    completeWalkthrough, 
+    skipWalkthrough,
+    hasSeenWalkthrough 
+  } = useFeatureWalkthrough();
+
+  // Walkthrough steps for first-time users
+  const walkthroughSteps = [
+    {
+      id: 'hero',
+      title: 'Welcome to Safety Sensei',
+      description: 'Your AI-powered SWMS builder designed specifically for Australian construction safety compliance.',
+      target: '[data-walkthrough="hero"]',
+      position: 'bottom' as const,
+      highlight: true
+    },
+    {
+      id: 'features',
+      title: 'Powerful Features',
+      description: 'Explore our comprehensive suite of tools including AI generation, visual editing, and multi-language support.',
+      target: '[data-walkthrough="features"]',
+      position: 'top' as const,
+      highlight: true
+    },
+    {
+      id: 'pricing',
+      title: 'Choose Your Plan',
+      description: 'Start with a free trial or select a subscription plan that fits your needs.',
+      target: '[data-walkthrough="pricing"]',
+      position: 'top' as const,
+      highlight: true
+    },
+    {
+      id: 'get-started',
+      title: 'Get Started',
+      description: 'Click here to sign in with Google and begin creating your first SWMS document.',
+      target: '[data-walkthrough="get-started"]',
+      position: 'top' as const,
+      highlight: true
+    }
+  ];
 
   const handleGetStarted = async () => {
     try {
@@ -209,7 +252,7 @@ export default function Landing() {
       </motion.div>
 
       {/* Hero Section with 3D Effects */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden z-10">
+      <section data-walkthrough="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden z-10">
         <motion.div 
           style={{ y, opacity }}
           className="absolute inset-0 bg-gradient-to-br from-blue-600/10 via-transparent to-blue-800/10"
@@ -246,13 +289,14 @@ export default function Landing() {
           <AnimatedSection delay={0.6}>
             <div className="flex flex-col gap-6 justify-center items-center max-w-md mx-auto">
               {/* Primary Action - Sign In with Google */}
-              <div className="w-full">
-                <Button 
-                  size="lg" 
-                  className="w-full bg-white hover:bg-gray-50 text-gray-800 border-2 border-gray-300 hover:border-gray-400 px-8 py-4 text-lg shadow-lg"
-                  onClick={handleGetStarted}
-                  disabled={isLoading}
-                >
+              <div className="w-full" data-walkthrough="get-started">
+                <EnhancedTooltip content="Sign in with Google to start creating professional SWMS documents with AI assistance">
+                  <Button 
+                    size="lg" 
+                    className="w-full bg-white hover:bg-gray-50 text-gray-800 border-2 border-gray-300 hover:border-gray-400 px-8 py-4 text-lg shadow-lg"
+                    onClick={handleGetStarted}
+                    disabled={isLoading}
+                  >
                   <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
                     <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                     <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
