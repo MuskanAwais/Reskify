@@ -149,18 +149,23 @@ export function SimplifiedTableEditor({ riskAssessments, onUpdate, tradeType }: 
           </TooltipProvider>
         </div>
       ))}
-      <QuickActionTooltip tooltip={`Add new ${placeholder.toLowerCase()}`}>
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={() => addArrayItem(items, setItems)}
-          className="w-full"
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Add {placeholder}
-        </Button>
-      </QuickActionTooltip>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => addArrayItem(items, setItems)}
+              className="w-full"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Add {placeholder}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Add new {placeholder.toLowerCase()}</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
     </div>
   );
 
@@ -275,12 +280,17 @@ export function SimplifiedTableEditor({ riskAssessments, onUpdate, tradeType }: 
             </div>
           </div>
 
-          <QuickActionTooltip tooltip="Add this risk assessment to the SWMS">
-            <Button onClick={addNewRisk} className="w-full">
-              <Plus className="h-4 w-4 mr-2" />
-              Add Risk Assessment
-            </Button>
-          </QuickActionTooltip>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button onClick={addNewRisk} className="w-full">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Risk Assessment
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Add this risk assessment to the SWMS</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </CardContent>
       </Card>
 
@@ -296,24 +306,34 @@ export function SimplifiedTableEditor({ riskAssessments, onUpdate, tradeType }: 
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-lg">{assessment.activity}</CardTitle>
                   <div className="flex items-center gap-2">
-                    <QuickActionTooltip tooltip="Edit risk assessment">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setEditingId(editingId === assessment.id ? null : assessment.id)}
-                      >
-                        <Edit2 className="h-4 w-4" />
-                      </Button>
-                    </QuickActionTooltip>
-                    <QuickActionTooltip tooltip="Remove risk assessment">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => removeAssessment(assessment.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </QuickActionTooltip>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setEditingId(editingId === assessment.id ? null : assessment.id)}
+                          >
+                            <Edit2 className="h-4 w-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>Edit risk assessment</TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => removeAssessment(assessment.id)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>Remove risk assessment</TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   </div>
                 </div>
                 {assessment.description && (
@@ -386,18 +406,28 @@ export function SimplifiedTableEditor({ riskAssessments, onUpdate, tradeType }: 
                     </div>
 
                     <div className="flex gap-2">
-                      <QuickActionTooltip tooltip="Save changes">
-                        <Button size="sm" onClick={() => setEditingId(null)}>
-                          <Check className="h-4 w-4 mr-2" />
-                          Save
-                        </Button>
-                      </QuickActionTooltip>
-                      <QuickActionTooltip tooltip="Cancel editing">
-                        <Button variant="outline" size="sm" onClick={() => setEditingId(null)}>
-                          <X className="h-4 w-4 mr-2" />
-                          Cancel
-                        </Button>
-                      </QuickActionTooltip>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button size="sm" onClick={() => setEditingId(null)}>
+                              <Check className="h-4 w-4 mr-2" />
+                              Save
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Save changes</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button variant="outline" size="sm" onClick={() => setEditingId(null)}>
+                              <X className="h-4 w-4 mr-2" />
+                              Cancel
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Cancel editing</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     </div>
                   </div>
                 )}

@@ -23,7 +23,7 @@ import {
   Layers,
   Search
 } from "lucide-react";
-import SimplifiedTableEditor from "./simplified-table-editor";
+import { SimplifiedTableEditor } from "./simplified-table-editor";
 import SmartTooltip from "@/components/ui/smart-tooltip";
 import QuickActionTooltip, { presetTooltips } from "@/components/ui/quick-action-tooltip";
 
