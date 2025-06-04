@@ -185,108 +185,79 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      // Use comprehensive Ultimate Construction Database to get authentic risk assessments for each activity
-      const { getAllUltimateConstructionTasks } = await import('./ultimate-construction-database');
+      // Use AI-powered unique risk assessment generation for each activity
+      const { generateMultipleRiskAssessments } = await import('./ai-risk-assessments');
+      const { getSafetyCodesByTrade } = await import('./comprehensive-safety-codes');
       
-      const allTasks = getAllUltimateConstructionTasks();
-      const riskAssessments = [];
-      const safetyMeasures = [];
-      const complianceCodes = new Set();
-
-      // Find exact matches in the comprehensive database for each selected activity
       console.log(`Processing ${activities.length} activities for ${tradeType}:`, activities);
-      console.log(`Database has ${allTasks.length} total tasks available`);
       
-      for (let i = 0; i < activities.length; i++) {
-        const activity = activities[i];
-        console.log(`Processing activity ${i + 1}/${activities.length}: "${activity}"`);
-        
-        // Find exact task match in comprehensive database
-        const exactTask = allTasks.find(task => 
-          task.activity === activity && task.trade === tradeType
-        );
-        
-        console.log(`Exact task found for "${activity}":`, !!exactTask);
-        
-        if (!exactTask) {
-          // Try to find any task with this trade to see what's available
-          const tradeTasksPreview = allTasks
-            .filter(task => task.trade === tradeType)
-            .slice(0, 3)
-            .map(task => task.activity);
-          console.log(`No exact match. Sample ${tradeType} tasks in database:`, tradeTasksPreview);
-        }
-        
-        if (exactTask) {
-          // Use authentic data from comprehensive database
-          const riskAssessment = {
-            id: exactTask.taskId,
-            activity: exactTask.activity,
-            hazards: exactTask.hazards,
-            initialRiskScore: exactTask.initialRiskScore,
-            riskLevel: exactTask.riskLevel,
-            controlMeasures: exactTask.controlMeasures,
-            residualRiskScore: exactTask.residualRiskScore,
-            residualRiskLevel: exactTask.residualRiskLevel,
-            responsible: exactTask.responsible,
-            ppe: exactTask.ppe,
-            training: exactTask.trainingRequired,
-            inspection: exactTask.inspectionFrequency,
-            emergencyProcedures: exactTask.emergencyProcedures,
-            environmental: exactTask.environmentalControls,
-            quality: exactTask.qualityRequirements,
-            legislation: exactTask.legislation,
-            category: exactTask.category,
-            trade: exactTask.trade,
-            complexity: exactTask.complexity,
-            frequency: exactTask.frequency,
-            editable: true
-          };
+      // Generate unique AI-powered risk assessments for each activity
+      const projectContext = `${tradeType} work at ${projectLocation || 'construction site'} in Australia. Job: ${jobName || 'Construction project'}. Location: ${projectAddress || 'TBD'}`;
+      
+      console.log('Generating AI-powered unique risk assessments for each activity...');
+      const riskAssessments = await generateMultipleRiskAssessments(activities, tradeType || 'General', projectContext);
+      
+      // Get comprehensive safety codes for the trade
+      const applicableCodes = getSafetyCodesByTrade(tradeType || 'General');
+      const complianceCodes = new Set(applicableCodes.map(code => code.code));
+      
+      // Generate trade-specific safety measures
+      const safetyMeasures = generateTradeSafetyMeasures(tradeType || 'General');
 
-          riskAssessments.push(riskAssessment);
+      console.log(`Generated ${riskAssessments.length} unique AI-powered risk assessments`);
+      console.log('AI risk assessments:', riskAssessments.map(r => ({ 
+        activity: r.activity, 
+        id: r.id, 
+        initialRisk: r.initialRiskScore, 
+        residualRisk: r.residualRiskScore 
+      })));
 
-          // Add legislation to compliance codes
-          exactTask.legislation.forEach(code => complianceCodes.add(code));
-          
-          // Add safety measures from control measures
-          safetyMeasures.push(...exactTask.controlMeasures);
-        } else {
-          // Find similar task in same trade if exact match not found
-          const similarTask = allTasks.find(task => 
-            task.trade === tradeType && 
-            (task.activity.toLowerCase().includes(activity.toLowerCase()) ||
-             activity.toLowerCase().includes(task.activity.toLowerCase()))
-          );
-          
-          if (similarTask) {
-            const riskAssessment = {
-              id: `custom-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-              activity: activity,
-              hazards: similarTask.hazards,
-              initialRiskScore: similarTask.initialRiskScore,
-              riskLevel: similarTask.riskLevel,
-              controlMeasures: similarTask.controlMeasures,
-              residualRiskScore: similarTask.residualRiskScore,
-              residualRiskLevel: similarTask.residualRiskLevel,
-              responsible: similarTask.responsible,
-              ppe: similarTask.ppe,
-              training: similarTask.trainingRequired,
-              inspection: similarTask.inspectionFrequency,
-              emergencyProcedures: similarTask.emergencyProcedures,
-              environmental: similarTask.environmentalControls,
-              quality: similarTask.qualityRequirements,
-              legislation: similarTask.legislation,
-              category: similarTask.category,
-              trade: tradeType,
-              complexity: similarTask.complexity,
-              frequency: similarTask.frequency,
-              editable: true
-            };
+      // Decrement user credits
+      user.swmsCredits = Math.max(0, user.swmsCredits - 1);
 
-            riskAssessments.push(riskAssessment);
-            similarTask.legislation.forEach(code => complianceCodes.add(code));
-            safetyMeasures.push(...similarTask.controlMeasures);
-          } else {
+      res.json({
+        title: title || `SWMS - ${tradeType} Work`,
+        projectLocation,
+        tradeType,
+        activities,
+        riskAssessments,
+        safetyMeasures,
+        complianceCodes: Array.from(complianceCodes),
+        emergencyProcedures: getEmergencyProcedures(tradeType || 'General'),
+        generalRequirements: getGeneralRequirements(),
+        aiEnhanced: true,
+        status: 'draft'
+      });
+    } catch (error: any) {
+      console.error('Auto-generate SWMS error:', error);
+      res.status(500).json({ message: 'Failed to auto-generate SWMS' });
+    }
+  });
+
+  // Generate detailed SWMS table data from selected tasks with AI-powered assessments
+  app.post("/api/generate-swms-table", async (req, res) => {
+    try {
+      const { activities, tradeType, projectDetails } = req.body;
+      
+      if (!activities || !Array.isArray(activities) || activities.length === 0) {
+        return res.status(400).json({ message: 'Activities array is required' });
+      }
+
+      // Use AI-powered risk assessment generation
+      const { generateMultipleRiskAssessments } = await import('./ai-risk-assessments');
+      const projectContext = `${tradeType} work in Australia. ${projectDetails || ''}`;
+      
+      const riskAssessments = await generateMultipleRiskAssessments(activities, tradeType, projectContext);
+      
+      res.json({
+        riskAssessments,
+        success: true
+      });
+    } catch (error: any) {
+      console.error('Generate SWMS table error:', error);
+      res.status(500).json({ message: 'Failed to generate SWMS table data' });
+    }
+  });
             // Generic fallback for unmatched activities
             console.log(`No match found for activity "${activity}" in trade "${tradeType}", using generic fallback`);
             const riskAssessment = {
