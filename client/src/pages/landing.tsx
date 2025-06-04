@@ -172,19 +172,18 @@ export default function Landing() {
 
   const pricing = [
     {
-      name: "Free Trial",
-      price: "Free",
-      period: "",
-      credits: "1 SWMS to test",
+      name: "Basic",
+      price: "$25",
+      period: "/month",
+      credits: "3 SWMS per month",
       features: [
-        "AI-powered SWMS generation",
-        "Basic template access",
-        "PDF export",
-        "See how it works",
-        "No credit card required"
+        "3 SWMS per month",
+        "Basic AI generation",
+        "Standard templates",
+        "Email support",
+        "Single user"
       ],
-      popular: false,
-      trial: true
+      popular: false
     },
     {
       name: "Pro Plan",
@@ -192,10 +191,9 @@ export default function Landing() {
       period: "/month",
       credits: "10 SWMS per month",
       features: [
-        "AI-powered SWMS generation",
-        "Advanced AI features",
+        "10 SWMS per month",
+        "AI-powered generation",
         "Visual table editor",
-        "Safety library access",
         "QR check-in system",
         "Multi-language support",
         "Voice control",
@@ -209,14 +207,13 @@ export default function Landing() {
       period: "/month",
       credits: "25 SWMS per month",
       features: [
+        "25 SWMS per month",
         "Everything in Pro",
         "Custom branding",
         "API access",
         "Advanced analytics",
         "Team management",
-        "Custom integrations",
-        "Dedicated support",
-        "Training sessions"
+        "24/7 phone support"
       ],
       popular: false
     }
@@ -493,18 +490,10 @@ export default function Landing() {
           <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {pricing.map((plan, index) => (
               <FloatingCard key={index} delay={index * 0.15}>
-                <EnhancedTooltip content={`${plan.name} plan includes: ${plan.features.join(', ')}. Perfect for ${plan.name === 'Free Trial' ? 'trying our platform' : plan.name === 'Pro' ? 'small to medium teams' : 'large enterprises'}.`} side="top">
+                <EnhancedTooltip content={`${plan.name} plan includes: ${plan.features.join(', ')}. Perfect for ${plan.name === 'Basic' ? 'small teams getting started' : plan.name === 'Pro Plan' ? 'medium teams with advanced needs' : 'large enterprises with full requirements'}.`} side="top">
                   <Card className={`h-full relative cursor-pointer ${
-                    plan.trial ? 'border-green-500 border-2 bg-gradient-to-br from-green-50 to-white' :
                     plan.popular ? 'border-blue-500 border-2 scale-105' : 'border-gray-200'
                   } shadow-lg hover:shadow-xl transition-all duration-300`}>
-                  {plan.trial && (
-                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                      <Badge className="bg-green-600 text-white px-4 py-1">
-                        Try Now
-                      </Badge>
-                    </div>
-                  )}
                   {plan.popular && (
                     <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                       <Badge className="bg-blue-600 text-white px-4 py-1">

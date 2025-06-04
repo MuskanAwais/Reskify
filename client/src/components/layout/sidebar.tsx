@@ -53,6 +53,14 @@ export default function Sidebar() {
     }
   });
 
+  const [demoMode, setDemoMode] = useState(() => {
+    try {
+      return localStorage.getItem('demoMode') === 'true';
+    } catch {
+      return false;
+    }
+  });
+
   const toggleAdminMode = () => {
     const newMode = !adminMode;
     setAdminMode(newMode);
@@ -62,6 +70,16 @@ export default function Sidebar() {
       console.error('Failed to save admin state:', error);
     }
     window.location.reload();
+  };
+
+  const toggleDemoMode = () => {
+    const newMode = !demoMode;
+    setDemoMode(newMode);
+    try {
+      localStorage.setItem('demoMode', newMode.toString());
+    } catch (error) {
+      console.error('Failed to save demo state:', error);
+    }
   };
   
   // Fetch user subscription data
@@ -102,7 +120,7 @@ export default function Sidebar() {
     <aside className="w-64 bg-card shadow-md border-r">
       <div className="p-6">
         {/* Admin Toggle */}
-        <div className="mb-6">
+        <div className="mb-6 space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium">Admin Mode</span>
             <Button
@@ -120,6 +138,24 @@ export default function Sidebar() {
             </Button>
           </div>
 
+          {adminMode && (
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium">Demo Mode</span>
+              <Button
+                variant={demoMode ? "default" : "outline"}
+                size="sm"
+                onClick={toggleDemoMode}
+                className={`px-3 py-1 text-xs ${
+                  demoMode 
+                    ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                <Bot className="mr-1 h-3 w-3" />
+                {demoMode ? 'ON' : 'OFF'}
+              </Button>
+            </div>
+          )}
         </div>
 
         <Separator className="mb-6" />
