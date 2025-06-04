@@ -96,6 +96,48 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
   const taskLimit = getTaskLimit();
   const isTaskLimitReached = formData.activities?.length >= taskLimit;
 
+  // Function to get trade-specific safety codes
+  const getTradeSpecificCodes = (tradeType: string): string[] => {
+    const tradeCodeMap: Record<string, string[]> = {
+      'Electrical': [
+        'AS/NZS 3000:2018',
+        'Work Health and Safety Act 2011',
+        'Work Health and Safety Regulation 2017',
+        'AS/NZS 1801:1997'
+      ],
+      'Plumbing': [
+        'Work Health and Safety Act 2011',
+        'Work Health and Safety Regulation 2017',
+        'National Construction Code',
+        'Australian Standards AS 3500'
+      ],
+      'Carpentry': [
+        'Work Health and Safety Act 2011',
+        'Work Health and Safety Regulation 2017',
+        'Building Code of Australia',
+        'Australian Standards AS 1100'
+      ],
+      'Painting': [
+        'Work Health and Safety Act 2011',
+        'Work Health and Safety Regulation 2017',
+        'Building Code of Australia',
+        'Australian Standards AS 1100 - Technical drawing'
+      ],
+      'HVAC': [
+        'Work Health and Safety Act 2011',
+        'Work Health and Safety Regulation 2017',
+        'Building Code of Australia',
+        'AS/NZS 3000:2018'
+      ]
+    };
+    
+    return tradeCodeMap[tradeType] || [
+      'Work Health and Safety Act 2011',
+      'Work Health and Safety Regulation 2017',
+      'Building Code of Australia'
+    ];
+  };
+
   useEffect(() => {
     onDataChange(formData);
   }, [formData]);
