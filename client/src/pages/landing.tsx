@@ -549,7 +549,7 @@ export default function Landing() {
           <AnimatedSection delay={0.6}>
             <div className="text-center mt-12">
               <p className="text-gray-600 mb-4">
-                All plans include 14-day free trial • Cancel anytime • No setup fees
+                Cancel anytime • No setup fees • Australian Owned
               </p>
               <div className="flex justify-center items-center gap-8 text-sm text-gray-500">
                 <div className="flex items-center gap-2">
@@ -589,9 +589,9 @@ export default function Landing() {
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
-              <Link href="/contact">
+              <Link href="/pricing">
                 <Button size="lg" variant="outline" className="px-8 py-4 text-lg border-white text-white hover:bg-white hover:text-blue-600">
-                  Contact Sales
+                  View Pricing
                 </Button>
               </Link>
             </div>
