@@ -346,10 +346,10 @@ export default function DocumentPreview({ formData }: DocumentPreviewProps) {
                             <thead>
                               <tr>
                                 <th className="border p-1 bg-gray-100">Consequence</th>
-                                <th className="border p-1 bg-green-200">Likely</th>
-                                <th className="border p-1 bg-yellow-200">Possible</th>
-                                <th className="border p-1 bg-orange-200">Unlikely</th>
-                                <th className="border p-1 bg-red-200">Very Rare</th>
+                                <th className="border p-1 bg-red-200">Likely</th>
+                                <th className="border p-1 bg-orange-200">Possible</th>
+                                <th className="border p-1 bg-yellow-200">Unlikely</th>
+                                <th className="border p-1 bg-green-200">Very Rare</th>
                               </tr>
                             </thead>
                             <tbody>
@@ -365,21 +365,21 @@ export default function DocumentPreview({ formData }: DocumentPreviewProps) {
                                 <td className="border p-1 bg-red-400 text-white text-center">15</td>
                                 <td className="border p-1 bg-orange-400 text-white text-center">12</td>
                                 <td className="border p-1 bg-yellow-400 text-center">8</td>
-                                <td className="border p-1 bg-green-400 text-center">4</td>
+                                <td className="border p-1 bg-green-400 text-center">5</td>
                               </tr>
                               <tr>
                                 <td className="border p-1 bg-yellow-100 font-medium">Medium</td>
                                 <td className="border p-1 bg-orange-400 text-white text-center">13</td>
                                 <td className="border p-1 bg-yellow-400 text-center">9</td>
-                                <td className="border p-1 bg-green-400 text-center">5</td>
-                                <td className="border p-1 bg-green-500 text-white text-center">2</td>
+                                <td className="border p-1 bg-green-400 text-center">6</td>
+                                <td className="border p-1 bg-green-500 text-white text-center">3</td>
                               </tr>
                               <tr>
                                 <td className="border p-1 bg-green-100 font-medium">Low</td>
                                 <td className="border p-1 bg-yellow-400 text-center">10</td>
-                                <td className="border p-1 bg-green-400 text-center">6</td>
-                                <td className="border p-1 bg-green-500 text-white text-center">3</td>
-                                <td className="border p-1 bg-green-600 text-white text-center">1</td>
+                                <td className="border p-1 bg-green-400 text-center">7</td>
+                                <td className="border p-1 bg-green-500 text-white text-center">4</td>
+                                <td className="border p-1 bg-green-600 text-white text-center">2</td>
                               </tr>
                             </tbody>
                           </table>
