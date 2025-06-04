@@ -694,7 +694,13 @@ function addComprehensiveProjectWatermark(pdf: any, document: any, language: str
   const pageHeight = pdf.internal.pageSize.getHeight();
   
   // Get translations
-  const translations = getWatermarkTranslations(language);
+  const translations = {
+    project: language === 'es' ? 'Proyecto' : language === 'fr' ? 'Projet' : 'Project',
+    job: language === 'es' ? 'Trabajo' : language === 'fr' ? 'Travail' : 'Job',
+    location: language === 'es' ? 'Ubicación' : language === 'fr' ? 'Emplacement' : 'Location',
+    area: language === 'es' ? 'Área' : language === 'fr' ? 'Zone' : 'Area',
+    trade: language === 'es' ? 'Oficio' : language === 'fr' ? 'Métier' : 'Trade'
+  };
   
   // Save current state
   pdf.saveGraphicsState();
@@ -722,12 +728,12 @@ function addComprehensiveProjectWatermark(pdf: any, document: any, language: str
   pdf.setTextColor(100, 100, 100, 0.18);
   
   // Collect all project information
-  const projectDetails = [];
-  if (document.jobName) projectDetails.push(`Project: ${document.jobName}`);
-  if (document.jobNumber) projectDetails.push(`Job #: ${document.jobNumber}`);
-  if (document.projectAddress) projectDetails.push(`Location: ${document.projectAddress}`);
-  if (document.projectLocation) projectDetails.push(`Area: ${document.projectLocation}`);
-  if (document.tradeType) projectDetails.push(`Trade: ${document.tradeType}`);
+  const projectDetails: string[] = [];
+  if (document.jobName) projectDetails.push(`${translations.project}: ${document.jobName}`);
+  if (document.jobNumber) projectDetails.push(`${translations.job} #: ${document.jobNumber}`);
+  if (document.projectAddress) projectDetails.push(`${translations.location}: ${document.projectAddress}`);
+  if (document.projectLocation) projectDetails.push(`${translations.area}: ${document.projectLocation}`);
+  if (document.tradeType) projectDetails.push(`${translations.trade}: ${document.tradeType}`);
   if (document.title) projectDetails.push(`Title: ${document.title}`);
   
   // Add date and document info
@@ -791,13 +797,13 @@ function addComprehensiveProjectWatermark(pdf: any, document: any, language: str
     pdf.setTextColor(59, 130, 246, 0.08);
     
     // Top watermark with translation
-    pdf.text(translations.safetyDocument, centerX, centerY - 80, {
+    pdf.text('Safety Document', centerX, centerY - 80, {
       angle: 45,
       align: 'center'
     });
     
     // Bottom watermark with translation
-    pdf.text(translations.authorizedPersonnel, centerX, centerY + 80, {
+    pdf.text('Authorized Personnel Only', centerX, centerY + 80, {
       angle: 45,
       align: 'center'
     });

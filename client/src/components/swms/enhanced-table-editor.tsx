@@ -188,6 +188,116 @@ export default function EnhancedTableEditor({ formData, onDataChange }: Enhanced
     );
   };
 
+  const MultiSelectEditor = ({ 
+    items, 
+    onSave, 
+    placeholder = "Add items..." 
+  }: {
+    items: string[];
+    onSave: (items: string[]) => void;
+    placeholder?: string;
+  }) => {
+    const [isEditing, setIsEditing] = useState(false);
+    const [editValue, setEditValue] = useState("");
+
+    if (!isEditing) {
+      return (
+        <div 
+          className="min-h-[60px] border border-gray-200 rounded p-2 cursor-pointer hover:bg-gray-50"
+          onClick={() => setIsEditing(true)}
+        >
+          {items && items.length > 0 ? (
+            <div className="space-y-1">
+              {items.map((item, index) => (
+                <div key={index} className="bg-blue-50 text-blue-800 px-2 py-1 rounded text-xs">
+                  {item}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-gray-400 text-xs flex items-center h-full">
+              {placeholder}
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    return (
+      <div className="space-y-2">
+        <div className="min-h-[60px] border border-gray-200 rounded p-2 bg-white">
+          {items && items.length > 0 && (
+            <div className="space-y-1 mb-2">
+              {items.map((item, index) => (
+                <div key={index} className="bg-blue-50 text-blue-800 px-2 py-1 rounded text-xs flex items-center justify-between">
+                  <span>{item}</span>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-4 w-4 p-0 text-red-600"
+                    onClick={() => {
+                      const newItems = items.filter((_, i) => i !== index);
+                      onSave(newItems);
+                    }}
+                  >
+                    <X className="w-3 h-3" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
+          <Input
+            value={editValue}
+            onChange={(e) => setEditValue(e.target.value)}
+            placeholder="Type and press Enter to add..."
+            className="h-7 text-xs"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && editValue.trim()) {
+                const newItems = [...(items || []), editValue.trim()];
+                onSave(newItems);
+                setEditValue("");
+              }
+              if (e.key === 'Escape') {
+                setIsEditing(false);
+                setEditValue("");
+              }
+            }}
+            autoFocus
+          />
+        </div>
+        <div className="flex gap-1">
+          <Button 
+            size="sm" 
+            variant="ghost" 
+            className="h-6 text-xs"
+            onClick={() => {
+              if (editValue.trim()) {
+                const newItems = [...(items || []), editValue.trim()];
+                onSave(newItems);
+                setEditValue("");
+              }
+              setIsEditing(false);
+            }}
+          >
+            <Save className="w-3 h-3 mr-1" />
+            Done
+          </Button>
+          <Button 
+            size="sm" 
+            variant="ghost" 
+            className="h-6 text-xs"
+            onClick={() => {
+              setIsEditing(false);
+              setEditValue("");
+            }}
+          >
+            <X className="w-3 h-3" />
+          </Button>
+        </div>
+      </div>
+    );
+  };
+
   const InlineEditField = ({ 
     value, 
     onSave, 
@@ -340,22 +450,34 @@ export default function EnhancedTableEditor({ formData, onDataChange }: Enhanced
                       </div>
                     </div>
 
-                    {/* Compact Summary Row */}
+                    {/* Always Visible Editing Grid */}
                     <div className="grid grid-cols-4 gap-4 text-xs">
                       <div>
-                        <Label className="text-xs font-medium text-gray-600">Hazards</Label>
-                        <CompactCell items={assessment.hazards} maxShow={2} />
+                        <Label className="text-xs font-medium text-gray-600 mb-1 block">Hazards</Label>
+                        <MultiSelectEditor
+                          items={assessment.hazards}
+                          onSave={(value) => updateAssessment(assessment.id, 'hazards', value)}
+                          placeholder="Add hazards..."
+                        />
                       </div>
                       <div>
-                        <Label className="text-xs font-medium text-gray-600">Control Measures</Label>
-                        <CompactCell items={assessment.controlMeasures} maxShow={2} />
+                        <Label className="text-xs font-medium text-gray-600 mb-1 block">Control Measures</Label>
+                        <MultiSelectEditor
+                          items={assessment.controlMeasures}
+                          onSave={(value) => updateAssessment(assessment.id, 'controlMeasures', value)}
+                          placeholder="Add control measures..."
+                        />
                       </div>
                       <div>
-                        <Label className="text-xs font-medium text-gray-600">PPE Required</Label>
-                        <CompactCell items={assessment.ppe} maxShow={3} />
+                        <Label className="text-xs font-medium text-gray-600 mb-1 block">PPE Required</Label>
+                        <MultiSelectEditor
+                          items={assessment.ppe}
+                          onSave={(value) => updateAssessment(assessment.id, 'ppe', value)}
+                          placeholder="Add PPE..."
+                        />
                       </div>
                       <div>
-                        <Label className="text-xs font-medium text-gray-600">Responsible Person</Label>
+                        <Label className="text-xs font-medium text-gray-600 mb-1 block">Responsible Person</Label>
                         <InlineEditField
                           value={assessment.responsible}
                           onSave={(value) => updateAssessment(assessment.id, 'responsible', value)}
