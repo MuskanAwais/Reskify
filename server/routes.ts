@@ -100,6 +100,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Auto-generate SWMS from activities
+  app.post("/api/auto-generate-swms", async (req, res) => {
+    try {
+      const { activities, tradeType, title, jobName, projectLocation } = req.body;
+      
+      if (!activities || activities.length === 0) {
+        return res.status(400).json({ message: 'No activities provided' });
+      }
+
+      // Import the auto SWMS generator
+      const { generateAutoSwms } = await import('./auto-swms-generator');
+      
+      const autoSwms = await generateAutoSwms(activities, tradeType);
+      
+      res.json(autoSwms);
+    } catch (error: any) {
+      console.error('Auto-generate SWMS error:', error);
+      res.status(500).json({ message: 'Failed to auto-generate SWMS' });
+    }
+  });
+
   // Generate SWMS with comprehensive risk assessments and safety data
   app.post("/api/generate-swms", async (req, res) => {
     try {
