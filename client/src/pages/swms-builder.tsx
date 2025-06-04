@@ -5,6 +5,7 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import SwmsForm from "@/components/swms/swms-form";
 import DocumentPreview from "@/components/swms/document-preview";
+import EnhancedTableEditor from "@/components/swms/enhanced-table-editor";
 import CreditCounter from "@/components/ui/credit-counter";
 import { ArrowLeft, ArrowRight, FileText, Shield, CheckCircle, Save, X } from "lucide-react";
 import { Link, useLocation } from "wouter";

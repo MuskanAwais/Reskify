@@ -242,12 +242,12 @@ export default function VisualTableEditor({ formData, onDataChange }: VisualTabl
           onClick={() => setIsEditing(true)}
         >
           {multiSelect && Array.isArray(value) ? (
-            <div className="flex flex-wrap gap-1">
-              {value.map((item: string, index: number) => (
-                <Badge key={index} variant="secondary" className="text-xs">
-                  {item}
-                </Badge>
-              ))}
+            <div className="text-sm text-gray-700">
+              {value.length > 0 ? (
+                value.length === 1 ? value[0] : `${value[0]} +${value.length - 1} more`
+              ) : (
+                placeholder
+              )}
             </div>
           ) : (
             <span className="text-sm">{value || placeholder}</span>

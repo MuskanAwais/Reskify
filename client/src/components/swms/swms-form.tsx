@@ -23,7 +23,7 @@ import {
   Layers,
   Search
 } from "lucide-react";
-import VisualTableEditor from "./visual-table-editor";
+import EnhancedTableEditor from "./enhanced-table-editor";
 import SmartTooltip from "@/components/ui/smart-tooltip";
 
 interface SwmsFormProps {
@@ -925,7 +925,7 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
             </p>
           </div>
 
-          <VisualTableEditor 
+          <EnhancedTableEditor 
             formData={formData}
             onDataChange={(data) => updateFormData(data)}
           />
