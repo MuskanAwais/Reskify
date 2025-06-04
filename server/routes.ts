@@ -2134,6 +2134,93 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Team collaboration routes (Enterprise only)
+  app.get("/api/team/members", (req, res) => {
+    const mockTeamMembers = [
+      {
+        id: "1",
+        name: "John Smith",
+        email: "john@company.com",
+        role: "admin",
+        status: "active",
+        joinedAt: "2024-01-15T00:00:00Z",
+        lastActive: "2024-06-04T10:30:00Z"
+      },
+      {
+        id: "2", 
+        name: "Sarah Wilson",
+        email: "sarah@company.com",
+        role: "editor",
+        status: "active",
+        joinedAt: "2024-02-01T00:00:00Z",
+        lastActive: "2024-06-03T16:45:00Z"
+      },
+      {
+        id: "3",
+        name: "Mike Johnson", 
+        email: "mike@company.com",
+        role: "viewer",
+        status: "pending",
+        joinedAt: "2024-06-01T00:00:00Z",
+        lastActive: "2024-06-01T00:00:00Z"
+      }
+    ];
+    res.json(mockTeamMembers);
+  });
+
+  app.get("/api/team/projects", (req, res) => {
+    const mockTeamProjects = [
+      {
+        id: "1",
+        title: "Office Tower Construction - Level 5 Fitout",
+        status: "in-review",
+        assignedTo: ["1", "2"],
+        createdBy: "1",
+        createdAt: "2024-05-15T00:00:00Z",
+        dueDate: "2024-06-15T00:00:00Z",
+        progress: 75,
+        comments: 3
+      },
+      {
+        id: "2",
+        title: "Warehouse Electrical Installation",
+        status: "draft", 
+        assignedTo: ["2", "3"],
+        createdBy: "2",
+        createdAt: "2024-06-01T00:00:00Z",
+        dueDate: "2024-06-30T00:00:00Z",
+        progress: 25,
+        comments: 1
+      }
+    ];
+    res.json(mockTeamProjects);
+  });
+
+  app.post("/api/team/invite", (req, res) => {
+    const { email, role } = req.body;
+    res.json({ 
+      success: true, 
+      message: `Invitation sent to ${email} with ${role} role` 
+    });
+  });
+
+  app.patch("/api/team/members/:id/role", (req, res) => {
+    const { id } = req.params;
+    const { role } = req.body;
+    res.json({ 
+      success: true, 
+      message: `Member ${id} role updated to ${role}` 
+    });
+  });
+
+  app.delete("/api/team/members/:id", (req, res) => {
+    const { id } = req.params;
+    res.json({ 
+      success: true, 
+      message: `Member ${id} removed from team` 
+    });
+  });
+
   const server = createServer(app);
   return server;
 }
