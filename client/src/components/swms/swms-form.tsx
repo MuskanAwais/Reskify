@@ -66,11 +66,11 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
 
   // Task limits based on subscription and demo mode
   const getTaskLimit = () => {
-    // Demo mode restrictions
-    if (isDemoMode || !subscription?.plan) return 2;
+    // Demo mode restrictions - only when explicitly enabled
+    if (isDemoMode) return 2;
     // All paid plans have unlimited tasks
     if (subscription?.plan === "Pro" || subscription?.plan === "Enterprise") return 999;
-    return 2; // Fallback for Basic plan
+    return 999; // Default unlimited for regular users
   };
 
   const taskLimit = getTaskLimit();
@@ -277,12 +277,12 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
                       Limit Reached
                     </Badge>
                   )}
-                  {(isDemoMode || !subscription?.plan) && (
+                  {isDemoMode && (
                     <Badge variant="outline" className="text-xs">
                       Demo Mode - 2 Tasks Max
                     </Badge>
                   )}
-                  {subscription?.plan && !isDemoMode && (
+                  {!isDemoMode && subscription?.plan && (
                     <Badge variant="default" className="text-xs bg-green-100 text-green-800">
                       {subscription.plan} Plan
                     </Badge>

@@ -128,8 +128,8 @@ export function Tour({ steps, isActive, onComplete, onSkip }: TourProps) {
       <Card 
         className="fixed max-w-sm z-1002 shadow-lg border-2 border-blue-500"
         style={{
-          top: tooltipPosition.top,
-          left: tooltipPosition.left,
+          top: Math.max(10, Math.min(window.innerHeight - 200, tooltipPosition.top)),
+          left: Math.max(10, Math.min(window.innerWidth - 400, tooltipPosition.left)),
           transform: 'translate(-50%, 0)',
           zIndex: 1002
         }}
