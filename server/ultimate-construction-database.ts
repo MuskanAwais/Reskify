@@ -565,6 +565,139 @@ export const ULTIMATE_CONSTRUCTION_DATABASE = {
       "Tile polishing", "Grout recoloring", "Waterproofing repair", "Movement joint repair",
       "Substrate repair", "Adhesive failure repair", "Hollow tile repair", "Lippage correction"
     ]
+  },
+
+  "Insulation": {
+    "Primary Tasks": [
+      "Wall insulation installation", "Ceiling insulation installation", "Floor insulation installation",
+      "Roof insulation installation", "Bulk insulation installation", "Reflective insulation installation",
+      "Composite insulation installation", "Acoustic insulation installation", "Fire-rated insulation installation",
+      "Thermal bridging prevention", "Vapor barrier installation", "Air sealing", "Insulation removal",
+      "Insulation upgrade", "Energy efficiency assessment", "Thermal imaging inspection"
+    ],
+    "Bulk Insulation": [
+      "Glasswool batts", "Polyester batts", "Natural fiber batts", "Rigid foam boards",
+      "Expanded polystyrene", "Extruded polystyrene", "Polyurethane foam", "Phenolic foam",
+      "Cellulose insulation", "Sheep wool insulation", "Cotton insulation", "Hemp insulation",
+      "Recycled denim insulation", "Mineral wool insulation", "Rock wool insulation", "Slag wool insulation"
+    ],
+    "Reflective Insulation": [
+      "Foil-faced batts", "Bulk and reflective composite", "Multi-cell reflective insulation",
+      "Reflective foil laminate", "Double-sided reflective foil", "Perforated reflective foil",
+      "Reinforced reflective foil", "Flexible reflective sheets", "Rigid reflective panels",
+      "Reflective paint systems", "Radiant barrier systems", "Cool roof coatings"
+    ],
+    "Specialty Insulation": [
+      "Fire-rated insulation", "Acoustic insulation", "Marine insulation", "Refrigeration insulation",
+      "High-temperature insulation", "Cryogenic insulation", "Pipe insulation", "Duct insulation",
+      "Tank insulation", "Vessel insulation", "Equipment insulation", "Process insulation",
+      "Steam line insulation", "Condensate line insulation", "Chilled water insulation", "Hot water insulation"
+    ],
+    "Installation Methods": [
+      "Friction fit installation", "Adhesive installation", "Mechanical fixing", "Spray application",
+      "Blown-in installation", "Injection installation", "Wet spray application", "Dry spray application",
+      "Board cutting and fitting", "Membrane installation", "Vapor barrier installation", "Air sealing",
+      "Joint sealing", "Penetration sealing", "Edge sealing", "Compression fitting"
+    ]
+  },
+
+  "Scaffolding": {
+    "Primary Tasks": [
+      "Tube and coupler scaffolding", "System scaffolding", "Mobile scaffolding", "Suspended scaffolding",
+      "Cantilever scaffolding", "Birdcage scaffolding", "Stair tower scaffolding", "Facade scaffolding",
+      "Access tower scaffolding", "Working platform construction", "Safety barrier installation",
+      "Fall protection systems", "Scaffold inspection", "Scaffold dismantling", "Load testing"
+    ],
+    "System Scaffolding": [
+      "Kwikstage scaffolding", "Layher scaffolding", "Peri scaffolding", "Haki scaffolding",
+      "Cup lock scaffolding", "Ring lock scaffolding", "Wedge lock scaffolding", "Pin lock scaffolding",
+      "Frame scaffolding", "Tower scaffolding", "Beam scaffolding", "Truss scaffolding",
+      "Modular scaffolding", "Multi-directional scaffolding", "Heavy duty scaffolding", "Lightweight scaffolding"
+    ],
+    "Tube and Coupler": [
+      "Steel tube scaffolding", "Aluminum tube scaffolding", "Right angle couplers", "Swivel couplers",
+      "Sleeve couplers", "Putlog couplers", "Beam clamps", "Girder clamps", "Base plates",
+      "Adjustable base plates", "Screw jacks", "U-head jacks", "Swivel jacks", "Tube cutting",
+      "Coupler inspection", "Load calculations"
+    ],
+    "Specialized Scaffolding": [
+      "Birdcage scaffolding", "Fan scaffolding", "Cantilever scaffolding", "Needle scaffolding",
+      "Suspended scaffolding", "Outrigger scaffolding", "Truss-out scaffolding", "Bridge scaffolding",
+      "Chimney scaffolding", "Tank scaffolding", "Ship scaffolding", "Refinery scaffolding",
+      "Power station scaffolding", "Mining scaffolding", "Offshore scaffolding", "Emergency scaffolding"
+    ],
+    "Safety and Compliance": [
+      "Fall protection systems", "Edge protection", "Safety nets", "Debris nets",
+      "Scaffold tags", "Competent person inspection", "Engineer certification", "Load calculations",
+      "Wind load assessment", "Tie requirements", "Foundation assessment", "Access requirements",
+      "Handrail installation", "Toe board installation", "Platform installation", "Safety training"
+    ]
+  },
+
+  "Demolition": {
+    "Primary Tasks": [
+      "Structural demolition", "Interior demolition", "Selective demolition", "Strip out works",
+      "Concrete demolition", "Steel demolition", "Masonry demolition", "Hazardous material removal",
+      "Asbestos removal", "Lead paint removal", "Site preparation", "Debris removal",
+      "Recycling and disposal", "Dust suppression", "Noise control", "Vibration monitoring"
+    ],
+    "Structural Demolition": [
+      "Building demolition", "Bridge demolition", "Tower demolition", "Chimney demolition",
+      "Silo demolition", "Tank demolition", "Foundation removal", "Slab removal",
+      "Wall removal", "Roof removal", "Floor removal", "Staircase removal",
+      "Elevator shaft demolition", "Mechanical demolition", "Manual demolition", "Controlled demolition"
+    ],
+    "Specialized Techniques": [
+      "Explosive demolition", "Controlled blasting", "Diamond wire cutting", "Concrete sawing",
+      "Wall sawing", "Floor sawing", "Core drilling", "Concrete breaking", "Hydraulic breaking",
+      "Pneumatic breaking", "Chemical demolition", "Thermal cutting", "Water jet cutting",
+      "Robotic demolition", "High reach demolition", "Deconstruction"
+    ],
+    "Hazardous Material Handling": [
+      "Asbestos removal", "Lead paint removal", "Contaminated soil removal", "Chemical contamination",
+      "Radioactive material removal", "PCB removal", "Mercury removal", "Mold remediation",
+      "Hazardous waste identification", "Air monitoring", "Personal protective equipment",
+      "Containment systems", "Decontamination procedures", "Waste classification", "Disposal methods"
+    ],
+    "Environmental Controls": [
+      "Dust suppression", "Water spraying", "Chemical suppressants", "Enclosure systems",
+      "Negative pressure systems", "Air filtration", "Noise control", "Sound barriers",
+      "Vibration monitoring", "Ground vibration control", "Air quality monitoring",
+      "Water quality protection", "Soil protection", "Erosion control", "Sediment control"
+    ]
+  },
+
+  "Steel Fixing": {
+    "Primary Tasks": [
+      "Reinforcement steel placement", "Structural steel installation", "Rebar cutting and bending",
+      "Mesh installation", "Tie wire installation", "Spacer installation", "Chair installation",
+      "Splice installation", "Anchor bolt installation", "Dowel installation", "Coupler installation",
+      "Welded connections", "Mechanical connections", "Post-tensioning", "Pre-stressing"
+    ],
+    "Reinforcement Steel": [
+      "Grade 250 steel", "Grade 500 steel", "Deformed bars", "Plain bars", "Welded mesh",
+      "Trench mesh", "Slab mesh", "Wall mesh", "Column mesh", "Beam reinforcement",
+      "Footing reinforcement", "Pile reinforcement", "Retaining wall reinforcement",
+      "Bridge reinforcement", "Marine reinforcement", "Seismic reinforcement"
+    ],
+    "Installation Techniques": [
+      "Manual placement", "Crane placement", "Pre-assembly", "Prefabrication", "Modular installation",
+      "In-situ bending", "Factory bending", "Cold bending", "Hot bending", "Threading",
+      "Mechanical splicing", "Welded splicing", "Grouted splicing", "Compression splicing",
+      "Tension splicing", "Shear connection"
+    ],
+    "Structural Steel": [
+      "Beam installation", "Column installation", "Truss installation", "Frame installation",
+      "Bracing installation", "Connection details", "Bolted connections", "Welded connections",
+      "Riveted connections", "Moment connections", "Simple connections", "Semi-rigid connections",
+      "Expansion joints", "Movement joints", "Fire protection", "Corrosion protection"
+    ],
+    "Quality Control": [
+      "Dimensional checking", "Alignment verification", "Level checking", "Plumb checking",
+      "Connection inspection", "Weld inspection", "Bolt inspection", "Material certification",
+      "Mill test certificates", "Fabrication inspection", "Installation inspection",
+      "Load testing", "Proof loading", "Non-destructive testing", "Documentation", "As-built drawings"
+    ]
   }
 };
 
