@@ -25,8 +25,10 @@ import {
   TrendingUp,
   Archive,
   UserCheck,
-  Activity
+  Activity,
+  Play
 } from "lucide-react";
+import { Tour } from "@/components/ui/tour";
 
 const quickActions = [
   {
@@ -99,6 +101,66 @@ export default function Sidebar() {
       console.error('Failed to save enterprise state:', error);
     }
   };
+
+  // Tour functionality
+  const [showTour, setShowTour] = useState(false);
+  
+  const tourSteps = [
+    {
+      target: '[data-tour="admin-toggle"]',
+      title: 'Admin Mode',
+      content: 'Toggle admin mode to access administrative features and testing controls.',
+      position: 'right' as const,
+      spotlight: true
+    },
+    {
+      target: '[data-tour="demo-toggle"]',
+      title: 'Demo Mode',
+      content: 'Enable demo mode to test features without a subscription. This limits you to 2 tasks.',
+      position: 'right' as const,
+      spotlight: true
+    },
+    {
+      target: '[data-tour="enterprise-toggle"]',
+      title: 'Enterprise Mode',
+      content: 'Enable Enterprise mode to test team collaboration features including team management.',
+      position: 'right' as const,
+      spotlight: true
+    },
+    {
+      target: '[data-tour="quick-actions"]',
+      title: 'Quick Actions',
+      content: 'Start creating SWMS documents or use the AI generator from here.',
+      position: 'right' as const,
+      spotlight: true
+    },
+    {
+      target: '[data-tour="navigation"]',
+      title: 'Navigation Menu',
+      content: 'Access all features including your SWMS documents, safety library, and team collaboration.',
+      position: 'right' as const,
+      spotlight: true
+    },
+    {
+      target: '[data-tour="team-tab"]',
+      title: 'Team Collaboration',
+      content: 'This Enterprise feature allows you to manage team members and collaborate on SWMS projects.',
+      position: 'right' as const,
+      spotlight: true
+    }
+  ];
+
+  const startTour = () => {
+    setShowTour(true);
+  };
+
+  const completeTour = () => {
+    setShowTour(false);
+  };
+
+  const skipTour = () => {
+    setShowTour(false);
+  };
   
   // Fetch user subscription data
   const { data: subscription } = useQuery({
@@ -150,6 +212,7 @@ export default function Sidebar() {
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium">Admin Mode</span>
             <Button
+              data-tour="admin-toggle"
               variant={adminMode ? "default" : "outline"}
               size="sm"
               onClick={toggleAdminMode}
@@ -164,11 +227,23 @@ export default function Sidebar() {
             </Button>
           </div>
 
+          {/* Start Tour Button */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={startTour}
+            className="w-full px-3 py-1 text-xs bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100 mt-2"
+          >
+            <Play className="mr-1 h-3 w-3" />
+            Start Interface Tour
+          </Button>
+
           {adminMode && (
             <>
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium">Demo Mode</span>
                 <Button
+                  data-tour="demo-toggle"
                   variant={demoMode ? "default" : "outline"}
                   size="sm"
                   onClick={toggleDemoMode}
@@ -186,6 +261,7 @@ export default function Sidebar() {
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium">Enterprise Mode</span>
                 <Button
+                  data-tour="enterprise-toggle"
                   variant={enterpriseMode ? "default" : "outline"}
                   size="sm"
                   onClick={toggleEnterpriseMode}
@@ -206,7 +282,7 @@ export default function Sidebar() {
         <Separator className="mb-6" />
 
         {/* Quick Actions */}
-        <div className="mb-8">
+        <div className="mb-8" data-tour="quick-actions">
           <h3 className="text-lg font-semibold text-gray-700 mb-4">Quick Actions</h3>
           <div className="space-y-3">
             {quickActions.map((action) => {
