@@ -23,9 +23,86 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Safety library endpoint
   app.get("/api/safety-library", async (req, res) => {
     try {
-      const { getAllSafetyCodes } = await import('./comprehensive-safety-codes');
-      const safetyCodes = getAllSafetyCodes();
-      res.json(safetyCodes);
+      const safetyLibrary = [
+        {
+          id: 1,
+          title: "Construction Work",
+          category: "NSW Code of Practice",
+          type: "Guidance Document",
+          description: "NSW Code of Practice for construction work - comprehensive guidance for managing construction risks",
+          url: "/safety-docs/nsw/Construction-work-COP.pdf",
+          lastUpdated: "2019-08",
+          applicableIndustries: ["Construction", "Building"],
+          jurisdiction: "NSW",
+          pages: 90,
+          keyTopics: ["SWMS", "WHS Management Plans", "High Risk Construction Work", "Induction Training"]
+        },
+        {
+          id: 2,
+          title: "Hazardous Manual Tasks",
+          category: "NSW Code of Practice",
+          type: "Guidance Document",
+          description: "NSW Code of Practice for managing risks associated with hazardous manual tasks and musculoskeletal disorders",
+          url: "/safety-docs/nsw/Hazardous-manual-tasks-COP.pdf",
+          lastUpdated: "2019-08",
+          applicableIndustries: ["All"],
+          jurisdiction: "NSW",
+          pages: 72,
+          keyTopics: ["Musculoskeletal Disorders", "Risk Assessment", "Manual Handling", "Workplace Design"]
+        },
+        {
+          id: 3,
+          title: "Managing Electrical Risks in the Workplace",
+          category: "NSW Code of Practice",
+          type: "Guidance Document",
+          description: "NSW Code of Practice for managing electrical risks and electrical safety in workplaces",
+          url: "/safety-docs/nsw/Managing-electrical-risks-in-the-workplace-COP.pdf",
+          lastUpdated: "2019-08",
+          applicableIndustries: ["Construction", "Electrical", "Manufacturing", "All"],
+          jurisdiction: "NSW",
+          pages: 76,
+          keyTopics: ["Electrical Safety", "Isolation Procedures", "Testing", "PPE", "High Voltage Work"]
+        },
+        {
+          id: 4,
+          title: "Managing the Risk of Falls at Workplaces",
+          category: "NSW Code of Practice",
+          type: "Guidance Document",
+          description: "NSW Code of Practice for preventing falls from height and managing fall risks in workplaces",
+          url: "/safety-docs/nsw/Managing-the-risk-of-falls-at-workplaces-COP.pdf",
+          lastUpdated: "2019-08",
+          applicableIndustries: ["Construction", "Manufacturing", "Warehousing", "All"],
+          jurisdiction: "NSW",
+          pages: 73,
+          keyTopics: ["Fall Prevention", "Scaffolding", "Ladders", "Safety Harnesses", "Emergency Procedures"]
+        },
+        {
+          id: 5,
+          title: "The Pocket Guide to Construction Safety",
+          category: "NSW Safety Guide",
+          type: "Practical Guide",
+          description: "SafeWork NSW pocket guide for small construction businesses and subcontractors",
+          url: "/safety-docs/nsw/pocketguide-to-construction-safety.pdf",
+          lastUpdated: "2024-10",
+          applicableIndustries: ["Construction", "Building"],
+          jurisdiction: "NSW",
+          pages: 43,
+          keyTopics: ["Small Business Safety", "Hazard Checklists", "Emergency Procedures", "Mental Health"]
+        }
+      ];
+
+      res.json({
+        documents: safetyLibrary,
+        totalDocuments: safetyLibrary.length,
+        categories: {
+          "NSW Code of Practice": safetyLibrary.filter(doc => doc.category === "NSW Code of Practice").length,
+          "NSW Safety Guide": safetyLibrary.filter(doc => doc.category === "NSW Safety Guide").length
+        },
+        jurisdiction: "NSW",
+        publisher: "SafeWork NSW",
+        complianceFramework: "Work Health and Safety Act 2011 (NSW)",
+        lastUpdated: new Date().toISOString().split('T')[0]
+      });
     } catch (error: any) {
       console.error("Get safety library error:", error);
       res.status(500).json({ message: "Failed to fetch safety library" });
