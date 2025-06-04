@@ -151,11 +151,25 @@ export default function SwmsBuilder() {
           <div>
             <h2 className="text-3xl font-bold text-gray-800">SWMS Builder</h2>
             <p className="text-gray-600">Create comprehensive safety documentation</p>
+            {isDraft && (
+              <p className="text-sm text-amber-600 font-medium">Draft saved automatically</p>
+            )}
           </div>
         </div>
-        <Badge variant="outline" className="bg-green-50 text-primary border-primary/20">
-          Step {currentStep} of {STEPS.length}
-        </Badge>
+        <div className="flex items-center gap-3">
+          <Button 
+            variant="outline" 
+            onClick={handleSaveAndClose}
+            disabled={saveDraftMutation.isPending}
+            className="gap-2"
+          >
+            <Save className="h-4 w-4" />
+            {saveDraftMutation.isPending ? "Saving..." : "Save & Close"}
+          </Button>
+          <Badge variant="outline" className="bg-green-50 text-primary border-primary/20">
+            Step {currentStep} of {STEPS.length}
+          </Badge>
+        </div>
       </div>
 
       {/* Progress Bar */}

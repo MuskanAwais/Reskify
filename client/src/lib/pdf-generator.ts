@@ -41,7 +41,37 @@ interface SwmsDocument {
   documentHash?: string;
 }
 
-// Add DEMO watermark function for trial documents
+// Add company logo for Pro/Enterprise plans
+function addCompanyLogo(pdf: jsPDF, user: User, subscription: any) {
+  if (subscription?.plan === "Pro" || subscription?.plan === "Enterprise") {
+    // Logo positioning on front page
+    const logoX = 15;
+    const logoY = 15;
+    const logoWidth = 50;
+    const logoHeight = 20;
+    
+    // Add logo placeholder/company branding area
+    pdf.setFillColor(240, 248, 255); // Light blue background
+    pdf.rect(logoX, logoY, logoWidth, logoHeight, 'F');
+    
+    // Company name in logo area
+    pdf.setFontSize(12);
+    pdf.setFont('helvetica', 'bold');
+    pdf.setTextColor(25, 118, 210); // Blue text
+    pdf.text(user.companyName || 'Company Name', logoX + 2, logoY + 8);
+    
+    // Add "Custom Branding" text for Pro/Enterprise
+    pdf.setFontSize(8);
+    pdf.setFont('helvetica', 'normal');
+    pdf.setTextColor(100, 100, 100);
+    pdf.text('Professional Branding', logoX + 2, logoY + 15);
+    
+    // Reset text color
+    pdf.setTextColor(0, 0, 0);
+  }
+}
+
+// Add DEMO watermark function for Basic plan documents
 function addDemoWatermark(pdf: jsPDF) {
   const pageWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
