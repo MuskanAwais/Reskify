@@ -219,7 +219,7 @@ export default function SwmsBuilder() {
             {/* Step indicators */}
             <div className="flex justify-between">
               {STEPS.map((step) => (
-                <div key={step.id} className="flex flex-col items-center space-y-2">
+                <div key={step.id} className="flex flex-col items-center space-y-2 flex-1">
                   <div 
                     className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
                       step.id <= currentStep 
@@ -233,9 +233,9 @@ export default function SwmsBuilder() {
                       step.id
                     )}
                   </div>
-                  <div className="text-center hidden md:block">
-                    <p className="text-xs font-medium text-gray-800">{step.title}</p>
-                    <p className="text-xs text-gray-500 max-w-24">{step.description}</p>
+                  <div className="text-center hidden md:block px-2">
+                    <p className="text-xs font-medium text-gray-800 text-center">{step.title}</p>
+                    <p className="text-xs text-gray-500 text-center leading-tight">{step.description}</p>
                   </div>
                 </div>
               ))}
