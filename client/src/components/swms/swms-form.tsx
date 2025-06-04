@@ -920,16 +920,59 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
         <div className="space-y-6">
           <div className="text-center">
             <Shield className="mx-auto h-12 w-12 text-blue-500 mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Visual SWMS Table Editor</h3>
+            <h3 className="text-lg font-semibold mb-2">Safety Codes & Compliance</h3>
             <p className="text-gray-600 text-sm">
-              Select activities and edit your risk assessment table directly with dropdowns and interactive cells
+              Select applicable safety codes and compliance requirements
             </p>
           </div>
-
-          <SimplifiedTableEditor 
-            formData={formData}
-            onDataChange={(data) => updateFormData(data)}
-          />
+          
+          <Card>
+            <CardHeader>
+              <CardTitle>Applicable Safety Codes</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-gray-600 mb-4">Select safety codes and compliance requirements that apply to your project</p>
+              
+              {/* Trade-specific recommended codes */}
+              {formData.tradeType && (
+                <div className="space-y-4 mb-6">
+                  <h4 className="font-medium text-gray-800 flex items-center gap-2">
+                    <Shield className="h-4 w-4 text-blue-500" />
+                    Recommended for {formData.tradeType}
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {safetyLibrary
+                      ?.filter((code: any) => code.applicableTrades?.includes(formData.tradeType))
+                      .slice(0, 9)
+                      .map((code: any) => (
+                        <div key={code.id} className="flex items-start space-x-2 p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
+                          <Checkbox
+                            id={code.id}
+                            checked={formData.complianceCodes.includes(code.code)}
+                            onCheckedChange={(checked) => {
+                              if (checked) {
+                                addArrayItem('complianceCodes', code.code);
+                              } else {
+                                const index = formData.complianceCodes.indexOf(code.code);
+                                if (index > -1) removeArrayItem('complianceCodes', index);
+                              }
+                            }}
+                          />
+                          <div className="flex-1 min-w-0">
+                            <Label htmlFor={code.id} className="text-sm font-medium cursor-pointer block">
+                              {code.code}
+                            </Label>
+                            <p className="text-xs text-gray-600 mt-1 line-clamp-2">
+                              {code.title}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
       );
 
