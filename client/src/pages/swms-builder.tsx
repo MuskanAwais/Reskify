@@ -6,8 +6,11 @@ import { Badge } from "@/components/ui/badge";
 import SwmsForm from "@/components/swms/swms-form";
 import DocumentPreview from "@/components/swms/document-preview";
 import CreditCounter from "@/components/ui/credit-counter";
-import { ArrowLeft, ArrowRight, FileText, Shield, CheckCircle } from "lucide-react";
-import { Link } from "wouter";
+import { ArrowLeft, ArrowRight, FileText, Shield, CheckCircle, Save, X } from "lucide-react";
+import { Link, useLocation } from "wouter";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 
 const STEPS = [
   { id: 1, title: "Project Details", description: "Basic project information and trade selection" },
@@ -33,14 +36,75 @@ export default function SwmsBuilder() {
     safetyMeasures: [],
     complianceCodes: []
   });
+  const [isDraft, setIsDraft] = useState(false);
+  const [draftId, setDraftId] = useState(null);
+  const [location, setLocation] = useLocation();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  // Check user subscription for feature access
+  const { data: subscription } = useQuery({
+    queryKey: ["/api/user/subscription"],
+  });
 
   const progress = ((currentStep - 1) / (STEPS.length - 1)) * 100;
 
+  // Save draft mutation
+  const saveDraftMutation = useMutation({
+    mutationFn: async (data) => {
+      const response = await apiRequest("POST", "/api/swms/draft", {
+        ...data,
+        status: "draft",
+        currentStep
+      });
+      return response;
+    },
+    onSuccess: (data) => {
+      setDraftId(data.id);
+      setIsDraft(true);
+      toast({
+        title: "Draft Saved",
+        description: "Your SWMS has been saved as a draft.",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/swms"] });
+    },
+    onError: () => {
+      toast({
+        title: "Save Failed",
+        description: "Unable to save draft. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Auto-save when moving between steps
+  const autoSave = () => {
+    if (formData.title || formData.jobName || formData.tradeType) {
+      saveDraftMutation.mutate(formData);
+    }
+  };
+
   const handleNext = () => {
+    // Auto-save before moving to next step
+    autoSave();
+    
     if (currentStep < STEPS.length) {
       setCurrentStep(currentStep + 1);
     }
   };
+
+  const handleSaveAndClose = () => {
+    saveDraftMutation.mutate(formData);
+    setTimeout(() => {
+      setLocation("/dashboard");
+    }, 1000);
+  };
+
+  // Check if user has access to AI generation (Pro+ only)
+  const hasAIAccess = subscription?.plan === "Pro" || subscription?.plan === "Enterprise";
+  
+  // Check if user has access to custom branding (Pro+ only)
+  const hasCustomBranding = subscription?.plan === "Pro" || subscription?.plan === "Enterprise";
 
   // Handle AI-generated SWMS data on component mount
   useEffect(() => {

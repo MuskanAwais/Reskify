@@ -173,28 +173,28 @@ export default function Landing() {
   const pricing = [
     {
       name: "Basic",
-      price: "$25",
-      period: "/month",
+      price: "$50",
+      period: " + GST/month",
       credits: "3 SWMS per month",
       features: [
         "3 SWMS per month",
-        "Basic AI generation",
         "Standard templates",
+        "Visual table editor",
         "Email support",
         "Single user"
       ],
       popular: false
     },
     {
-      name: "Pro Plan",
-      price: "$50",
-      period: "/month",
+      name: "Pro",
+      price: "$100",
+      period: " + GST/month",
       credits: "10 SWMS per month",
       features: [
         "10 SWMS per month",
         "AI-powered generation",
         "Visual table editor",
-        "QR check-in system",
+        "Custom branding",
         "Multi-language support",
         "Voice control",
         "Priority support"
@@ -203,17 +203,16 @@ export default function Landing() {
     },
     {
       name: "Enterprise",
-      price: "$100",
-      period: "/month",
+      price: "$200",
+      period: " + GST/month",
       credits: "25 SWMS per month",
       features: [
         "25 SWMS per month",
         "Everything in Pro",
-        "Custom branding",
-        "API access",
         "Advanced analytics",
         "Team management",
-        "24/7 phone support"
+        "24/7 phone support",
+        "Custom integrations"
       ],
       popular: false
     }

@@ -155,28 +155,28 @@ export default function Billing() {
   const plans = [
     {
       name: "Basic",
-      price: 25,
+      price: 50,
       credits: 3,
       tier: 1,
       features: [
         "3 SWMS per month",
-        "Basic AI generation",
         "Standard templates",
+        "Visual table editor",
         "Email support",
         "Single user"
       ],
       popular: false
     },
     {
-      name: "Pro Plan",
-      price: 50,
+      name: "Pro",
+      price: 100,
       credits: 10,
       tier: 2,
       features: [
         "10 SWMS per month",
         "AI-powered generation",
         "Visual table editor",
-        "QR check-in system",
+        "Custom branding",
         "Multi-language support",
         "Voice control",
         "Priority support"
@@ -185,17 +185,16 @@ export default function Billing() {
     },
     {
       name: "Enterprise",
-      price: 100,
+      price: 200,
       credits: 25,
       tier: 3,
       features: [
         "25 SWMS per month",
         "Everything in Pro",
-        "Custom branding",
-        "API access",
         "Advanced analytics",
         "Team management",
-        "24/7 phone support"
+        "24/7 phone support",
+        "Custom integrations"
       ],
       popular: false
     }
