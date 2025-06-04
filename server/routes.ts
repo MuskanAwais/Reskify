@@ -35,13 +35,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Trades endpoint with comprehensive activities including safety data
   app.get("/api/trades", async (req, res) => {
     try {
-      const { COMPREHENSIVE_TRADES_DATA } = await import('./comprehensive-trades-data');
+      const { ULTIMATE_CONSTRUCTION_DATABASE } = await import('./ultimate-construction-database');
       
       // Convert comprehensive trades data to API format
-      const trades = Object.keys(COMPREHENSIVE_TRADES_DATA).map(tradeName => {
-        const tradeData = COMPREHENSIVE_TRADES_DATA[tradeName];
+      const trades = Object.keys(ULTIMATE_CONSTRUCTION_DATABASE).map(tradeName => {
+        const tradeData = ULTIMATE_CONSTRUCTION_DATABASE[tradeName as keyof typeof ULTIMATE_CONSTRUCTION_DATABASE];
         const categories = Object.keys(tradeData).map(categoryName => {
-          const activities = tradeData[categoryName];
+          const activities = tradeData[categoryName as keyof typeof tradeData];
           return {
             name: categoryName,
             isPrimary: categoryName === "Primary Tasks",
@@ -74,15 +74,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { tradeName } = req.params;
       
       // Import the comprehensive trades data
-      const { COMPREHENSIVE_TRADES_DATA } = await import('./comprehensive-trades-data');
+      const { ULTIMATE_CONSTRUCTION_DATABASE } = await import('./ultimate-construction-database');
       
-      if (!COMPREHENSIVE_TRADES_DATA[tradeName]) {
+      if (!ULTIMATE_CONSTRUCTION_DATABASE[tradeName as keyof typeof ULTIMATE_CONSTRUCTION_DATABASE]) {
         return res.status(404).json({ message: 'Trade not found' });
       }
       
-      const tradeData = COMPREHENSIVE_TRADES_DATA[tradeName];
-      const activities = Object.keys(tradeData).reduce((acc, categoryName) => {
-        return acc.concat(tradeData[categoryName]);
+      const tradeData = ULTIMATE_CONSTRUCTION_DATABASE[tradeName as keyof typeof ULTIMATE_CONSTRUCTION_DATABASE];
+      const activities = Object.keys(tradeData).reduce((acc: string[], categoryName) => {
+        return acc.concat(tradeData[categoryName as keyof typeof tradeData]);
       }, []);
       
       res.json({
@@ -90,7 +90,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         totalActivities: activities.length,
         categories: Object.keys(tradeData).map(categoryName => ({
           name: categoryName,
-          activities: tradeData[categoryName]
+          activities: tradeData[categoryName as keyof typeof tradeData]
         })),
         allActivities: activities
       });
