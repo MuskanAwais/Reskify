@@ -413,18 +413,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 "Fiber optic installation"
               ],
               totalActivities: 200
-            },
-            {
-              name: "Safety Systems",
-              isPrimary: false,
-              activities: [
-                "Emergency lighting installation",
-                "Smoke alarm installation",
-                "Security system installation",
-                "Fire alarm system installation",
-                "CCTV installation"
-              ],
-              totalActivities: 120
             }
           ]
         },
@@ -487,6 +475,690 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 "Hardware installation"
               ],
               totalActivities: 120
+            }
+          ]
+        },
+        { 
+          name: "Roofing", 
+          totalTasks: 400, 
+          primaryTasks: 12,
+          categories: [
+            {
+              name: "Roof Installation",
+              isPrimary: true,
+              activities: [
+                "Tile roof installation",
+                "Metal roof installation",
+                "Gutter installation",
+                "Roof membrane installation",
+                "Skylight installation",
+                "Downpipe installation",
+                "Fascia board installation",
+                "Ridge capping installation",
+                "Flashing installation",
+                "Roof ventilation installation"
+              ],
+              totalActivities: 80
+            },
+            {
+              name: "Roof Maintenance",
+              isPrimary: false,
+              activities: [
+                "Roof cleaning",
+                "Gutter cleaning",
+                "Roof inspection",
+                "Leak repair",
+                "Tile replacement"
+              ],
+              totalActivities: 40
+            }
+          ]
+        },
+        { 
+          name: "Concrete Work", 
+          totalTasks: 350, 
+          primaryTasks: 10,
+          categories: [
+            {
+              name: "Foundation Work",
+              isPrimary: true,
+              activities: [
+                "Foundation excavation",
+                "Concrete pouring",
+                "Formwork installation",
+                "Reinforcement placement",
+                "Concrete finishing",
+                "Slab preparation",
+                "Footings construction",
+                "Pier construction",
+                "Retaining wall construction",
+                "Basement construction"
+              ],
+              totalActivities: 70
+            },
+            {
+              name: "Concrete Structures",
+              isPrimary: false,
+              activities: [
+                "Column construction",
+                "Beam construction",
+                "Staircase construction",
+                "Precast installation",
+                "Concrete repair"
+              ],
+              totalActivities: 50
+            }
+          ]
+        },
+        { 
+          name: "Steelwork", 
+          totalTasks: 450, 
+          primaryTasks: 12,
+          categories: [
+            {
+              name: "Structural Steel",
+              isPrimary: true,
+              activities: [
+                "Steel beam installation",
+                "Steel column erection",
+                "Welding operations",
+                "Steel fabrication",
+                "Bolting operations",
+                "Steel cutting",
+                "Steel frame assembly",
+                "Crane operations",
+                "Steel fixing",
+                "Joint preparation"
+              ],
+              totalActivities: 90
+            },
+            {
+              name: "Steel Finishing",
+              isPrimary: false,
+              activities: [
+                "Steel painting",
+                "Galvanizing",
+                "Fire protection coating",
+                "Rust treatment",
+                "Surface preparation"
+              ],
+              totalActivities: 50
+            }
+          ]
+        },
+        { 
+          name: "Painting", 
+          totalTasks: 300, 
+          primaryTasks: 8,
+          categories: [
+            {
+              name: "Interior Painting",
+              isPrimary: true,
+              activities: [
+                "Wall painting",
+                "Ceiling painting",
+                "Trim painting",
+                "Surface preparation",
+                "Primer application",
+                "Wallpaper installation",
+                "Texture application",
+                "Staining work",
+                "Protective coating",
+                "Touch-up work"
+              ],
+              totalActivities: 60
+            },
+            {
+              name: "Exterior Painting",
+              isPrimary: false,
+              activities: [
+                "House exterior painting",
+                "Roof painting",
+                "Fence painting",
+                "Deck staining",
+                "Pressure washing"
+              ],
+              totalActivities: 40
+            }
+          ]
+        },
+        { 
+          name: "HVAC", 
+          totalTasks: 500, 
+          primaryTasks: 12,
+          categories: [
+            {
+              name: "Air Conditioning",
+              isPrimary: true,
+              activities: [
+                "Ducting installation",
+                "Unit installation",
+                "Refrigerant handling",
+                "System commissioning",
+                "Ventilation installation",
+                "Thermostat installation",
+                "Filter replacement",
+                "Insulation installation",
+                "Control system setup",
+                "Testing and balancing"
+              ],
+              totalActivities: 100
+            },
+            {
+              name: "Heating Systems",
+              isPrimary: false,
+              activities: [
+                "Boiler installation",
+                "Radiator installation",
+                "Underfloor heating",
+                "Heat pump installation",
+                "Gas line installation"
+              ],
+              totalActivities: 60
+            }
+          ]
+        },
+        { 
+          name: "Landscaping", 
+          totalTasks: 250, 
+          primaryTasks: 8,
+          categories: [
+            {
+              name: "Garden Installation",
+              isPrimary: true,
+              activities: [
+                "Site preparation",
+                "Plant installation",
+                "Irrigation installation",
+                "Hardscaping",
+                "Lawn installation",
+                "Tree planting",
+                "Garden bed preparation",
+                "Mulching",
+                "Path construction",
+                "Retaining wall construction"
+              ],
+              totalActivities: 50
+            },
+            {
+              name: "Maintenance",
+              isPrimary: false,
+              activities: [
+                "Garden maintenance",
+                "Lawn mowing",
+                "Pruning",
+                "Fertilizing",
+                "Pest control"
+              ],
+              totalActivities: 30
+            }
+          ]
+        },
+        { 
+          name: "Bricklaying", 
+          totalTasks: 200, 
+          primaryTasks: 8,
+          categories: [
+            {
+              name: "Masonry Work",
+              isPrimary: true,
+              activities: [
+                "Brick laying",
+                "Block laying",
+                "Mortar mixing",
+                "Wall construction",
+                "Pointing work",
+                "Stone work",
+                "Arch construction",
+                "Pier construction",
+                "Chimney construction",
+                "Repair work"
+              ],
+              totalActivities: 40
+            },
+            {
+              name: "Specialized Masonry",
+              isPrimary: false,
+              activities: [
+                "Heritage restoration",
+                "Repointing",
+                "Cleaning",
+                "Structural repair",
+                "Damp proofing"
+              ],
+              totalActivities: 25
+            }
+          ]
+        },
+        { 
+          name: "Tiling", 
+          totalTasks: 180, 
+          primaryTasks: 6,
+          categories: [
+            {
+              name: "Floor & Wall Tiling",
+              isPrimary: true,
+              activities: [
+                "Floor tile installation",
+                "Wall tile installation",
+                "Grouting",
+                "Surface preparation",
+                "Waterproofing",
+                "Mosaic installation",
+                "Natural stone installation",
+                "Tile cutting",
+                "Adhesive application",
+                "Sealing"
+              ],
+              totalActivities: 36
+            },
+            {
+              name: "Specialized Tiling",
+              isPrimary: false,
+              activities: [
+                "Pool tiling",
+                "Feature wall tiling",
+                "Countertop tiling",
+                "Outdoor tiling",
+                "Repair work"
+              ],
+              totalActivities: 20
+            }
+          ]
+        },
+        { 
+          name: "Glazing", 
+          totalTasks: 150, 
+          primaryTasks: 6,
+          categories: [
+            {
+              name: "Window Installation",
+              isPrimary: true,
+              activities: [
+                "Window glazing",
+                "Glass cutting",
+                "Frame installation",
+                "Sealant application",
+                "Security glass installation",
+                "Double glazing",
+                "Mirror installation",
+                "Shopfront glazing",
+                "Curtain wall installation",
+                "Glass balustrade"
+              ],
+              totalActivities: 30
+            },
+            {
+              name: "Glass Repair",
+              isPrimary: false,
+              activities: [
+                "Glass replacement",
+                "Crack repair",
+                "Reglazing",
+                "Frame repair",
+                "Emergency glazing"
+              ],
+              totalActivities: 15
+            }
+          ]
+        },
+        { 
+          name: "Flooring", 
+          totalTasks: 220, 
+          primaryTasks: 8,
+          categories: [
+            {
+              name: "Floor Installation",
+              isPrimary: true,
+              activities: [
+                "Timber flooring",
+                "Carpet installation",
+                "Vinyl flooring",
+                "Subfloor preparation",
+                "Floor sanding",
+                "Laminate installation",
+                "Polished concrete",
+                "Epoxy coating",
+                "Underlay installation",
+                "Skirting installation"
+              ],
+              totalActivities: 44
+            },
+            {
+              name: "Floor Finishing",
+              isPrimary: false,
+              activities: [
+                "Floor polishing",
+                "Staining",
+                "Sealing",
+                "Repair work",
+                "Refinishing"
+              ],
+              totalActivities: 25
+            }
+          ]
+        },
+        { 
+          name: "Insulation", 
+          totalTasks: 120, 
+          primaryTasks: 5,
+          categories: [
+            {
+              name: "Thermal Insulation",
+              isPrimary: true,
+              activities: [
+                "Bulk insulation installation",
+                "Reflective insulation",
+                "Ceiling insulation",
+                "Wall insulation",
+                "Acoustic insulation",
+                "Underfloor insulation",
+                "Roof insulation",
+                "Pipe insulation",
+                "Duct insulation",
+                "Fire-rated insulation"
+              ],
+              totalActivities: 24
+            },
+            {
+              name: "Specialized Insulation",
+              isPrimary: false,
+              activities: [
+                "Spray foam insulation",
+                "Injection insulation",
+                "Marine insulation",
+                "Industrial insulation",
+                "Cold storage insulation"
+              ],
+              totalActivities: 15
+            }
+          ]
+        },
+        { 
+          name: "Security Systems", 
+          totalTasks: 180, 
+          primaryTasks: 6,
+          categories: [
+            {
+              name: "Security Installation",
+              isPrimary: true,
+              activities: [
+                "CCTV installation",
+                "Alarm system installation",
+                "Access control installation",
+                "Security lighting",
+                "Intercom installation",
+                "Motion sensor installation",
+                "Key card system",
+                "Biometric system",
+                "Perimeter security",
+                "Emergency systems"
+              ],
+              totalActivities: 36
+            },
+            {
+              name: "Monitoring Systems",
+              isPrimary: false,
+              activities: [
+                "Control room setup",
+                "Remote monitoring",
+                "System maintenance",
+                "Upgrade installation",
+                "Integration work"
+              ],
+              totalActivities: 18
+            }
+          ]
+        },
+        { 
+          name: "Earthworks", 
+          totalTasks: 300, 
+          primaryTasks: 10,
+          categories: [
+            {
+              name: "Excavation",
+              isPrimary: true,
+              activities: [
+                "Site excavation",
+                "Trenching",
+                "Backfilling",
+                "Compaction",
+                "Site leveling",
+                "Cut and fill",
+                "Drainage installation",
+                "Utility trenching",
+                "Foundation excavation",
+                "Road construction"
+              ],
+              totalActivities: 60
+            },
+            {
+              name: "Site Preparation",
+              isPrimary: false,
+              activities: [
+                "Site clearing",
+                "Demolition",
+                "Soil testing",
+                "Erosion control",
+                "Environmental protection"
+              ],
+              totalActivities: 30
+            }
+          ]
+        },
+        { 
+          name: "Fire Protection", 
+          totalTasks: 200, 
+          primaryTasks: 8,
+          categories: [
+            {
+              name: "Fire Systems",
+              isPrimary: true,
+              activities: [
+                "Sprinkler installation",
+                "Fire alarm installation",
+                "Emergency lighting",
+                "Fire extinguisher installation",
+                "Exit sign installation",
+                "Smoke detection",
+                "Fire door installation",
+                "Evacuation systems",
+                "Fire pump installation",
+                "Suppression systems"
+              ],
+              totalActivities: 40
+            },
+            {
+              name: "Fire Safety",
+              isPrimary: false,
+              activities: [
+                "Fire safety training",
+                "System testing",
+                "Maintenance",
+                "Compliance inspection",
+                "Emergency planning"
+              ],
+              totalActivities: 20
+            }
+          ]
+        },
+        { 
+          name: "Scaffolding", 
+          totalTasks: 150, 
+          primaryTasks: 6,
+          categories: [
+            {
+              name: "Scaffold Setup",
+              isPrimary: true,
+              activities: [
+                "Scaffold erection",
+                "Scaffold dismantling",
+                "Platform installation",
+                "Safety rail installation",
+                "Access ladder installation",
+                "Mobile scaffold setup",
+                "Suspended scaffold",
+                "System scaffold",
+                "Tube and fitting",
+                "Cantilever scaffold"
+              ],
+              totalActivities: 30
+            },
+            {
+              name: "Scaffold Maintenance",
+              isPrimary: false,
+              activities: [
+                "Inspection",
+                "Repair",
+                "Modification",
+                "Safety compliance",
+                "Documentation"
+              ],
+              totalActivities: 15
+            }
+          ]
+        },
+        { 
+          name: "Communications", 
+          totalTasks: 180, 
+          primaryTasks: 6,
+          categories: [
+            {
+              name: "Data & Communications",
+              isPrimary: true,
+              activities: [
+                "Data cabling",
+                "Phone system installation",
+                "Network installation",
+                "Satellite installation",
+                "Antenna installation",
+                "Fiber optic installation",
+                "Wireless system setup",
+                "Audio visual installation",
+                "Public address system",
+                "Internet infrastructure"
+              ],
+              totalActivities: 36
+            },
+            {
+              name: "Telecommunications",
+              isPrimary: false,
+              activities: [
+                "Tower installation",
+                "Microwave installation",
+                "Cable pulling",
+                "Testing and commissioning",
+                "Maintenance"
+              ],
+              totalActivities: 18
+            }
+          ]
+        },
+        { 
+          name: "Pool Construction", 
+          totalTasks: 100, 
+          primaryTasks: 5,
+          categories: [
+            {
+              name: "Pool Installation",
+              isPrimary: true,
+              activities: [
+                "Pool excavation",
+                "Pool lining",
+                "Pool equipment installation",
+                "Pool tiling",
+                "Pool fencing",
+                "Plumbing installation",
+                "Electrical installation",
+                "Filtration system",
+                "Heating system",
+                "Pool decking"
+              ],
+              totalActivities: 20
+            },
+            {
+              name: "Pool Maintenance",
+              isPrimary: false,
+              activities: [
+                "Pool cleaning",
+                "Equipment servicing",
+                "Chemical balancing",
+                "Repair work",
+                "Renovation"
+              ],
+              totalActivities: 10
+            }
+          ]
+        },
+        { 
+          name: "Solar & Renewable", 
+          totalTasks: 150, 
+          primaryTasks: 6,
+          categories: [
+            {
+              name: "Solar Installation",
+              isPrimary: true,
+              activities: [
+                "Solar panel installation",
+                "Inverter installation",
+                "Battery installation",
+                "Solar wiring",
+                "System commissioning",
+                "Mounting system",
+                "Grid connection",
+                "Monitoring system",
+                "Safety shutdown",
+                "Performance testing"
+              ],
+              totalActivities: 30
+            },
+            {
+              name: "Renewable Energy",
+              isPrimary: false,
+              activities: [
+                "Wind turbine installation",
+                "Hydroelectric systems",
+                "Geothermal systems",
+                "Energy storage",
+                "Smart grid integration"
+              ],
+              totalActivities: 15
+            }
+          ]
+        },
+        { 
+          name: "Demolition", 
+          totalTasks: 200, 
+          primaryTasks: 8,
+          categories: [
+            {
+              name: "Demolition Work",
+              isPrimary: true,
+              activities: [
+                "Structural demolition",
+                "Interior demolition",
+                "Asbestos removal",
+                "Debris removal",
+                "Site cleanup",
+                "Selective demolition",
+                "Controlled demolition",
+                "Mechanical demolition",
+                "Manual demolition",
+                "Waste sorting"
+              ],
+              totalActivities: 40
+            },
+            {
+              name: "Hazardous Material",
+              isPrimary: false,
+              activities: [
+                "Lead paint removal",
+                "Contaminated soil removal",
+                "Chemical cleanup",
+                "Environmental remediation",
+                "Safety monitoring"
+              ],
+              totalActivities: 20
             }
           ]
         }
