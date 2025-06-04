@@ -50,6 +50,21 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
     queryKey: ["/api/safety-library"],
   });
 
+  // Check user subscription for task limits
+  const { data: subscription } = useQuery({
+    queryKey: ["/api/user/subscription"],
+  });
+
+  // Task limits based on subscription
+  const getTaskLimit = () => {
+    if (subscription?.plan === "Pro") return 10;
+    if (subscription?.plan === "Enterprise") return 25;
+    return 2; // Basic/Demo mode limit
+  };
+
+  const taskLimit = getTaskLimit();
+  const isTaskLimitReached = formData.activities?.length >= taskLimit;
+
   useEffect(() => {
     onDataChange(formData);
   }, [formData]);
@@ -237,6 +252,26 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
                 <p className="text-sm text-gray-600">Choose all applicable work activities for this project</p>
               </CardHeader>
               <CardContent className="space-y-4">
+                {/* Task Limit Indicator */}
+                <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <FileText className="h-4 w-4 text-blue-600" />
+                    <span className="text-sm font-medium text-blue-800">
+                      Tasks Selected: {formData.activities?.length || 0} / {taskLimit}
+                    </span>
+                  </div>
+                  {isTaskLimitReached && (
+                    <Badge variant="destructive" className="text-xs">
+                      Limit Reached
+                    </Badge>
+                  )}
+                  {subscription?.plan === "Basic" && (
+                    <Badge variant="outline" className="text-xs">
+                      Upgrade for more tasks
+                    </Badge>
+                  )}
+                </div>
+
                 {/* Activity Search */}
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">Search Activities</Label>
@@ -277,8 +312,17 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
                             <div key={index} className="flex items-center space-x-2">
                               <Checkbox
                                 checked={isSelected}
+                                disabled={!isSelected && isTaskLimitReached}
                                 onCheckedChange={async (checked) => {
                                   if (checked) {
+                                    if (isTaskLimitReached) {
+                                      toast({
+                                        title: "Task Limit Reached",
+                                        description: `You can only select ${taskLimit} tasks with your current plan. Upgrade to Pro for more tasks.`,
+                                        variant: "destructive",
+                                      });
+                                      return;
+                                    }
                                     addArrayItem('activities', result.activity);
                                     // Auto-generate SWMS when activities are selected
                                     setTimeout(() => autoGenerateSwms(), 500);
@@ -355,12 +399,34 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
                                   if (index > -1) removeArrayItem('activities', index);
                                 });
                               } else {
-                                // Select all
+                                // Select all with task limit enforcement
+                                const currentCount = formData.activities?.length || 0;
+                                const availableSlots = taskLimit - currentCount;
+                                
+                                if (availableSlots <= 0) {
+                                  toast({
+                                    title: "Task Limit Reached",
+                                    description: `You can only select ${taskLimit} tasks with your current plan. Upgrade to Pro for more tasks.`,
+                                    variant: "destructive",
+                                  });
+                                  return;
+                                }
+                                
+                                let addedCount = 0;
                                 category.activities.forEach((activity: string) => {
-                                  if (!formData.activities.includes(activity)) {
+                                  if (!formData.activities.includes(activity) && addedCount < availableSlots) {
                                     addArrayItem('activities', activity);
+                                    addedCount++;
                                   }
                                 });
+                                
+                                if (addedCount < category.activities.filter(a => !formData.activities.includes(a)).length) {
+                                  toast({
+                                    title: "Partial Selection",
+                                    description: `Only ${addedCount} activities selected due to your ${taskLimit} task limit.`,
+                                    variant: "destructive",
+                                  });
+                                }
                               }
                             }}
                           >
@@ -389,8 +455,17 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
                                     <Checkbox
                                       id={activity}
                                       checked={isSelected}
+                                      disabled={!isSelected && isTaskLimitReached}
                                       onCheckedChange={async (checked) => {
                                         if (checked) {
+                                          if (isTaskLimitReached) {
+                                            toast({
+                                              title: "Task Limit Reached",
+                                              description: `You can only select ${taskLimit} tasks with your current plan. Upgrade to Pro for more tasks.`,
+                                              variant: "destructive",
+                                            });
+                                            return;
+                                          }
                                           addArrayItem('activities', activity);
                                           // Auto-generate SWMS when activities are selected with updated state
                                           setTimeout(() => {

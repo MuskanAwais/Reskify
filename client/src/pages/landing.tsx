@@ -210,9 +210,9 @@ export default function Landing() {
         "25 SWMS per month",
         "Everything in Pro",
         "Advanced analytics",
-        "Team management",
+        "Team collaboration",
         "24/7 phone support",
-        "Custom integrations"
+        "Priority development"
       ],
       popular: false
     }
