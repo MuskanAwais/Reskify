@@ -34,14 +34,60 @@ export const users = pgTable("users", {
 export const swmsDocuments = pgTable("swms_documents", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id).notNull(),
+  
+  // 1. Project and Document Details
   title: text("title").notNull(),
   jobName: text("job_name").notNull(),
   jobNumber: text("job_number"),
   projectAddress: text("project_address").notNull(),
   projectLocation: text("project_location").notNull(),
+  projectDescription: text("project_description"),
+  principalContractor: text("principal_contractor").notNull(),
+  subcontractor: text("subcontractor"),
+  principalContractorAbn: text("principal_contractor_abn"),
+  subcontractorAbn: text("subcontractor_abn"),
+  licenseNumber: text("license_number"),
+  documentVersion: text("document_version").default("1.0"),
+  responsiblePersons: jsonb("responsible_persons").notNull(),
+  signatureSection: jsonb("signature_section"),
+  
+  // 2. High-Risk Construction Work (HRCW) Identification
+  isHighRiskWork: boolean("is_high_risk_work").default(false),
+  highRiskActivities: text("high_risk_activities").array(),
+  whsRegulations: text("whs_regulations").array(),
+  highRiskJustification: text("high_risk_justification"),
+  
+  // 3. Work Activity Breakdown
   tradeType: text("trade_type").notNull(),
   activities: text("activities").array().notNull(),
+  workActivities: jsonb("work_activities").notNull(), // detailed breakdown with steps
+  
+  // 4. Hazard Identification and Risk Assessment
   riskAssessments: jsonb("risk_assessments").notNull(),
+  
+  // 5. Risk Control Measures (covered in risk assessments)
+  
+  // 6. Plant, Equipment and Materials Used
+  plantEquipment: jsonb("plant_equipment"),
+  
+  // 7. PPE Requirements (covered in risk assessments)
+  
+  // 8. Training, Competency and Permits
+  trainingRequirements: jsonb("training_requirements"),
+  competencyRequirements: jsonb("competency_requirements"),
+  permitsRequired: text("permits_required").array(),
+  
+  // 9. Emergency Procedures
+  emergencyProcedures: jsonb("emergency_procedures").notNull(),
+  nearestHospital: text("nearest_hospital"),
+  emergencyContacts: jsonb("emergency_contacts"),
+  firstAidArrangements: text("first_aid_arrangements"),
+  
+  // 10. Review and Monitoring
+  reviewProcess: jsonb("review_process"),
+  monitoringRequirements: jsonb("monitoring_requirements"),
+  
+  // System fields
   safetyMeasures: jsonb("safety_measures").notNull(),
   complianceCodes: text("compliance_codes").array().notNull(),
   status: text("status").notNull().default("draft"), // draft, under_review, approved, signed

@@ -14,11 +14,12 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
 const STEPS = [
-  { id: 1, title: "Project Details", description: "Basic project information and trade selection" },
-  { id: 2, title: "Risk Assessment", description: "Identify and assess potential hazards for your work activities" },
-  { id: 3, title: "Safety Codes", description: "Select applicable safety codes and compliance requirements" },
-  { id: 4, title: "Legal Disclaimer", description: "Accept terms and liability disclaimer" },
-  { id: 5, title: "Final Document", description: "Generate complete SWMS document" }
+  { id: 1, title: "Project & Contractor Details", description: "Project information, contractor details, and high-risk work identification" },
+  { id: 2, title: "Work Activities & Risk Assessment", description: "Detailed work breakdown and comprehensive risk assessments" },
+  { id: 3, title: "Plant, Equipment & Training", description: "Equipment specifications, training requirements, and permits" },
+  { id: 4, title: "Emergency & Monitoring", description: "Emergency procedures and review/monitoring processes" },
+  { id: 5, title: "Legal Disclaimer", description: "Accept terms and liability disclaimer" },
+  { id: 6, title: "Final Document", description: "Generate complete SWMS document" }
 ];
 
 export default function SwmsBuilder() {

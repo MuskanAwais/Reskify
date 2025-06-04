@@ -448,18 +448,23 @@ export default function Sidebar() {
               <CreditCard className="h-4 w-4 text-slate-500" />
             </div>
             <p className="text-xs text-slate-600 mb-3">
-              {subscription?.plan || "Basic Plan"}
+              {subscription?.plan ? subscription.plan.charAt(0).toUpperCase() + subscription.plan.slice(1) + " Plan" : "Basic Plan"}
             </p>
             <div className="text-xs text-slate-600">
               <div className="flex justify-between mb-1">
                 <span>Credits Used</span>
-                <span>{subscription?.creditsUsed || 0}/{subscription?.creditsTotal || 10}</span>
+                <span>
+                  {subscription?.creditsUsed || 0}/
+                  {subscription?.plan === 'pro' ? 100 : 
+                   subscription?.plan === 'enterprise' ? 200 : 
+                   subscription?.creditsTotal || 10}
+                </span>
               </div>
               <div className="w-full bg-slate-200 rounded-full h-2">
                 <div 
                   className="bg-blue-500 h-2 rounded-full transition-all duration-300" 
                   style={{ 
-                    width: `${((subscription?.creditsUsed || 0) / (subscription?.creditsTotal || 10)) * 100}%` 
+                    width: `${((subscription?.creditsUsed || 0) / (subscription?.plan === 'pro' ? 100 : subscription?.plan === 'enterprise' ? 200 : subscription?.creditsTotal || 10)) * 100}%` 
                   }}
                 ></div>
               </div>
