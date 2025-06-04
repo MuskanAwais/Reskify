@@ -135,11 +135,18 @@ function Layout({ children }: { children: React.ReactNode }) {
   }
   
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative">
+      <Watermark 
+        companyName="Test Company"
+        projectName="Office Renovation Project"
+        projectNumber="PRJ-2025-001"
+        projectAddress="123 Construction Lane, Sydney NSW 2000"
+        brandName="Safety Sensei"
+      />
       <Header />
-      <div className="flex">
+      <div className="flex relative z-10">
         <Sidebar />
-        <main className="flex-1 p-6">
+        <main className="flex-1 p-6 relative z-10">
           {children}
         </main>
       </div>
