@@ -469,62 +469,76 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
                             )}
                           </Button>
                           
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            className="select-all-btn"
-                            onClick={() => {
-                              const allSelected = category.activities.every((activity: string) => 
-                                formData.activities.includes(activity)
-                              );
-                              if (allSelected) {
-                                // Deselect all
-                                category.activities.forEach((activity: string) => {
-                                  const index = formData.activities.indexOf(activity);
-                                  if (index > -1) removeArrayItem('activities', index);
-                                });
-                              } else {
-                                // Select all with task limit enforcement (only for demo mode)
-                                const currentCount = formData.activities?.length || 0;
-                                
-                                if (taskLimit !== 999) { // Only enforce limits for demo mode
-                                  const availableSlots = taskLimit - currentCount;
+                          <QuickActionTooltip
+                            title="Select All Activities"
+                            description="Toggle selection for all activities in this category"
+                            category="editing"
+                            shortcuts={[
+                              { key: "Ctrl + A", action: "Select all in category" }
+                            ]}
+                            tips={[
+                              "Quickly select/deselect entire categories",
+                              "Respects your current plan's task limits",
+                              "Shows count of selected vs total activities"
+                            ]}
+                          >
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="select-all-btn"
+                              onClick={() => {
+                                const allSelected = category.activities.every((activity: string) => 
+                                  formData.activities.includes(activity)
+                                );
+                                if (allSelected) {
+                                  // Deselect all
+                                  category.activities.forEach((activity: string) => {
+                                    const index = formData.activities.indexOf(activity);
+                                    if (index > -1) removeArrayItem('activities', index);
+                                  });
+                                } else {
+                                  // Select all with task limit enforcement (only for demo mode)
+                                  const currentCount = formData.activities?.length || 0;
                                   
-                                  if (availableSlots <= 0) {
+                                  if (taskLimit !== 999) { // Only enforce limits for demo mode
+                                    const availableSlots = taskLimit - currentCount;
+                                    
+                                    if (availableSlots <= 0) {
+                                      toast({
+                                        title: "Task Limit Reached",
+                                        description: `Demo mode limited to ${taskLimit} tasks. Sign up for unlimited tasks.`,
+                                        variant: "destructive",
+                                      });
+                                      return;
+                                    }
+                                  }
+                                  
+                                  let addedCount = 0;
+                                  const availableSlots = taskLimit === 999 ? Infinity : (taskLimit - currentCount);
+                                  
+                                  category.activities.forEach((activity: string) => {
+                                    if (!formData.activities.includes(activity) && addedCount < availableSlots) {
+                                      addArrayItem('activities', activity);
+                                      addedCount++;
+                                    }
+                                  });
+                                  
+                                  if (addedCount < category.activities.filter(a => !formData.activities.includes(a)).length) {
                                     toast({
-                                      title: "Task Limit Reached",
-                                      description: `Demo mode limited to ${taskLimit} tasks. Sign up for unlimited tasks.`,
+                                      title: "Partial Selection",
+                                      description: `Only ${addedCount} activities selected due to your ${taskLimit} task limit.`,
                                       variant: "destructive",
                                     });
-                                    return;
                                   }
                                 }
-                                
-                                let addedCount = 0;
-                                const availableSlots = taskLimit === 999 ? Infinity : (taskLimit - currentCount);
-                                
-                                category.activities.forEach((activity: string) => {
-                                  if (!formData.activities.includes(activity) && addedCount < availableSlots) {
-                                    addArrayItem('activities', activity);
-                                    addedCount++;
-                                  }
-                                });
-                                
-                                if (addedCount < category.activities.filter(a => !formData.activities.includes(a)).length) {
-                                  toast({
-                                    title: "Partial Selection",
-                                    description: `Only ${addedCount} activities selected due to your ${taskLimit} task limit.`,
-                                    variant: "destructive",
-                                  });
-                                }
-                              }
-                            }}
-                          >
-                            {category.activities.every((activity: string) => 
-                              formData.activities.includes(activity)
+                              }}
+                            >
+                              {category.activities.every((activity: string) => 
+                                formData.activities.includes(activity)
                             ) ? 'Deselect All' : 'Select All'}
-                          </Button>
+                            </Button>
+                          </QuickActionTooltip>
                         </div>
                       </div>
                       
@@ -667,15 +681,29 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
                     
                     <div className="flex items-center justify-between mb-2">
                       <span></span>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="text-xs h-6 px-2 text-blue-600 hover:text-blue-800"
-                        onClick={() => updateFormData({ activities: [] })}
+                      <QuickActionTooltip
+                        title="Clear All Activities"
+                        description="Remove all selected activities from your SWMS"
+                        category="editing"
+                        shortcuts={[
+                          { key: "Ctrl + Delete", action: "Clear all activities" }
+                        ]}
+                        tips={[
+                          "This will remove all selected activities",
+                          "You can always re-select activities afterward",
+                          "Useful for starting fresh with activity selection"
+                        ]}
                       >
-                        Clear All
-                      </Button>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="text-xs h-6 px-2 text-blue-600 hover:text-blue-800"
+                          onClick={() => updateFormData({ activities: [] })}
+                        >
+                          Clear All
+                        </Button>
+                      </QuickActionTooltip>
                     </div>
                     <div className="flex flex-wrap gap-1.5">
                       {formData.activities.slice(0, 8).map((activity: string, index: number) => (
@@ -952,10 +980,17 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
               {formData.riskAssessments && formData.riskAssessments.length > 0 && (
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-base">Risk Assessment Table</CardTitle>
-                    <p className="text-sm text-gray-600">
-                      Review and customize the AI-generated risk assessments. Click on any cell to edit directly.
-                    </p>
+                    <QuickActionTooltip
+                      {...presetTooltips.tableEditor}
+                      side="top"
+                    >
+                      <div className="cursor-help">
+                        <CardTitle className="text-base">Risk Assessment Table</CardTitle>
+                        <p className="text-sm text-gray-600">
+                          Review and customize the AI-generated risk assessments. Click on any cell to edit directly.
+                        </p>
+                      </div>
+                    </QuickActionTooltip>
                   </CardHeader>
                   <CardContent>
                     <SimplifiedTableEditor 
