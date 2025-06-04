@@ -3,7 +3,7 @@ import { motion, useScroll, useTransform, useInView } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { 
   Shield,
   FileText, 
@@ -69,6 +69,14 @@ export default function Landing() {
   const opacity = useTransform(scrollYProgress, [0, 0.5, 1], [1, 0.8, 0.6]);
   const { user, isLoading, signIn } = useFirebaseAuth();
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
+
+  // Redirect to dashboard when user is authenticated
+  useEffect(() => {
+    if (user && !isLoading) {
+      setLocation("/dashboard");
+    }
+  }, [user, isLoading, setLocation]);
   const { 
     isActive: isWalkthroughActive, 
     startWalkthrough, 
