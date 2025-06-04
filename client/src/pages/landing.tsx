@@ -174,11 +174,13 @@ export default function Landing() {
   const pricing = [
     {
       name: "Basic",
-      price: "$50",
-      period: " + GST/month",
-      credits: "3 SWMS per month",
+      price: billingPeriod === 'yearly' ? "$540" : "$50",
+      period: billingPeriod === 'yearly' ? " + GST/year" : " + GST/month",
+      credits: "10 SWMS per month",
+      originalPrice: billingPeriod === 'yearly' ? "$600" : null,
+      discount: billingPeriod === 'yearly' ? "Save 10%" : null,
       features: [
-        "3 SWMS per month",
+        "10 SWMS per month",
         "Standard templates",
         "Visual table editor",
         "Email support",
@@ -188,11 +190,13 @@ export default function Landing() {
     },
     {
       name: "Pro",
-      price: "$100",
-      period: " + GST/month",
-      credits: "10 SWMS per month",
+      price: billingPeriod === 'yearly' ? "$1,080" : "$100",
+      period: billingPeriod === 'yearly' ? " + GST/year" : " + GST/month",
+      credits: "25 SWMS per month",
+      originalPrice: billingPeriod === 'yearly' ? "$1,200" : null,
+      discount: billingPeriod === 'yearly' ? "Save 10%" : null,
       features: [
-        "10 SWMS per month",
+        "25 SWMS per month",
         "AI-powered generation",
         "Visual table editor",
         "Custom branding",
@@ -204,11 +208,13 @@ export default function Landing() {
     },
     {
       name: "Enterprise",
-      price: "$200",
-      period: " + GST/month",
-      credits: "25 SWMS per month",
+      price: billingPeriod === 'yearly' ? "$2,160" : "$200",
+      period: billingPeriod === 'yearly' ? " + GST/year" : " + GST/month",
+      credits: "60 SWMS per month",
+      originalPrice: billingPeriod === 'yearly' ? "$2,400" : null,
+      discount: billingPeriod === 'yearly' ? "Save 10%" : null,
       features: [
-        "25 SWMS per month",
+        "60 SWMS per month",
         "Everything in Pro",
         "Advanced analytics",
         "Team collaboration",
@@ -494,9 +500,36 @@ export default function Landing() {
               <h2 className="text-4xl font-bold text-gray-900 mb-4">
                 Transparent Pricing
               </h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
                 Choose the plan that fits your team size and project requirements. No hidden fees.
               </p>
+              
+              {/* Billing Period Toggle */}
+              <div className="flex items-center justify-center gap-4 mb-8">
+                <span className={`text-sm font-medium ${billingPeriod === 'monthly' ? 'text-gray-900' : 'text-gray-500'}`}>
+                  Monthly
+                </span>
+                <button
+                  onClick={() => setBillingPeriod(billingPeriod === 'monthly' ? 'yearly' : 'monthly')}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                    billingPeriod === 'yearly' ? 'bg-blue-600' : 'bg-gray-200'
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                      billingPeriod === 'yearly' ? 'translate-x-6' : 'translate-x-1'
+                    }`}
+                  />
+                </button>
+                <span className={`text-sm font-medium ${billingPeriod === 'yearly' ? 'text-gray-900' : 'text-gray-500'}`}>
+                  Yearly
+                </span>
+                {billingPeriod === 'yearly' && (
+                  <Badge className="bg-green-100 text-green-800 ml-2">
+                    Save 10%
+                  </Badge>
+                )}
+              </div>
             </div>
           </AnimatedSection>
 
@@ -518,12 +551,22 @@ export default function Landing() {
                   <CardHeader className="text-center pb-4">
                     <CardTitle className="text-xl">{plan.name}</CardTitle>
                     <div className="mt-4">
-                      <span className={`text-3xl font-bold ${plan.trial ? 'text-green-600' : 'text-gray-900'}`}>
+                      {plan.originalPrice && billingPeriod === 'yearly' && (
+                        <div className="text-sm text-gray-500 line-through mb-1">
+                          {plan.originalPrice} + GST/year
+                        </div>
+                      )}
+                      <span className="text-3xl font-bold text-gray-900">
                         {plan.price}
                       </span>
                       <span className="text-gray-600">{plan.period}</span>
+                      {plan.discount && billingPeriod === 'yearly' && (
+                        <div className="text-sm text-green-600 font-medium mt-1">
+                          {plan.discount}
+                        </div>
+                      )}
                     </div>
-                    <p className={`font-medium mt-2 ${plan.trial ? 'text-green-600' : 'text-blue-600'}`}>
+                    <p className="font-medium mt-2 text-blue-600">
                       {plan.credits}
                     </p>
                   </CardHeader>
@@ -532,7 +575,7 @@ export default function Landing() {
                     <ul className="space-y-3 mb-8">
                       {plan.features.map((feature, featureIndex) => (
                         <li key={featureIndex} className="flex items-center gap-3">
-                          <CheckCircle className={`h-4 w-4 flex-shrink-0 ${plan.trial ? 'text-green-500' : 'text-green-500'}`} />
+                          <CheckCircle className="h-4 w-4 flex-shrink-0 text-green-500" />
                           <span className="text-gray-700 text-sm">{feature}</span>
                         </li>
                       ))}
@@ -541,12 +584,11 @@ export default function Landing() {
                     <Link href="/register">
                       <Button 
                         className={`w-full ${
-                          plan.trial ? 'bg-green-600 hover:bg-green-700' :
                           plan.popular ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-900 hover:bg-gray-800'
                         } text-white`}
                         size="lg"
                       >
-                        {plan.trial ? 'Start Free Trial' : 'Get Started'}
+                        Get Started
                       </Button>
                     </Link>
                   </CardContent>

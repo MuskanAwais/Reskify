@@ -58,7 +58,7 @@ export default function Billing() {
 
   // Mock billing data - replace with real API calls
   const billingData: BillingData = {
-    currentPlan: "Professional",
+    currentPlan: "Pro",
     credits: 8,
     monthlyLimit: 25,
     billingCycle: "monthly",
@@ -156,10 +156,10 @@ export default function Billing() {
     {
       name: "Basic",
       price: 50,
-      credits: 3,
+      credits: 10,
       tier: 1,
       features: [
-        "3 SWMS per month",
+        "10 SWMS per month",
         "Standard templates",
         "Visual table editor",
         "Email support",
@@ -170,10 +170,10 @@ export default function Billing() {
     {
       name: "Pro",
       price: 100,
-      credits: 10,
+      credits: 25,
       tier: 2,
       features: [
-        "10 SWMS per month",
+        "25 SWMS per month",
         "AI-powered generation",
         "Visual table editor",
         "Custom branding",
@@ -186,10 +186,10 @@ export default function Billing() {
     {
       name: "Enterprise",
       price: 200,
-      credits: 25,
+      credits: 60,
       tier: 3,
       features: [
-        "25 SWMS per month",
+        "60 SWMS per month",
         "Everything in Pro",
         "Advanced analytics",
         "Team collaboration",
