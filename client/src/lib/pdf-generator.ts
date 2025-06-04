@@ -102,15 +102,21 @@ function addDemoWatermark(pdf: jsPDF) {
   pdf.restoreGraphicsState();
 }
 
-export async function generateProtectedPDF(document: SwmsDocument, user: User | null, isTrialDocument: boolean = false): Promise<Blob> {
+export async function generateProtectedPDF(document: SwmsDocument, user: User | null, subscription: any = null, isTrialDocument: boolean = false): Promise<Blob> {
   try {
     const pdf = new jsPDF();
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
     let yPosition = 20;
 
-    // Add DEMO watermark for trial documents
-    if (isTrialDocument) {
+    // Add company logo for Pro/Enterprise plans
+    if (user && subscription) {
+      addCompanyLogo(pdf, user, subscription);
+      yPosition = 40; // Adjust starting position after logo
+    }
+
+    // Add DEMO watermark for Basic plan documents
+    if (isTrialDocument || subscription?.plan === "Basic") {
       addDemoWatermark(pdf);
     }
 

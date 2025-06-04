@@ -1846,6 +1846,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // SWMS draft save endpoint with auto-save functionality
+  app.post("/api/swms/draft", async (req, res) => {
+    try {
+      const userId = 1; // Demo user ID
+      const swmsData = req.body;
+      
+      // Check user subscription for feature access
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Feature access control based on subscription
+      const hasAIAccess = user.subscriptionType === "Pro" || user.subscriptionType === "Enterprise";
+      const hasCustomBranding = user.subscriptionType === "Pro" || user.subscriptionType === "Enterprise";
+      
+      // Restrict AI features for Basic plan
+      if (swmsData.aiEnhanced && !hasAIAccess) {
+        return res.status(403).json({ 
+          message: "AI-powered SWMS generation requires Pro or Enterprise plan",
+          feature: "ai_generation",
+          requiredPlan: "Pro"
+        });
+      }
+      
+      // Save as draft with feature flags
+      const draft = await storage.createSwmsDocument({
+        ...swmsData,
+        userId,
+        status: "draft",
+        aiEnhanced: hasAIAccess ? swmsData.aiEnhanced : false
+      });
+      
+      res.json(draft);
+    } catch (error) {
+      console.error("Save draft error:", error);
+      res.status(500).json({ message: "Failed to save draft" });
+    }
+  });
+
   app.get("/api/admin/billing", async (req, res) => {
     try {
       const billingData = {
