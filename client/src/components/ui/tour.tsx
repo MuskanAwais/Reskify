@@ -106,27 +106,28 @@ export function Tour({ steps, isActive, onComplete, onSkip }: TourProps) {
 
   return (
     <>
-      {/* Overlay */}
-      <div className="fixed inset-0 bg-black bg-opacity-50 z-1000" style={{ zIndex: 1000 }} />
+      {/* Light overlay that doesn't block interaction */}
+      <div className="fixed inset-0 bg-black bg-opacity-20 pointer-events-none z-900" style={{ zIndex: 900 }} />
       
-      {/* Spotlight effect */}
-      {step.spotlight && targetElement && (
+      {/* Highlight ring for target element */}
+      {targetElement && (
         <div 
-          className="fixed border-4 border-blue-500 rounded-lg pointer-events-none"
+          className="fixed border-4 border-blue-500 rounded-lg pointer-events-none animate-pulse"
           style={{
             top: targetElement.getBoundingClientRect().top - 4,
             left: targetElement.getBoundingClientRect().left - 4,
             width: targetElement.getBoundingClientRect().width + 8,
             height: targetElement.getBoundingClientRect().height + 8,
             zIndex: 1001,
-            boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.5)'
+            background: 'rgba(59, 130, 246, 0.1)',
+            boxShadow: '0 0 20px rgba(59, 130, 246, 0.4)'
           }}
         />
       )}
 
       {/* Tooltip */}
       <Card 
-        className="fixed max-w-sm z-1002 shadow-lg border-2 border-blue-500"
+        className="fixed max-w-sm z-1002 shadow-xl border-2 border-blue-500 bg-white"
         style={{
           top: Math.max(10, Math.min(window.innerHeight - 200, tooltipPosition.top)),
           left: Math.max(10, Math.min(window.innerWidth - 400, tooltipPosition.left)),

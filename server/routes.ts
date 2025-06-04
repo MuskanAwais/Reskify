@@ -381,6 +381,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Trades endpoint for dropdown selection
+  app.get("/api/trades", async (req, res) => {
+    try {
+      const trades = [
+        { name: "Electrical", totalTasks: 1200, primaryTasks: 15 },
+        { name: "Plumbing", totalTasks: 850, primaryTasks: 15 },
+        { name: "Carpentry", totalTasks: 950, primaryTasks: 15 },
+        { name: "Roofing", totalTasks: 400, primaryTasks: 12 },
+        { name: "Concrete Work", totalTasks: 350, primaryTasks: 10 },
+        { name: "Steelwork", totalTasks: 450, primaryTasks: 12 },
+        { name: "Painting", totalTasks: 300, primaryTasks: 8 },
+        { name: "HVAC", totalTasks: 500, primaryTasks: 12 },
+        { name: "Landscaping", totalTasks: 250, primaryTasks: 8 },
+        { name: "Bricklaying", totalTasks: 200, primaryTasks: 8 },
+        { name: "Tiling", totalTasks: 180, primaryTasks: 6 },
+        { name: "Glazing", totalTasks: 150, primaryTasks: 6 },
+        { name: "Flooring", totalTasks: 220, primaryTasks: 8 },
+        { name: "Insulation", totalTasks: 120, primaryTasks: 5 },
+        { name: "Security Systems", totalTasks: 180, primaryTasks: 6 },
+        { name: "Earthworks", totalTasks: 300, primaryTasks: 10 },
+        { name: "Fire Protection", totalTasks: 200, primaryTasks: 8 },
+        { name: "Scaffolding", totalTasks: 150, primaryTasks: 6 },
+        { name: "Communications", totalTasks: 180, primaryTasks: 6 },
+        { name: "Pool Construction", totalTasks: 100, primaryTasks: 5 },
+        { name: "Solar & Renewable", totalTasks: 150, primaryTasks: 6 },
+        { name: "Demolition", totalTasks: 200, primaryTasks: 8 }
+      ];
+      
+      res.json(trades);
+    } catch (error: any) {
+      console.error('Get trades error:', error);
+      res.status(500).json({ message: 'Failed to fetch trades' });
+    }
+  });
+
+  // Safety library endpoint
+  app.get("/api/safety-library", async (req, res) => {
+    try {
+      const safetyLibrary = getAllSafetyCodes();
+      res.json(safetyLibrary);
+    } catch (error: any) {
+      console.error('Get safety library error:', error);
+      res.status(500).json({ message: 'Failed to fetch safety library' });
+    }
+  });
+
   // Admin endpoints
   app.get("/api/admin/users", async (req, res) => {
     try {
