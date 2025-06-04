@@ -85,7 +85,40 @@ export default function SwmsBuilder() {
     }
   };
 
+  // Validation function for step 1
+  const validateStep1 = () => {
+    const errors: string[] = [];
+    
+    if (!formData.jobName?.trim()) {
+      errors.push("Job Name is required");
+    }
+    if (!formData.jobNumber?.trim()) {
+      errors.push("Job Number is required");
+    }
+    if (!formData.projectAddress?.trim()) {
+      errors.push("Project Address is required");
+    }
+    if (!formData.tradeType?.trim()) {
+      errors.push("Trade Type is required");
+    }
+    
+    return errors;
+  };
+
   const handleNext = () => {
+    // Validate step 1 before proceeding
+    if (currentStep === 1) {
+      const errors = validateStep1();
+      if (errors.length > 0) {
+        toast({
+          title: "Missing Required Information",
+          description: "Please fill in all mandatory fields: " + errors.join(", "),
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+    
     // Auto-save before moving to next step
     autoSave();
     
