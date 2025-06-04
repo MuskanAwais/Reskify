@@ -305,10 +305,10 @@ export async function generateProtectedPDF(document: SwmsDocument, user: User | 
       yPosition = (pdf as any).lastAutoTable.finalY + 20;
     }
 
-    // Risk Assessment Section
+    // Risk Assessment Table Section
     if (document.riskAssessments && document.riskAssessments.length > 0) {
       // Check if we need a new page
-      if (yPosition > pageHeight - 60) {
+      if (yPosition > pageHeight - 100) {
         pdf.addPage();
         yPosition = 20;
       }
@@ -316,26 +316,59 @@ export async function generateProtectedPDF(document: SwmsDocument, user: User | 
       pdf.setFontSize(14);
       pdf.setFont('helvetica', 'bold');
       pdf.text('Risk Assessment Matrix', 20, yPosition);
-      yPosition += 10;
+      yPosition += 15;
 
-      const riskData = document.riskAssessments.map(risk => [
-        risk.hazard,
-        risk.riskLevel.toUpperCase(),
-        Array.isArray(risk.controlMeasures) 
-          ? risk.controlMeasures.join('\n') 
-          : risk.controlMeasures,
-        risk.responsiblePerson
+      // Prepare table data with proper structure
+      const tableHeaders = ['Activity', 'Hazards', 'Initial Risk', 'Control Measures', 'Residual Risk', 'Responsible'];
+      
+      const tableData = document.riskAssessments.map((risk: any) => [
+        risk.activity || 'General Activity',
+        Array.isArray(risk.hazards) ? risk.hazards.join(', ') : (risk.hazard || 'Not specified'),
+        risk.initialRiskScore ? `${risk.initialRiskScore} (${risk.riskLevel || 'Medium'})` : (risk.riskLevel || 'Medium'),
+        Array.isArray(risk.controlMeasures) ? risk.controlMeasures.join('; ') : (risk.controlMeasures || 'Standard controls'),
+        risk.residualRiskScore ? `${risk.residualRiskScore} (${risk.residualRiskLevel || 'Low'})` : 'Low',
+        risk.responsible || risk.responsiblePerson || 'Site Supervisor'
       ]);
 
-      const getRiskColor = (riskLevel: string) => {
-        switch (riskLevel.toLowerCase()) {
-          case 'low': return [34, 197, 94]; // Green
-          case 'medium': return [234, 179, 8]; // Yellow
-          case 'high': return [249, 115, 22]; // Orange
-          case 'extreme': return [239, 68, 68]; // Red
-          default: return [107, 114, 128]; // Gray
-        }
-      };
+      // Create professional table using autoTable
+      pdf.autoTable({
+        head: [tableHeaders],
+        body: tableData,
+        startY: yPosition,
+        styles: {
+          fontSize: 8,
+          cellPadding: 3,
+          lineColor: [0, 0, 0],
+          lineWidth: 0.1,
+        },
+        headStyles: {
+          fillColor: [41, 128, 185],
+          textColor: [255, 255, 255],
+          fontStyle: 'bold',
+          fontSize: 9,
+        },
+        bodyStyles: {
+          fillColor: [245, 245, 245],
+          textColor: [0, 0, 0],
+        },
+        alternateRowStyles: {
+          fillColor: [255, 255, 255],
+        },
+        columnStyles: {
+          0: { cellWidth: 25 }, // Activity
+          1: { cellWidth: 40 }, // Hazards
+          2: { cellWidth: 20 }, // Initial Risk
+          3: { cellWidth: 50 }, // Control Measures
+          4: { cellWidth: 20 }, // Residual Risk
+          5: { cellWidth: 25 }, // Responsible
+        },
+        margin: { left: 20, right: 20 },
+        theme: 'grid',
+        tableLineColor: [0, 0, 0],
+        tableLineWidth: 0.1,
+      });
+
+      yPosition = (pdf as any).lastAutoTable.finalY + 20;
 
       pdf.autoTable({
         startY: yPosition,
