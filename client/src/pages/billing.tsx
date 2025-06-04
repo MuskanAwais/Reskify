@@ -49,6 +49,7 @@ export default function Billing() {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("billing");
   const [isLoading, setIsLoading] = useState(false);
+  const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
 
   // Fetch user settings with real API
   const { data: userSettings, refetch: refetchSettings } = useQuery({
@@ -155,7 +156,9 @@ export default function Billing() {
   const plans = [
     {
       name: "Basic",
-      price: 50,
+      monthlyPrice: 50,
+      yearlyPrice: 540,
+      originalYearlyPrice: 600,
       credits: 10,
       tier: 1,
       features: [
@@ -169,7 +172,9 @@ export default function Billing() {
     },
     {
       name: "Pro",
-      price: 100,
+      monthlyPrice: 100,
+      yearlyPrice: 1080,
+      originalYearlyPrice: 1200,
       credits: 25,
       tier: 2,
       features: [
@@ -185,7 +190,9 @@ export default function Billing() {
     },
     {
       name: "Enterprise",
-      price: 200,
+      monthlyPrice: 200,
+      yearlyPrice: 2160,
+      originalYearlyPrice: 2400,
       credits: 60,
       tier: 3,
       features: [
@@ -385,11 +392,47 @@ export default function Billing() {
             </Card>
           </div>
 
+          {/* Billing Period Toggle */}
+          <div className="flex justify-center mb-6">
+            <div className="bg-muted p-1 rounded-lg">
+              <div className="flex items-center space-x-1">
+                <button
+                  onClick={() => setBillingPeriod('monthly')}
+                  className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                    billingPeriod === 'monthly'
+                      ? 'bg-background text-foreground shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  Monthly
+                </button>
+                <button
+                  onClick={() => setBillingPeriod('yearly')}
+                  className={`px-4 py-2 text-sm font-medium rounded-md transition-colors relative ${
+                    billingPeriod === 'yearly'
+                      ? 'bg-background text-foreground shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  Yearly
+                  <span className="absolute -top-1 -right-1 bg-green-500 text-white text-xs px-1.5 py-0.5 rounded-full">
+                    -10%
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+
           {/* Available Plans */}
           <Card>
             <CardHeader>
               <CardTitle>Choose Your Plan</CardTitle>
-              <p className="text-muted-foreground">Upgrade or downgrade your subscription at any time</p>
+              <p className="text-muted-foreground">
+                {billingPeriod === 'yearly' 
+                  ? "Save 10% with yearly billing - upgrade or downgrade your subscription at any time"
+                  : "Upgrade or downgrade your subscription at any time"
+                }
+              </p>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -411,10 +454,24 @@ export default function Billing() {
                       <div>
                         <h3 className="text-xl font-bold">{plan.name}</h3>
                         <div className="flex items-baseline">
-                          <span className="text-3xl font-bold">${plan.price}</span>
-                          <span className="text-muted-foreground">/month</span>
+                          <span className="text-3xl font-bold">
+                            ${billingPeriod === 'yearly' ? plan.yearlyPrice : plan.monthlyPrice}
+                          </span>
+                          <span className="text-muted-foreground">
+                            /{billingPeriod === 'yearly' ? 'year' : 'month'}
+                          </span>
                         </div>
-                        <p className="text-sm text-muted-foreground">{plan.credits} SWMS credits</p>
+                        {billingPeriod === 'yearly' && (
+                          <div className="flex items-center space-x-2">
+                            <span className="text-sm text-muted-foreground line-through">
+                              ${plan.originalYearlyPrice}
+                            </span>
+                            <Badge variant="secondary" className="bg-green-100 text-green-700">
+                              Save 10%
+                            </Badge>
+                          </div>
+                        )}
+                        <p className="text-sm text-muted-foreground">{plan.credits} SWMS credits per month</p>
                       </div>
 
                       <ul className="space-y-2">
