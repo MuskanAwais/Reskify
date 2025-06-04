@@ -258,101 +258,82 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: 'Failed to generate SWMS table data' });
     }
   });
-            // Generic fallback for unmatched activities
-            console.log(`No match found for activity "${activity}" in trade "${tradeType}", using generic fallback`);
-            const riskAssessment = {
-              id: `generic-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-              activity: activity,
-              hazards: ["Manual handling injuries", "Tool and equipment hazards", "Slips, trips and falls"],
-              initialRiskScore: 9,
-              riskLevel: "Medium",
-              controlMeasures: ["Follow safe work procedures", "Use appropriate PPE", "Conduct safety briefing"],
-              residualRiskScore: 3,
-              residualRiskLevel: "Low",
-              responsible: "Site Supervisor",
-              ppe: ["Safety glasses", "Hard hat", "Safety boots", "High-vis clothing"],
-              training: ["Safety induction", "Task-specific training"],
-              inspection: "Pre-work inspection",
-              emergencyProcedures: ["Call 000 for emergencies"],
-              environmental: ["Standard environmental controls"],
-              quality: ["Follow quality procedures"],
-              legislation: ["Work Health and Safety Act 2011"],
-              category: "General Construction",
-              trade: tradeType,
-              complexity: "basic",
-              frequency: "project-based",
-              editable: true
-            };
-            
-            riskAssessments.push(riskAssessment);
-            complianceCodes.add("Work Health and Safety Act 2011");
-            safetyMeasures.push(...riskAssessment.controlMeasures);
-            console.log(`Added generic risk assessment for "${activity}"`);
-          }
+
+  // Helper functions for SWMS generation
+  function generateTradeSafetyMeasures(tradeType: string): any[] {
+    const baseMeasures = [
+      {
+        category: "General Safety",
+        measures: ["Site induction", "Daily safety briefings", "Hazard identification"],
+        equipment: ["First aid kit", "Emergency contacts", "Safety signage"],
+        procedures: ["Emergency evacuation plan", "Incident reporting procedure"]
+      }
+    ];
+
+    const tradeMeasures: Record<string, any[]> = {
+      'Electrical': [
+        {
+          category: "Electrical Safety",
+          measures: ["Electrical isolation", "Testing before work", "Use of insulated tools"],
+          equipment: ["Voltage tester", "Insulated tools", "Arc flash PPE"],
+          procedures: ["Lock out tag out procedure", "Electrical testing procedure"]
         }
-      }
+      ],
+      'Plumbing': [
+        {
+          category: "Plumbing Safety",
+          measures: ["Water isolation", "Pressure testing", "Confined space assessment"],
+          equipment: ["Water detection equipment", "Gas detector", "Ventilation fan"],
+          procedures: ["Water isolation procedure", "Confined space entry procedure"]
+        }
+      ],
+      'Carpentry': [
+        {
+          category: "Carpentry Safety",
+          measures: ["Tool inspection", "Dust control", "Manual handling techniques"],
+          equipment: ["Dust extraction", "Lifting aids", "Cut-resistant gloves"],
+          procedures: ["Tool maintenance procedure", "Manual handling procedure"]
+        }
+      ]
+    };
 
-      console.log(`Generated ${riskAssessments.length} risk assessments total`);
-      console.log('Risk assessments:', riskAssessments.map(r => ({ activity: r.activity, id: r.id })));
-      
-      // CRITICAL FIX: Ensure we have exactly one risk assessment per activity
-      if (riskAssessments.length !== activities.length) {
-        console.log(`MISMATCH: ${activities.length} activities vs ${riskAssessments.length} risk assessments`);
-        
-        const processedActivities = riskAssessments.map(r => r.activity);
-        const missingActivities = activities.filter(activity => !processedActivities.includes(activity));
-        
-        console.log(`Missing activities that need risk assessments:`, missingActivities);
-        
-        // Create risk assessments for missing activities
-        missingActivities.forEach((activity, index) => {
-          const genericAssessment = {
-            id: `missing-${Date.now()}-${index}`,
-            activity: activity,
-            hazards: ["Manual handling injuries", "Tool and equipment hazards", "Slips, trips and falls"],
-            initialRiskScore: 6,
-            riskLevel: "Medium",
-            controlMeasures: ["Follow safe work procedures", "Use appropriate PPE", "Conduct pre-work inspections"],
-            residualRiskScore: 3,
-            residualRiskLevel: "Low",
-            responsible: "Site Supervisor",
-            ppe: ["Safety glasses", "Hard hat", "Safety boots", "High-visibility clothing"],
-            training: ["Safety induction", "Task-specific training"],
-            inspection: "Daily",
-            emergencyProcedures: ["Stop work immediately if unsafe", "Report incidents to supervisor"],
-            environmental: ["Minimize waste", "Follow environmental guidelines"],
-            quality: ["Follow quality standards", "Document work completion"],
-            legislation: ["Work Health and Safety Act 2011"],
-            category: "General Construction",
-            trade: tradeType,
-            complexity: "intermediate",
-            frequency: "project-based",
-            editable: true
-          };
-          
-          riskAssessments.push(genericAssessment);
-          console.log(`FIXED: Added risk assessment for missing activity "${activity}"`);
-        });
-      }
+    return [...baseMeasures, ...(tradeMeasures[tradeType] || [])];
+  }
 
-      res.json({
-        title: title || `SWMS - ${tradeType} Work`,
-        projectLocation,
-        tradeType,
-        activities,
-        riskAssessments,
-        safetyMeasures: Array.from(new Set(safetyMeasures)),
-        complianceCodes: Array.from(complianceCodes),
-        aiEnhanced: true,
-        status: 'draft'
-      });
-    } catch (error: any) {
-      console.error('Auto-generate SWMS error:', error);
-      res.status(500).json({ message: 'Failed to auto-generate SWMS' });
-    }
-  });
+  function getEmergencyProcedures(tradeType: string): string[] {
+    const baseProc = [
+      "Stop work immediately if unsafe conditions arise",
+      "Call emergency services: 000",
+      "Notify site supervisor immediately",
+      "Provide first aid if trained and safe to do so",
+      "Evacuate area if necessary"
+    ];
 
-  // Generate detailed SWMS table data from selected tasks
+    const tradeProc: Record<string, string[]> = {
+      'Electrical': [
+        "De-energize electrical source if safe",
+        "Do not touch victim if still in contact with electricity"
+      ],
+      'Plumbing': [
+        "Shut off water supply if flooding occurs",
+        "Evacuate if gas leak suspected"
+      ]
+    };
+
+    return [...baseProc, ...(tradeProc[tradeType] || [])];
+  }
+
+  function getGeneralRequirements(): string[] {
+    return [
+      "All workers must complete site induction before commencing work",
+      "Daily toolbox talks must be conducted",
+      "All incidents and near misses must be reported immediately",
+      "PPE must be worn at all times in designated areas",
+      "No work to commence without approved SWMS"
+    ];
+  }
+
+  // Generate detailed SWMS table data from selected tasks with AI-powered assessments
   app.post("/api/generate-swms-table", async (req, res) => {
     try {
       const { activities, tradeType, projectDetails } = req.body;
@@ -361,109 +342,288 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: 'Activities array is required' });
       }
 
-      const { getAllMegaTasks } = await import('./mega-construction-database');
-      const allTasks = getAllMegaTasks();
+      // Use AI-powered risk assessment generation
+      const { generateMultipleRiskAssessments } = await import('./ai-risk-assessments');
+      const projectContext = `${tradeType} work in Australia. ${projectDetails || ''}`;
       
-      // Map selected activities to detailed SWMS table data
-      const swmsTableData = activities.map((activity: string) => {
-        // Find exact task match in comprehensive database
-        const exactTask = allTasks.find(task => task.activity === activity);
-        if (exactTask) {
-          return {
-            id: exactTask.taskId,
-            activity: exactTask.activity,
-            hazards: exactTask.hazards,
-            riskLevel: exactTask.riskLevel,
-            initialRisk: exactTask.initialRiskScore,
-            controlMeasures: exactTask.controlMeasures,
-            residualRisk: exactTask.residualRiskScore,
-            residualRiskLevel: exactTask.residualRiskLevel,
-            responsible: exactTask.responsible,
-            ppe: exactTask.ppe || [],
-            training: exactTask.trainingRequired || [],
-            inspection: exactTask.inspectionFrequency,
-            emergencyProcedures: exactTask.emergencyProcedures || [],
-            environmental: exactTask.environmentalControls || [],
-            quality: exactTask.qualityRequirements || [],
-            legislation: exactTask.legislation,
-            category: exactTask.category,
-            trade: exactTask.trade,
-            complexity: exactTask.complexity,
-            frequency: exactTask.frequency,
-            editable: true
-          };
-        }
-        
-        // Return structured entry for activities not in database
-        return {
-          id: `custom-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-          activity: activity,
-          hazards: ["To be assessed"],
-          riskLevel: "Medium",
-          initialRisk: 9,
-          controlMeasures: ["To be determined"],
-          residualRisk: 3,
-          residualRiskLevel: "Low",
-          responsible: "Site Supervisor",
-          ppe: ["Standard PPE required"],
-          training: ["Task-specific training required"],
-          inspection: "As required",
-          emergencyProcedures: ["Follow site emergency procedures"],
-          environmental: ["Standard environmental controls"],
-          quality: ["Follow quality procedures"],
-          legislation: ["Work Health and Safety Act 2011"],
-          category: "General",
-          trade: tradeType,
-          complexity: "basic",
-          frequency: "project-based",
-          editable: true
-        };
+      const riskAssessments = await generateMultipleRiskAssessments(activities, tradeType, projectContext);
+      
+      res.json({
+        riskAssessments,
+        success: true
       });
-
-      const response = {
-        success: true,
-        title: `SWMS - ${tradeType} Work`,
-        projectLocation: projectDetails?.location || "Construction Site",
-        selectedActivities: activities,
-        swmsTableData: swmsTableData,
-        projectDetails: projectDetails,
-        tradeType: tradeType,
-        complianceCodes: [
-          "Work Health and Safety Act 2011 (Cth)",
-          "Work Health and Safety Regulation 2017",
-          "Construction Work Code of Practice 2013"
-        ],
-        summary: {
-          totalTasks: swmsTableData.length,
-          riskProfile: {
-            extreme: swmsTableData.filter(item => item.riskLevel === "Extreme").length,
-            high: swmsTableData.filter(item => item.riskLevel === "High").length,
-            medium: swmsTableData.filter(item => item.riskLevel === "Medium").length,
-            low: swmsTableData.filter(item => item.riskLevel === "Low").length
-          },
-          databaseMatches: swmsTableData.filter(item => !item.id.startsWith('custom-')).length,
-          customEntries: swmsTableData.filter(item => item.id.startsWith('custom-')).length
-        }
-      };
-      
-      res.json(response);
     } catch (error: any) {
-      console.error('SWMS table generation error:', error);
+      console.error('Generate SWMS table error:', error);
       res.status(500).json({ message: 'Failed to generate SWMS table data' });
     }
   });
 
   // Get user subscription information
   app.get('/api/user/subscription-info', async (req, res) => {
-    if (!req.user) {
-      return res.status(401).json({ error: 'Authentication required' });
-    }
-
     try {
-      const user = req.user;
-      const swmsDocuments = await storage.getSwmsDocumentsByUser(user.id);
+      const userId = 1; // Default user for now
+      const user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      res.json({
+        plan: user.subscriptionType || "basic",
+        status: "active",
+        features: {
+          aiGeneration: (user.subscriptionType === "professional" || user.subscriptionType === "enterprise"),
+          teamCollaboration: user.subscriptionType === "enterprise",
+          customBranding: (user.subscriptionType === "professional" || user.subscriptionType === "enterprise")
+        }
+      });
+    } catch (error: any) {
+      console.error('Get subscription info error:', error);
+      res.status(500).json({ message: 'Failed to fetch subscription information' });
+    }
+  });
+
+  // User profile endpoints  
+  app.get("/api/user/profile", async (req, res) => {
+    try {
+      const userId = 1; // Default user for now
+      const user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
       
       res.json({
+        name: user.username,
+        email: user.email,
+        company: user.companyName,
+        phone: user.phone || "",
+        address: user.address || ""
+      });
+    } catch (error: any) {
+      console.error('Get user profile error:', error);
+      res.status(500).json({ message: 'Failed to fetch user profile' });
+    }
+  });
+
+  app.put("/api/user/profile", async (req, res) => {
+    try {
+      const userId = 1; // Default user for now
+      const { name, email, company, phone, address } = req.body;
+      
+      if (!name || !email || !company) {
+        return res.status(400).json({ message: "Name, email, and company are required" });
+      }
+      
+      const profileData = {
+        username: name,
+        email,
+        companyName: company,
+        phone,
+        address
+      };
+      
+      const success = await storage.updateUserProfile(userId, profileData);
+      
+      if (!success) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      res.json({ 
+        success: true, 
+        message: "Profile updated successfully",
+        profile: profileData
+      });
+    } catch (error: any) {
+      console.error('Update profile error:', error);
+      res.status(500).json({ message: 'Failed to update profile' });
+    }
+  });
+
+  app.get("/api/user/settings", async (req, res) => {
+    try {
+      const userId = 1; // Default user for now
+      const user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      res.json({
+        notificationsEnabled: user.notificationsEnabled || false,
+        twoFactorEnabled: user.twoFactorEnabled || false,
+        profile: {
+          name: user.username,
+          email: user.email,
+          company: user.companyName,
+          phone: user.phone || "",
+          address: user.address || ""
+        }
+      });
+    } catch (error: any) {
+      console.error('Get user settings error:', error);
+      res.status(500).json({ message: 'Failed to fetch user settings' });
+    }
+  });
+
+  // User subscription endpoint
+  app.get("/api/user/subscription", async (req, res) => {
+    try {
+      const userId = 1; // Default user for now
+      const user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const subscriptionType = user.subscriptionType || "professional";
+      const hasAccess = subscriptionType === "professional" || subscriptionType === "enterprise";
+
+      res.json({
+        subscriptionType,
+        hasAccess,
+        features: {
+          standardPracticeGuide: hasAccess,
+          teamCollaboration: subscriptionType === "enterprise",
+          advancedReporting: hasAccess,
+          aiEnhancements: hasAccess
+        }
+      });
+    } catch (error: any) {
+      console.error('Get user subscription error:', error);
+      res.status(500).json({ message: 'Failed to fetch subscription details' });
+    }
+  });
+
+  // Contact form endpoint
+  app.post("/api/contact", async (req, res) => {
+    try {
+      const { name, email, subject, message } = req.body;
+      
+      if (!name || !email || !subject || !message) {
+        return res.status(400).json({ message: "All fields are required" });
+      }
+
+      // For now, we'll just log the contact form submission
+      // In production, this would send an email to michael@creatorcapitalmgmt.com
+      console.log('Contact form submission:', {
+        name,
+        email,
+        subject,
+        message,
+        timestamp: new Date().toISOString(),
+        recipientEmail: 'michael@creatorcapitalmgmt.com'
+      });
+
+      res.json({ 
+        success: true, 
+        message: "Thank you for your message. We'll get back to you soon!" 
+      });
+    } catch (error: any) {
+      console.error('Contact form error:', error);
+      res.status(500).json({ message: 'Failed to send message' });
+    }
+  });
+
+  // Admin API endpoints
+  app.get("/api/admin/users", async (req, res) => {
+    try {
+      const users = [
+        {
+          id: 1,
+          username: "John Doe",
+          email: "john.doe@example.com",
+          company: "ABC Construction",
+          plan: "Pro Plan",
+          status: "active",
+          swmsCount: 23,
+          lastActive: "2 hours ago",
+          subscriptionType: "premium",
+          creditsRemaining: 25,
+          isActive: true,
+          createdAt: "2024-01-01T00:00:00.000Z",
+          lastLogin: "2024-06-03T00:00:00.000Z"
+        },
+        {
+          id: 2,
+          username: "Jane Smith",
+          email: "jane.smith@example.com",
+          company: "XYZ Builders",
+          plan: "Basic Plan",
+          status: "active",
+          swmsCount: 15,
+          lastActive: "1 day ago",
+          subscriptionType: "basic",
+          creditsRemaining: 10,
+          isActive: true,
+          createdAt: "2024-02-01T00:00:00.000Z",
+          lastLogin: "2024-06-02T00:00:00.000Z"
+        }
+      ];
+      res.json(users);
+    } catch (error: any) {
+      console.error("Get users error:", error);
+      res.status(500).json({ message: "Failed to fetch users" });
+    }
+  });
+
+  app.get("/api/admin/all-swms", async (req, res) => {
+    try {
+      const documents = await storage.getSwmsDocumentsByUser(1);
+      const swmsWithUserInfo = documents.map(doc => ({
+        ...doc,
+        username: "John Doe",
+        userEmail: "john.doe@example.com",
+        companyName: "ABC Construction",
+        creditsUsed: 1,
+        status: "active"
+      }));
+      res.json(swmsWithUserInfo);
+    } catch (error: any) {
+      console.error("Get all SWMS error:", error);
+      res.status(500).json({ message: "Failed to fetch SWMS documents" });
+    }
+  });
+
+  app.get("/api/admin/usage-analytics", async (req, res) => {
+    try {
+      const mockAnalytics = {
+        totalSwmsGenerated: 1847,
+        generalSwmsCount: 1352,
+        aiSwmsCount: 495,
+        weeklyGrowth: 23.5,
+        dailyData: [
+          { date: 'Mon', general: 45, ai: 12, total: 57 },
+          { date: 'Tue', general: 52, ai: 18, total: 70 },
+          { date: 'Wed', general: 38, ai: 15, total: 53 },
+          { date: 'Thu', general: 67, ai: 22, total: 89 },
+          { date: 'Fri', general: 71, ai: 25, total: 96 },
+          { date: 'Sat', general: 28, ai: 8, total: 36 },
+          { date: 'Sun', general: 31, ai: 9, total: 40 }
+        ],
+        tradeUsage: [
+          { trade: 'Electrical', count: 287, percentage: 15.5 },
+          { trade: 'Plumbing', count: 234, percentage: 12.7 },
+          { trade: 'Carpentry', count: 198, percentage: 10.7 },
+          { trade: 'Roofing', count: 176, percentage: 9.5 },
+          { trade: 'Concrete', count: 165, percentage: 8.9 },
+          { trade: 'Others', count: 787, percentage: 42.7 }
+        ],
+        featureUsage: [
+          { name: 'General SWMS', value: 73.2, color: '#3b82f6' },
+          { name: 'AI SWMS', value: 26.8, color: '#10b981' }
+        ]
+      };
+      res.json(mockAnalytics);
+    } catch (error: any) {
+      console.error("Get usage analytics error:", error);
+      res.status(500).json({ message: "Failed to fetch usage analytics" });
+    }
+  });
+
+  const httpServer = createServer(app);
+  return httpServer;
+}
         subscriptionType: user.subscriptionType || 'trial',
         subscriptionStatus: user.subscriptionStatus || 'trial',
         swmsGenerated: swmsDocuments.length,
