@@ -240,14 +240,38 @@ export default function Billing() {
 
   const upgradePlan = async (planName: string) => {
     try {
+      const currentTier = getCurrentPlanTier(billingData.currentPlan);
+      const newPlanTier = getCurrentPlanTier(planName);
+      const isUpgrade = newPlanTier > currentTier;
+      const isDowngrade = newPlanTier < currentTier;
+      
+      // Get credit differences
+      const currentPlan = plans.find(p => p.name === billingData.currentPlan);
+      const newPlan = plans.find(p => p.name === planName);
+      const currentCredits = currentPlan?.credits || 0;
+      const newCredits = newPlan?.credits || 0;
+      const creditDifference = newCredits - currentCredits;
+      
+      let title, description;
+      if (isUpgrade) {
+        title = "Plan Upgrade";
+        description = `Upgrading to ${planName} plan (+${creditDifference} credits)...`;
+      } else if (isDowngrade) {
+        title = "Plan Downgrade";
+        description = `Downgrading to ${planName} plan (${creditDifference} credits)...`;
+      } else {
+        title = "Plan Change";
+        description = `Switching to ${planName} plan...`;
+      }
+
       toast({
-        title: "Plan Upgrade",
-        description: `Upgrading to ${planName} plan...`,
+        title,
+        description,
       });
     } catch (error) {
       toast({
-        title: "Upgrade Error",
-        description: "Failed to upgrade plan. Please try again.",
+        title: "Plan Change Error",
+        description: "Failed to change plan. Please try again.",
         variant: "destructive",
       });
     }
