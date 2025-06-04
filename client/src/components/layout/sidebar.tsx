@@ -111,6 +111,13 @@ export default function Sidebar() {
 
   // Tour functionality
   const [showTour, setShowTour] = useState(false);
+  const [tourCompleted, setTourCompleted] = useState(() => {
+    try {
+      return localStorage.getItem('interface-tour-completed') === 'true';
+    } catch {
+      return false;
+    }
+  });
   
   const tourSteps = [
     {
@@ -194,6 +201,13 @@ export default function Sidebar() {
 
   const startTour = () => {
     setShowTour(true);
+    // Mark tour as completed once it's started
+    try {
+      localStorage.setItem('interface-tour-completed', 'true');
+      setTourCompleted(true);
+    } catch (error) {
+      console.error('Failed to save tour completion state:', error);
+    }
   };
 
   const completeTour = () => {
@@ -314,18 +328,20 @@ export default function Sidebar() {
           </div>
         )}
 
-        {/* Start Tour Button - Always visible for guided user experience */}
-        <div className="mb-6">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={startTour}
-            className="w-full px-3 py-1 text-xs bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100"
-          >
-            <Play className="mr-1 h-3 w-3" />
-            Start Interface Tour
-          </Button>
-        </div>
+        {/* Start Tour Button - Hidden after first use */}
+        {!tourCompleted && (
+          <div className="mb-6">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={startTour}
+              className="w-full px-3 py-1 text-xs bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100"
+            >
+              <Play className="mr-1 h-3 w-3" />
+              Start Interface Tour
+            </Button>
+          </div>
+        )}
 
         <Separator className="mb-6" />
 
