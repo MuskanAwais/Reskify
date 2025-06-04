@@ -48,6 +48,15 @@ export const translations = {
     "Print": "Print",
     "Download": "Download",
     "Upload": "Upload",
+    
+    // Watermark translations
+    "Company": "Company",
+    "Project": "Project", 
+    "Number": "Number",
+    "Address": "Address",
+    "Trade": "Trade",
+    "Generated": "Generated",
+    "SWMS Document": "SWMS Document",
     "Select": "Select",
     "Deselect": "Deselect",
     "Select All": "Select All",
@@ -106,6 +115,16 @@ export const translations = {
     "Print": "Imprimir",
     "Download": "Descargar",
     "Upload": "Subir",
+    
+    // Watermark translations
+    "Company": "Empresa",
+    "Project": "Proyecto",
+    "Number": "Número",
+    "Address": "Dirección",
+    "Trade": "Oficio",
+    "Generated": "Generado",
+    "SWMS Document": "Documento SWMS",
+    
     "Select": "Seleccionar",
     "Deselect": "Deseleccionar",
     "Select All": "Seleccionar Todo",

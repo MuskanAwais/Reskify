@@ -120,45 +120,59 @@ export async function generateProtectedPDF(document: SwmsDocument, user: User | 
       addDemoWatermark(pdf);
     }
 
-    // Add enhanced watermark with job details behind tables
+    // Add enhanced watermark with comprehensive project details
     const addEnhancedWatermark = () => {
-      // Main "Safety Sensei" watermark - center diagonal
-      pdf.setFontSize(50);
-      pdf.setTextColor(245, 245, 245); // Very light gray
+      // Company name watermark - large center
+      pdf.setFontSize(40);
+      pdf.setTextColor(240, 240, 240); // Very light gray
       pdf.setFont('helvetica', 'bold');
       
-      const mainWatermark = "Safety Sensei";
-      const mainTextWidth = pdf.getTextWidth(mainWatermark);
-      pdf.text(mainWatermark, (pageWidth - mainTextWidth) / 2, pageHeight / 2, { 
+      const companyName = user?.companyName || "Test Company";
+      const companyTextWidth = pdf.getTextWidth(companyName);
+      pdf.text(companyName, (pageWidth - companyTextWidth) / 2, pageHeight / 2 - 20, { 
         angle: 45,
         align: 'center'
       });
       
-      // Job details watermark - behind table areas
-      pdf.setFontSize(10);
+      // Safety Sensei brand watermark - below company name
+      pdf.setFontSize(24);
+      pdf.setTextColor(245, 245, 245);
+      pdf.setFont('helvetica', 'bold');
+      
+      const brandName = "Safety Sensei";
+      const brandTextWidth = pdf.getTextWidth(brandName);
+      pdf.text(brandName, (pageWidth - brandTextWidth) / 2, pageHeight / 2 + 20, { 
+        angle: 45,
+        align: 'center'
+      });
+      
+      // Project details watermark - distributed across page
+      pdf.setFontSize(9);
       pdf.setTextColor(250, 250, 250); // Even lighter gray
       pdf.setFont('helvetica', 'normal');
       
-      const jobDetails = [
-        `Job: ${(document as any).jobName || document.title || 'N/A'}`,
-        `Number: ${(document as any).jobNumber || 'N/A'}`,
-        `Address: ${(document as any).projectAddress || document.projectLocation || 'N/A'}`,
+      const projectDetails = [
+        `Project: ${(document as any).jobName || document.title || 'Office Renovation Project'}`,
+        `Number: ${(document as any).jobNumber || 'PRJ-2025-001'}`,
+        `Address: ${(document as any).projectAddress || document.projectLocation || '123 Construction Lane, Sydney NSW 2000'}`,
         `Trade: ${document.tradeType || 'N/A'}`,
+        `Company: ${user?.companyName || 'Test Company'}`,
         `Generated: ${new Date().toLocaleDateString()}`
       ];
       
-      // Distribute job details across page behind where tables will be
-      const positions = [
-        { x: 30, y: 180, angle: 0 },    // Upper left
-        { x: pageWidth - 100, y: 220, angle: 90 }, // Upper right vertical
-        { x: 50, y: 400, angle: -15 },  // Middle left diagonal
-        { x: pageWidth - 120, y: 450, angle: 15 }, // Middle right diagonal
-        { x: 80, y: pageHeight - 100, angle: 0 }   // Lower left
+      // Distribute project details across page in a pattern
+      const detailPositions = [
+        { x: 40, y: 150, angle: 15 },    // Upper left diagonal
+        { x: pageWidth - 140, y: 180, angle: -15 }, // Upper right diagonal
+        { x: 30, y: 350, angle: 0 },     // Middle left horizontal
+        { x: pageWidth - 120, y: 380, angle: 0 }, // Middle right horizontal
+        { x: 60, y: 550, angle: -10 },   // Lower left diagonal
+        { x: pageWidth - 100, y: 580, angle: 10 }   // Lower right diagonal
       ];
       
-      jobDetails.forEach((detail, index) => {
-        if (positions[index]) {
-          const pos = positions[index];
+      projectDetails.forEach((detail, index) => {
+        if (detailPositions[index]) {
+          const pos = detailPositions[index];
           pdf.text(detail, pos.x, pos.y, { 
             angle: pos.angle,
             align: 'left'
@@ -166,15 +180,17 @@ export async function generateProtectedPDF(document: SwmsDocument, user: User | 
         }
       });
       
-      // Additional scattered watermark elements
-      for (let i = 0; i < 3; i++) {
-        const x = Math.random() * (pageWidth - 100) + 50;
-        const y = Math.random() * (pageHeight - 100) + 100;
-        pdf.text(`SWMS ${document.id || ''}`, x, y, { 
-          angle: Math.random() * 60 - 30,
-          align: 'left'
-        });
-      }
+      // Additional corner watermarks for better coverage
+      pdf.setFontSize(8);
+      pdf.setTextColor(252, 252, 252);
+      
+      // Top corners
+      pdf.text('Safety Sensei', 20, 30, { angle: 0 });
+      pdf.text(companyName, pageWidth - 80, 30, { angle: 0 });
+      
+      // Bottom corners
+      pdf.text('SWMS Document', 20, pageHeight - 20, { angle: 0 });
+      pdf.text('Safety Sensei', pageWidth - 80, pageHeight - 20, { angle: 0 });
     };
     
     // Apply watermark to current page
