@@ -392,47 +392,49 @@ export default function Billing() {
             </Card>
           </div>
 
-          {/* Billing Period Toggle */}
-          <div className="flex justify-center mb-6">
-            <div className="bg-muted p-1 rounded-lg">
-              <div className="flex items-center space-x-1">
-                <button
-                  onClick={() => setBillingPeriod('monthly')}
-                  className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-                    billingPeriod === 'monthly'
-                      ? 'bg-background text-foreground shadow-sm'
-                      : 'text-muted-foreground hover:text-foreground'
-                  }`}
-                >
-                  Monthly
-                </button>
-                <button
-                  onClick={() => setBillingPeriod('yearly')}
-                  className={`px-4 py-2 text-sm font-medium rounded-md transition-colors relative ${
-                    billingPeriod === 'yearly'
-                      ? 'bg-background text-foreground shadow-sm'
-                      : 'text-muted-foreground hover:text-foreground'
-                  }`}
-                >
-                  Yearly
-                  <span className="absolute -top-1 -right-1 bg-green-500 text-white text-xs px-1.5 py-0.5 rounded-full">
-                    -10%
-                  </span>
-                </button>
-              </div>
-            </div>
-          </div>
-
           {/* Available Plans */}
           <Card>
             <CardHeader>
-              <CardTitle>Choose Your Plan</CardTitle>
-              <p className="text-muted-foreground">
-                {billingPeriod === 'yearly' 
-                  ? "Save 10% with yearly billing - upgrade or downgrade your subscription at any time"
-                  : "Upgrade or downgrade your subscription at any time"
-                }
-              </p>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                  <CardTitle>Choose Your Plan</CardTitle>
+                  <p className="text-muted-foreground">
+                    {billingPeriod === 'yearly' 
+                      ? "Save 10% with yearly billing - upgrade or downgrade your subscription at any time"
+                      : "Upgrade or downgrade your subscription at any time"
+                    }
+                  </p>
+                </div>
+                
+                {/* Billing Period Toggle */}
+                <div className="bg-muted p-1 rounded-lg">
+                  <div className="flex items-center space-x-1">
+                    <button
+                      onClick={() => setBillingPeriod('monthly')}
+                      className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                        billingPeriod === 'monthly'
+                          ? 'bg-background text-foreground shadow-sm'
+                          : 'text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      Monthly
+                    </button>
+                    <button
+                      onClick={() => setBillingPeriod('yearly')}
+                      className={`px-4 py-2 text-sm font-medium rounded-md transition-colors relative ${
+                        billingPeriod === 'yearly'
+                          ? 'bg-background text-foreground shadow-sm'
+                          : 'text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      Yearly
+                      <span className="absolute -top-1 -right-1 bg-green-500 text-white text-xs px-1.5 py-0.5 rounded-full">
+                        -10%
+                      </span>
+                    </button>
+                  </div>
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

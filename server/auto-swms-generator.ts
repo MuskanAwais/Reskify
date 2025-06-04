@@ -444,15 +444,19 @@ export async function generateAutoSwms(activities: string[], tradeType: string) 
   console.log('Trade type:', tradeType);
 
   // Process each selected activity
-  for (const activity of activities) {
+  for (let i = 0; i < activities.length; i++) {
+    const activity = activities[i];
+    console.log(`Processing activity ${i + 1}/${activities.length}: ${activity}`);
+    
     // First try exact match from activity database
     const activityData = ACTIVITY_RISK_DATABASE[activity as keyof typeof ACTIVITY_RISK_DATABASE];
     
     if (activityData) {
+      console.log(`Found activity data for: ${activity}`);
       // Convert risks to risk assessments format
-      activityData.risks.forEach((risk: any) => {
-        riskAssessments.push({
-          id: `risk-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      activityData.risks.forEach((risk: any, riskIndex: number) => {
+        const riskAssessment = {
+          id: `risk-${Date.now()}-${i}-${riskIndex}-${Math.random().toString(36).substr(2, 9)}`,
           activity: activity,
           hazards: [risk.hazard],
           initialRiskScore: risk.riskLevel === 'high' ? 9 : risk.riskLevel === 'medium' ? 6 : 3,
@@ -468,7 +472,9 @@ export async function generateAutoSwms(activities: string[], tradeType: string) 
           inspectionFrequency: "Daily",
           emergencyProcedures: ["Stop work immediately", "Report to supervisor", "Evacuate if necessary"],
           environmentalControls: ["Minimize dust", "Proper waste disposal"]
-        });
+        };
+        console.log(`Adding risk assessment for ${activity}:`, riskAssessment.id);
+        riskAssessments.push(riskAssessment);
       });
       
       // Add safety measures for this activity
@@ -483,9 +489,10 @@ export async function generateAutoSwms(activities: string[], tradeType: string) 
         });
       });
     } else {
+      console.log(`No activity data found for: ${activity}, generating generic risk assessment`);
       // Generate generic risk assessment for unknown activities
-      riskAssessments.push({
-        id: `risk-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      const genericRiskAssessment = {
+        id: `risk-${Date.now()}-${i}-generic-${Math.random().toString(36).substr(2, 9)}`,
         activity: activity,
         hazards: ["Manual handling injuries", "Slip, trip and fall hazards", "Tool-related injuries"],
         initialRiskScore: 6,
@@ -506,7 +513,9 @@ export async function generateAutoSwms(activities: string[], tradeType: string) 
         inspectionFrequency: "Daily",
         emergencyProcedures: ["Stop work immediately", "Report to supervisor", "Seek first aid if required"],
         environmentalControls: ["Minimize environmental impact", "Proper waste disposal"]
-      });
+      };
+      console.log(`Adding generic risk assessment for ${activity}:`, genericRiskAssessment.id);
+      riskAssessments.push(genericRiskAssessment);
 
       // Add generic safety measures
       safetyMeasures.push({
