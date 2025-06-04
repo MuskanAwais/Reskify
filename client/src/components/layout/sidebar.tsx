@@ -47,7 +47,12 @@ const quickActions = [
 
 export default function Sidebar() {
   const [location] = useLocation();
+  
+  // Check if user is admin (replace with actual admin email check when deploying)
+  const isAdmin = true; // TODO: Replace with actual admin check based on user email
+  
   const [adminMode, setAdminMode] = useState(() => {
+    if (!isAdmin) return false;
     try {
       return localStorage.getItem('adminMode') === 'true';
     } catch {
@@ -107,44 +112,65 @@ export default function Sidebar() {
   
   const tourSteps = [
     {
-      target: '[data-tour="admin-toggle"]',
-      title: 'Admin Mode',
-      content: 'Toggle admin mode to access administrative features and testing controls.',
-      position: 'right' as const,
-      spotlight: true
-    },
-    {
-      target: '[data-tour="demo-toggle"]',
-      title: 'Demo Mode',
-      content: 'Enable demo mode to test features without a subscription. This limits you to 2 tasks.',
-      position: 'right' as const,
-      spotlight: true
-    },
-    {
-      target: '[data-tour="enterprise-toggle"]',
-      title: 'Enterprise Mode',
-      content: 'Enable Enterprise mode to test team collaboration features including team management.',
-      position: 'right' as const,
-      spotlight: true
-    },
-    {
       target: '[data-tour="quick-actions"]',
       title: 'Quick Actions',
-      content: 'Start creating SWMS documents or use the AI generator from here.',
+      content: 'Start creating SWMS documents or use the AI generator from here. These are your main entry points for creating safety documentation.',
       position: 'right' as const,
       spotlight: true
     },
     {
       target: '[data-tour="navigation"]',
       title: 'Navigation Menu',
-      content: 'Access all features including your SWMS documents, safety library, and team collaboration.',
+      content: 'Access all features including your SWMS documents, safety library, analytics, and account settings. The lock icons show features that require upgrades.',
+      position: 'right' as const,
+      spotlight: true
+    },
+    {
+      target: '[data-tour="dashboard-link"]',
+      title: 'Dashboard',
+      content: 'Your main overview showing recent SWMS documents, quick stats, and activity summary.',
+      position: 'right' as const,
+      spotlight: true
+    },
+    {
+      target: '[data-tour="my-swms-link"]',
+      title: 'My SWMS',
+      content: 'View and manage all your SWMS documents. Search, filter, and organize your safety documentation.',
+      position: 'right' as const,
+      spotlight: true
+    },
+    {
+      target: '[data-tour="safety-library-link"]',
+      title: 'Safety Library',
+      content: 'Access comprehensive safety resources, regulations, and templates. Available with Pro and Enterprise plans.',
       position: 'right' as const,
       spotlight: true
     },
     {
       target: '[data-tour="team-tab"]',
       title: 'Team Collaboration',
-      content: 'This Enterprise feature allows you to manage team members and collaborate on SWMS projects.',
+      content: 'Enterprise feature for managing team members and collaborative SWMS projects. Includes real-time editing and approval workflows.',
+      position: 'right' as const,
+      spotlight: true
+    },
+    {
+      target: '[data-tour="analytics-link"]',
+      title: 'Analytics & Reports',
+      content: 'Track your safety performance with detailed analytics, compliance reports, and usage statistics.',
+      position: 'right' as const,
+      spotlight: true
+    },
+    {
+      target: '[data-tour="account-link"]',
+      title: 'Account & Billing',
+      content: 'Manage your subscription, billing details, and account preferences. Upgrade plans for more features.',
+      position: 'right' as const,
+      spotlight: true
+    },
+    {
+      target: '[data-tour="subscription-status"]',
+      title: 'Subscription Status',
+      content: 'Monitor your current plan and credit usage. Demo mode is limited to 2 SWMS documents.',
       position: 'right' as const,
       spotlight: true
     }
@@ -168,14 +194,15 @@ export default function Sidebar() {
   });
 
   const navigationItems = [
-    { icon: Home, label: "Dashboard", href: "/dashboard" },
-    { icon: FileText, label: "My SWMS", href: "/my-swms" },
+    { icon: Home, label: "Dashboard", href: "/dashboard", tourId: "dashboard-link" },
+    { icon: FileText, label: "My SWMS", href: "/my-swms", tourId: "my-swms-link" },
     { 
       icon: Book, 
       label: "Safety Library", 
       href: "/safety-library",
       requiresAccess: true,
-      hasAccess: subscription?.features?.safetyLibrary || adminMode
+      hasAccess: subscription?.features?.safetyLibrary || adminMode,
+      tourId: "safety-library-link"
     },
     { 
       icon: Users, 
@@ -183,10 +210,11 @@ export default function Sidebar() {
       href: "/team-collaboration",
       requiresAccess: true,
       hasAccess: subscription?.plan === "Enterprise" || adminMode || enterpriseMode,
-      badge: subscription?.plan === "Enterprise" || enterpriseMode ? "Enterprise" : null
+      badge: subscription?.plan === "Enterprise" || enterpriseMode ? "Enterprise" : null,
+      tourId: "team-tab"
     },
-    { icon: BarChart3, label: "Analytics", href: "/analytics" },
-    { icon: User, label: "Account", href: "/billing" }
+    { icon: BarChart3, label: "Analytics", href: "/analytics", tourId: "analytics-link" },
+    { icon: User, label: "Account", href: "/billing", tourId: "account-link" }
   ];
 
   const innovativeFeatures = [
@@ -207,76 +235,80 @@ export default function Sidebar() {
   return (
     <aside className="w-64 bg-card shadow-md border-r">
       <div className="p-6">
-        {/* Admin Toggle */}
-        <div className="mb-6 space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium">Admin Mode</span>
-            <Button
-              data-tour="admin-toggle"
-              variant={adminMode ? "default" : "outline"}
-              size="sm"
-              onClick={toggleAdminMode}
-              className={`px-3 py-1 text-xs ${
-                adminMode 
-                  ? 'bg-green-600 text-white hover:bg-green-700' 
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              <Shield className="mr-1 h-3 w-3" />
-              {adminMode ? 'ON' : 'OFF'}
-            </Button>
-          </div>
+        {/* Admin Toggle - Only visible for admin users */}
+        {isAdmin && (
+          <div className="mb-6 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium">Admin Mode</span>
+              <Button
+                data-tour="admin-toggle"
+                variant={adminMode ? "default" : "outline"}
+                size="sm"
+                onClick={toggleAdminMode}
+                className={`px-3 py-1 text-xs ${
+                  adminMode 
+                    ? 'bg-green-600 text-white hover:bg-green-700' 
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                <Shield className="mr-1 h-3 w-3" />
+                {adminMode ? 'ON' : 'OFF'}
+              </Button>
+            </div>
 
-          {/* Start Tour Button */}
+            {adminMode && (
+              <>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">Demo Mode</span>
+                  <Button
+                    data-tour="demo-toggle"
+                    variant={demoMode ? "default" : "outline"}
+                    size="sm"
+                    onClick={toggleDemoMode}
+                    className={`px-3 py-1 text-xs ${
+                      demoMode 
+                        ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    <Bot className="mr-1 h-3 w-3" />
+                    {demoMode ? 'ON' : 'OFF'}
+                  </Button>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">Enterprise Mode</span>
+                  <Button
+                    data-tour="enterprise-toggle"
+                    variant={enterpriseMode ? "default" : "outline"}
+                    size="sm"
+                    onClick={toggleEnterpriseMode}
+                    className={`px-3 py-1 text-xs ${
+                      enterpriseMode 
+                        ? 'bg-purple-600 text-white hover:bg-purple-700' 
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    <Users className="mr-1 h-3 w-3" />
+                    {enterpriseMode ? 'ON' : 'OFF'}
+                  </Button>
+                </div>
+              </>
+            )}
+          </div>
+        )}
+
+        {/* Start Tour Button - Always visible for guided user experience */}
+        <div className="mb-6">
           <Button
             variant="outline"
             size="sm"
             onClick={startTour}
-            className="w-full px-3 py-1 text-xs bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100 mt-2"
+            className="w-full px-3 py-1 text-xs bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100"
           >
             <Play className="mr-1 h-3 w-3" />
             Start Interface Tour
           </Button>
-
-          {adminMode && (
-            <>
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Demo Mode</span>
-                <Button
-                  data-tour="demo-toggle"
-                  variant={demoMode ? "default" : "outline"}
-                  size="sm"
-                  onClick={toggleDemoMode}
-                  className={`px-3 py-1 text-xs ${
-                    demoMode 
-                      ? 'bg-blue-600 text-white hover:bg-blue-700' 
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  <Bot className="mr-1 h-3 w-3" />
-                  {demoMode ? 'ON' : 'OFF'}
-                </Button>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Enterprise Mode</span>
-                <Button
-                  data-tour="enterprise-toggle"
-                  variant={enterpriseMode ? "default" : "outline"}
-                  size="sm"
-                  onClick={toggleEnterpriseMode}
-                  className={`px-3 py-1 text-xs ${
-                    enterpriseMode 
-                      ? 'bg-purple-600 text-white hover:bg-purple-700' 
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  <Users className="mr-1 h-3 w-3" />
-                  {enterpriseMode ? 'ON' : 'OFF'}
-                </Button>
-              </div>
-            </>
-          )}
         </div>
 
         <Separator className="mb-6" />
@@ -318,7 +350,7 @@ export default function Sidebar() {
             return (
               <Link key={item.href} href={item.href}>
                 <Button
-                  data-tour={item.href === "/team-collaboration" ? "team-tab" : undefined}
+                  data-tour={item.tourId}
                   variant="ghost"
                   className={`w-full justify-start ${
                     isActive 
@@ -377,7 +409,7 @@ export default function Sidebar() {
 
         {/* Subscription Status */}
         <Separator className="my-6" />
-        <Card className="bg-slate-50 border-slate-200">
+        <Card className="bg-slate-50 border-slate-200" data-tour="subscription-status">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-medium text-slate-700">Current Plan</span>
