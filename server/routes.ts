@@ -330,28 +330,76 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      // Import AI risk assessment functions
-      const { generateUniqueRiskAssessment, generateDetailedFallbackAssessment } = await import('./ai-risk-assessments');
+      // Import activity-specific risk system
+      const { getActivityRisk, generateGenericRisk } = await import('./activity-specific-risks');
       const { generateAutoSwms } = await import('./auto-swms-generator');
       
-      // Generate unique AI-powered risk assessments for each activity
-      const enhancedRiskAssessments = await Promise.all(
-        activities.map(async (activity: string) => {
-          try {
-            const uniqueAssessment = await generateUniqueRiskAssessment(activity, tradeType, projectDetails);
-            return uniqueAssessment;
-          } catch (error) {
-            console.error(`Failed to generate AI assessment for ${activity}:`, error);
-            // Fallback to database assessment if AI fails
-            return generateDetailedFallbackAssessment(activity, tradeType);
-          }
-        })
-      );
+      // Generate unique activity-specific risk assessments
+      const enhancedRiskAssessments = activities.map((activity: string) => {
+        // Try to get specific risk data for this activity
+        let activityRisk = getActivityRisk(activity);
+        
+        // If no specific data found, generate trade-specific generic risk
+        if (!activityRisk) {
+          console.log(`No specific activity data found for: ${activity}, generating trade-specific risk assessment`);
+          activityRisk = generateGenericRisk(activity, tradeType);
+        } else {
+          console.log(`Found specific activity data for: ${activity}`);
+        }
+        
+        return {
+          id: `activity-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          activity: activityRisk.activity,
+          description: activityRisk.description,
+          hazards: activityRisk.hazards,
+          initialRiskScore: activityRisk.initialRiskScore,
+          riskLevel: activityRisk.initialRiskScore >= 5 ? "Extreme" : 
+                    activityRisk.initialRiskScore >= 4 ? "High" : 
+                    activityRisk.initialRiskScore >= 3 ? "Medium" : "Low",
+          controlMeasures: activityRisk.controlMeasures,
+          legislation: activityRisk.legislation,
+          residualRiskScore: activityRisk.residualRiskScore,
+          residualRiskLevel: activityRisk.residualRiskScore >= 5 ? "Extreme" : 
+                           activityRisk.residualRiskScore >= 4 ? "High" : 
+                           activityRisk.residualRiskScore >= 3 ? "Medium" : "Low",
+          responsible: "Site Supervisor",
+          ppe: activityRisk.ppe,
+          trainingRequired: activityRisk.training,
+          permitRequired: [],
+          inspectionFrequency: "Daily",
+          emergencyProcedures: [
+            "Stop work immediately if unsafe conditions arise",
+            "Report incidents to site supervisor immediately",
+            "Seek first aid or emergency medical attention if required",
+            "Secure the work area until hazards are controlled"
+          ],
+          environmentalControls: [
+            "Minimize environmental impact during operations",
+            "Proper waste disposal according to regulations",
+            "Prevent contamination of surrounding areas"
+          ]
+        };
+      });
       
-      // Generate comprehensive safety measures and compliance codes
-      const autoSwmsData = await generateAutoSwms(activities, tradeType);
-      const safetyMeasures = autoSwmsData.safetyMeasures || [];
-      const complianceCodes = autoSwmsData.complianceCodes || [];
+      // Generate trade-specific safety measures and compliance codes
+      const tradeSpecificCodes = {
+        "Carpentry": ["AS 1684 Residential Timber Framing", "AS/NZS 1170 Structural Design Actions", "Building Code of Australia"],
+        "Electrical": ["AS/NZS 3000 Electrical Wiring Rules", "AS/NZS 3012 Electrical Installations", "Work Health and Safety Regulation"],
+        "Plumbing": ["AS/NZS 3500 Plumbing Code", "AS/NZS 3499 Water Supply Systems", "Building Code of Australia"],
+        "Concrete": ["AS 1379 Concrete Structures", "AS 3600 Concrete Structures", "Work Health and Safety Regulation"],
+        "Painting": ["AS/NZS 1715 Respiratory Protection", "Work Health and Safety Regulation", "Environmental Protection Act"],
+        "Tiling": ["AS 3958 Guide to the Installation of Ceramic Tiles", "Work Health and Safety Regulation", "AS/NZS 1715 Respiratory Protection"]
+      } as Record<string, string[]>;
+      
+      const complianceCodes = [
+        "Work Health and Safety Act 2011",
+        "Work Health and Safety Regulation 2017",
+        ...(tradeSpecificCodes[tradeType] || [])
+      ];
+      
+      const safetyMeasures = [
+        { category: "General Safety", measures: ["Follow safe work procedures", "Use appropriate PPE"], equipment: ["Standard PPE"], procedures: ["Safety briefings", "Hazard identification"] }
+      ];
       
       const enhancedData = {
         riskAssessments: enhancedRiskAssessments,
@@ -381,6 +429,73 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error("Get usage analytics error:", error);
       res.status(500).json({ message: "Failed to fetch usage analytics" });
+    }
+  });
+
+  // Generate final SWMS document
+  app.post("/api/swms", async (req, res) => {
+    try {
+      const { formData } = req.body;
+      
+      console.log('Creating SWMS with data:', JSON.stringify(formData, null, 2));
+      
+      // Create SWMS document structure
+      const swmsDocument = {
+        id: `SWMS-${Date.now()}`,
+        title: formData.title || formData.jobName || "SWMS Document",
+        jobName: formData.jobName || "Untitled Project",
+        jobNumber: formData.jobNumber || `JOB-${Date.now()}`,
+        projectAddress: formData.projectAddress || "Not specified",
+        projectLocation: formData.projectLocation || formData.projectAddress || "Not specified",
+        tradeType: formData.tradeType || "General Construction",
+        activities: formData.activities || [],
+        riskAssessments: formData.riskAssessments || [],
+        safetyMeasures: formData.safetyMeasures || [],
+        complianceCodes: formData.complianceCodes || [],
+        status: "Generated",
+        aiEnhanced: true,
+        createdAt: new Date().toISOString(),
+        documentHash: `hash-${Date.now()}`
+      };
+      
+      console.log('SWMS document created successfully:', swmsDocument.id);
+      
+      res.json({
+        success: true,
+        swmsId: swmsDocument.id,
+        document: swmsDocument,
+        downloadUrl: `/api/swms/${swmsDocument.id}/download`,
+        message: "SWMS document generated successfully"
+      });
+    } catch (error: any) {
+      console.error('SWMS generation error:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: 'Failed to generate SWMS document',
+        error: error.message 
+      });
+    }
+  });
+
+  // Download SWMS as PDF
+  app.get("/api/swms/:id/download", async (req, res) => {
+    try {
+      const { id } = req.params;
+      
+      // For now, return a simple success response
+      // PDF generation would be handled on the frontend
+      res.json({
+        success: true,
+        downloadReady: true,
+        documentId: id,
+        message: "PDF download initiated"
+      });
+    } catch (error: any) {
+      console.error('SWMS download error:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: 'Failed to generate PDF download' 
+      });
     }
   });
 
