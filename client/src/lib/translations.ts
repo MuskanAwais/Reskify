@@ -183,6 +183,16 @@ export const translations = {
     "Print": "Imprimer",
     "Download": "Télécharger",
     "Upload": "Téléverser",
+    
+    // Watermark translations
+    "Company": "Entreprise",
+    "Project": "Projet",
+    "Number": "Numéro",
+    "Address": "Adresse",
+    "Trade": "Métier",
+    "Generated": "Généré",
+    "SWMS Document": "Document SWMS",
+    
     "Select": "Sélectionner",
     "Deselect": "Désélectionner",
     "Select All": "Tout Sélectionner",
