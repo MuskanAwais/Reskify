@@ -57,11 +57,11 @@ export function Tour({ steps, isActive, onComplete, onSkip }: TourProps) {
           break;
         case 'left':
           top = rect.top + rect.height / 2;
-          left = rect.left - 300; // Move further left for wider tooltips
+          left = Math.max(350, rect.left - 20); // Ensure tooltip doesn't go off-screen left
           break;
         case 'right':
           top = rect.top + rect.height / 2;
-          left = rect.right + 20; // More space to the right
+          left = Math.min(window.innerWidth - 450, rect.right + 20); // Ensure tooltip fits on screen
           break;
       }
 

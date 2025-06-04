@@ -55,14 +55,34 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
     queryKey: ["/api/user/subscription"],
   });
 
-  // Check if demo mode is active
-  const isDemoMode = (() => {
+  // Check if demo mode is active with real-time updates
+  const [isDemoMode, setIsDemoMode] = useState(() => {
     try {
       return localStorage.getItem('demoMode') === 'true';
     } catch {
       return false;
     }
-  })();
+  });
+
+  // Listen for localStorage changes to update demo mode in real-time
+  useEffect(() => {
+    const handleStorageChange = () => {
+      try {
+        setIsDemoMode(localStorage.getItem('demoMode') === 'true');
+      } catch {
+        setIsDemoMode(false);
+      }
+    };
+
+    // Listen for storage events and custom events
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('demoModeChanged', handleStorageChange);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('demoModeChanged', handleStorageChange);
+    };
+  }, []);
 
   // Task limits based on subscription and demo mode
   const getTaskLimit = () => {
