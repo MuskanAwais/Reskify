@@ -156,7 +156,7 @@ export function SimplifiedTableEditor({ riskAssessments = [], onUpdate, tradeTyp
               type="button"
               variant="outline"
               size="sm"
-              onClick={() => addArrayItem(items, setItems)}
+              onClick={() => setItems([...items, ''])}
               className="w-full"
             >
               <Plus className="h-4 w-4 mr-2" />

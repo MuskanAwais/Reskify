@@ -1153,6 +1153,68 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
     case 3:
       return (
         <div className="space-y-6">
+          <div className="text-center">
+            <Wrench className="mx-auto h-12 w-12 text-blue-500 mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Plant, Equipment & Training</h3>
+            <p className="text-gray-600 text-sm">
+              Specify required equipment, plant, and training requirements
+            </p>
+          </div>
+          
+          <Card>
+            <CardHeader>
+              <CardTitle>Equipment & Plant Requirements</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label className="text-sm font-medium">Required Equipment</Label>
+                <Textarea
+                  value={formData.requiredEquipment || ''}
+                  onChange={(e) => setFormData(prev => ({ ...prev, requiredEquipment: e.target.value }))}
+                  placeholder="List all equipment required for this work (e.g., scaffolding, power tools, safety harnesses, etc.)"
+                  className="mt-2 min-h-[100px]"
+                />
+              </div>
+              
+              <div>
+                <Label className="text-sm font-medium">Plant & Machinery</Label>
+                <Textarea
+                  value={formData.plantMachinery || ''}
+                  onChange={(e) => setFormData(prev => ({ ...prev, plantMachinery: e.target.value }))}
+                  placeholder="List any plant or machinery to be used (e.g., excavators, cranes, generators, etc.)"
+                  className="mt-2 min-h-[100px]"
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Training Requirements</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label className="text-sm font-medium">Required Licenses & Certifications</Label>
+                <Textarea
+                  value={formData.requiredLicenses || ''}
+                  onChange={(e) => setFormData(prev => ({ ...prev, requiredLicenses: e.target.value }))}
+                  placeholder="List required licenses, certifications, and training (e.g., Working at Heights, Electrical License, First Aid, etc.)"
+                  className="mt-2 min-h-[100px]"
+                />
+              </div>
+              
+              <div>
+                <Label className="text-sm font-medium">Competency Requirements</Label>
+                <Textarea
+                  value={formData.competencyRequirements || ''}
+                  onChange={(e) => setFormData(prev => ({ ...prev, competencyRequirements: e.target.value }))}
+                  placeholder="Describe specific competency requirements and experience needed"
+                  className="mt-2 min-h-[100px]"
+                />
+              </div>
+            </CardContent>
+          </Card>
+
           <Card>
             <CardHeader>
               <CardTitle>Applicable Safety Codes</CardTitle>
@@ -1275,65 +1337,83 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
       return (
         <div className="space-y-6">
           <div className="text-center">
-            <Wrench className="mx-auto h-12 w-12 text-blue-500 mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Plant, Equipment & Training</h3>
+            <AlertTriangle className="mx-auto h-12 w-12 text-red-500 mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Emergency Procedures & Monitoring</h3>
             <p className="text-gray-600 text-sm">
-              Specify required equipment, plant, and training requirements
+              Define emergency procedures, monitoring requirements, and inspection schedules
             </p>
           </div>
 
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Equipment & Plant Requirements</CardTitle>
+              <CardTitle>Emergency Procedures</CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div>
-                  <Label className="text-sm font-medium mb-2 block">Required Equipment</Label>
-                  <Textarea
-                    value={formData.requiredEquipment || ''}
-                    onChange={(e) => updateFormData({ requiredEquipment: e.target.value })}
-                    placeholder="List all equipment required for this work (e.g., scaffolding, power tools, safety harnesses, etc.)"
-                    rows={4}
-                  />
-                </div>
-                <div>
-                  <Label className="text-sm font-medium mb-2 block">Plant & Machinery</Label>
-                  <Textarea
-                    value={formData.plantMachinery || ''}
-                    onChange={(e) => updateFormData({ plantMachinery: e.target.value })}
-                    placeholder="List any plant or machinery to be used (e.g., excavators, cranes, generators, etc.)"
-                    rows={4}
-                  />
-                </div>
+            <CardContent className="space-y-4">
+              <div>
+                <Label className="text-sm font-medium">Emergency Contact Information</Label>
+                <Textarea
+                  value={formData.emergencyContacts || ''}
+                  onChange={(e) => setFormData(prev => ({ ...prev, emergencyContacts: e.target.value }))}
+                  placeholder="Emergency contacts including site supervisor, first aid officer, emergency services numbers"
+                  className="mt-2 min-h-[100px]"
+                />
+              </div>
+              
+              <div>
+                <Label className="text-sm font-medium">Emergency Response Procedures</Label>
+                <Textarea
+                  value={formData.emergencyProcedures || ''}
+                  onChange={(e) => setFormData(prev => ({ ...prev, emergencyProcedures: e.target.value }))}
+                  placeholder="Step-by-step emergency response procedures for incidents, injuries, and evacuations"
+                  className="mt-2 min-h-[100px]"
+                />
+              </div>
+              
+              <div>
+                <Label className="text-sm font-medium">First Aid Requirements</Label>
+                <Textarea
+                  value={formData.firstAidRequirements || ''}
+                  onChange={(e) => setFormData(prev => ({ ...prev, firstAidRequirements: e.target.value }))}
+                  placeholder="First aid kit locations, trained first aid officers, medical facilities nearby"
+                  className="mt-2 min-h-[100px]"
+                />
               </div>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Training Requirements</CardTitle>
+              <CardTitle>Monitoring & Inspection</CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div>
-                  <Label className="text-sm font-medium mb-2 block">Required Licenses & Certifications</Label>
-                  <Textarea
-                    value={formData.trainingRequirements || ''}
-                    onChange={(e) => updateFormData({ trainingRequirements: e.target.value })}
-                    placeholder="List required licenses, certifications, and training (e.g., Working at Heights, Electrical License, First Aid, etc.)"
-                    rows={4}
-                  />
-                </div>
-                <div>
-                  <Label className="text-sm font-medium mb-2 block">Competency Requirements</Label>
-                  <Textarea
-                    value={formData.competencyRequirements || ''}
-                    onChange={(e) => updateFormData({ competencyRequirements: e.target.value })}
-                    placeholder="Describe specific competency requirements and experience needed"
-                    rows={3}
-                  />
-                </div>
+            <CardContent className="space-y-4">
+              <div>
+                <Label className="text-sm font-medium">Inspection Schedule</Label>
+                <Textarea
+                  value={formData.inspectionSchedule || ''}
+                  onChange={(e) => setFormData(prev => ({ ...prev, inspectionSchedule: e.target.value }))}
+                  placeholder="Daily, weekly, or periodic inspection requirements and schedules"
+                  className="mt-2 min-h-[100px]"
+                />
+              </div>
+              
+              <div>
+                <Label className="text-sm font-medium">Monitoring Requirements</Label>
+                <Textarea
+                  value={formData.monitoringRequirements || ''}
+                  onChange={(e) => setFormData(prev => ({ ...prev, monitoringRequirements: e.target.value }))}
+                  placeholder="Ongoing monitoring requirements during work activities"
+                  className="mt-2 min-h-[100px]"
+                />
+              </div>
+              
+              <div>
+                <Label className="text-sm font-medium">Record Keeping</Label>
+                <Textarea
+                  value={formData.recordKeeping || ''}
+                  onChange={(e) => setFormData(prev => ({ ...prev, recordKeeping: e.target.value }))}
+                  placeholder="Documentation and record keeping requirements"
+                  className="mt-2 min-h-[100px]"
+                />
               </div>
             </CardContent>
           </Card>
@@ -1345,122 +1425,64 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
         <div className="space-y-6">
           <div className="text-center">
             <AlertTriangle className="mx-auto h-12 w-12 text-red-500 mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Emergency Procedures & Monitoring</h3>
+            <h3 className="text-lg font-semibold mb-2">Legal Disclaimer</h3>
             <p className="text-gray-600 text-sm">
-              Define emergency procedures, monitoring requirements, and inspection schedules
+              Review and accept legal disclaimer and terms
             </p>
           </div>
 
-          <Card>
+          <Card className="border-red-200 bg-red-50">
             <CardHeader>
-              <CardTitle className="text-base">Emergency Procedures</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div>
-                  <Label className="text-sm font-medium mb-2 block">Emergency Contact Information</Label>
-                  <Textarea
-                    value={formData.emergencyContacts || ''}
-                    onChange={(e) => updateFormData({ emergencyContacts: e.target.value })}
-                    placeholder="Emergency contacts including site supervisor, first aid officer, emergency services numbers"
-                    rows={3}
-                  />
-                </div>
-                <div>
-                  <Label className="text-sm font-medium mb-2 block">Emergency Response Procedures</Label>
-                  <Textarea
-                    value={formData.emergencyProcedures || ''}
-                    onChange={(e) => updateFormData({ emergencyProcedures: e.target.value })}
-                    placeholder="Step-by-step emergency response procedures for incidents, injuries, and evacuations"
-                    rows={4}
-                  />
-                </div>
-                <div>
-                  <Label className="text-sm font-medium mb-2 block">First Aid Requirements</Label>
-                  <Textarea
-                    value={formData.firstAidRequirements || ''}
-                    onChange={(e) => updateFormData({ firstAidRequirements: e.target.value })}
-                    placeholder="First aid kit locations, trained first aid officers, medical facilities nearby"
-                    rows={3}
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Monitoring & Inspection</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div>
-                  <Label className="text-sm font-medium mb-2 block">Inspection Schedule</Label>
-                  <Textarea
-                    value={formData.inspectionSchedule || ''}
-                    onChange={(e) => updateFormData({ inspectionSchedule: e.target.value })}
-                    placeholder="Daily, weekly, or periodic inspection requirements and schedules"
-                    rows={3}
-                  />
-                </div>
-                <div>
-                  <Label className="text-sm font-medium mb-2 block">Monitoring Requirements</Label>
-                  <Textarea
-                    value={formData.monitoringRequirements || ''}
-                    onChange={(e) => updateFormData({ monitoringRequirements: e.target.value })}
-                    placeholder="Ongoing monitoring requirements during work activities"
-                    rows={3}
-                  />
-                </div>
-                <div>
-                  <Label className="text-sm font-medium mb-2 block">Record Keeping</Label>
-                  <Textarea
-                    value={formData.recordKeeping || ''}
-                    onChange={(e) => updateFormData({ recordKeeping: e.target.value })}
-                    placeholder="Documentation and record keeping requirements"
-                    rows={3}
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      );
-
-    case 6:
-      return (
-        <div className="space-y-6">
-          <Card className="border-2 border-red-200">
-            <CardHeader className="bg-red-50">
-              <CardTitle className="flex items-center text-red-800">
-                <Shield className="mr-2 h-5 w-5" />
+              <CardTitle className="text-red-800 flex items-center gap-2">
+                <AlertTriangle className="h-5 w-5" />
                 Legal Disclaimer & Terms
               </CardTitle>
             </CardHeader>
-            <CardContent className="p-6 space-y-4">
-              <div className="bg-red-50 border-2 border-red-200 rounded-lg p-4">
-                <h4 className="font-bold text-red-800 mb-3">IMPORTANT LEGAL DISCLAIMER</h4>
-                <div className="text-sm text-red-700 space-y-2">
-                  <p><strong>NO LIABILITY:</strong> Safety Samurai and its operators are NOT LIABLE for any incidents, accidents, injuries, property damage, or fatalities arising from the use of this SWMS document.</p>
-                  <p><strong>TEMPLATE ONLY:</strong> This document is a TEMPLATE and must be reviewed, modified, and approved by qualified safety professionals before use.</p>
-                  <p><strong>CONTRACTOR RESPONSIBILITY:</strong> You are solely responsible for ensuring this SWMS complies with all applicable laws, regulations, and safety requirements.</p>
-                  <p><strong>SITE-SPECIFIC REQUIREMENTS:</strong> This document must be adapted to site-specific conditions and hazards.</p>
-                  <p><strong>PROFESSIONAL REVIEW REQUIRED:</strong> A qualified safety professional must review and approve this SWMS before work commences.</p>
+            <CardContent>
+              <div className="bg-white p-6 rounded-lg border border-red-200">
+                <div className="space-y-4 text-sm">
+                  <div>
+                    <h4 className="font-semibold text-red-800 mb-2">IMPORTANT LEGAL DISCLAIMER</h4>
+                    <p className="text-red-700">
+                      <strong>NO LIABILITY:</strong> Safety Samurai and its operators are NOT LIABLE for any incidents, accidents, injuries, property damage, or fatalities arising from the use of this SWMS document.
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <p className="text-red-700">
+                      <strong>TEMPLATE ONLY:</strong> This document is a TEMPLATE and must be reviewed, modified, and approved by qualified safety professionals before use.
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <p className="text-red-700">
+                      <strong>CONTRACTOR RESPONSIBILITY:</strong> You are solely responsible for ensuring this SWMS complies with all applicable laws, regulations, and safety requirements.
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <p className="text-red-700">
+                      <strong>SITE-SPECIFIC REQUIREMENTS:</strong> This document must be adapted to site-specific conditions and hazards.
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <p className="text-red-700">
+                      <strong>PROFESSIONAL REVIEW REQUIRED:</strong> A qualified safety professional must review and approve this SWMS before work commences.
+                    </p>
+                  </div>
                 </div>
               </div>
               
-              <div className="flex items-start space-x-3 p-4 border rounded-lg">
+              <div className="mt-6 flex items-start space-x-3">
                 <Checkbox
-                  id="legal-agreement"
-                  checked={formData.legalAgreementAccepted || false}
-                  onCheckedChange={(checked) => updateFormData({ legalAgreementAccepted: checked })}
+                  checked={formData.acceptedDisclaimer || false}
+                  onCheckedChange={(checked) => setFormData(prev => ({ ...prev, acceptedDisclaimer: checked }))}
                   className="mt-1"
                 />
-                <div className="flex-1">
-                  <label htmlFor="legal-agreement" className="text-sm font-medium cursor-pointer">
-                    I acknowledge and accept the legal disclaimer above. I understand that Safety Samurai is not liable for any incidents or damages arising from the use of this SWMS document, and that I am responsible for ensuring compliance with all applicable safety regulations.
-                  </label>
-                </div>
+                <Label className="text-sm text-gray-700 leading-relaxed">
+                  I acknowledge and accept the legal disclaimer above. I understand that Safety Samurai is not liable for any incidents or damages arising from the use of this SWMS document, and that I am responsible for ensuring compliance with all applicable safety regulations.
+                </Label>
               </div>
             </CardContent>
           </Card>
