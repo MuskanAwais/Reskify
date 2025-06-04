@@ -1,5 +1,6 @@
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import { translations } from './translations';
 
 // Extend jsPDF types for autoTable
 declare module 'jspdf' {
@@ -120,8 +121,22 @@ export async function generateProtectedPDF(document: SwmsDocument, user: User | 
       addDemoWatermark(pdf);
     }
 
-    // Add enhanced watermark with comprehensive project details
+    // Add enhanced watermark with comprehensive project details and multi-language support
     const addEnhancedWatermark = () => {
+      // Get current language for translations
+      const currentLanguage = (() => {
+        try {
+          return localStorage.getItem("selectedLanguage") || "en";
+        } catch {
+          return "en";
+        }
+      })();
+      
+      const t = (key: string): string => {
+        const languageTranslations = translations[currentLanguage as keyof typeof translations] || translations.en;
+        return languageTranslations[key as keyof typeof languageTranslations] || key;
+      };
+      
       // Company name watermark - large center
       pdf.setFontSize(40);
       pdf.setTextColor(240, 240, 240); // Very light gray
@@ -134,30 +149,30 @@ export async function generateProtectedPDF(document: SwmsDocument, user: User | 
         align: 'center'
       });
       
-      // Safety Sensei brand watermark - below company name
+      // Safety Sensei brand watermark - always in English
       pdf.setFontSize(24);
       pdf.setTextColor(245, 245, 245);
       pdf.setFont('helvetica', 'bold');
       
-      const brandName = "Safety Sensei";
+      const brandName = "Safety Sensei"; // Always English
       const brandTextWidth = pdf.getTextWidth(brandName);
       pdf.text(brandName, (pageWidth - brandTextWidth) / 2, pageHeight / 2 + 20, { 
         angle: 45,
         align: 'center'
       });
       
-      // Project details watermark - distributed across page
+      // Project details watermark - distributed across page with translations
       pdf.setFontSize(9);
       pdf.setTextColor(250, 250, 250); // Even lighter gray
       pdf.setFont('helvetica', 'normal');
       
       const projectDetails = [
-        `Project: ${(document as any).jobName || document.title || 'Office Renovation Project'}`,
-        `Number: ${(document as any).jobNumber || 'PRJ-2025-001'}`,
-        `Address: ${(document as any).projectAddress || document.projectLocation || '123 Construction Lane, Sydney NSW 2000'}`,
-        `Trade: ${document.tradeType || 'N/A'}`,
-        `Company: ${user?.companyName || 'Test Company'}`,
-        `Generated: ${new Date().toLocaleDateString()}`
+        `${t('Project')}: ${(document as any).jobName || document.title || 'Office Renovation Project'}`,
+        `${t('Number')}: ${(document as any).jobNumber || 'PRJ-2025-001'}`,
+        `${t('Address')}: ${(document as any).projectAddress || document.projectLocation || '123 Construction Lane, Sydney NSW 2000'}`,
+        `${t('Trade')}: ${document.tradeType || 'N/A'}`,
+        `${t('Company')}: ${user?.companyName || 'Test Company'}`,
+        `${t('Generated')}: ${new Date().toLocaleDateString()}`
       ];
       
       // Distribute project details across page in a pattern
@@ -184,13 +199,13 @@ export async function generateProtectedPDF(document: SwmsDocument, user: User | 
       pdf.setFontSize(8);
       pdf.setTextColor(252, 252, 252);
       
-      // Top corners
+      // Top corners - Safety Sensei always in English
       pdf.text('Safety Sensei', 20, 30, { angle: 0 });
       pdf.text(companyName, pageWidth - 80, 30, { angle: 0 });
       
       // Bottom corners
-      pdf.text('SWMS Document', 20, pageHeight - 20, { angle: 0 });
-      pdf.text('Safety Sensei', pageWidth - 80, pageHeight - 20, { angle: 0 });
+      pdf.text(t('SWMS Document'), 20, pageHeight - 20, { angle: 0 });
+      pdf.text('Safety Sensei', pageWidth - 80, pageHeight - 20, { angle: 0 }); // Always English
     };
     
     // Apply watermark to current page
