@@ -1,0 +1,91 @@
+1. Project and Document Details
+	•	Project name, location, and description
+	•	Principal contractor and subcontractor name
+	•	ABN, licence number (if applicable)
+	•	SWMS document version number and date
+	•	Person(s) responsible for ensuring compliance with SWMS on site
+	•	Signature section (prepared by / reviewed by / approved by)
+
+⸻
+
+2. High-Risk Construction Work (HRCW) Identification
+
+Clearly state if the work involves any of the 18 high-risk activities under WHS Regulation 291, such as:
+	•	Work at heights above 2m
+	•	Work near live electrical installations
+	•	Demolition or structural alterations
+	•	Asbestos-related work
+	•	Confined spaces, etc.
+
+⚠️ You must specify why the work is classified as high-risk and which regulation(s) apply.
+
+⸻
+
+3. Work Activity Breakdown
+
+Each work activity or task must include:
+	•	Task title (e.g. “Use of power tools”, “Installation of suspended ceiling”)
+	•	Description of the task
+	•	Step-by-step breakdown (to allow for proper risk identification)
+
+⸻
+
+4. Hazard Identification and Risk Assessment
+
+For each step or activity, list:
+	•	Associated hazards (e.g. sharp tools, slips, working at heights)
+	•	Potential risks (e.g. lacerations, falls, electric shock)
+
+There’s no hard rule on quantity, but 2–6 risks per task is typical for medium-complexity activities. Ensure:
+	•	All reasonably foreseeable hazards are addressed
+	•	Include site-specific risks where relevant
+
+⸻
+
+5. Risk Control Measures (The Hierarchy of Control)
+
+For each identified hazard, include:
+	•	Controls listed in order of hierarchy: Elimination > Substitution > Engineering > Isolation > Admin > PPE
+	•	Multiple controls may apply to a single risk
+
+✅ Your generator should default to engineering or elimination first, then drop down the hierarchy if others aren’t practical.
+
+⸻
+
+6. Plant, Equipment and Materials Used
+
+Include:
+	•	Specific tools/machinery to be used
+	•	Manufacturer recommendations
+	•	Pre-start inspection requirements
+
+⸻
+
+7. PPE Requirements
+
+List specific PPE for each task:
+	•	Hard hats, gloves, safety boots, eye protection, hearing protection, etc.
+
+Make this context-sensitive depending on the risk level and task type.
+
+⸻
+
+8. Training, Competency and Permits
+	•	Required licences (e.g. High-Risk Work Licence)
+	•	Evidence of training (white card, task-specific competency)
+	•	Induction records
+	•	Any permits required (confined space, hot works, electrical isolation)
+
+⸻
+
+9. Emergency Procedures
+	•	Response plan for likely incidents (e.g. injury, fall, fire)
+	•	Nearest hospital and emergency contact numbers
+	•	Site-specific first aid arrangements
+
+⸻
+
+10. Review and Monitoring
+	•	Process for reviewing and updating the SWMS
+	•	Site supervisor sign-off
+	•	Toolbox talks / pre-start briefings

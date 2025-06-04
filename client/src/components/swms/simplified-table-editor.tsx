@@ -1,428 +1,436 @@
-import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { useToast } from "@/hooks/use-toast";
-import { 
-  Plus, 
-  Trash2, 
-  Edit,
-  Shield,
-  AlertTriangle,
-  CheckCircle
-} from "lucide-react";
-
-interface SimplifiedTableEditorProps {
-  formData: any;
-  onDataChange: (data: any) => void;
-}
+import React, { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Trash2, Plus, Edit2, Check, X, AlertTriangle } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface RiskAssessment {
   id: string;
   activity: string;
+  description?: string;
   hazards: string[];
   initialRiskScore: number;
-  riskLevel: string;
   controlMeasures: string[];
   residualRiskScore: number;
-  residualRiskLevel: string;
   responsible: string;
   ppe: string[];
   training: string[];
   legislation: string[];
-  editable?: boolean;
 }
 
-const RISK_LEVELS = [
-  { value: 1, label: "Very Low", color: "bg-green-500" },
-  { value: 2, label: "Low", color: "bg-green-400" },
-  { value: 3, label: "Medium", color: "bg-yellow-500" },
-  { value: 4, label: "High", color: "bg-orange-500" },
-  { value: 5, label: "Very High", color: "bg-red-500" },
-  { value: 6, label: "Extreme", color: "bg-red-600" }
-];
+interface SimplifiedTableEditorProps {
+  riskAssessments: RiskAssessment[];
+  onUpdate: (assessments: RiskAssessment[]) => void;
+  tradeType: string;
+}
 
-const RESPONSIBLE_PERSONS = [
-  "Site Supervisor",
-  "Safety Officer", 
-  "Project Manager",
-  "Lead Tradesperson",
-  "Site Foreman",
-  "Safety Coordinator"
-];
-
-export default function SimplifiedTableEditor({ formData, onDataChange }: SimplifiedTableEditorProps) {
-  const [riskAssessments, setRiskAssessments] = useState<RiskAssessment[]>([]);
+export function SimplifiedTableEditor({ riskAssessments, onUpdate, tradeType }: SimplifiedTableEditorProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
-  const { toast } = useToast();
+  const [newAssessment, setNewAssessment] = useState<Partial<RiskAssessment>>({
+    activity: '',
+    hazards: [''],
+    controlMeasures: [''],
+    responsible: 'Site Supervisor',
+    ppe: [''],
+    training: [''],
+    legislation: [''],
+    initialRiskScore: 3,
+    residualRiskScore: 2
+  });
 
-  useEffect(() => {
-    if (formData.riskAssessments) {
-      setRiskAssessments(formData.riskAssessments);
-    }
-  }, [formData]);
-
-  const getRiskColor = (score: number) => {
-    const risk = RISK_LEVELS.find(r => r.value === score);
-    return risk?.color || "bg-gray-400";
+  const getRiskLevel = (score: number): { level: string; color: string } => {
+    if (score <= 2) return { level: 'Low', color: 'bg-green-100 text-green-800' };
+    if (score <= 3) return { level: 'Medium', color: 'bg-yellow-100 text-yellow-800' };
+    if (score <= 4) return { level: 'High', color: 'bg-orange-100 text-orange-800' };
+    return { level: 'Extreme', color: 'bg-red-100 text-red-800' };
   };
 
-  const getRiskLabel = (score: number) => {
-    const risk = RISK_LEVELS.find(r => r.value === score);
-    return risk?.label || "Unknown";
-  };
+  const addNewRisk = () => {
+    if (!newAssessment.activity?.trim()) return;
+    
+    const assessment: RiskAssessment = {
+      id: `risk-${Date.now()}`,
+      activity: newAssessment.activity,
+      description: newAssessment.description || `${newAssessment.activity} work involving ${tradeType.toLowerCase()} trade activities`,
+      hazards: newAssessment.hazards?.filter(h => h.trim()) || [],
+      controlMeasures: newAssessment.controlMeasures?.filter(c => c.trim()) || [],
+      responsible: newAssessment.responsible || 'Site Supervisor',
+      ppe: newAssessment.ppe?.filter(p => p.trim()) || [],
+      training: newAssessment.training?.filter(t => t.trim()) || [],
+      legislation: newAssessment.legislation?.filter(l => l.trim()) || [],
+      initialRiskScore: newAssessment.initialRiskScore || 3,
+      residualRiskScore: newAssessment.residualRiskScore || 2
+    };
 
-  const updateAssessment = (id: string, field: string, value: any) => {
-    const updated = riskAssessments.map(assessment => 
-      assessment.id === id 
-        ? { ...assessment, [field]: value }
-        : assessment
-    );
-    setRiskAssessments(updated);
-    onDataChange({ ...formData, riskAssessments: updated });
-  };
-
-  const deleteAssessment = (id: string) => {
-    const updated = riskAssessments.filter(assessment => assessment.id !== id);
-    setRiskAssessments(updated);
-    onDataChange({ ...formData, riskAssessments: updated });
-    toast({
-      title: "Risk Assessment Deleted",
-      description: "The risk assessment has been removed.",
+    onUpdate([...riskAssessments, assessment]);
+    setNewAssessment({
+      activity: '',
+      hazards: [''],
+      controlMeasures: [''],
+      responsible: 'Site Supervisor',
+      ppe: [''],
+      training: [''],
+      legislation: [''],
+      initialRiskScore: 3,
+      residualRiskScore: 2
     });
   };
 
-  const addNewAssessment = () => {
-    const newAssessment: RiskAssessment = {
-      id: `custom-${Date.now()}`,
-      activity: "New Activity",
-      hazards: ["Manual handling injuries", "Slip, trip and fall hazards"],
-      initialRiskScore: 3,
-      riskLevel: "Medium",
-      controlMeasures: ["Follow safe work procedures", "Use appropriate PPE"],
-      residualRiskScore: 2,
-      residualRiskLevel: "Low",
-      responsible: "Site Supervisor",
-      ppe: ["Hard hat", "Safety boots", "High-vis vest"],
-      training: ["Site induction", "Task-specific training"],
-      legislation: ["Work Health and Safety Act 2011"],
-      editable: true
-    };
-    
-    const updated = [...riskAssessments, newAssessment];
-    setRiskAssessments(updated);
-    onDataChange({ ...formData, riskAssessments: updated });
-    setEditingId(newAssessment.id);
+  const updateAssessment = (id: string, updates: Partial<RiskAssessment>) => {
+    onUpdate(riskAssessments.map(assessment => 
+      assessment.id === id ? { ...assessment, ...updates } : assessment
+    ));
   };
 
-  const EditableField = ({ 
-    value, 
-    onSave, 
-    type = "text",
-    multiline = false,
-    options = []
-  }: {
-    value: any;
-    onSave: (value: any) => void;
-    type?: string;
-    multiline?: boolean;
-    options?: any[];
-  }) => {
-    const [editValue, setEditValue] = useState(value);
-    const [isEditing, setIsEditing] = useState(false);
+  const removeAssessment = (id: string) => {
+    onUpdate(riskAssessments.filter(assessment => assessment.id !== id));
+  };
 
-    const handleSave = () => {
-      onSave(editValue);
-      setIsEditing(false);
-    };
+  const addArrayItem = (array: string[], setArray: (items: string[]) => void) => {
+    setArray([...array, '']);
+  };
 
-    if (!isEditing) {
-      return (
-        <div 
-          className="cursor-pointer hover:bg-blue-50 p-2 rounded min-h-[40px] border border-gray-200 flex items-center"
-          onClick={() => setIsEditing(true)}
-        >
-          {type === "array" ? (
-            <div className="space-y-1 w-full">
-              {Array.isArray(value) && value.length > 0 ? (
-                value.slice(0, 3).map((item: string, index: number) => (
-                  <Badge key={index} variant="secondary" className="mr-1 text-xs">
-                    {item}
-                  </Badge>
-                ))
-              ) : (
-                <span className="text-gray-400 text-sm">Click to add items...</span>
-              )}
-              {Array.isArray(value) && value.length > 3 && (
-                <Badge variant="outline" className="text-xs">
-                  +{value.length - 3} more
-                </Badge>
-              )}
-            </div>
+  const updateArrayItem = (array: string[], index: number, value: string, setArray: (items: string[]) => void) => {
+    const newArray = [...array];
+    newArray[index] = value;
+    setArray(newArray);
+  };
+
+  const removeArrayItem = (array: string[], index: number, setArray: (items: string[]) => void) => {
+    setArray(array.filter((_, i) => i !== index));
+  };
+
+  const ArrayEditor = ({ 
+    items, 
+    setItems, 
+    placeholder, 
+    type = 'input' 
+  }: { 
+    items: string[]; 
+    setItems: (items: string[]) => void; 
+    placeholder: string; 
+    type?: 'input' | 'textarea';
+  }) => (
+    <div className="space-y-2">
+      {items.map((item, index) => (
+        <div key={index} className="flex gap-2">
+          {type === 'textarea' ? (
+            <Textarea
+              value={item}
+              onChange={(e) => updateArrayItem(items, index, e.target.value, setItems)}
+              placeholder={placeholder}
+              className="flex-1 min-h-[60px]"
+            />
           ) : (
-            <span className="text-sm">{value || "Click to edit..."}</span>
+            <Input
+              value={item}
+              onChange={(e) => updateArrayItem(items, index, e.target.value, setItems)}
+              placeholder={placeholder}
+              className="flex-1"
+            />
           )}
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => removeArrayItem(items, index, setItems)}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Remove item</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
-      );
-    }
-
-    if (type === "select") {
-      return (
-        <div className="space-y-2">
-          <Select value={editValue} onValueChange={setEditValue}>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {options.map((option: any) => (
-                <SelectItem key={option.value || option} value={option.value || option}>
-                  {option.label || option}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <div className="flex gap-2">
-            <Button size="sm" onClick={handleSave}>Save</Button>
-            <Button size="sm" variant="outline" onClick={() => setIsEditing(false)}>Cancel</Button>
-          </div>
-        </div>
-      );
-    }
-
-    if (type === "array") {
-      return (
-        <div className="space-y-2">
-          <Textarea
-            value={Array.isArray(editValue) ? editValue.join('\n') : editValue}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && e.ctrlKey) {
-                e.preventDefault();
-                const currentValue = e.currentTarget.value;
-                const lines = currentValue.split('\n').filter(line => line.trim());
-                if (lines.length > 0) {
-                  setEditValue(lines);
-                  onSave(lines);
-                  setIsEditing(false);
-                }
-              }
-            }}
-            onChange={(e) => setEditValue(e.target.value)}
-            placeholder="Enter items, one per line. Press Ctrl+Enter to save."
-            className="min-h-[80px]"
-          />
-          <div className="flex gap-2">
-            <Button size="sm" onClick={handleSave}>Save</Button>
-            <Button size="sm" variant="outline" onClick={() => setIsEditing(false)}>Cancel</Button>
-          </div>
-        </div>
-      );
-    }
-
-    return (
-      <div className="space-y-2">
-        {multiline ? (
-          <Textarea
-            value={editValue}
-            onChange={(e) => setEditValue(e.target.value)}
-            className="min-h-[60px]"
-          />
-        ) : (
-          <Input
-            value={editValue}
-            onChange={(e) => setEditValue(e.target.value)}
-          />
-        )}
-        <div className="flex gap-2">
-          <Button size="sm" onClick={handleSave}>Save</Button>
-          <Button size="sm" variant="outline" onClick={() => setIsEditing(false)}>Cancel</Button>
-        </div>
-      </div>
-    );
-  };
+      ))}
+      <QuickActionTooltip tooltip={`Add new ${placeholder.toLowerCase()}`}>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => addArrayItem(items, setItems)}
+          className="w-full"
+        >
+          <Plus className="h-4 w-4 mr-2" />
+          Add {placeholder}
+        </Button>
+      </QuickActionTooltip>
+    </div>
+  );
 
   return (
     <div className="space-y-6">
+      {/* Add New Risk Assessment */}
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-lg flex items-center">
-            <Shield className="mr-2 h-5 w-5" />
-            Risk Assessment Management
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Plus className="h-5 w-5" />
+            Add New Risk Assessment
           </CardTitle>
-          <Button onClick={addNewAssessment} className="flex items-center gap-2">
-            <Plus className="w-4 h-4" />
-            Add Risk Assessment
-          </Button>
         </CardHeader>
-        <CardContent>
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-            <div className="text-sm text-blue-800 font-medium mb-2">How to Edit Risk Assessment Table:</div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-blue-700">
-              <div>
-                <div className="font-medium mb-1">Editing Existing Risks:</div>
-                <ul className="space-y-1">
-                  <li>• Click any field to edit content directly</li>
-                  <li>• For lists (hazards, controls), add one item per line</li>
-                  <li>• Press <kbd className="px-1 py-0.5 bg-white border rounded text-xs">Ctrl+Enter</kbd> to save changes</li>
-                  <li>• Press <kbd className="px-1 py-0.5 bg-white border rounded text-xs">Escape</kbd> to cancel</li>
-                  <li>• Use <kbd className="px-1 py-0.5 bg-white border rounded text-xs">Enter</kbd> for new lines in text areas</li>
-                </ul>
-              </div>
-              <div>
-                <div className="font-medium mb-1">Adding New Content:</div>
-                <ul className="space-y-1">
-                  <li>• Use "Add Risk Assessment" button for new activities</li>
-                  <li>• Risk scores: 1-6 (Very Low to Extreme)</li>
-                  <li>• Control measures should follow safety hierarchy</li>
-                  <li>• Include specific PPE and training requirements</li>
-                </ul>
-              </div>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="text-sm font-medium mb-2 block">Activity Name</label>
+              <Input
+                value={newAssessment.activity || ''}
+                onChange={(e) => setNewAssessment({ ...newAssessment, activity: e.target.value })}
+                placeholder="e.g., Power point installation"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-2 block">Responsible Person</label>
+              <Input
+                value={newAssessment.responsible || ''}
+                onChange={(e) => setNewAssessment({ ...newAssessment, responsible: e.target.value })}
+                placeholder="Site Supervisor"
+              />
             </div>
           </div>
 
-          {riskAssessments.length === 0 ? (
-            <div className="text-center py-12 border-2 border-dashed border-gray-300 rounded-lg">
-              <Shield className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-              <h3 className="text-lg font-medium text-gray-700 mb-2">No Risk Assessments</h3>
-              <p className="text-gray-500 mb-4">Create your first risk assessment to get started</p>
-              <Button onClick={addNewAssessment} variant="outline">
-                <Plus className="w-4 h-4 mr-2" />
-                Add Risk Assessment
-              </Button>
+          <div>
+            <label className="text-sm font-medium mb-2 block">Activity Description</label>
+            <Textarea
+              value={newAssessment.description || ''}
+              onChange={(e) => setNewAssessment({ ...newAssessment, description: e.target.value })}
+              placeholder="Detailed description of the activity and work involved"
+              className="min-h-[60px]"
+            />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="text-sm font-medium mb-2 block">Hazards</label>
+              <ArrayEditor
+                items={newAssessment.hazards || ['']}
+                setItems={(items) => setNewAssessment({ ...newAssessment, hazards: items })}
+                placeholder="e.g., Electrocution from live circuits"
+                type="textarea"
+              />
             </div>
-          ) : (
-            <div className="space-y-6">
-              {riskAssessments.map((assessment) => (
-                <Card key={assessment.id} className="border-l-4 border-l-blue-500">
-                  <CardHeader className="flex flex-row items-center justify-between pb-3">
-                    <div className="flex items-center gap-3">
-                      <h3 className="text-lg font-semibold">{assessment.activity}</h3>
-                      <div className="flex items-center gap-2">
-                        <div className={`w-4 h-4 rounded ${getRiskColor(assessment.initialRiskScore)}`} title="Initial Risk"></div>
-                        <span className="text-xs text-gray-600">→</span>
-                        <div className={`w-4 h-4 rounded ${getRiskColor(assessment.residualRiskScore)}`} title="Residual Risk"></div>
-                        <span className="text-sm text-gray-600">
-                          {getRiskLabel(assessment.residualRiskScore)}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex gap-2">
+            <div>
+              <label className="text-sm font-medium mb-2 block">Control Measures</label>
+              <ArrayEditor
+                items={newAssessment.controlMeasures || ['']}
+                setItems={(items) => setNewAssessment({ ...newAssessment, controlMeasures: items })}
+                placeholder="e.g., Isolate power and test circuits dead"
+                type="textarea"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className="text-sm font-medium mb-2 block">PPE Required</label>
+              <ArrayEditor
+                items={newAssessment.ppe || ['']}
+                setItems={(items) => setNewAssessment({ ...newAssessment, ppe: items })}
+                placeholder="e.g., Insulated gloves"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-2 block">Training Required</label>
+              <ArrayEditor
+                items={newAssessment.training || ['']}
+                setItems={(items) => setNewAssessment({ ...newAssessment, training: items })}
+                placeholder="e.g., Electrical license"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-2 block">Legislation</label>
+              <ArrayEditor
+                items={newAssessment.legislation || ['']}
+                setItems={(items) => setNewAssessment({ ...newAssessment, legislation: items })}
+                placeholder="e.g., AS/NZS 3000"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="text-sm font-medium mb-2 block">Initial Risk Score (1-5)</label>
+              <Input
+                type="number"
+                min="1"
+                max="5"
+                value={newAssessment.initialRiskScore || 3}
+                onChange={(e) => setNewAssessment({ ...newAssessment, initialRiskScore: parseInt(e.target.value) || 3 })}
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-2 block">Residual Risk Score (1-5)</label>
+              <Input
+                type="number"
+                min="1"
+                max="5"
+                value={newAssessment.residualRiskScore || 2}
+                onChange={(e) => setNewAssessment({ ...newAssessment, residualRiskScore: parseInt(e.target.value) || 2 })}
+              />
+            </div>
+          </div>
+
+          <QuickActionTooltip tooltip="Add this risk assessment to the SWMS">
+            <Button onClick={addNewRisk} className="w-full">
+              <Plus className="h-4 w-4 mr-2" />
+              Add Risk Assessment
+            </Button>
+          </QuickActionTooltip>
+        </CardContent>
+      </Card>
+
+      {/* Existing Risk Assessments */}
+      <div className="space-y-4">
+        {riskAssessments.map((assessment) => {
+          const initialRisk = getRiskLevel(assessment.initialRiskScore);
+          const residualRisk = getRiskLevel(assessment.residualRiskScore);
+          
+          return (
+            <Card key={assessment.id} className="border-l-4 border-l-blue-500">
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-lg">{assessment.activity}</CardTitle>
+                  <div className="flex items-center gap-2">
+                    <QuickActionTooltip tooltip="Edit risk assessment">
                       <Button
-                        variant="ghost"
+                        variant="outline"
                         size="sm"
                         onClick={() => setEditingId(editingId === assessment.id ? null : assessment.id)}
                       >
-                        <Edit className="w-4 h-4" />
+                        <Edit2 className="h-4 w-4" />
                       </Button>
+                    </QuickActionTooltip>
+                    <QuickActionTooltip tooltip="Remove risk assessment">
                       <Button
-                        variant="ghost"
+                        variant="outline"
                         size="sm"
-                        onClick={() => deleteAssessment(assessment.id)}
-                        className="text-red-600 hover:text-red-800"
+                        onClick={() => removeAssessment(assessment.id)}
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <Trash2 className="h-4 w-4" />
                       </Button>
+                    </QuickActionTooltip>
+                  </div>
+                </div>
+                {assessment.description && (
+                  <p className="text-sm text-muted-foreground">{assessment.description}</p>
+                )}
+              </CardHeader>
+              
+              <CardContent className="space-y-4">
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <Badge className={initialRisk.color}>
+                      Initial Risk: {initialRisk.level} ({assessment.initialRiskScore})
+                    </Badge>
+                    <span>→</span>
+                    <Badge className={residualRisk.color}>
+                      Residual Risk: {residualRisk.level} ({assessment.residualRiskScore})
+                    </Badge>
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    Responsible: {assessment.responsible}
+                  </div>
+                </div>
+
+                {editingId !== assessment.id ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                        <AlertTriangle className="h-4 w-4 text-orange-500" />
+                        Hazards
+                      </h4>
+                      <ul className="list-disc list-inside space-y-1 text-sm">
+                        {assessment.hazards.map((hazard, index) => (
+                          <li key={index}>{hazard}</li>
+                        ))}
+                      </ul>
                     </div>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
+                    <div>
+                      <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                        <Check className="h-4 w-4 text-green-500" />
+                        Control Measures
+                      </h4>
+                      <ul className="list-disc list-inside space-y-1 text-sm">
+                        {assessment.controlMeasures.map((control, index) => (
+                          <li key={index}>{control}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-4 p-4 bg-gray-50 rounded-lg">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <Label className="text-sm font-medium mb-2 block">Activity Name</Label>
-                        <EditableField
-                          value={assessment.activity}
-                          onSave={(value) => updateAssessment(assessment.id, 'activity', value)}
+                        <label className="text-sm font-medium mb-2 block">Hazards</label>
+                        <ArrayEditor
+                          items={assessment.hazards}
+                          setItems={(items) => updateAssessment(assessment.id, { hazards: items })}
+                          placeholder="Hazard description"
+                          type="textarea"
                         />
                       </div>
-                      
                       <div>
-                        <Label className="text-sm font-medium mb-2 block">Responsible Person</Label>
-                        <EditableField
-                          value={assessment.responsible}
-                          onSave={(value) => updateAssessment(assessment.id, 'responsible', value)}
-                          type="select"
-                          options={RESPONSIBLE_PERSONS}
+                        <label className="text-sm font-medium mb-2 block">Control Measures</label>
+                        <ArrayEditor
+                          items={assessment.controlMeasures}
+                          setItems={(items) => updateAssessment(assessment.id, { controlMeasures: items })}
+                          placeholder="Control measure description"
+                          type="textarea"
                         />
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <Label className="text-sm font-medium mb-2 block">Initial Risk Score</Label>
-                        <EditableField
-                          value={assessment.initialRiskScore}
-                          onSave={(value) => updateAssessment(assessment.id, 'initialRiskScore', parseInt(value))}
-                          type="select"
-                          options={RISK_LEVELS.map(r => ({ value: r.value, label: `${r.value} - ${r.label}` }))}
-                        />
-                      </div>
-                      
-                      <div>
-                        <Label className="text-sm font-medium mb-2 block">Residual Risk Score</Label>
-                        <EditableField
-                          value={assessment.residualRiskScore}
-                          onSave={(value) => updateAssessment(assessment.id, 'residualRiskScore', parseInt(value))}
-                          type="select"
-                          options={RISK_LEVELS.map(r => ({ value: r.value, label: `${r.value} - ${r.label}` }))}
-                        />
-                      </div>
+                    <div className="flex gap-2">
+                      <QuickActionTooltip tooltip="Save changes">
+                        <Button size="sm" onClick={() => setEditingId(null)}>
+                          <Check className="h-4 w-4 mr-2" />
+                          Save
+                        </Button>
+                      </QuickActionTooltip>
+                      <QuickActionTooltip tooltip="Cancel editing">
+                        <Button variant="outline" size="sm" onClick={() => setEditingId(null)}>
+                          <X className="h-4 w-4 mr-2" />
+                          Cancel
+                        </Button>
+                      </QuickActionTooltip>
                     </div>
+                  </div>
+                )}
 
-                    <div>
-                      <Label className="text-sm font-medium mb-2 block">Hazards Identified</Label>
-                      <EditableField
-                        value={assessment.hazards}
-                        onSave={(value) => updateAssessment(assessment.id, 'hazards', value)}
-                        type="array"
-                      />
+                {assessment.ppe.length > 0 && (
+                  <div>
+                    <h4 className="font-medium text-sm mb-2">PPE Required</h4>
+                    <div className="flex flex-wrap gap-1">
+                      {assessment.ppe.map((ppe, index) => (
+                        <Badge key={index} variant="secondary" className="text-xs">
+                          {ppe}
+                        </Badge>
+                      ))}
                     </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
 
-                    <div>
-                      <Label className="text-sm font-medium mb-2 block">Control Measures</Label>
-                      <EditableField
-                        value={assessment.controlMeasures}
-                        onSave={(value) => updateAssessment(assessment.id, 'controlMeasures', value)}
-                        type="array"
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <Label className="text-sm font-medium mb-2 block">PPE Required</Label>
-                        <EditableField
-                          value={assessment.ppe}
-                          onSave={(value) => updateAssessment(assessment.id, 'ppe', value)}
-                          type="array"
-                        />
-                      </div>
-                      
-                      <div>
-                        <Label className="text-sm font-medium mb-2 block">Training Required</Label>
-                        <EditableField
-                          value={assessment.training}
-                          onSave={(value) => updateAssessment(assessment.id, 'training', value)}
-                          type="array"
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <Label className="text-sm font-medium mb-2 block">Australian Standards & Legislation</Label>
-                      <EditableField
-                        value={assessment.legislation}
-                        onSave={(value) => updateAssessment(assessment.id, 'legislation', value)}
-                        type="array"
-                      />
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      {riskAssessments.length === 0 && (
+        <Card className="text-center py-8">
+          <CardContent>
+            <AlertTriangle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-lg font-medium mb-2">No Risk Assessments</h3>
+            <p className="text-muted-foreground mb-4">
+              Start by adding your first risk assessment above.
+            </p>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
