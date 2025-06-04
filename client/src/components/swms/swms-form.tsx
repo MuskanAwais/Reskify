@@ -22,7 +22,11 @@ import {
   ChevronUp,
   Layers,
   Search,
-  Wrench
+  Wrench,
+  Eye,
+  Download,
+  Save,
+  CheckCircle
 } from "lucide-react";
 import { SimplifiedTableEditor } from "./simplified-table-editor";
 import SmartTooltip from "@/components/ui/smart-tooltip";
@@ -1492,40 +1496,93 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
     case 6:
       return (
         <div className="space-y-6">
+          <div className="text-center">
+            <FileText className="mx-auto h-12 w-12 text-green-500 mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Final Document</h3>
+            <p className="text-gray-600 text-sm">
+              Review your completed SWMS and generate the final document
+            </p>
+          </div>
+
           <Card>
             <CardHeader>
-              <CardTitle>Review Your SWMS</CardTitle>
+              <CardTitle className="text-green-700">Document Summary</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <h4 className="font-medium text-gray-800 mb-2">Project Details</h4>
                   <div className="space-y-1 text-sm">
-                    <p><strong>Title:</strong> {formData.title}</p>
-                    <p><strong>Trade:</strong> {formData.tradeType}</p>
-                    <p><strong>Location:</strong> {formData.projectLocation}</p>
+                    <p><strong>Title:</strong> {formData.title || 'Not specified'}</p>
+                    <p><strong>Trade:</strong> {formData.tradeType || 'Not specified'}</p>
+                    <p><strong>Location:</strong> {formData.projectLocation || 'Not specified'}</p>
                   </div>
                 </div>
                 <div>
-                  <h4 className="font-medium text-gray-800 mb-2">Activities</h4>
-                  <div className="flex flex-wrap gap-1">
-                    {formData.activities.map((activity: string, index: number) => (
-                      <Badge key={index} variant="outline" className="text-xs">
-                        {activity}
-                      </Badge>
-                    ))}
+                  <h4 className="font-medium text-gray-800 mb-2">Risk Assessments</h4>
+                  <div className="space-y-1 text-sm">
+                    <p><strong>Total Assessments:</strong> {formData.riskAssessments?.length || 0}</p>
+                    <p><strong>Activities:</strong> {formData.activities?.length || 0}</p>
+                    <p><strong>Compliance Codes:</strong> {formData.complianceCodes?.length || 0}</p>
                   </div>
                 </div>
               </div>
               
-              <div>
-                <h4 className="font-medium text-gray-800 mb-2">Compliance Codes</h4>
-                <div className="flex flex-wrap gap-2">
-                  {formData.complianceCodes.map((code: string, index: number) => (
-                    <Badge key={index} variant="secondary" className="text-xs">
-                      {code}
-                    </Badge>
-                  ))}
+              <div className="border-t pt-4">
+                <h4 className="font-medium text-gray-800 mb-3">Document Actions</h4>
+                <div className="flex flex-wrap gap-3">
+                  <Button 
+                    onClick={() => console.log('Preview SWMS')}
+                    variant="outline"
+                    className="flex items-center gap-2"
+                  >
+                    <Eye className="h-4 w-4" />
+                    Preview Document
+                  </Button>
+                  <Button 
+                    onClick={() => console.log('Download PDF')}
+                    className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
+                  >
+                    <Download className="h-4 w-4" />
+                    Download PDF
+                  </Button>
+                  <Button 
+                    onClick={() => console.log('Save Draft')}
+                    variant="outline"
+                    className="flex items-center gap-2"
+                  >
+                    <Save className="h-4 w-4" />
+                    Save Draft
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-green-200 bg-green-50">
+            <CardHeader>
+              <CardTitle className="text-green-800 flex items-center gap-2">
+                <CheckCircle className="h-5 w-5" />
+                Completion Checklist
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2 text-sm">
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="h-4 w-4 text-green-600" />
+                  <span>Project details completed</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="h-4 w-4 text-green-600" />
+                  <span>Risk assessments generated</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="h-4 w-4 text-green-600" />
+                  <span>Safety measures documented</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="h-4 w-4 text-green-600" />
+                  <span>Legal disclaimer accepted</span>
                 </div>
               </div>
             </CardContent>
