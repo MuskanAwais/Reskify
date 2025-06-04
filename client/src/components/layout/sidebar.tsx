@@ -455,8 +455,8 @@ export default function Sidebar() {
                 <span>Credits Used</span>
                 <span>
                   {subscription?.creditsUsed || 0}/
-                  {subscription?.plan === 'pro' ? 100 : 
-                   subscription?.plan === 'enterprise' ? 200 : 
+                  {subscription?.plan === 'pro' ? 25 : 
+                   subscription?.plan === 'enterprise' ? 60 : 
                    subscription?.creditsTotal || 10}
                 </span>
               </div>
@@ -464,7 +464,7 @@ export default function Sidebar() {
                 <div 
                   className="bg-blue-500 h-2 rounded-full transition-all duration-300" 
                   style={{ 
-                    width: `${((subscription?.creditsUsed || 0) / (subscription?.plan === 'pro' ? 100 : subscription?.plan === 'enterprise' ? 200 : subscription?.creditsTotal || 10)) * 100}%` 
+                    width: `${((subscription?.creditsUsed || 0) / (subscription?.plan === 'pro' ? 25 : subscription?.plan === 'enterprise' ? 60 : subscription?.creditsTotal || 10)) * 100}%` 
                   }}
                 ></div>
               </div>

@@ -11,7 +11,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         billingCycle: "monthly",
         nextBillingDate: "2025-07-04",
         creditsUsed: 15,
-        creditsTotal: 100,
+        creditsTotal: 25,
         features: ["unlimited_swms", "ai_generation", "team_collaboration"]
       });
     } catch (error: any) {
