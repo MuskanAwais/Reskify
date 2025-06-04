@@ -21,7 +21,8 @@ import {
   ChevronDown,
   ChevronUp,
   Layers,
-  Search
+  Search,
+  Wrench
 } from "lucide-react";
 import { SimplifiedTableEditor } from "./simplified-table-editor";
 import SmartTooltip from "@/components/ui/smart-tooltip";
@@ -1071,57 +1072,7 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
                 </Card>
               )}
 
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-base">Add Custom Risk</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="hazard">Hazard Description</Label>
-                      <Input
-                        id="hazard"
-                        placeholder="e.g., Fall from height"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="riskLevel">Risk Level</Label>
-                      <Select>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select risk level" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="low">Low</SelectItem>
-                          <SelectItem value="medium">Medium</SelectItem>
-                          <SelectItem value="high">High</SelectItem>
-                          <SelectItem value="extreme">Extreme</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="responsiblePerson">Responsible Person</Label>
-                      <Input
-                        id="responsiblePerson"
-                        placeholder="e.g., Site Supervisor"
-                      />
-                    </div>
-                    <div className="space-y-2 md:col-span-2">
-                      <Label htmlFor="controlMeasures">Control Measures</Label>
-                      <Textarea
-                        id="controlMeasures"
-                        placeholder="Describe the control measures to mitigate this risk..."
-                        rows={3}
-                      />
-                    </div>
-                    <div className="md:col-span-2">
-                      <Button type="button" className="w-full">
-                        <Plus className="mr-2 h-4 w-4" />
-                        Add Risk Assessment
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+
             </div>
           )}
 
@@ -1199,7 +1150,7 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
         </div>
       );
 
-    case 4:
+    case 3:
       return (
         <div className="space-y-6">
           <Card>
@@ -1320,7 +1271,163 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
         </div>
       );
 
+    case 4:
+      return (
+        <div className="space-y-6">
+          <div className="text-center">
+            <Wrench className="mx-auto h-12 w-12 text-blue-500 mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Plant, Equipment & Training</h3>
+            <p className="text-gray-600 text-sm">
+              Specify required equipment, plant, and training requirements
+            </p>
+          </div>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Equipment & Plant Requirements</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div>
+                  <Label className="text-sm font-medium mb-2 block">Required Equipment</Label>
+                  <Textarea
+                    value={formData.requiredEquipment || ''}
+                    onChange={(e) => updateFormData({ requiredEquipment: e.target.value })}
+                    placeholder="List all equipment required for this work (e.g., scaffolding, power tools, safety harnesses, etc.)"
+                    rows={4}
+                  />
+                </div>
+                <div>
+                  <Label className="text-sm font-medium mb-2 block">Plant & Machinery</Label>
+                  <Textarea
+                    value={formData.plantMachinery || ''}
+                    onChange={(e) => updateFormData({ plantMachinery: e.target.value })}
+                    placeholder="List any plant or machinery to be used (e.g., excavators, cranes, generators, etc.)"
+                    rows={4}
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Training Requirements</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div>
+                  <Label className="text-sm font-medium mb-2 block">Required Licenses & Certifications</Label>
+                  <Textarea
+                    value={formData.trainingRequirements || ''}
+                    onChange={(e) => updateFormData({ trainingRequirements: e.target.value })}
+                    placeholder="List required licenses, certifications, and training (e.g., Working at Heights, Electrical License, First Aid, etc.)"
+                    rows={4}
+                  />
+                </div>
+                <div>
+                  <Label className="text-sm font-medium mb-2 block">Competency Requirements</Label>
+                  <Textarea
+                    value={formData.competencyRequirements || ''}
+                    onChange={(e) => updateFormData({ competencyRequirements: e.target.value })}
+                    placeholder="Describe specific competency requirements and experience needed"
+                    rows={3}
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      );
+
     case 5:
+      return (
+        <div className="space-y-6">
+          <div className="text-center">
+            <AlertTriangle className="mx-auto h-12 w-12 text-red-500 mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Emergency Procedures & Monitoring</h3>
+            <p className="text-gray-600 text-sm">
+              Define emergency procedures, monitoring requirements, and inspection schedules
+            </p>
+          </div>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Emergency Procedures</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div>
+                  <Label className="text-sm font-medium mb-2 block">Emergency Contact Information</Label>
+                  <Textarea
+                    value={formData.emergencyContacts || ''}
+                    onChange={(e) => updateFormData({ emergencyContacts: e.target.value })}
+                    placeholder="Emergency contacts including site supervisor, first aid officer, emergency services numbers"
+                    rows={3}
+                  />
+                </div>
+                <div>
+                  <Label className="text-sm font-medium mb-2 block">Emergency Response Procedures</Label>
+                  <Textarea
+                    value={formData.emergencyProcedures || ''}
+                    onChange={(e) => updateFormData({ emergencyProcedures: e.target.value })}
+                    placeholder="Step-by-step emergency response procedures for incidents, injuries, and evacuations"
+                    rows={4}
+                  />
+                </div>
+                <div>
+                  <Label className="text-sm font-medium mb-2 block">First Aid Requirements</Label>
+                  <Textarea
+                    value={formData.firstAidRequirements || ''}
+                    onChange={(e) => updateFormData({ firstAidRequirements: e.target.value })}
+                    placeholder="First aid kit locations, trained first aid officers, medical facilities nearby"
+                    rows={3}
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Monitoring & Inspection</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div>
+                  <Label className="text-sm font-medium mb-2 block">Inspection Schedule</Label>
+                  <Textarea
+                    value={formData.inspectionSchedule || ''}
+                    onChange={(e) => updateFormData({ inspectionSchedule: e.target.value })}
+                    placeholder="Daily, weekly, or periodic inspection requirements and schedules"
+                    rows={3}
+                  />
+                </div>
+                <div>
+                  <Label className="text-sm font-medium mb-2 block">Monitoring Requirements</Label>
+                  <Textarea
+                    value={formData.monitoringRequirements || ''}
+                    onChange={(e) => updateFormData({ monitoringRequirements: e.target.value })}
+                    placeholder="Ongoing monitoring requirements during work activities"
+                    rows={3}
+                  />
+                </div>
+                <div>
+                  <Label className="text-sm font-medium mb-2 block">Record Keeping</Label>
+                  <Textarea
+                    value={formData.recordKeeping || ''}
+                    onChange={(e) => updateFormData({ recordKeeping: e.target.value })}
+                    placeholder="Documentation and record keeping requirements"
+                    rows={3}
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      );
+
+    case 6:
       return (
         <div className="space-y-6">
           <Card className="border-2 border-red-200">
