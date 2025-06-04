@@ -9,6 +9,13 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
+// Debug logging
+console.log('Firebase Config:', {
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY ? 'Set' : 'Missing',
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID ? 'Set' : 'Missing'
+});
+
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 
