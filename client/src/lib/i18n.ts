@@ -16,7 +16,10 @@ export const SUPPORTED_LANGUAGES: Language[] = [
   { code: 'ja', name: '日本語', flag: '🇯🇵' },
   { code: 'ko', name: '한국어', flag: '🇰🇷' },
   { code: 'ar', name: 'العربية', flag: '🇸🇦' },
-  { code: 'hi', name: 'हिन्दी', flag: '🇮🇳' }
+  { code: 'hi', name: 'हिन्दी', flag: '🇮🇳' },
+  { code: 'nl', name: 'Nederlands', flag: '🇳🇱' },
+  { code: 'sv', name: 'Svenska', flag: '🇸🇪' },
+  { code: 'no', name: 'Norsk', flag: '🇳🇴' }
 ];
 
 export const translations = {
@@ -234,6 +237,57 @@ export const translations = {
     'common.cancel': 'Cancelar',
     'common.confirm': 'Confirmar',
     'common.close': 'Cerrar'
+  },
+  
+  // Dutch translations
+  nl: {
+    'nav.dashboard': 'Dashboard',
+    'nav.swms-builder': 'SWMS Builder',
+    'nav.my-swms': 'Mijn SWMS',
+    'nav.safety-library': 'Veiligheidsbibliotheek',
+    'nav.subscription': 'Abonnement',
+    'swms.title': 'SWMS Builder',
+    'btn.next': 'Volgende',
+    'btn.previous': 'Vorige',
+    'btn.generate': 'Genereer SWMS',
+    'btn.download': 'Download PDF',
+    'common.loading': 'Laden...',
+    'common.error': 'Fout',
+    'common.success': 'Succes'
+  },
+  
+  // Swedish translations
+  sv: {
+    'nav.dashboard': 'Instrumentpanel',
+    'nav.swms-builder': 'SWMS Builder',
+    'nav.my-swms': 'Mina SWMS',
+    'nav.safety-library': 'Säkerhetsbibliotek',
+    'nav.subscription': 'Prenumeration',
+    'swms.title': 'SWMS Builder',
+    'btn.next': 'Nästa',
+    'btn.previous': 'Föregående',
+    'btn.generate': 'Generera SWMS',
+    'btn.download': 'Ladda ner PDF',
+    'common.loading': 'Laddar...',
+    'common.error': 'Fel',
+    'common.success': 'Framgång'
+  },
+  
+  // Norwegian translations
+  no: {
+    'nav.dashboard': 'Dashbord',
+    'nav.swms-builder': 'SWMS Builder',
+    'nav.my-swms': 'Mine SWMS',
+    'nav.safety-library': 'Sikkerhetsbibliotek',
+    'nav.subscription': 'Abonnement',
+    'swms.title': 'SWMS Builder',
+    'btn.next': 'Neste',
+    'btn.previous': 'Forrige',
+    'btn.generate': 'Generer SWMS',
+    'btn.download': 'Last ned PDF',
+    'common.loading': 'Laster...',
+    'common.error': 'Feil',
+    'common.success': 'Suksess'
   }
 };
 

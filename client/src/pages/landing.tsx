@@ -156,8 +156,8 @@ export default function Landing() {
     },
     {
       icon: <Languages className="h-8 w-8" />,
-      title: "12 Languages",
-      description: "Full multi-language support including English, Chinese, Spanish, French, German, Italian, and more."
+      title: "15 Languages",
+      description: "Full multi-language support including English, Chinese, Spanish, French, German, Italian, Portuguese, Russian, Japanese, Korean, Arabic, Hindi, Dutch, Swedish, and Norwegian."
     },
     {
       icon: <Mic className="h-8 w-8" />,
@@ -228,7 +228,7 @@ export default function Landing() {
   const stats = [
     { number: "200+", label: "Construction Tasks", icon: <FileText className="h-6 w-6" /> },
     { number: "50+", label: "Australian Standards", icon: <Shield className="h-6 w-6" /> },
-    { number: "2", label: "Languages Supported", icon: <Globe className="h-6 w-6" /> },
+    { number: "15", label: "Languages Supported", icon: <Globe className="h-6 w-6" /> },
     { number: "AI-Powered", label: "Risk Assessment", icon: <Zap className="h-6 w-6" /> }
   ];
 
