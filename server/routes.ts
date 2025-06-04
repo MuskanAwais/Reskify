@@ -381,32 +381,115 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Trades endpoint for dropdown selection
+  // Trades endpoint with activities for dropdown selection
   app.get("/api/trades", async (req, res) => {
     try {
       const trades = [
-        { name: "Electrical", totalTasks: 1200, primaryTasks: 15 },
-        { name: "Plumbing", totalTasks: 850, primaryTasks: 15 },
-        { name: "Carpentry", totalTasks: 950, primaryTasks: 15 },
-        { name: "Roofing", totalTasks: 400, primaryTasks: 12 },
-        { name: "Concrete Work", totalTasks: 350, primaryTasks: 10 },
-        { name: "Steelwork", totalTasks: 450, primaryTasks: 12 },
-        { name: "Painting", totalTasks: 300, primaryTasks: 8 },
-        { name: "HVAC", totalTasks: 500, primaryTasks: 12 },
-        { name: "Landscaping", totalTasks: 250, primaryTasks: 8 },
-        { name: "Bricklaying", totalTasks: 200, primaryTasks: 8 },
-        { name: "Tiling", totalTasks: 180, primaryTasks: 6 },
-        { name: "Glazing", totalTasks: 150, primaryTasks: 6 },
-        { name: "Flooring", totalTasks: 220, primaryTasks: 8 },
-        { name: "Insulation", totalTasks: 120, primaryTasks: 5 },
-        { name: "Security Systems", totalTasks: 180, primaryTasks: 6 },
-        { name: "Earthworks", totalTasks: 300, primaryTasks: 10 },
-        { name: "Fire Protection", totalTasks: 200, primaryTasks: 8 },
-        { name: "Scaffolding", totalTasks: 150, primaryTasks: 6 },
-        { name: "Communications", totalTasks: 180, primaryTasks: 6 },
-        { name: "Pool Construction", totalTasks: 100, primaryTasks: 5 },
-        { name: "Solar & Renewable", totalTasks: 150, primaryTasks: 6 },
-        { name: "Demolition", totalTasks: 200, primaryTasks: 8 }
+        { 
+          name: "Electrical", 
+          totalTasks: 1200, 
+          primaryTasks: 15,
+          categories: [
+            {
+              name: "Power Installation",
+              isPrimary: true,
+              activities: [
+                "Power outlet installation",
+                "Light switch installation", 
+                "Ceiling fan installation",
+                "Circuit breaker installation",
+                "Electrical meter installation"
+              ],
+              totalActivities: 150
+            },
+            {
+              name: "Wiring & Cabling",
+              isPrimary: true,
+              activities: [
+                "Cable pulling and installation",
+                "Conduit installation",
+                "Junction box installation",
+                "Data cable installation",
+                "Fiber optic installation"
+              ],
+              totalActivities: 200
+            },
+            {
+              name: "Safety Systems",
+              isPrimary: false,
+              activities: [
+                "Emergency lighting installation",
+                "Smoke alarm installation",
+                "Security system installation",
+                "Fire alarm system installation",
+                "CCTV installation"
+              ],
+              totalActivities: 120
+            }
+          ]
+        },
+        { 
+          name: "Plumbing", 
+          totalTasks: 850, 
+          primaryTasks: 15,
+          categories: [
+            {
+              name: "Water Systems",
+              isPrimary: true,
+              activities: [
+                "Water pipe installation",
+                "Toilet installation",
+                "Tap and fixture installation",
+                "Hot water system installation",
+                "Water meter installation"
+              ],
+              totalActivities: 120
+            },
+            {
+              name: "Drainage",
+              isPrimary: true,
+              activities: [
+                "Drain pipe installation",
+                "Sewer line installation",
+                "Stormwater drainage",
+                "Septic system installation",
+                "Grease trap installation"
+              ],
+              totalActivities: 100
+            }
+          ]
+        },
+        { 
+          name: "Carpentry", 
+          totalTasks: 950, 
+          primaryTasks: 15,
+          categories: [
+            {
+              name: "Structural Framing",
+              isPrimary: true,
+              activities: [
+                "Wall framing",
+                "Roof framing", 
+                "Floor framing",
+                "Stud wall construction",
+                "Beam installation"
+              ],
+              totalActivities: 180
+            },
+            {
+              name: "Doors & Windows",
+              isPrimary: true,
+              activities: [
+                "Door installation",
+                "Window installation",
+                "Door frame construction",
+                "Window frame installation",
+                "Hardware installation"
+              ],
+              totalActivities: 120
+            }
+          ]
+        }
       ];
       
       res.json(trades);
