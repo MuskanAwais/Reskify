@@ -199,7 +199,7 @@ export default function SimplifiedTableEditor({ formData, onDataChange }: Simpli
           <Textarea
             value={Array.isArray(editValue) ? editValue.join('\n') : editValue}
             onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey) {
+              if (e.key === 'Enter' && e.ctrlKey) {
                 e.preventDefault();
                 const currentValue = e.currentTarget.value;
                 const lines = currentValue.split('\n').filter(line => line.trim());
@@ -210,8 +210,8 @@ export default function SimplifiedTableEditor({ formData, onDataChange }: Simpli
                 }
               }
             }}
-            onChange={(e) => setEditValue(e.target.value.split('\n').filter(Boolean))}
-            placeholder="Enter items, one per line"
+            onChange={(e) => setEditValue(e.target.value)}
+            placeholder="Enter items, one per line. Press Ctrl+Enter to save."
             className="min-h-[80px]"
           />
           <div className="flex gap-2">
@@ -266,8 +266,9 @@ export default function SimplifiedTableEditor({ formData, onDataChange }: Simpli
                 <ul className="space-y-1">
                   <li>• Click any field to edit content directly</li>
                   <li>• For lists (hazards, controls), add one item per line</li>
-                  <li>• Press <kbd className="px-1 py-0.5 bg-white border rounded text-xs">Enter</kbd> to save changes</li>
+                  <li>• Press <kbd className="px-1 py-0.5 bg-white border rounded text-xs">Ctrl+Enter</kbd> to save changes</li>
                   <li>• Press <kbd className="px-1 py-0.5 bg-white border rounded text-xs">Escape</kbd> to cancel</li>
+                  <li>• Use <kbd className="px-1 py-0.5 bg-white border rounded text-xs">Enter</kbd> for new lines in text areas</li>
                 </ul>
               </div>
               <div>

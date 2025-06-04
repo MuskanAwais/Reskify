@@ -369,32 +369,6 @@ export async function generateProtectedPDF(document: SwmsDocument, user: User | 
       });
 
       yPosition = (pdf as any).lastAutoTable.finalY + 20;
-
-      pdf.autoTable({
-        startY: yPosition,
-        head: [['Hazard', 'Risk Level', 'Control Measures', 'Responsible Person']],
-        body: riskData,
-        theme: 'grid',
-        headStyles: { fillColor: [21, 101, 192] },
-        margin: { left: 20, right: 20 },
-        columnStyles: {
-          0: { cellWidth: 40 },
-          1: { cellWidth: 25 },
-          2: { cellWidth: 60 },
-          3: { cellWidth: 35 }
-        },
-        didParseCell: function(data) {
-          if (data.column.index === 1 && data.section === 'body') {
-            const riskLevel = data.cell.text[0];
-            const color = getRiskColor(riskLevel);
-            data.cell.styles.fillColor = color;
-            data.cell.styles.textColor = [255, 255, 255];
-            data.cell.styles.fontStyle = 'bold';
-          }
-        }
-      });
-
-      yPosition = (pdf as any).lastAutoTable.finalY + 20;
     }
 
     // Safety Measures Section
