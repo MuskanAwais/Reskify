@@ -258,6 +258,30 @@ export default function SimplifiedTableEditor({ formData, onDataChange }: Simpli
           </Button>
         </CardHeader>
         <CardContent>
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+            <div className="text-sm text-blue-800 font-medium mb-2">How to Edit Risk Assessment Table:</div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-blue-700">
+              <div>
+                <div className="font-medium mb-1">Editing Existing Risks:</div>
+                <ul className="space-y-1">
+                  <li>• Click any field to edit content directly</li>
+                  <li>• For lists (hazards, controls), add one item per line</li>
+                  <li>• Press <kbd className="px-1 py-0.5 bg-white border rounded text-xs">Enter</kbd> to save changes</li>
+                  <li>• Press <kbd className="px-1 py-0.5 bg-white border rounded text-xs">Escape</kbd> to cancel</li>
+                </ul>
+              </div>
+              <div>
+                <div className="font-medium mb-1">Adding New Content:</div>
+                <ul className="space-y-1">
+                  <li>• Use "Add Risk Assessment" button for new activities</li>
+                  <li>• Risk scores: 1-6 (Very Low to Extreme)</li>
+                  <li>• Control measures should follow safety hierarchy</li>
+                  <li>• Include specific PPE and training requirements</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
           {riskAssessments.length === 0 ? (
             <div className="text-center py-12 border-2 border-dashed border-gray-300 rounded-lg">
               <Shield className="mx-auto h-12 w-12 text-gray-400 mb-4" />
