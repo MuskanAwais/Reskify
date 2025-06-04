@@ -435,7 +435,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Generate final SWMS document
   app.post("/api/swms", async (req, res) => {
     try {
-      const { formData } = req.body;
+      console.log('Raw request body:', JSON.stringify(req.body, null, 2));
+      const formData = req.body.formData || req.body;
+      
+      if (!formData) {
+        return res.status(400).json({ 
+          success: false, 
+          message: "No form data provided" 
+        });
+      }
       
       console.log('Creating SWMS with data:', JSON.stringify(formData, null, 2));
       

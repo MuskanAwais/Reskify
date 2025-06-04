@@ -1221,117 +1221,28 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
 
           <Card>
             <CardHeader>
-              <CardTitle>Applicable Safety Codes</CardTitle>
+              <CardTitle>Site Access & Permits</CardTitle>
             </CardHeader>
-            <CardContent>
-              <p className="text-sm text-gray-600 mb-4">Select safety codes and compliance requirements that apply to your project</p>
-              
-              {/* Trade-specific recommended codes */}
-              {formData.tradeType && (
-                <div className="space-y-4 mb-6">
-                  <h4 className="font-medium text-gray-800 flex items-center gap-2">
-                    <Shield className="h-4 w-4 text-blue-500" />
-                    Recommended for {formData.tradeType}
-                  </h4>
-                  <div className="grid gap-3">
-                    {getTradeSpecificCodes(formData.tradeType).map((code: string) => {
-                      const safetyItem = safetyLibrary?.find((item: any) => item.code === code);
-                      return (
-                        <div key={code} className="flex items-start space-x-3 p-3 border rounded-lg bg-blue-50 border-blue-200">
-                          <Checkbox
-                            checked={formData.complianceCodes.includes(code)}
-                            onCheckedChange={(checked) => {
-                              if (checked) {
-                                addArrayItem('complianceCodes', code);
-                              } else {
-                                const index = formData.complianceCodes.indexOf(code);
-                                if (index > -1) removeArrayItem('complianceCodes', index);
-                              }
-                            }}
-                            className="mt-1"
-                          />
-                          <div className="flex-1">
-                            <p className="font-medium text-sm text-blue-800">{code}</p>
-                            {safetyItem && (
-                              <p className="text-xs text-blue-600 mt-1">{safetyItem.title}</p>
-                            )}
-                          </div>
-                          <Badge variant="secondary" className="text-xs">Recommended</Badge>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-              
-              {/* General Safety Codes */}
+            <CardContent className="space-y-4">
               <div>
-                <h4 className="font-medium text-gray-800 mb-3 flex items-center gap-2">
-                  <FileText className="h-4 w-4 text-gray-500" />
-                  All Available Safety Codes
-                </h4>
-                <div className="mb-3">
-                  <Input
-                    placeholder="Search safety codes..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="max-w-md"
-                  />
-                </div>
-                <div className="grid gap-3 max-h-96 overflow-y-auto">
-                  {safetyLibrary
-                    ?.filter((item: any) => 
-                      item.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                      item.title.toLowerCase().includes(searchTerm.toLowerCase())
-                    )
-                    .map((item: any) => (
-                    <div key={item.code} className="flex items-start space-x-3 p-3 border rounded-lg hover:bg-gray-50">
-                      <Checkbox
-                        checked={formData.complianceCodes.includes(item.code)}
-                        onCheckedChange={(checked) => {
-                          if (checked) {
-                            addArrayItem('complianceCodes', item.code);
-                          } else {
-                            const index = formData.complianceCodes.indexOf(item.code);
-                            if (index > -1) removeArrayItem('complianceCodes', index);
-                          }
-                        }}
-                        className="mt-1"
-                      />
-                      <div className="flex-1">
-                        <p className="font-medium text-sm">{item.code}</p>
-                        <p className="text-xs text-gray-600 mt-1">{item.title}</p>
-                        {item.description && (
-                          <p className="text-xs text-gray-500 mt-1">{item.description}</p>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                <Label className="text-sm font-medium">Required Permits</Label>
+                <Textarea
+                  value={formData.requiredPermits || ''}
+                  onChange={(e) => setFormData(prev => ({ ...prev, requiredPermits: e.target.value }))}
+                  placeholder="List any permits required for this work (e.g., hot work permit, confined space permit, electrical work permit)"
+                  className="mt-2 min-h-[100px]"
+                />
               </div>
               
-              {/* Selected codes summary */}
-              {formData.complianceCodes.length > 0 && (
-                <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-                  <h5 className="font-medium text-green-800 mb-2">Selected Codes ({formData.complianceCodes.length})</h5>
-                  <div className="flex flex-wrap gap-2">
-                    {formData.complianceCodes.map((code: string, index: number) => (
-                      <Badge key={index} variant="outline" className="text-xs bg-white">
-                        {code}
-                        <button
-                          onClick={() => {
-                            const codeIndex = formData.complianceCodes.indexOf(code);
-                            if (codeIndex > -1) removeArrayItem('complianceCodes', codeIndex);
-                          }}
-                          className="ml-1 text-red-500 hover:text-red-700"
-                        >
-                          ×
-                        </button>
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              )}
+              <div>
+                <Label className="text-sm font-medium">Site Access Requirements</Label>
+                <Textarea
+                  value={formData.siteAccess || ''}
+                  onChange={(e) => setFormData(prev => ({ ...prev, siteAccess: e.target.value }))}
+                  placeholder="Describe site access requirements, restrictions, and safety protocols"
+                  className="mt-2 min-h-[100px]"
+                />
+              </div>
             </CardContent>
           </Card>
         </div>
