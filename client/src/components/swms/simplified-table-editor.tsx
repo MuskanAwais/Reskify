@@ -203,8 +203,11 @@ export default function SimplifiedTableEditor({ formData, onDataChange }: Simpli
                 e.preventDefault();
                 const currentValue = e.currentTarget.value;
                 const lines = currentValue.split('\n').filter(line => line.trim());
-                setEditValue(lines);
-                handleSave();
+                if (lines.length > 0) {
+                  setEditValue(lines);
+                  onSave(lines);
+                  setIsEditing(false);
+                }
               }
             }}
             onChange={(e) => setEditValue(e.target.value.split('\n').filter(Boolean))}

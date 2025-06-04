@@ -643,7 +643,7 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
                         </span>
                       </div>
                       <div className="text-xs text-gray-500">
-                        SWMS will auto-generate when you proceed to next step
+                        Risk assessments auto-generated below
                       </div>
                     </div>
                     
@@ -784,6 +784,24 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
               </Card>
 
               {formData.riskAssessments && formData.riskAssessments.length > 0 && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-base">Risk Assessment Table</CardTitle>
+                    <p className="text-sm text-gray-600">
+                      Review and customize the AI-generated risk assessments. Click on any cell to edit directly.
+                    </p>
+                  </CardHeader>
+                  <CardContent>
+                    <SimplifiedTableEditor 
+                      formData={formData} 
+                      onDataChange={onDataChange}
+                    />
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Legacy risk display for reference */}
+              {false && formData.riskAssessments && formData.riskAssessments.length > 0 && (
                 <Card>
                   <CardHeader>
                     <CardTitle className="text-base">Identified Risks</CardTitle>
