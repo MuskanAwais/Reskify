@@ -1119,8 +1119,8 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
                     Recommended for {formData.tradeType}
                   </h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                    {safetyLibrary
-                      ?.filter((code: any) => code.applicableTrades?.includes(formData.tradeType))
+                    {safetyLibrary?.documents
+                      ?.filter((code: any) => code.applicableIndustries?.includes(formData.tradeType))
                       .slice(0, 9)
                       .map((code: any) => (
                         <div key={code.id} className="flex items-start space-x-2 p-3 border border-gray-200 rounded-lg hover:bg-gray-50">

@@ -1,0 +1,81 @@
+Trade,Activity,Complexity,Initial Risk Rating,Specific Hazard / Risk Description,Control Measures (Hierarchy Aligned),Residual Risk Rating,PPE,Permits Required,Legislation / Codes / Standards
+Electrical,Install light fittings,Medium,High,"Electric shock from live wiring
+
+Falling from ladder
+
+Eye injury from debris","Isolate power at switchboard and verify with tester
+
+Use insulated tools and PPE
+
+Work in teams of two where possible
+
+Use platform ladder with safety feet",Medium,"Insulated gloves, safety glasses, hard hat",Electrical isolation permit,"""AS/NZS 3000, Safe Work NSW CoP - Electrical Risks"""
+Plumbing,Install water heater,High,Extreme,"Burns from hot water or steam
+
+Manual handling injury
+
+Gas leak/explosion hazard","Allow system to cool before handling
+
+Use lifting trolleys or team lift
+
+Check gas lines with approved detection spray",High,"Thermal gloves, safety boots, goggles","Hot works, plumbing compliance","""AS 5601, AS 3500.4"""
+Carpentry,Frame internal walls,Medium,High,"Nail gun injury
+
+Trip hazards from offcuts
+
+Exposure to dust","Use nail guns with sequential trigger
+
+Maintain clean, clear work area
+
+Wear dust mask when cutting",Medium,"Eye protection, ear muffs, dust mask",None,"""AS 1684, Safe Work NSW CoP - Construction Work"""
+Cleaning,Final builder's clean,Low,Medium,"Slips on wet floors
+
+Exposure to cleaning chemicals","Display wet floor signs
+
+Use low-toxicity, labelled cleaning products",Low,"Rubber gloves, non-slip footwear",None,"""Safe Work NSW CoP - Hazardous Manual Tasks"""
+Glazing,Install fixed glass panel,High,Extreme,"Glass breakage causing laceration
+
+Manual handling strain
+
+Dropped object","Use mechanical lifting aids
+
+Store glass vertically with bracing
+
+Wear cut-resistant gloves",High,"Cut-resistant gloves, steel-capped boots, safety glasses",Manual handling permit (site-specific),"""AS 1288-2006, AS 1336"""
+Signage & Decals,Install wall graphics,Low,Medium,"Ladder fall
+
+Solvent inhalation","Use platform ladders on stable ground
+
+Ensure good ventilation when using adhesives",Low,"Safety boots, mask if spraying",None,"""AS 1657, SWA CoP - Working at Heights"""
+HVAC,Install ceiling-mounted air conditioning unit,High,Extreme,"Overhead load drop
+
+Electrical contact
+
+Fall through ceiling grid","Secure load with certified lifting equipment
+
+Isolate circuits and confirm de-energisation
+
+Use scaffold for access above ceiling grid",High,"Hard hat, gloves, harness","Hot works, electrical isolation","""AS 1668.2-2012, AS 3000"""
+Partitions,Install aluminium framed glazed partitions,Medium,High,"Lifting injury
+
+Sharp edge cuts
+
+Glass breakage","Team lift with dolly assistance
+
+Deburr edges prior to install
+
+Use laminated or toughened glass only",Medium,"Cut gloves, boots, safety eyewear",None,"""AS 1288, Safe Work NSW CoP - Manual Handling"""
+Tiling,Install floor tiles,Medium,High,"Kneeling strain
+
+Cement dust inhalation
+
+Sharp tools","Use kneepads and take frequent breaks
+
+Mix grout in ventilated space
+
+Store tools in toolbox when not in use",Medium,"Dust mask, gloves, knee pads",None,"""AS 3958.1, SWA CoP - Hazardous Substances"""
+Blinds & Curtains,Install ceiling-mounted blinds,Low,Medium,"Ladder fall
+
+Drill-related hand injury","Use stable platform ladder
+
+Use drill with clutch and side handle",Low,"Gloves, safety glasses",None,"""AS 1657"""

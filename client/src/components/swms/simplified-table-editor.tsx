@@ -388,7 +388,7 @@ export function SimplifiedTableEditor({ riskAssessments = [], onUpdate, tradeTyp
                       <div>
                         <label className="text-sm font-medium mb-2 block">Hazards</label>
                         <ArrayEditor
-                          items={assessment.hazards}
+                          items={assessment.hazards || ['']}
                           setItems={(items) => updateAssessment(assessment.id, { hazards: items })}
                           placeholder="Hazard description"
                           type="textarea"
@@ -397,7 +397,7 @@ export function SimplifiedTableEditor({ riskAssessments = [], onUpdate, tradeTyp
                       <div>
                         <label className="text-sm font-medium mb-2 block">Control Measures</label>
                         <ArrayEditor
-                          items={assessment.controlMeasures}
+                          items={assessment.controlMeasures || ['']}
                           setItems={(items) => updateAssessment(assessment.id, { controlMeasures: items })}
                           placeholder="Control measure description"
                           type="textarea"
