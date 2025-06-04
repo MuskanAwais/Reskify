@@ -28,6 +28,8 @@ import Logo from "@/components/ui/logo";
 import logoImage from "@assets/Untitled design-2.png";
 import { useFirebaseAuth } from "@/hooks/useFirebaseAuth";
 import { useToast } from "@/hooks/use-toast";
+import { EnhancedTooltip } from "@/components/ui/tooltip-enhanced";
+import { FeatureWalkthrough, useFeatureWalkthrough } from "@/components/ui/feature-walkthrough";
 
 const AnimatedSection = ({ children, className = "", delay = 0 }: any) => {
   const ref = React.useRef<HTMLDivElement>(null);
