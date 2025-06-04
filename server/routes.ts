@@ -384,73 +384,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Trades endpoint with activities for dropdown selection
   app.get("/api/trades", async (req, res) => {
     try {
-      const trades = [
-        { 
-          name: "Electrical", 
-          totalTasks: 1200, 
-          primaryTasks: 15,
-          categories: [
-            {
-              name: "Power Installation",
-              isPrimary: true,
-              activities: [
-                "Power outlet installation",
-                "Light switch installation", 
-                "Ceiling fan installation",
-                "Circuit breaker installation",
-                "Electrical meter installation"
-              ],
-              totalActivities: 150
-            },
-            {
-              name: "Wiring & Cabling",
-              isPrimary: true,
-              activities: [
-                "Cable pulling and installation",
-                "Conduit installation",
-                "Junction box installation",
-                "Data cable installation",
-                "Fiber optic installation"
-              ],
-              totalActivities: 200
-            }
-          ]
-        },
-        { 
-          name: "Plumbing", 
-          totalTasks: 850, 
-          primaryTasks: 15,
-          categories: [
-            {
-              name: "Water Systems",
-              isPrimary: true,
-              activities: [
-                "Water pipe installation",
-                "Toilet installation",
-                "Tap and fixture installation",
-                "Hot water system installation",
-                "Water meter installation"
-              ],
-              totalActivities: 120
-            },
-            {
-              name: "Drainage",
-              isPrimary: true,
-              activities: [
-                "Drain pipe installation",
-                "Sewer line installation",
-                "Stormwater drainage",
-                "Septic system installation",
-                "Grease trap installation"
-              ],
-              totalActivities: 100
-            }
-          ]
-        },
-        { 
-          name: "Carpentry", 
-          totalTasks: 950, 
-          primaryTasks: 15,
+      // Import comprehensive trades data
+      const { COMPREHENSIVE_TRADES_DATA } = await import('./comprehensive-trades-data');
+      
+      // Convert comprehensive trades data to API format
+      const trades = Object.keys(COMPREHENSIVE_TRADES_DATA).map(tradeName => {
+        const tradeData = COMPREHENSIVE_TRADES_DATA[tradeName];
+        const categories = Object.keys(tradeData).map(categoryName => {
+          const activities = tradeData[categoryName];
+          return {
+            name: categoryName,
+            isPrimary: categoryName === "Primary Tasks",
+            activities: activities,
+            totalActivities: activities.length
+          };
+        });
+        
+        const totalTasks = categories.reduce((sum, cat) => sum + cat.totalActivities, 0);
+        const primaryTasks = categories.find(cat => cat.isPrimary)?.totalActivities || 0;
+        
+        return {
+          name: tradeName,
+          totalTasks: totalTasks,
+          primaryTasks: primaryTasks,
+          categories: categories
+        };
+      });
+      
+      res.json(trades);
+    } catch (error: any) {
+      console.error('Get trades error:', error);
+      res.status(500).json({ message: 'Failed to fetch trades' });
+    }
+  });
+
+  // Save SWMS draft endpoint
           categories: [
             {
               name: "Structural Framing",
