@@ -302,7 +302,7 @@ export default function Sidebar() {
         <Separator className="mb-6" />
 
         {/* Navigation */}
-        <nav className="space-y-2">
+        <nav className="space-y-2" data-tour="navigation">
           <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
             Navigation
           </h3>
@@ -318,6 +318,7 @@ export default function Sidebar() {
             return (
               <Link key={item.href} href={item.href}>
                 <Button
+                  data-tour={item.href === "/team-collaboration" ? "team-tab" : undefined}
                   variant="ghost"
                   className={`w-full justify-start ${
                     isActive 
@@ -402,6 +403,14 @@ export default function Sidebar() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Tour Component */}
+      <Tour 
+        steps={tourSteps}
+        isActive={showTour}
+        onComplete={completeTour}
+        onSkip={skipTour}
+      />
     </aside>
   );
 }
