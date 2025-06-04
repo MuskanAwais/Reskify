@@ -336,11 +336,11 @@ export default function Billing() {
                 <div className="grid grid-cols-2 gap-2">
                   <Button onClick={() => purchaseCredits(5)} variant="outline" size="sm">
                     <Plus className="w-4 h-4 mr-1" />
-                    +5 Credits ($50)
+                    5 Credits ($50)
                   </Button>
                   <Button onClick={() => purchaseCredits(10)} variant="outline" size="sm">
                     <Plus className="w-4 h-4 mr-1" />
-                    +10 Credits ($90)
+                    10 Credits ($90)
                   </Button>
                 </div>
               </CardContent>
