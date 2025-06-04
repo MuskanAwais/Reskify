@@ -449,17 +449,19 @@ export default function Landing() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {features.map((feature, index) => (
               <FloatingCard key={index} delay={index * 0.1}>
-                <Card className="h-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-white to-blue-50/30">
-                  <CardHeader>
-                    <div className="text-blue-600 mb-4">
-                      {feature.icon}
-                    </div>
-                    <CardTitle className="text-xl">{feature.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-gray-600">{feature.description}</p>
-                  </CardContent>
-                </Card>
+                <EnhancedTooltip content={`Learn more about ${feature.title}: ${feature.description}`} side="top">
+                  <Card className="h-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-white to-blue-50/30 cursor-pointer">
+                    <CardHeader>
+                      <div className="text-blue-600 mb-4">
+                        {feature.icon}
+                      </div>
+                      <CardTitle className="text-xl">{feature.title}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-gray-600">{feature.description}</p>
+                    </CardContent>
+                  </Card>
+                </EnhancedTooltip>
               </FloatingCard>
             ))}
           </div>
@@ -483,10 +485,11 @@ export default function Landing() {
           <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {pricing.map((plan, index) => (
               <FloatingCard key={index} delay={index * 0.15}>
-                <Card className={`h-full relative ${
-                  plan.trial ? 'border-green-500 border-2 bg-gradient-to-br from-green-50 to-white' :
-                  plan.popular ? 'border-blue-500 border-2 scale-105' : 'border-gray-200'
-                } shadow-lg`}>
+                <EnhancedTooltip content={`${plan.name} plan includes: ${plan.features.join(', ')}. Perfect for ${plan.name === 'Free Trial' ? 'trying our platform' : plan.name === 'Pro' ? 'small to medium teams' : 'large enterprises'}.`} side="top">
+                  <Card className={`h-full relative cursor-pointer ${
+                    plan.trial ? 'border-green-500 border-2 bg-gradient-to-br from-green-50 to-white' :
+                    plan.popular ? 'border-blue-500 border-2 scale-105' : 'border-gray-200'
+                  } shadow-lg hover:shadow-xl transition-all duration-300`}>
                   {plan.trial && (
                     <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                       <Badge className="bg-green-600 text-white px-4 py-1">
@@ -538,6 +541,7 @@ export default function Landing() {
                     </Link>
                   </CardContent>
                 </Card>
+                </EnhancedTooltip>
               </FloatingCard>
             ))}
           </div>
