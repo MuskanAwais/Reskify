@@ -436,28 +436,84 @@ export const ACTIVITY_RISK_DATABASE = {
 import { getTasksByTrade, getUniversalTasks, searchMegaTasks, MEGA_CONSTRUCTION_DATABASE } from './mega-construction-database';
 
 export async function generateAutoSwms(activities: string[], tradeType: string) {
-  const risks: any[] = [];
+  const riskAssessments: any[] = [];
   const safetyMeasures: any[] = [];
   const complianceCodes: string[] = [];
 
+  console.log('Generating auto SWMS for activities:', activities);
+  console.log('Trade type:', tradeType);
+
   // Process each selected activity
   for (const activity of activities) {
+    // First try exact match from activity database
     const activityData = ACTIVITY_RISK_DATABASE[activity as keyof typeof ACTIVITY_RISK_DATABASE];
     
     if (activityData) {
-      // Add risks for this activity
-      risks.push(...activityData.risks);
+      // Convert risks to risk assessments format
+      activityData.risks.forEach((risk: any) => {
+        riskAssessments.push({
+          id: `risk-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          activity: activity,
+          hazards: [risk.hazard],
+          initialRiskScore: risk.riskLevel === 'high' ? 9 : risk.riskLevel === 'medium' ? 6 : 3,
+          riskLevel: risk.riskLevel,
+          controlMeasures: risk.controlMeasures,
+          legislation: risk.complianceCodes,
+          residualRiskScore: risk.riskLevel === 'high' ? 4 : risk.riskLevel === 'medium' ? 3 : 2,
+          residualRiskLevel: risk.riskLevel === 'high' ? 'medium' : 'low',
+          responsible: risk.responsiblePerson,
+          ppe: ["Hard hat", "Safety boots", "High-vis vest"],
+          trainingRequired: ["Site induction", "Task-specific training"],
+          permitRequired: risk.riskLevel === 'high' ? ["Work permit", "Risk assessment"] : [],
+          inspectionFrequency: "Daily",
+          emergencyProcedures: ["Stop work immediately", "Report to supervisor", "Evacuate if necessary"],
+          environmentalControls: ["Minimize dust", "Proper waste disposal"]
+        });
+      });
       
       // Add safety measures for this activity
       safetyMeasures.push(...activityData.safetyMeasures);
       
       // Collect compliance codes
-      activityData.risks.forEach(risk => {
+      activityData.risks.forEach((risk: any) => {
         risk.complianceCodes.forEach((code: string) => {
           if (!complianceCodes.includes(code)) {
             complianceCodes.push(code);
           }
         });
+      });
+    } else {
+      // Generate generic risk assessment for unknown activities
+      riskAssessments.push({
+        id: `risk-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        activity: activity,
+        hazards: ["Manual handling injuries", "Slip, trip and fall hazards", "Tool-related injuries"],
+        initialRiskScore: 6,
+        riskLevel: "medium",
+        controlMeasures: [
+          "Follow safe work procedures",
+          "Use appropriate personal protective equipment",
+          "Ensure proper training before commencing work",
+          "Maintain clean and organized work area"
+        ],
+        legislation: getTradeSpecificCodes(tradeType),
+        residualRiskScore: 3,
+        residualRiskLevel: "low",
+        responsible: "Site Supervisor",
+        ppe: ["Hard hat", "Safety boots", "High-vis vest", "Safety glasses"],
+        trainingRequired: ["Site induction", "Task-specific training"],
+        permitRequired: [],
+        inspectionFrequency: "Daily",
+        emergencyProcedures: ["Stop work immediately", "Report to supervisor", "Seek first aid if required"],
+        environmentalControls: ["Minimize environmental impact", "Proper waste disposal"]
+      });
+
+      // Add generic safety measures
+      safetyMeasures.push({
+        category: "General Safety",
+        measures: ["Conduct pre-work safety briefing", "Maintain situational awareness", "Follow emergency procedures"],
+        equipment: ["First aid kit", "Fire extinguisher", "Emergency contact list"],
+        procedures: ["Daily safety checks", "Incident reporting", "Regular safety meetings"]
       });
     }
   }
@@ -470,8 +526,12 @@ export async function generateAutoSwms(activities: string[], tradeType: string) 
     }
   });
 
+  console.log('Generated risk assessments count:', riskAssessments.length);
+  console.log('Generated safety measures count:', safetyMeasures.length);
+  console.log('Generated compliance codes count:', complianceCodes.length);
+
   return {
-    risks,
+    riskAssessments,
     safetyMeasures,
     complianceCodes
   };
