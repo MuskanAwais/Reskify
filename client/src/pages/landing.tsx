@@ -324,21 +324,33 @@ export default function Landing() {
               </div>
 
               {/* Secondary Actions */}
-              <div className="w-full flex flex-col sm:flex-row gap-3">
-                <Link href="/auth" className="flex-1">
-                  <Button 
-                    variant="outline" 
-                    size="lg" 
-                    className="w-full border-blue-600 text-blue-600 hover:bg-blue-50 px-6 py-3"
-                  >
-                    <Lock className="mr-2 h-4 w-4" />
-                    Sign In
-                  </Button>
-                </Link>
+              <div className="w-full flex flex-col gap-3">
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Link href="/auth" className="flex-1">
+                    <Button 
+                      variant="outline" 
+                      size="lg" 
+                      className="w-full border-blue-600 text-blue-600 hover:bg-blue-50 px-6 py-3"
+                    >
+                      <Lock className="mr-2 h-4 w-4" />
+                      Sign In
+                    </Button>
+                  </Link>
+                  <Link href="/register" className="flex-1">
+                    <Button 
+                      variant="outline" 
+                      size="lg" 
+                      className="w-full border-green-600 text-green-600 hover:bg-green-50 px-6 py-3"
+                    >
+                      <Users className="mr-2 h-4 w-4" />
+                      Sign Up
+                    </Button>
+                  </Link>
+                </div>
                 <Button 
                   variant="outline" 
                   size="lg" 
-                  className="flex-1 border-gray-300 px-6 py-3" 
+                  className="w-full border-gray-300 px-6 py-3" 
                   onClick={() => {
                     document.getElementById('demo-video')?.scrollIntoView({ behavior: 'smooth' });
                   }}
