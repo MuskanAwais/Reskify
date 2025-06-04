@@ -98,7 +98,9 @@ export default function Header() {
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <ContactForm />
+                <div data-tour="contact-support">
+                  <ContactForm />
+                </div>
                 <DropdownMenuSeparator />
                 <Link href="/profile">
                   <DropdownMenuItem>

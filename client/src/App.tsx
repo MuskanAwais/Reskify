@@ -8,6 +8,7 @@ import Header from "@/components/layout/header";
 import Sidebar from "@/components/layout/sidebar";
 import OnboardingTour from "@/components/ui/onboarding-tour";
 import { useTranslation } from "@/lib/i18n";
+import Watermark from "@/components/ui/watermark";
 import Dashboard from "@/pages/dashboard";
 import SwmsBuilder from "@/pages/swms-builder";
 import Profile from "@/pages/profile";
