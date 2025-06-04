@@ -70,6 +70,7 @@ export default function Landing() {
   const { user, isLoading, signIn } = useFirebaseAuth();
   const { toast } = useToast();
   const [, setLocation] = useLocation();
+  const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
 
   // Redirect to dashboard when user is authenticated
   useEffect(() => {
