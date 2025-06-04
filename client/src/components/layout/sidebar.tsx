@@ -451,13 +451,10 @@ export default function Sidebar() {
               {subscription?.plan ? subscription.plan.charAt(0).toUpperCase() + subscription.plan.slice(1) + " Plan" : "Basic Plan"}
             </p>
             <div className="text-xs text-slate-600">
-              <div className="flex justify-between mb-1">
+              <div className="flex justify-between items-center mb-1">
                 <span>Credits Used</span>
-                <span>
-                  {subscription?.creditsUsed || 0}/
-                  {subscription?.plan === 'pro' ? 25 : 
-                   subscription?.plan === 'enterprise' ? 60 : 
-                   subscription?.creditsTotal || 10}
+                <span className="font-medium">
+                  {subscription?.creditsUsed || 0}/{subscription?.plan === 'pro' ? 25 : subscription?.plan === 'enterprise' ? 60 : subscription?.creditsTotal || 10}
                 </span>
               </div>
               <div className="w-full bg-slate-200 rounded-full h-2">
