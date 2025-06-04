@@ -218,6 +218,14 @@ export default function Billing() {
     }
   };
 
+  const shouldShowButton = (planName: string) => {
+    const currentTier = getCurrentPlanTier(billingData.currentPlan);
+    const planTier = getCurrentPlanTier(planName);
+    
+    // Show button for current plan (disabled) or higher tiers only
+    return planName === billingData.currentPlan || planTier > currentTier;
+  };
+
   const calculateProgress = () => {
     return (billingData.creditsUsedThisMonth / billingData.monthlyLimit) * 100;
   };
@@ -418,14 +426,16 @@ export default function Billing() {
                         ))}
                       </ul>
 
-                      <Button
-                        className="w-full"
-                        variant={plan.name === billingData.currentPlan ? "outline" : "default"}
-                        onClick={() => upgradePlan(plan.name)}
-                        disabled={plan.name === billingData.currentPlan}
-                      >
-                        {getButtonText(plan.name)}
-                      </Button>
+                      {shouldShowButton(plan.name) && (
+                        <Button
+                          className="w-full"
+                          variant={plan.name === billingData.currentPlan ? "outline" : "default"}
+                          onClick={() => upgradePlan(plan.name)}
+                          disabled={plan.name === billingData.currentPlan}
+                        >
+                          {getButtonText(plan.name)}
+                        </Button>
+                      )}
                     </div>
                   </div>
                 ))}

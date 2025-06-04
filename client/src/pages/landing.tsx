@@ -325,13 +325,14 @@ export default function Landing() {
 
               {/* Secondary Actions */}
               <div className="w-full flex flex-col sm:flex-row gap-3">
-                <Link href="/register" className="flex-1">
+                <Link href="/auth" className="flex-1">
                   <Button 
                     variant="outline" 
                     size="lg" 
                     className="w-full border-blue-600 text-blue-600 hover:bg-blue-50 px-6 py-3"
                   >
-                    Create Account
+                    <Lock className="mr-2 h-4 w-4" />
+                    Sign In
                   </Button>
                 </Link>
                 <Button 
