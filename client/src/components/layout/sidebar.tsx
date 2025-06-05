@@ -225,11 +225,11 @@ export default function Sidebar() {
   });
 
   const navigationItems = [
-    { icon: Home, label: "Dashboard", href: "/dashboard", tourId: "dashboard-link" },
-    { icon: FileText, label: "My SWMS", href: "/my-swms", tourId: "my-swms-link" },
+    { icon: Home, labelKey: "nav.dashboard", href: "/dashboard", tourId: "dashboard-link" },
+    { icon: FileText, labelKey: "nav.my-swms", href: "/my-swms", tourId: "my-swms-link" },
     { 
       icon: Book, 
-      label: "Safety Library", 
+      labelKey: "nav.safety-library", 
       href: "/safety-library",
       requiresAccess: true,
       hasAccess: subscription?.features?.safetyLibrary || adminMode,
@@ -237,15 +237,15 @@ export default function Sidebar() {
     },
     { 
       icon: Users, 
-      label: "Team", 
+      labelKey: "nav.team", 
       href: "/team-collaboration",
       requiresAccess: true,
       hasAccess: subscription?.plan === "Enterprise" || adminMode || enterpriseMode,
       badge: subscription?.plan === "Enterprise" || enterpriseMode ? "Enterprise" : null,
       tourId: "team-tab"
     },
-    { icon: BarChart3, label: "Analytics", href: "/analytics", tourId: "analytics-link" },
-    { icon: User, label: "Account", href: "/billing", tourId: "account-link" }
+    { icon: BarChart3, labelKey: "nav.analytics", href: "/analytics", tourId: "analytics-link" },
+    { icon: User, labelKey: "nav.account", href: "/billing", tourId: "account-link" }
   ];
 
   const innovativeFeatures = [
@@ -392,7 +392,7 @@ export default function Sidebar() {
                   }`}
                 >
                   <Icon className="mr-3 h-4 w-4" />
-                  {item.label}
+                  {translate(item.labelKey)}
                   {item.badge && (
                     <Badge variant="secondary" className="ml-auto text-xs bg-purple-100 text-purple-800">
                       {item.badge}

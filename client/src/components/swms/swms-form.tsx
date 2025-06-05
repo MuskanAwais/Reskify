@@ -29,7 +29,7 @@ import {
   CheckCircle
 } from "lucide-react";
 import { SimplifiedTableEditor } from "./simplified-table-editor";
-import { useLanguage } from "@/lib/language-context";
+import { translate } from "@/lib/language-direct";
 import SmartTooltip from "@/components/ui/smart-tooltip";
 import QuickActionTooltip, { presetTooltips } from "@/components/ui/quick-action-tooltip";
 import { ComprehensiveProjectDetails } from "./comprehensive-project-details";
@@ -45,7 +45,7 @@ interface SwmsFormProps {
 
 export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormProps) {
   const { toast } = useToast();
-  const { t } = useLanguage();
+
   const [formData, setFormData] = useState(data);
   const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set());
   const [searchTerm, setSearchTerm] = useState("");
@@ -1342,9 +1342,9 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
         <div className="space-y-6">
           <div className="text-center">
             <AlertTriangle className="mx-auto h-12 w-12 text-red-500 mb-4" />
-            <h3 className="text-lg font-semibold mb-2">{t('legalDisclaimer')}</h3>
+            <h3 className="text-lg font-semibold mb-2">{translate('legalDisclaimer')}</h3>
             <p className="text-gray-600 text-sm">
-              {t('reviewAcceptDisclaimer')}
+              {translate('reviewAcceptDisclaimer')}
             </p>
           </div>
 
@@ -1352,7 +1352,7 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
             <CardHeader>
               <CardTitle className="text-red-800 flex items-center gap-2">
                 <AlertTriangle className="h-5 w-5" />
-                {t('legalDisclaimerTerms')}
+                {translate('legalDisclaimerTerms')}
               </CardTitle>
             </CardHeader>
             <CardContent>
