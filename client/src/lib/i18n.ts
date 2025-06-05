@@ -92,7 +92,16 @@ export const translations = {
     'common.success': 'Success',
     'common.cancel': 'Cancel',
     'common.confirm': 'Confirm',
-    'common.close': 'Close'
+    'common.close': 'Close',
+    
+    // Legal disclaimer section
+    legalDisclaimer: 'Legal Disclaimer',
+    reviewAcceptDisclaimer: 'Review and accept legal disclaimer and terms',
+    legalDisclaimerTerms: 'Legal Disclaimer & Terms',
+    
+    // Dashboard
+    startBuildingSwms: 'Start Building Your SWMS',
+    createComprehensiveDocumentation: 'Create comprehensive safety documentation tailored to your trade and project requirements.'
   },
   
   zh: {
