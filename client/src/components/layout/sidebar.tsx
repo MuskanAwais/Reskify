@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Link, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
+import { translate } from "@/lib/language-direct";
 import { 
   FileText, 
   Search, 
@@ -32,13 +33,13 @@ import { Tour } from "@/components/ui/tour";
 
 const quickActions = [
   {
-    title: "Create SWMS",
+    titleKey: "nav.swms-builder",
     icon: FileText,
     href: "/swms-builder",
-    className: "bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 hover:border-blue-300"
+    className: "bg-green-50 text-green-700 border border-green-200 hover:bg-green-100 hover:border-green-300"
   },
   {
-    title: "AI SWMS Generator",
+    titleKey: "nav.ai-generator",
     icon: Bot,
     href: "/ai-swms-generator",
     className: "bg-purple-50 text-purple-700 border border-purple-200 hover:bg-purple-100 hover:border-purple-300"
@@ -347,7 +348,7 @@ export default function Sidebar() {
 
         {/* Quick Actions */}
         <div className="mb-8" data-tour="quick-actions">
-          <h3 className="text-lg font-semibold text-gray-700 mb-4">Quick Actions</h3>
+          <h3 className="text-lg font-semibold text-gray-700 mb-4">{translate('quickActions')}</h3>
           <div className="space-y-3">
             {quickActions.map((action) => {
               const Icon = action.icon;
@@ -355,7 +356,7 @@ export default function Sidebar() {
                 <Link key={action.href} href={action.href}>
                   <Button className={`w-full justify-start ${action.className}`}>
                     <Icon className="mr-3 h-4 w-4" />
-                    {action.title}
+                    {translate(action.titleKey)}
                   </Button>
                 </Link>
               );
