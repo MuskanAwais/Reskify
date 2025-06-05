@@ -165,7 +165,10 @@ export default function DocumentPreview({ formData }: DocumentPreviewProps) {
       const url = URL.createObjectURL(pdfBlob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `SWMS-${generatedDocument.id}-${new Date().toISOString().split('T')[0]}.pdf`;
+      const fileName = generatedDocument.jobNumber 
+        ? `${generatedDocument.title || 'SWMS'}-${generatedDocument.jobNumber}.pdf`
+        : `${generatedDocument.title || 'SWMS'}.pdf`;
+      link.download = fileName;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -203,7 +206,8 @@ export default function DocumentPreview({ formData }: DocumentPreviewProps) {
   };
 
   const getStatusColor = (status: string) => {
-    switch (status?.toLowerCase()) {
+    if (!status) return 'bg-gray-100 text-gray-800';
+    switch (status.toLowerCase()) {
       case 'draft': return 'bg-gray-100 text-gray-800';
       case 'under_review': return 'bg-amber-100 text-amber-800';
       case 'approved': return 'bg-green-100 text-green-800';
