@@ -42,7 +42,7 @@ export default function Header() {
             <div className="w-20 h-20 rounded-lg flex items-center justify-center">
               <img 
                 src={logoImage} 
-                alt="Safety Sensei Logo" 
+                alt="Riskify Logo" 
                 className="w-20 h-20 object-contain"
                 onError={(e) => {
                   console.log("Logo failed to load, showing fallback");
@@ -56,7 +56,7 @@ export default function Header() {
               <HardHat className="w-6 h-6 text-blue-600 hidden" />
             </div>
             <div>
-              <h1 className="text-xl font-bold tracking-tight text-foreground">Safety Sensei</h1>
+              <h1 className="text-xl font-bold tracking-tight text-foreground">Riskify</h1>
               <div className="flex items-center space-x-2">
                 <span className="text-sm text-muted-foreground">Professional SWMS Builder</span>
               </div>

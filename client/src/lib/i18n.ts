@@ -300,63 +300,7 @@ export const translations = {
   }
 };
 
-import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
-
-interface LanguageContextType {
-  currentLanguage: string;
-  setLanguage: (language: string) => void;
-  t: (key: string) => string;
-}
-
-const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
-
-export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [currentLanguage, setCurrentLanguage] = useState<string>(() => {
-    try {
-      return localStorage.getItem('selectedLanguage') || 'en';
-    } catch {
-      return 'en';
-    }
-  });
-
-  const setLanguage = (language: string) => {
-    setCurrentLanguage(language);
-    try {
-      localStorage.setItem('selectedLanguage', language);
-      // Trigger custom event for real-time updates
-      window.dispatchEvent(new CustomEvent('languageChanged', { detail: language }));
-    } catch (error) {
-      console.error('Failed to save language preference:', error);
-    }
-  };
-
-  const t = (key: string): string => {
-    const lang = translations[currentLanguage as keyof typeof translations] || translations.en;
-    return lang[key as keyof typeof lang] || key;
-  };
-
-  useEffect(() => {
-    const handleLanguageChange = (event: CustomEvent) => {
-      setCurrentLanguage(event.detail);
-    };
-
-    window.addEventListener('languageChanged', handleLanguageChange as EventListener);
-    return () => {
-      window.removeEventListener('languageChanged', handleLanguageChange as EventListener);
-    };
-  }, []);
-
-  return (
-    <LanguageContext.Provider value={{ currentLanguage, setLanguage, t }}>
-      {children}
-    </LanguageContext.Provider>
-  );
-}
-
-export function useTranslation() {
-  const context = useContext(LanguageContext);
-  if (!context) {
-    throw new Error('useTranslation must be used within a LanguageProvider');
-  }
-  return context;
+export function getTranslation(language: string = 'en', key: string): string {
+  const lang = translations[language as keyof typeof translations] || translations.en;
+  return lang[key as keyof typeof lang] || key;
 }
