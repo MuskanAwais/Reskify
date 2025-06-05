@@ -45,6 +45,7 @@ interface SwmsFormProps {
 
 export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormProps) {
   const { toast } = useToast();
+  const { t } = useLanguage();
   const [formData, setFormData] = useState(data);
   const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set());
   const [searchTerm, setSearchTerm] = useState("");
@@ -1341,9 +1342,9 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
         <div className="space-y-6">
           <div className="text-center">
             <AlertTriangle className="mx-auto h-12 w-12 text-red-500 mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Legal Disclaimer</h3>
+            <h3 className="text-lg font-semibold mb-2">{t('legalDisclaimer')}</h3>
             <p className="text-gray-600 text-sm">
-              Review and accept legal disclaimer and terms
+              {t('reviewAcceptDisclaimer')}
             </p>
           </div>
 
@@ -1351,7 +1352,7 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
             <CardHeader>
               <CardTitle className="text-red-800 flex items-center gap-2">
                 <AlertTriangle className="h-5 w-5" />
-                Legal Disclaimer & Terms
+                {t('legalDisclaimerTerms')}
               </CardTitle>
             </CardHeader>
             <CardContent>
