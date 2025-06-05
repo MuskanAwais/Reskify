@@ -64,8 +64,8 @@ export default function Dashboard() {
     <div className="space-y-8">
       {/* Page Header */}
       <div>
-        <h2 className="text-3xl font-bold text-gray-800 mb-2">Dashboard</h2>
-        <p className="text-gray-600">Manage your Safe Work Method Statements and safety compliance</p>
+        <h2 className="text-3xl font-bold text-gray-800 mb-2">{translate('nav.dashboard')}</h2>
+        <p className="text-gray-600">{translate('manageSafetyCompliance')}</p>
       </div>
 
       {/* Stats Cards */}
@@ -74,9 +74,9 @@ export default function Dashboard() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 mb-1">Draft SWMS</p>
+                <p className="text-sm text-gray-600 mb-1">{translate('draftSwms')}</p>
                 <p className="text-2xl font-bold text-gray-800">3</p>
-                <p className="text-xs text-gray-500 mt-1">Save and complete later</p>
+                <p className="text-xs text-gray-500 mt-1">{translate('saveCompleteLater')}</p>
               </div>
               <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
                 <FileText className="text-orange-600 text-xl" />
@@ -89,9 +89,9 @@ export default function Dashboard() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 mb-1">Completed SWMS</p>
+                <p className="text-sm text-gray-600 mb-1">{translate('completedSwms')}</p>
                 <p className="text-2xl font-bold text-gray-800">12</p>
-                <p className="text-xs text-gray-500 mt-1">Project-specific documentation</p>
+                <p className="text-xs text-gray-500 mt-1">{translate('projectSpecificDocumentation')}</p>
               </div>
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
                 <FileText className="text-green-600 text-xl" />
@@ -107,9 +107,9 @@ export default function Dashboard() {
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle>Create New SWMS</CardTitle>
+              <CardTitle>{translate('createNewSwms')}</CardTitle>
               <Badge variant="outline" className="bg-blue-50 text-primary border-primary/20">
-                Quick Start
+                {translate('quickStart')}
               </Badge>
             </div>
           </CardHeader>
@@ -123,7 +123,7 @@ export default function Dashboard() {
               <Link href="/swms-builder">
                 <Button className="bg-primary hover:bg-primary/90 text-white">
                   <FileText className="mr-2 h-4 w-4" />
-                  Create SWMS
+                  {translate('btn.generate')}
                 </Button>
               </Link>
             </div>
@@ -134,9 +134,9 @@ export default function Dashboard() {
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle>Recent SWMS Documents</CardTitle>
+              <CardTitle>{translate('recentSwmsDocuments')}</CardTitle>
               <Button variant="ghost" size="sm" className="text-primary hover:text-primary/80">
-                View All
+                {translate('viewAll')}
               </Button>
             </div>
           </CardHeader>
