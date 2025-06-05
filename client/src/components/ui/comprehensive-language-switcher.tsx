@@ -7,7 +7,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Globe, Check } from "lucide-react";
-import { useLanguage, SUPPORTED_LANGUAGES } from "@/lib/language-context";
+import { useLanguage, SUPPORTED_LANGUAGES } from "@/lib/language-context-new";
 
 // Using language data and translations from context
 

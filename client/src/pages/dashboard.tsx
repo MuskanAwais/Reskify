@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { useUser } from "@/App";
 import { Link } from "wouter";
-import { useLanguage } from "@/lib/language-context";
+import { useLanguage } from "@/lib/language-context-new";
 import { 
   FileText, 
   Shield, 

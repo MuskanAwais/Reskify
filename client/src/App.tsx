@@ -7,7 +7,7 @@ import { useState, createContext, useContext, useEffect } from "react";
 import Header from "@/components/layout/header";
 import Sidebar from "@/components/layout/sidebar";
 import OnboardingTour from "@/components/ui/onboarding-tour";
-import { LanguageProvider } from "@/lib/language-context";
+import { LanguageProvider } from "@/lib/language-context-new";
 import Watermark from "@/components/ui/watermark";
 import Dashboard from "@/pages/dashboard";
 import SwmsBuilder from "@/pages/swms-builder";
