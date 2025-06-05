@@ -15,8 +15,14 @@ export default function ComprehensiveLanguageSwitcher() {
   const { currentLanguage, setLanguage, t } = useLanguage();
   
   const handleLanguageChange = (languageCode: string) => {
+    console.log('Language changing to:', languageCode);
     setLanguage(languageCode);
     document.documentElement.lang = languageCode;
+    
+    // Force page refresh to ensure translations apply
+    setTimeout(() => {
+      window.location.reload();
+    }, 100);
     
     // Apply RTL for Arabic
     if (languageCode === "ar") {
