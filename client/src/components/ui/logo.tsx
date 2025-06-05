@@ -28,7 +28,7 @@ const Logo: React.FC<LogoProps> = ({
       {/* Brand Text Only */}
       <div className="flex flex-col">
         <div className={`font-bold ${size === 'xl' ? 'text-3xl' : size === 'lg' ? 'text-2xl' : size === 'md' ? 'text-xl' : 'text-lg'} ${colorClasses[variant]} tracking-tight`}>
-          Safety Sensei
+          Riskify
         </div>
         <div className={`text-gray-500 ${size === 'xl' ? 'text-base' : size === 'lg' ? 'text-sm' : 'text-xs'} font-medium tracking-wide`}>
           SWMS Builder for Australia
