@@ -24,6 +24,15 @@ const translations = {
     'nav.profile': 'Profile',
     'nav.settings': 'Settings',
     
+    // Legal disclaimer section
+    'legalDisclaimer': 'Legal Disclaimer',
+    'reviewAcceptDisclaimer': 'Review and accept legal disclaimer and terms',
+    'legalDisclaimerTerms': 'Legal Disclaimer & Terms',
+    
+    // Dashboard
+    'startBuildingSwms': 'Start Building Your SWMS',
+    'createComprehensiveDocumentation': 'Create comprehensive safety documentation tailored to your trade and project requirements.',
+
     // Common UI
     'btn.save': 'Save',
     'btn.cancel': 'Cancel',
@@ -140,6 +149,15 @@ const translations = {
     // App Name
     'app.name': 'Riskify',
     'app.tagline': '澳大利亚SWMS建设工具',
+    
+    // Legal disclaimer section
+    'legalDisclaimer': '法律免责声明',
+    'reviewAcceptDisclaimer': '审查并接受法律免责声明和条款',
+    'legalDisclaimerTerms': '法律免责声明和条款',
+    
+    // Dashboard
+    'startBuildingSwms': '开始构建您的SWMS',
+    'createComprehensiveDocumentation': '创建针对您的行业和项目要求的综合安全文档。',
     
     // Navigation
     'nav.dashboard': '仪表板',
