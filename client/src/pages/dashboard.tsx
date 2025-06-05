@@ -116,9 +116,9 @@ export default function Dashboard() {
           <CardContent className="space-y-6">
             <div className="text-center py-8">
               <FileText className="mx-auto h-12 w-12 text-primary mb-4" />
-              <h3 className="text-lg font-semibold mb-2">Start Building Your SWMS</h3>
+              <h3 className="text-lg font-semibold mb-2">{translate('startBuildingSwms')}</h3>
               <p className="text-gray-600 mb-6">
-                Create comprehensive safety documentation tailored to your industry and project requirements.
+                {translate('createComprehensiveDocumentation')}
               </p>
               <Link href="/swms-builder">
                 <Button className="bg-primary hover:bg-primary/90 text-white">

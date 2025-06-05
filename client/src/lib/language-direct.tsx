@@ -65,7 +65,7 @@ export function setLanguage(lang: string): void {
 
 export function translate(key: string): string {
   const langTranslations = TRANSLATIONS[currentLang as keyof typeof TRANSLATIONS];
-  return langTranslations?.[key] || TRANSLATIONS.en[key] || key;
+  return (langTranslations as any)?.[key] || (TRANSLATIONS.en as any)[key] || key;
 }
 
 // Initialize language from localStorage

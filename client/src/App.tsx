@@ -25,6 +25,7 @@ import Contact from "@/pages/contact";
 import Register from "@/pages/register";
 import LegalDisclaimer from "@/pages/legal-disclaimer";
 import LanguageTest from "@/pages/language-test";
+import LanguageDemo from "@/pages/language-demo";
 
 // Admin pages
 import AdminDashboard from "@/pages/admin/admin-dashboard";
@@ -169,6 +170,7 @@ function Router() {
         <Route path="/billing" component={Billing} />
         <Route path="/settings" component={Settings} />
         <Route path="/language-test" component={LanguageTest} />
+        <Route path="/language-demo" component={LanguageDemo} />
         <Route path="/legal-disclaimer" component={LegalDisclaimer} />
         
         {/* Innovative Features */}
