@@ -556,14 +556,14 @@ export default function DocumentPreview({ formData }: DocumentPreviewProps) {
                     <div className="text-center flex-1">
                       <span>Document ID: SWM-{documentToDisplay.id}</span>
                       <br />
-                      <span>Generated: {new Date().toLocaleDateString('en-AU')} | Safety Samurai Platform</span>
+                      <span>Generated: {new Date().toLocaleDateString('en-AU')} | Riskify Platform</span>
                       <div className="text-xs text-gray-500 mt-1">
                         {documentToDisplay.jobName || documentToDisplay.projectDetails?.jobName || "Project Name Required"}
                         {` - Job: ${documentToDisplay.jobNumber || documentToDisplay.projectDetails?.jobNumber || "Job Number Required"}`}
                       </div>
                     </div>
                     <div className="flex items-center opacity-30">
-                      <span className="text-xs font-bold text-blue-600">Safety Samurai</span>
+                      <span className="text-xs font-bold text-blue-600">Riskify</span>
                     </div>
                   </div>
 

@@ -1093,7 +1093,7 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
         </div>
       );
 
-    case 3:
+    case 5:
       return (
         <div className="space-y-6">
           <div className="text-center">
@@ -1396,7 +1396,7 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
                   className="mt-1"
                 />
                 <Label className="text-sm text-gray-700 leading-relaxed">
-                  I acknowledge and accept the legal disclaimer above. I understand that Safety Samurai is not liable for any incidents or damages arising from the use of this SWMS document, and that I am responsible for ensuring compliance with all applicable safety regulations.
+                  I acknowledge and accept the legal disclaimer above. I understand that Riskify is not liable for any incidents or damages arising from the use of this SWMS document, and that I am responsible for ensuring compliance with all applicable safety regulations.
                 </Label>
               </div>
             </CardContent>

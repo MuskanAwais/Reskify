@@ -119,6 +119,16 @@ export default function SwmsBuilder() {
       }
     }
     
+    // Validate legal disclaimer acceptance before proceeding from step 6 (legal disclaimer step)
+    if (currentStep === 6 && !formData.acceptedDisclaimer) {
+      toast({
+        title: "Legal Disclaimer Required",
+        description: "You must accept the legal disclaimer to continue.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     // Auto-save before moving to next step
     autoSave();
     

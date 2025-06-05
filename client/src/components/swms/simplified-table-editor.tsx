@@ -409,7 +409,15 @@ export function SimplifiedTableEditor({ riskAssessments = [], onUpdate, tradeTyp
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <Button size="sm" onClick={() => setEditingId(null)}>
+                            <Button 
+                              type="button"
+                              size="sm" 
+                              onClick={() => {
+                                // Force save by triggering update
+                                onUpdate([...riskAssessments]);
+                                setEditingId(null);
+                              }}
+                            >
                               <Check className="h-4 w-4 mr-2" />
                               Save
                             </Button>
@@ -420,7 +428,12 @@ export function SimplifiedTableEditor({ riskAssessments = [], onUpdate, tradeTyp
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <Button variant="outline" size="sm" onClick={() => setEditingId(null)}>
+                            <Button 
+                              type="button"
+                              variant="outline" 
+                              size="sm" 
+                              onClick={() => setEditingId(null)}
+                            >
                               <X className="h-4 w-4 mr-2" />
                               Cancel
                             </Button>
