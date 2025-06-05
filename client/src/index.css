@@ -163,7 +163,7 @@
 }
 
 :root {
-  --background: 210 40% 98%; /* #F8FAFC - Very light blue-gray like SiteDew */
+  --background: 210 40% 98%; /* #F8FAFC - Very light blue-gray */
   --foreground: 214 31% 31%; /* #475569 - Dark blue-gray */
   --muted: 210 40% 96%; /* #F1F5F9 - Very light blue */
   --muted-foreground: 215 16% 47%; /* #64748B - Medium blue-gray */
@@ -173,17 +173,17 @@
   --card-foreground: 214 31% 31%; /* #475569 */
   --border: 214 32% 91%; /* #E2E8F0 - Light blue-gray */
   --input: 214 32% 91%; /* #E2E8F0 */
-  --primary: 210 100% 56%; /* #3B82F6 - Clean blue like SiteDew */
+  --primary: 152 100% 13%; /* #0F4037 - Dark green */
   --primary-foreground: 0 0% 100%; /* #FFFFFF */
-  --secondary: 214 32% 91%; /* #E2E8F0 - Light blue-gray */
-  --secondary-foreground: 214 31% 31%; /* #475569 */
-  --accent: 214 32% 91%; /* #E2E8F0 */
-  --accent-foreground: 214 31% 31%; /* #475569 */
+  --secondary: 152 50% 25%; /* Lighter green for secondary */
+  --secondary-foreground: 0 0% 100%; /* #FFFFFF */
+  --accent: 152 30% 35%; /* Even lighter green for accents */
+  --accent-foreground: 0 0% 100%; /* #FFFFFF */
   --destructive: 0 72% 51%; /* #C62828 */
   --destructive-foreground: 60 9.1% 97.8%;
-  --ring: 210 100% 56%; /* #3B82F6 - Clean blue */
+  --ring: 152 100% 13%; /* #0F4037 - Dark green for focus rings */
   --radius: 0.5rem;
-  --success: 210 100% 56%; /* #3B82F6 - Use blue for success too */
+  --success: 152 100% 13%; /* #0F4037 - Use green for success */
   --warning: 45 100% 52%; /* #F57F17 */
 }
 
@@ -198,16 +198,16 @@
   --card-foreground: 0 0% 98%;
   --border: 240 3.7% 15.9%;
   --input: 240 3.7% 15.9%;
-  --primary: 120 40% 25%; /* Dark green */
+  --primary: 152 100% 13%; /* #0F4037 - Dark green */
   --primary-foreground: 0 0% 100%;
-  --secondary: 120 35% 35%; /* Lighter green */
+  --secondary: 152 60% 30%; /* Lighter green for dark mode */
   --secondary-foreground: 0 0% 100%;
-  --accent: 240 3.7% 15.9%;
-  --accent-foreground: 0 0% 98%;
+  --accent: 152 40% 25%; /* Medium green for accents */
+  --accent-foreground: 0 0% 100%;
   --destructive: 0 62.8% 30.6%;
   --destructive-foreground: 0 0% 98%;
-  --ring: 240 4.9% 83.9%;
-  --success: 122 39% 49%;
+  --ring: 152 100% 13%; /* #0F4037 - Dark green for focus rings */
+  --success: 152 100% 13%; /* #0F4037 - Dark green for success */
   --warning: 45 100% 52%;
 }
 
