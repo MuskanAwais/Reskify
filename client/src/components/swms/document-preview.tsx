@@ -600,28 +600,44 @@ export default function DocumentPreview({ formData }: DocumentPreviewProps) {
                     </div>
                   </div>
 
-                  {/* Additional Document Protection Watermarks */}
-                  <div className="absolute inset-0 pointer-events-none opacity-5 overflow-hidden">
-                    <div className="absolute top-1/6 left-1/6 transform -rotate-45 text-xl font-bold text-blue-600">
-                      Riskify
-                      {documentToDisplay.jobNumber && (
-                        <div className="text-sm">Job: {documentToDisplay.jobNumber}</div>
-                      )}
+                  {/* Comprehensive Document Protection Watermarks */}
+                  <div className="absolute inset-0 pointer-events-none opacity-8 overflow-hidden z-0">
+                    {/* Top section watermarks */}
+                    <div className="absolute top-10 left-10 transform -rotate-12 text-lg font-bold text-blue-500">
+                      Riskify | {documentToDisplay.jobName || 'Project'} | Job: {documentToDisplay.jobNumber || 'N/A'}
                     </div>
-                    <div className="absolute top-2/6 right-1/6 transform rotate-45 text-xl font-bold text-blue-600">
-                      Riskify
-                      {documentToDisplay.jobName && (
-                        <div className="text-sm">{documentToDisplay.jobName}</div>
-                      )}
+                    <div className="absolute top-20 right-10 transform rotate-12 text-lg font-bold text-blue-500">
+                      {documentToDisplay.projectAddress || 'Project Location'} | Riskify SWMS
                     </div>
-                    <div className="absolute top-3/6 left-1/2 transform -translate-x-1/2 rotate-12 text-xl font-bold text-blue-600">
+                    
+                    {/* Middle section watermarks */}
+                    <div className="absolute top-1/3 left-1/4 transform -rotate-45 text-xl font-bold text-blue-500">
                       © Riskify {new Date().getFullYear()}
                     </div>
-                    <div className="absolute top-4/6 right-1/3 transform -rotate-12 text-xl font-bold text-blue-600">
-                      Riskify SWMS
+                    <div className="absolute top-1/3 right-1/4 transform rotate-45 text-xl font-bold text-blue-500">
+                      {documentToDisplay.tradeType || 'Trade'} | Riskify
                     </div>
-                    <div className="absolute top-5/6 left-1/3 transform rotate-45 text-xl font-bold text-blue-600">
-                      Riskify
+                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rotate-12 text-2xl font-bold text-blue-500">
+                      RISKIFY SWMS
+                    </div>
+                    
+                    {/* Bottom section watermarks */}
+                    <div className="absolute bottom-32 left-10 transform rotate-15 text-lg font-bold text-blue-500">
+                      Generated: {new Date().toLocaleDateString('en-AU')} | Riskify
+                    </div>
+                    <div className="absolute bottom-20 right-10 transform -rotate-15 text-lg font-bold text-blue-500">
+                      {documentToDisplay.jobName || 'Project'} | Job: {documentToDisplay.jobNumber || 'N/A'}
+                    </div>
+                    <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 text-lg font-bold text-blue-500">
+                      Riskify SWMS Platform | {documentToDisplay.projectAddress || 'Location'}
+                    </div>
+                    
+                    {/* Diagonal watermarks across document */}
+                    <div className="absolute top-1/4 left-0 w-full transform rotate-45 text-lg font-bold text-blue-500 text-center">
+                      Riskify | {documentToDisplay.tradeType || 'Trade'} SWMS
+                    </div>
+                    <div className="absolute top-3/4 left-0 w-full transform -rotate-45 text-lg font-bold text-blue-500 text-center">
+                      © Riskify {new Date().getFullYear()} | {documentToDisplay.jobName || 'Project'}
                     </div>
                   </div>
                 </CardContent>
