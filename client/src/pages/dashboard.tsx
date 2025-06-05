@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { useUser } from "@/App";
 import { Link } from "wouter";
-import { useLanguage } from "@/lib/language-context-new";
+import { translate } from "@/lib/language-direct";
 import { 
   FileText, 
   Shield, 
@@ -21,7 +21,6 @@ import {
 
 export default function Dashboard() {
   const { user } = useUser();
-  const { t } = useLanguage();
 
   const { data: dashboardData, isLoading } = useQuery({
     queryKey: [`/api/dashboard/${user?.id}`],
@@ -117,9 +116,9 @@ export default function Dashboard() {
           <CardContent className="space-y-6">
             <div className="text-center py-8">
               <FileText className="mx-auto h-12 w-12 text-primary mb-4" />
-              <h3 className="text-lg font-semibold mb-2">{t('startBuildingSwms')}</h3>
+              <h3 className="text-lg font-semibold mb-2">Start Building Your SWMS</h3>
               <p className="text-gray-600 mb-6">
-                {t('createComprehensiveDocumentation')}
+                Create comprehensive safety documentation tailored to your industry and project requirements.
               </p>
               <Link href="/swms-builder">
                 <Button className="bg-primary hover:bg-primary/90 text-white">
