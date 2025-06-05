@@ -567,22 +567,61 @@ export default function DocumentPreview({ formData }: DocumentPreviewProps) {
                     </div>
                   </div>
 
+                  {/* Digital Signatures Section */}
+                  <div className="mt-8 border-t-2 border-gray-300 pt-6">
+                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Digital Signatures</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="border border-gray-300 p-4 rounded-lg">
+                        <h4 className="font-medium mb-2">Prepared By</h4>
+                        <div className="space-y-2">
+                          <div className="h-16 border-2 border-dashed border-gray-300 flex items-center justify-center text-sm text-gray-500">
+                            Digital Signature Required
+                          </div>
+                          <div className="text-sm">
+                            <div>Name: ________________________</div>
+                            <div>Position: ____________________</div>
+                            <div>Date: _______________________</div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="border border-gray-300 p-4 rounded-lg">
+                        <h4 className="font-medium mb-2">Approved By (Site Supervisor)</h4>
+                        <div className="space-y-2">
+                          <div className="h-16 border-2 border-dashed border-gray-300 flex items-center justify-center text-sm text-gray-500">
+                            Digital Signature Required
+                          </div>
+                          <div className="text-sm">
+                            <div>Name: ________________________</div>
+                            <div>Position: ____________________</div>
+                            <div>Date: _______________________</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
                   {/* Additional Document Protection Watermarks */}
                   <div className="absolute inset-0 pointer-events-none opacity-5 overflow-hidden">
-                    <div className="absolute top-1/4 left-1/4 transform -rotate-45 text-2xl font-bold text-blue-600">
-                      Safety Samurai
-                      {documentToDisplay.projectDetails?.jobNumber && (
-                        <div className="text-sm">Job: {documentToDisplay.projectDetails.jobNumber}</div>
+                    <div className="absolute top-1/6 left-1/6 transform -rotate-45 text-xl font-bold text-blue-600">
+                      Riskify
+                      {documentToDisplay.jobNumber && (
+                        <div className="text-sm">Job: {documentToDisplay.jobNumber}</div>
                       )}
                     </div>
-                    <div className="absolute top-3/4 right-1/4 transform rotate-45 text-2xl font-bold text-blue-600">
-                      Safety Samurai
-                      {documentToDisplay.projectDetails?.jobName && (
-                        <div className="text-sm">{documentToDisplay.projectDetails.jobName}</div>
+                    <div className="absolute top-2/6 right-1/6 transform rotate-45 text-xl font-bold text-blue-600">
+                      Riskify
+                      {documentToDisplay.jobName && (
+                        <div className="text-sm">{documentToDisplay.jobName}</div>
                       )}
                     </div>
-                    <div className="absolute bottom-1/4 left-1/2 transform -translate-x-1/2 rotate-12 text-xl font-bold text-blue-600">
-                      © Safety Samurai {new Date().getFullYear()}
+                    <div className="absolute top-3/6 left-1/2 transform -translate-x-1/2 rotate-12 text-xl font-bold text-blue-600">
+                      © Riskify {new Date().getFullYear()}
+                    </div>
+                    <div className="absolute top-4/6 right-1/3 transform -rotate-12 text-xl font-bold text-blue-600">
+                      Riskify SWMS
+                    </div>
+                    <div className="absolute top-5/6 left-1/3 transform rotate-45 text-xl font-bold text-blue-600">
+                      Riskify
                     </div>
                   </div>
                 </CardContent>
