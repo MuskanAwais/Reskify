@@ -4,7 +4,7 @@ import { Link, useLocation } from "wouter";
 import { HardHat, Plus, Bell, Settings, LogOut } from "lucide-react";
 import CreditCounter from "@/components/ui/credit-counter";
 import VoiceAssistant from "@/components/ui/voice-assistant";
-import ComprehensiveLanguageSwitcher from "@/components/ui/comprehensive-language-switcher";
+import SimpleLanguageSwitcher from "@/components/ui/simple-language-switcher";
 import ContactForm from "@/components/ui/contact-form";
 import logoImage from "@assets/Untitled design-2.png";
 

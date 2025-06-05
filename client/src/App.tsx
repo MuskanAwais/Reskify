@@ -7,7 +7,7 @@ import { useState, createContext, useContext, useEffect } from "react";
 import Header from "@/components/layout/header";
 import Sidebar from "@/components/layout/sidebar";
 import OnboardingTour from "@/components/ui/onboarding-tour";
-import { LanguageProvider } from "@/lib/language-context-new";
+import { SimpleLanguageProvider } from "@/lib/simple-language";
 import Watermark from "@/components/ui/watermark";
 import Dashboard from "@/pages/dashboard";
 import SwmsBuilder from "@/pages/swms-builder";
@@ -229,7 +229,7 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <LanguageProvider>
+      <SimpleLanguageProvider>
         <UserContext.Provider value={{ user, setUser }}>
           <AdminContext.Provider value={adminState}>
             <TooltipProvider>
@@ -238,7 +238,7 @@ function App() {
             </TooltipProvider>
           </AdminContext.Provider>
         </UserContext.Provider>
-      </LanguageProvider>
+      </SimpleLanguageProvider>
     </QueryClientProvider>
   );
 }
