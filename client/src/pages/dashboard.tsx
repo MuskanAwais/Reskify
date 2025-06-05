@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { useUser } from "@/App";
 import { Link } from "wouter";
+import { useLanguage } from "@/lib/language-context";
 import { 
   FileText, 
   Shield, 
@@ -57,7 +58,7 @@ export default function Dashboard() {
     recentDocuments: []
   };
 
-  const topSafetyCodes = safetyLibrary?.slice(0, 3) || [];
+  const topSafetyCodes = (Array.isArray(safetyLibrary) ? safetyLibrary : safetyLibrary?.documents || []).slice(0, 3);
 
   return (
     <div className="space-y-8">
