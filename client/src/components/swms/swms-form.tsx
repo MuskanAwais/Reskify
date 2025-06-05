@@ -29,6 +29,7 @@ import {
   CheckCircle
 } from "lucide-react";
 import { SimplifiedTableEditor } from "./simplified-table-editor";
+import { useLanguage } from "@/lib/language-context";
 import SmartTooltip from "@/components/ui/smart-tooltip";
 import QuickActionTooltip, { presetTooltips } from "@/components/ui/quick-action-tooltip";
 import { ComprehensiveProjectDetails } from "./comprehensive-project-details";
