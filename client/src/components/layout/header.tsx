@@ -72,7 +72,7 @@ export default function Header() {
             
             {/* Language Switcher */}
             <div data-tour="language-switcher">
-              <ComprehensiveLanguageSwitcher />
+              <SimpleLanguageSwitcher />
             </div>
 
 
