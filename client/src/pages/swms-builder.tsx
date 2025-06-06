@@ -223,8 +223,8 @@ export default function SwmsBuilder() {
         <CardContent className="pt-6">
           <div className="space-y-4">
             <div className="flex justify-between text-sm text-gray-600">
-              <span>Progress</span>
-              <span>{Math.round(progress)}% Complete</span>
+              <span>{translate("swms.progress")}</span>
+              <span>{Math.round(progress)}% {translate("swms.complete")}</span>
             </div>
             <Progress value={progress} className="w-full" />
             
