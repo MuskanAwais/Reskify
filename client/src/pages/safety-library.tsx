@@ -21,11 +21,10 @@ export default function SafetyLibrary() {
 
   // Get safety library data
   const { data: safetyLibrary = [] } = useQuery({
-    queryKey: ['/api/safety-library'],
-    enabled: isAdminMode || adminUnlocked || (subscription as any)?.plan === "Pro Plan"
+    queryKey: ['/api/safety-library']
   });
 
-  const hasAccess = isAdminMode || adminUnlocked || (subscription as any)?.plan === "Pro Plan" || false;
+  const hasAccess = isAdminMode || adminUnlocked || (subscription as any)?.plan === "Pro Plan";
 
   if (!hasAccess) {
     return (
