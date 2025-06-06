@@ -24,14 +24,17 @@ export default function SafetyLibrary() {
     queryKey: ['/api/safety-library']
   });
 
-  const hasAccess = isAdminMode || adminUnlocked || (subscription as any)?.plan === "Pro Plan";
+  const hasAccess = isAdminMode || adminUnlocked || 
+    (subscription as any)?.plan === "pro" || 
+    (subscription as any)?.plan === "enterprise" ||
+    (subscription as any)?.plan === "Pro Plan";
 
   if (!hasAccess) {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Standard Practice Guide</h1>
+            <h1 className="text-3xl font-bold tracking-tight">Safety Library</h1>
             <p className="text-muted-foreground">
               Access comprehensive Australian safety standards and practice guides
             </p>
@@ -46,7 +49,7 @@ export default function SafetyLibrary() {
             
             <h3 className="text-xl font-semibold mb-2 text-gray-700">Professional Feature</h3>
             <p className="text-gray-600 mb-6 max-w-md">
-              Standard Practice Guide access is available with Professional and Enterprise subscriptions
+              Safety Library access is available with Professional and Enterprise subscriptions
             </p>
 
             <div className="space-y-2 text-sm text-gray-500 mb-6">
