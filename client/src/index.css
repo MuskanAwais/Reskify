@@ -257,15 +257,15 @@
 
 /* Hover states */
 .hover\:bg-primary:hover {
-  background-color: hsl(207 79% 39%);
+  background-color: hsl(152 100% 18%);
 }
 
 .hover\:bg-secondary:hover {
-  background-color: hsl(24 100% 45%);
+  background-color: hsl(152 50% 30%);
 }
 
 .hover\:text-primary:hover {
-  color: hsl(207 79% 39%);
+  color: hsl(152 100% 18%);
 }
 
 /* Focus states */
@@ -288,6 +288,42 @@
 
 .status-approved {
   @apply bg-green-100 text-green-800;
+}
+
+/* Button variants using green theme */
+.btn-primary {
+  @apply bg-primary text-primary-foreground focus:ring-primary;
+}
+
+.btn-primary:hover {
+  background-color: hsl(152 100% 18%);
+}
+
+.btn-secondary {
+  @apply bg-secondary text-secondary-foreground focus:ring-secondary;
+}
+
+.btn-secondary:hover {
+  background-color: hsl(152 50% 30%);
+}
+
+.btn-success {
+  @apply bg-green-600 text-white focus:ring-green-500;
+}
+
+.btn-success:hover {
+  background-color: hsl(152 100% 18%);
+}
+
+/* Loading spinner using green theme */
+.spinner-primary {
+  border-color: hsl(var(--primary));
+  border-top-color: transparent;
+}
+
+.spinner-light {
+  border-color: rgba(255, 255, 255, 0.3);
+  border-top-color: white;
 }
 
 /* Risk level colors */

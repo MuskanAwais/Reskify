@@ -176,7 +176,7 @@ export default function TeamCollaboration() {
   const getRoleIcon = (role: string) => {
     switch (role) {
       case "admin": return <Crown className="h-4 w-4 text-yellow-500" />;
-      case "editor": return <Edit3 className="h-4 w-4 text-blue-500" />;
+      case "editor": return <Edit3 className="h-4 w-4 text-primary" />;
       case "viewer": return <User className="h-4 w-4 text-gray-500" />;
       default: return <User className="h-4 w-4" />;
     }
@@ -250,7 +250,7 @@ export default function TeamCollaboration() {
                       <p className="text-sm font-medium text-gray-600">Total Members</p>
                       <p className="text-2xl font-bold">{teamMembers.length}</p>
                     </div>
-                    <Users className="h-8 w-8 text-blue-500" />
+                    <Users className="h-8 w-8 text-primary" />
                   </div>
                 </CardContent>
               </Card>
