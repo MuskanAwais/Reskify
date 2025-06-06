@@ -1,9 +1,10 @@
 import type { Express } from "express";
+import express from "express";
 import { createServer, type Server } from "http";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
-import pdfParse from "pdf-parse";
+// import pdfParse from "pdf-parse";
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -507,9 +508,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       ];
 
+      // Combine static library with uploaded documents
+      const allDocuments = [...safetyLibrary, ...safetyLibraryDocuments];
+      
       res.json({
-        documents: safetyLibrary,
-        totalDocuments: safetyLibrary.length,
+        documents: allDocuments,
+        totalDocuments: allDocuments.length,
         categories: {
           "NSW Code of Practice": safetyLibrary.filter(doc => doc.category === "NSW Code of Practice").length,
           "NSW Safety Guide": safetyLibrary.filter(doc => doc.category === "NSW Safety Guide").length,
@@ -1001,6 +1005,97 @@ export async function registerRoutes(app: Express): Promise<Server> {
         message: 'Failed to generate PDF download' 
       });
     }
+  });
+
+  // File upload endpoint for Safety Library (Admin only)
+  app.post("/api/safety-library/upload", upload.single('file'), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+
+      const file = req.file;
+      const category = req.body.category || 'General Safety';
+      
+      // Extract metadata from the uploaded file
+      let textContent = '';
+      let pageCount = 0;
+      
+      // Basic file type detection and metadata extraction
+      if (file.mimetype === 'application/pdf') {
+        // For PDFs, estimate page count based on file size (rough approximation)
+        pageCount = Math.max(1, Math.floor(file.size / (50 * 1024))); // ~50KB per page estimate
+      } else {
+        pageCount = 1; // For DOC/DOCX files
+      }
+
+      // Generate document metadata
+      const document = {
+        id: Date.now(),
+        title: file.originalname.replace(/\.[^/.]+$/, ""), // Remove extension
+        category: category,
+        type: "Uploaded Document",
+        description: `Uploaded safety document: ${file.originalname}`,
+        url: `/uploads/safety-docs/${file.filename}`,
+        lastUpdated: new Date().toISOString().split('T')[0],
+        applicableIndustries: ["All"],
+        jurisdiction: "Various",
+        pages: pageCount || 1,
+        keyTopics: extractKeyTopics(file.originalname, textContent),
+        fileSize: Math.round(file.size / 1024), // Size in KB
+        uploadedAt: new Date().toISOString()
+      };
+
+      // Add to in-memory storage (in production, this would be a database)
+      safetyLibraryDocuments.push(document);
+
+      res.json({
+        message: "File uploaded successfully",
+        document: document
+      });
+
+    } catch (error: any) {
+      console.error("Upload error:", error);
+      
+      // Clean up uploaded file on error
+      if (req.file && fs.existsSync(req.file.path)) {
+        fs.unlinkSync(req.file.path);
+      }
+      
+      res.status(500).json({ 
+        message: "Upload failed", 
+        error: error.message 
+      });
+    }
+  });
+
+  // Helper function to extract key topics from filename and content
+  function extractKeyTopics(filename: string, content: string): string[] {
+    const topics: string[] = [];
+    const commonTerms = [
+      'construction', 'electrical', 'manual handling', 'noise', 'plant', 
+      'stevedoring', 'falls', 'hazardous', 'safety', 'risk', 'whs',
+      'training', 'emergency', 'fire', 'chemical', 'equipment'
+    ];
+
+    const text = (filename + ' ' + content).toLowerCase();
+    
+    commonTerms.forEach(term => {
+      if (text.includes(term)) {
+        topics.push(term.charAt(0).toUpperCase() + term.slice(1));
+      }
+    });
+
+    return topics.length > 0 ? topics : ['General Safety'];
+  }
+
+  // Serve uploaded files
+  app.use('/uploads', (req: any, res: any, next: any) => {
+    const uploadPath = path.join(process.cwd(), 'uploads');
+    if (!fs.existsSync(uploadPath)) {
+      fs.mkdirSync(uploadPath, { recursive: true });
+    }
+    next();
   });
 
   const httpServer = createServer(app);
