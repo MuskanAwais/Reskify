@@ -148,6 +148,11 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
       } else {
         newSet.add(activityName);
       }
+      
+      // Update form data with selected activities array
+      const activitiesArray = Array.from(newSet);
+      updateFormData({ activities: activitiesArray });
+      
       return newSet;
     });
   };
@@ -206,6 +211,11 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
     setSelectedActivities((prev) => {
       const newSet = new Set(prev);
       activitiesInCategory.forEach((activity: string) => newSet.add(activity));
+      
+      // Update form data with selected activities array
+      const activitiesArray = Array.from(newSet);
+      updateFormData({ activities: activitiesArray });
+      
       return newSet;
     });
   };
@@ -215,6 +225,11 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
     setSelectedActivities((prev) => {
       const newSet = new Set(prev);
       activitiesInCategory.forEach((activity: string) => newSet.delete(activity));
+      
+      // Update form data with selected activities array
+      const activitiesArray = Array.from(newSet);
+      updateFormData({ activities: activitiesArray });
+      
       return newSet;
     });
   };
@@ -551,6 +566,59 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
               </CardContent>
             </Card>
           </div>
+
+          {/* Selected Activities Summary */}
+          {formData.activities && formData.activities.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Selected Activities</CardTitle>
+                <p className="text-sm text-gray-600">
+                  Activities selected from {formData.tradeType} that require risk assessment
+                </p>
+              </CardHeader>
+              <CardContent>
+                <div className="grid gap-2">
+                  {formData.activities.map((activity: string, index: number) => (
+                    <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded border">
+                      <span className="text-sm font-medium">{activity}</span>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          const newRisk = {
+                            id: `activity-${Date.now()}-${index}`,
+                            activity: activity,
+                            description: `Risk assessment for ${activity}`,
+                            hazards: ['Identify specific hazards'],
+                            initialRiskScore: 4,
+                            riskLevel: 'Medium',
+                            controlMeasures: ['Add control measures'],
+                            legislation: ['Work Health and Safety Act'],
+                            residualRiskScore: 2,
+                            residualRiskLevel: 'Low',
+                            responsible: 'Site Supervisor',
+                            ppe: [],
+                            trainingRequired: [],
+                            permitRequired: [],
+                            inspectionFrequency: 'Daily',
+                            emergencyProcedures: [],
+                            environmentalControls: []
+                          };
+                          updateFormData({ 
+                            riskAssessments: [...(formData.riskAssessments || []), newRisk] 
+                          });
+                        }}
+                        className="text-xs"
+                      >
+                        <Plus className="mr-1 h-3 w-3" />
+                        Add Risk Assessment
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Manual Risk Assessment Entry */}
           <Card>
