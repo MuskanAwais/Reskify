@@ -922,235 +922,227 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
             </Card>
           </div>
 
-          {formData.activities.length > 0 && (
+          {/* AI section removed - users can access AI generation via sidebar */}
+
+          {formData.riskAssessments && formData.riskAssessments.length > 0 && (
             <div className="space-y-4">
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-base flex items-center">
-                    <Shield className="mr-2 h-4 w-4" />
-                    AI-Powered Risk Analysis
-                  </CardTitle>
+                  <CardTitle className="text-base">Risk Assessment Table</CardTitle>
+                  <p className="text-sm text-gray-600">
+                    Review and customize risk assessments. Click on any cell to edit directly.
+                  </p>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    <div>
-                      <Label className="text-sm font-medium">Selected Activities ({formData.activities.length})</Label>
-                      <div className="flex flex-wrap gap-1.5 mt-2">
-                        {formData.activities.slice(0, 6).map((activity: string, index: number) => (
-                          <Badge key={index} variant="secondary" className="text-xs">
-                            {activity}
-                          </Badge>
-                        ))}
-                        {formData.activities.length > 6 && (
-                          <Badge variant="outline" className="text-xs">
-                            +{formData.activities.length - 6} more
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
-                    
-                    <QuickActionTooltip
-                      title="AI Risk Assessment Generator"
-                      description="Automatically generate comprehensive risk assessments for your selected activities using advanced AI analysis"
-                      category="creation"
-                      shortcuts={[
-                        { key: "Ctrl + G", action: "Generate AI assessment" }
-                      ]}
-                      tips={[
-                        "AI considers trade-specific hazards and regulations",
-                        "Generated assessments follow Australian safety standards",
-                        "Results automatically advance to the visual editor",
-                        "You can customize all generated content afterward"
-                      ]}
-                      actions={[
-                        {
-                          label: "Quick Generate",
-                          icon: <Shield className="h-3 w-3" />,
-                          onClick: async () => {
-                            try {
-                              const response = await fetch('/api/ai/enhance-swms', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({
-                                  activities: formData.activities,
-                                  tradeType: formData.tradeType,
-                                  projectLocation: formData.projectLocation
-                                })
-                              });
-                              
-                              if (response.ok) {
-                                const aiData = await response.json();
-                                updateFormData({
-                                  riskAssessments: aiData.riskAssessments,
-                                  safetyMeasures: aiData.safetyMeasures,
-                                  complianceCodes: [...(formData.complianceCodes || []), ...aiData.complianceRecommendations]
-                                });
-                                toast({
-                                  title: "AI Analysis Complete",
-                                  description: `Generated ${aiData.riskAssessments.length} risk assessments. Proceeding to visual table editor.`,
-                                });
-                                setTimeout(() => {
-                                  if (onNext) onNext();
-                                }, 1500);
-                              } else {
-                                throw new Error('AI analysis failed');
-                              }
-                            } catch (error) {
-                              toast({
-                                title: "AI Analysis Error",
-                                description: "Unable to generate AI risk assessment. Please check your connection.",
-                                variant: "destructive"
-                              });
-                            }
-                          },
-                          variant: "default"
-                        }
-                      ]}
-                    >
-                      <Button
-                        type="button"
-                        className="w-full"
-                        onClick={async () => {
-                          try {
-                            const response = await fetch('/api/ai/enhance-swms', {
-                              method: 'POST',
-                              headers: { 'Content-Type': 'application/json' },
-                              body: JSON.stringify({
-                                activities: formData.activities,
-                                tradeType: formData.tradeType,
-                                projectLocation: formData.projectLocation
-                              })
-                            });
-                            
-                            if (response.ok) {
-                              const aiData = await response.json();
-                              updateFormData({
-                                riskAssessments: aiData.riskAssessments,
-                                safetyMeasures: aiData.safetyMeasures,
-                                complianceCodes: [...(formData.complianceCodes || []), ...aiData.complianceRecommendations]
-                              });
-                              toast({
-                                title: "AI Analysis Complete",
-                                description: `Generated ${aiData.riskAssessments.length} risk assessments. Proceeding to visual table editor.`,
-                              });
-                              // Automatically advance to step 3 (Visual Table Editor) after AI generation
-                              setTimeout(() => {
-                                if (onNext) onNext();
-                              }, 1500);
-                            } else {
-                              throw new Error('AI analysis failed');
-                            }
-                          } catch (error) {
-                            toast({
-                              title: "AI Analysis Error",
-                              description: "Unable to generate AI risk assessment. Please check your connection.",
-                              variant: "destructive"
-                            });
-                          }
-                        }}
-                      >
-                        <Shield className="mr-2 h-4 w-4" />
-                        Generate AI Risk Assessment
-                      </Button>
-                    </QuickActionTooltip>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {formData.riskAssessments && formData.riskAssessments.length > 0 && (
-                <Card>
-                  <CardHeader>
-                    <QuickActionTooltip
-                      {...presetTooltips.tableEditor}
-                      side="top"
-                    >
-                      <div className="cursor-help">
-                        <CardTitle className="text-base">Risk Assessment Table</CardTitle>
-                        <p className="text-sm text-gray-600">
-                          Review and customize the AI-generated risk assessments. Click on any cell to edit directly.
-                        </p>
-                      </div>
-                    </QuickActionTooltip>
-                  </CardHeader>
-                  <CardContent>
-                    <SimplifiedTableEditor 
-                      riskAssessments={formData?.riskAssessments || []}
-                      onUpdate={(assessments) => onDataChange({ ...formData, riskAssessments: assessments })}
-                      tradeType={formData?.tradeType || 'General'}
-                    />
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Legacy risk display for reference */}
-              {false && formData.riskAssessments && formData.riskAssessments.length > 0 && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-base">Identified Risks</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      {formData.riskAssessments.map((risk: any, index: number) => (
-                        <div key={index} className="border border-gray-200 rounded-lg p-4">
-                          <div className="flex items-start justify-between mb-3">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-2">
-                                <h4 className="font-medium text-gray-900">{risk.hazard}</h4>
-                                <Badge 
-                                  variant={
-                                    risk.riskLevel === 'extreme' ? 'destructive' :
-                                    risk.riskLevel === 'high' ? 'destructive' :
-                                    risk.riskLevel === 'medium' ? 'default' : 'secondary'
-                                  }
-                                  className="text-xs"
-                                >
-                                  {risk.riskLevel.toUpperCase()}
-                                </Badge>
-                              </div>
-                              <p className="text-sm text-gray-600 mb-2">
-                                <strong>Responsible:</strong> {risk.responsiblePerson}
-                              </p>
+                    {formData.riskAssessments.map((risk: any, index: number) => (
+                      <div key={risk.id || index} className="border border-gray-200 rounded-lg p-4 space-y-4">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-2">
+                              <h4 className="font-medium text-gray-900">{risk.activity}</h4>
+                              <Badge
+                                variant={
+                                  risk.riskLevel === 'extreme' ? 'destructive' :
+                                  risk.riskLevel === 'high' ? 'destructive' :
+                                  risk.riskLevel === 'medium' ? 'default' : 'secondary'
+                                }
+                                className="text-xs"
+                              >
+                                {risk.riskLevel?.toUpperCase() || 'UNASSESSED'}
+                              </Badge>
                             </div>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => {
-                                const updatedRisks = formData.riskAssessments.filter((_: any, i: number) => i !== index);
-                                updateFormData({ riskAssessments: updatedRisks });
-                              }}
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
+                            <p className="text-sm text-gray-600 mb-2">
+                              <strong>Responsible:</strong> {risk.responsible || risk.responsiblePerson || 'Site Supervisor'}
+                            </p>
                           </div>
-                          
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              const updatedRisks = formData.riskAssessments.filter((_: any, i: number) => i !== index);
+                              updateFormData({ riskAssessments: updatedRisks });
+                            }}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div className="space-y-2">
-                            <Label className="text-xs font-medium text-gray-700">Control Measures</Label>
-                            <div className="space-y-1">
-                              {Array.isArray(risk.controlMeasures) ? 
-                                risk.controlMeasures.map((measure: string, measureIndex: number) => (
-                                  <div key={measureIndex} className="text-sm text-gray-600 flex items-start">
-                                    <CheckSquare className="h-3 w-3 mt-0.5 mr-2 text-green-500 flex-shrink-0" />
-                                    {measure}
+                            <Label className="text-xs font-medium text-gray-700">Hazards</Label>
+                            <div className="space-y-2">
+                              {Array.isArray(risk.hazards) ? 
+                                risk.hazards.map((hazard: string, hazardIndex: number) => (
+                                  <div key={hazardIndex} className="flex items-center gap-2">
+                                    <textarea
+                                      value={hazard}
+                                      onChange={(e) => {
+                                        const updatedRisks = [...formData.riskAssessments];
+                                        updatedRisks[index].hazards[hazardIndex] = e.target.value;
+                                        updateFormData({ riskAssessments: updatedRisks });
+                                      }}
+                                      className="flex-1 min-h-[60px] px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
+                                      placeholder="Describe the hazard..."
+                                    />
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => {
+                                        const updatedRisks = [...formData.riskAssessments];
+                                        updatedRisks[index].hazards = updatedRisks[index].hazards.filter((_: any, i: number) => i !== hazardIndex);
+                                        updateFormData({ riskAssessments: updatedRisks });
+                                      }}
+                                    >
+                                      <X className="h-4 w-4" />
+                                    </Button>
                                   </div>
                                 )) :
-                                <div className="text-sm text-gray-600 flex items-start">
-                                  <CheckSquare className="h-3 w-3 mt-0.5 mr-2 text-green-500 flex-shrink-0" />
-                                  {risk.controlMeasures}
-                                </div>
+                                <textarea
+                                  value={risk.hazards || ''}
+                                  onChange={(e) => {
+                                    const updatedRisks = [...formData.riskAssessments];
+                                    updatedRisks[index].hazards = e.target.value;
+                                    updateFormData({ riskAssessments: updatedRisks });
+                                  }}
+                                  className="w-full min-h-[60px] px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
+                                  placeholder="Describe the hazards..."
+                                />
                               }
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  const updatedRisks = [...formData.riskAssessments];
+                                  if (!Array.isArray(updatedRisks[index].hazards)) {
+                                    updatedRisks[index].hazards = [updatedRisks[index].hazards || ''];
+                                  }
+                                  updatedRisks[index].hazards.push('');
+                                  updateFormData({ riskAssessments: updatedRisks });
+                                }}
+                                className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
+                              >
+                                <Plus className="mr-2 h-4 w-4" />
+                                Add Hazard description
+                              </Button>
+                            </div>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label className="text-xs font-medium text-gray-700">Control Measures</Label>
+                            <div className="space-y-2">
+                              {Array.isArray(risk.controlMeasures) ? 
+                                risk.controlMeasures.map((measure: string, measureIndex: number) => (
+                                  <div key={measureIndex} className="flex items-center gap-2">
+                                    <textarea
+                                      value={measure}
+                                      onChange={(e) => {
+                                        const updatedRisks = [...formData.riskAssessments];
+                                        updatedRisks[index].controlMeasures[measureIndex] = e.target.value;
+                                        updateFormData({ riskAssessments: updatedRisks });
+                                      }}
+                                      className="flex-1 min-h-[60px] px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
+                                      placeholder="Describe the control measure..."
+                                    />
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => {
+                                        const updatedRisks = [...formData.riskAssessments];
+                                        updatedRisks[index].controlMeasures = updatedRisks[index].controlMeasures.filter((_: any, i: number) => i !== measureIndex);
+                                        updateFormData({ riskAssessments: updatedRisks });
+                                      }}
+                                    >
+                                      <X className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                )) :
+                                <textarea
+                                  value={risk.controlMeasures || ''}
+                                  onChange={(e) => {
+                                    const updatedRisks = [...formData.riskAssessments];
+                                    updatedRisks[index].controlMeasures = e.target.value;
+                                    updateFormData({ riskAssessments: updatedRisks });
+                                  }}
+                                  className="w-full min-h-[60px] px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
+                                  placeholder="Describe the control measures..."
+                                />
+                              }
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  const updatedRisks = [...formData.riskAssessments];
+                                  if (!Array.isArray(updatedRisks[index].controlMeasures)) {
+                                    updatedRisks[index].controlMeasures = [updatedRisks[index].controlMeasures || ''];
+                                  }
+                                  updatedRisks[index].controlMeasures.push('');
+                                  updateFormData({ riskAssessments: updatedRisks });
+                                }}
+                                className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
+                              >
+                                <Plus className="mr-2 h-4 w-4" />
+                                Add Control measure description
+                              </Button>
                             </div>
                           </div>
                         </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-
-
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           )}
+
+          {/* Manual risk assessment entry area - always visible */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Manual Risk Assessment</CardTitle>
+              <p className="text-sm text-gray-600">
+                Add and edit risk assessments manually. Use AI Generator from sidebar for automated suggestions.
+              </p>
+            </CardHeader>
+            <CardContent>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  const newRisk = {
+                    id: `manual-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                    activity: formData.activities[0] || 'General Activity',
+                    description: '',
+                    hazards: [''],
+                    initialRiskScore: 4,
+                    riskLevel: 'Medium',
+                    controlMeasures: [''],
+                    legislation: ['Work Health and Safety Act'],
+                    residualRiskScore: 2,
+                    residualRiskLevel: 'Low',
+                    responsible: 'Site Supervisor',
+                    ppe: [],
+                    trainingRequired: [],
+                    permitRequired: [],
+                    inspectionFrequency: 'Daily',
+                    emergencyProcedures: [],
+                    environmentalControls: []
+                  };
+                  updateFormData({ 
+                    riskAssessments: [...(formData.riskAssessments || []), newRisk] 
+                  });
+                }}
+                className="mb-4"
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Add New Risk Assessment
+              </Button>
+            </CardContent>
+          </Card>
 
           {formData.activities.length === 0 && (
             <Card>
