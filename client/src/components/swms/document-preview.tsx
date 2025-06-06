@@ -255,7 +255,7 @@ export default function DocumentPreview({ formData }: DocumentPreviewProps) {
                       <p className="text-lg text-gray-600">{documentToDisplay.title}</p>
                       
                       {/* Watermark - Safety Samurai with Project Details */}
-                      <div className="absolute top-0 right-0 opacity-10 text-3xl font-bold text-blue-600 transform rotate-12 pointer-events-none">
+                      <div className="absolute top-0 right-0 opacity-10 text-3xl font-bold text-primary transform rotate-12 pointer-events-none">
                         <div className="text-center">
                           <div className="text-2xl">Safety Samurai</div>
                           <div className="text-sm mt-1">{formData.jobName || documentToDisplay.jobName || "Project Name Required"}</div>
@@ -487,9 +487,9 @@ export default function DocumentPreview({ formData }: DocumentPreviewProps) {
                                     ))}
                                   </div>
                                   {assessment.ppe && assessment.ppe.length > 0 && (
-                                    <div className="mt-2 p-1 bg-blue-50 rounded">
-                                      <div className="font-medium text-xs text-blue-700">PPE Required:</div>
-                                      <div className="text-xs text-blue-600">{assessment.ppe.join(', ')}</div>
+                                    <div className="mt-2 p-1 bg-primary/5 rounded">
+                                      <div className="font-medium text-xs text-primary">PPE Required:</div>
+                                      <div className="text-xs text-primary/80">{assessment.ppe.join(', ')}</div>
                                     </div>
                                   )}
                                   {assessment.responsible && (

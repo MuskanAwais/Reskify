@@ -64,7 +64,7 @@ export function SubscriptionModal({ isOpen, onClose, onSubscribe }: Subscription
               className={`relative rounded-2xl border-2 p-6 ${
                 plan.popular
                   ? 'border-purple-500 bg-purple-50'
-                  : 'border-blue-300 bg-blue-50'
+                  : 'border-primary/30 bg-primary/5'
               }`}
             >
               {plan.popular && (
@@ -78,7 +78,7 @@ export function SubscriptionModal({ isOpen, onClose, onSubscribe }: Subscription
 
               <div className="text-center mb-6">
                 <h3 className={`text-2xl font-bold ${
-                  plan.color === 'purple' ? 'text-purple-700' : 'text-blue-700'
+                  plan.color === 'purple' ? 'text-purple-700' : 'text-primary'
                 }`}>
                   {plan.name}
                 </h3>
@@ -104,7 +104,7 @@ export function SubscriptionModal({ isOpen, onClose, onSubscribe }: Subscription
                 className={`w-full py-3 text-lg font-semibold ${
                   plan.color === 'purple'
                     ? 'bg-purple-600 hover:bg-purple-700'
-                    : 'bg-blue-600 hover:bg-blue-700'
+                    : 'bg-primary hover:bg-primary/90'
                 }`}
               >
                 Choose {plan.name}
