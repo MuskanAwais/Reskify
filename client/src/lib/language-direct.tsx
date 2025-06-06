@@ -552,7 +552,22 @@ const translations = {
     "swms.job.name": "Название Работы",
     "swms.job.number": "Номер Работы",
     "swms.project.address": "Адрес Проекта",
-    "swms.project.location": "Местоположение/Описание Проекта"
+    "swms.project.location": "Местоположение/Описание Проекта",
+    // Dashboard translations
+    "manageSafetyCompliance": "Управление Соблюдением Безопасности",
+    "draftSwms": "Черновик SWMS",
+    "saveCompleteLater": "Сохранить и Завершить Позже",
+    "completedSwms": "Завершенные SWMS",
+    "projectSpecificDocumentation": "Проектная Документация",
+    "createNewSwms": "Создать Новый SWMS",
+    "quickStart": "Быстрый Старт",
+    "recentSwmsDocuments": "Недавние Документы SWMS",
+    "viewAll": "Показать Все",
+    "quickActions": "Быстрые Действия",
+    "nav.ai-generator": "ИИ Генератор",
+    "nav.team": "Команда",
+    "nav.analytics": "Аналитика",
+    "nav.account": "Аккаунт"
   },
   it: {
     legalDisclaimer: "Esclusione di Responsabilità Legale",
@@ -594,7 +609,22 @@ const translations = {
     "swms.job.name": "Nome Lavoro",
     "swms.job.number": "Numero Lavoro",
     "swms.project.address": "Indirizzo Progetto",
-    "swms.project.location": "Posizione/Descrizione Progetto"
+    "swms.project.location": "Posizione/Descrizione Progetto",
+    // Dashboard translations
+    "manageSafetyCompliance": "Gestire Conformità Sicurezza",
+    "draftSwms": "Bozza SWMS",
+    "saveCompleteLater": "Salva e Completa Dopo",
+    "completedSwms": "SWMS Completati",
+    "projectSpecificDocumentation": "Documentazione Specifica Progetto",
+    "createNewSwms": "Crea Nuovo SWMS",
+    "quickStart": "Avvio Rapido",
+    "recentSwmsDocuments": "Documenti SWMS Recenti",
+    "viewAll": "Visualizza Tutto",
+    "quickActions": "Azioni Rapide",
+    "nav.ai-generator": "Generatore IA",
+    "nav.team": "Team",
+    "nav.analytics": "Analisi",
+    "nav.account": "Account"
   },
   nl: {
     legalDisclaimer: "Juridische Disclaimer",
@@ -636,7 +666,22 @@ const translations = {
     "swms.job.name": "Taaknaam",
     "swms.job.number": "Taaknummer",
     "swms.project.address": "Projectadres",
-    "swms.project.location": "Projectlocatie/Beschrijving"
+    "swms.project.location": "Projectlocatie/Beschrijving",
+    // Dashboard translations
+    "manageSafetyCompliance": "Veiligheidsnaleving Beheren",
+    "draftSwms": "Concept SWMS",
+    "saveCompleteLater": "Opslaan en Later Voltooien",
+    "completedSwms": "Voltooide SWMS",
+    "projectSpecificDocumentation": "Projectspecifieke Documentatie",
+    "createNewSwms": "Nieuwe SWMS Maken",
+    "quickStart": "Snelle Start",
+    "recentSwmsDocuments": "Recente SWMS Documenten",
+    "viewAll": "Alles Bekijken",
+    "quickActions": "Snelle Acties",
+    "nav.ai-generator": "AI Generator",
+    "nav.team": "Team",
+    "nav.analytics": "Analytics",
+    "nav.account": "Account"
   },
   hi: {
     legalDisclaimer: "कानूनी अस्वीकरण",
@@ -678,7 +723,22 @@ const translations = {
     "swms.job.name": "कार्य नाम",
     "swms.job.number": "कार्य संख्या",
     "swms.project.address": "परियोजना पता",
-    "swms.project.location": "परियोजना स्थान/विवरण"
+    "swms.project.location": "परियोजना स्थान/विवरण",
+    // Dashboard translations
+    "manageSafetyCompliance": "सुरक्षा अनुपालन प्रबंधन",
+    "draftSwms": "मसौदा SWMS",
+    "saveCompleteLater": "सेव करें और बाद में पूरा करें",
+    "completedSwms": "पूर्ण SWMS",
+    "projectSpecificDocumentation": "परियोजना विशिष्ट प्रलेखन",
+    "createNewSwms": "नया SWMS बनाएं",
+    "quickStart": "त्वरित प्रारंभ",
+    "recentSwmsDocuments": "हाल के SWMS दस्तावेज़",
+    "viewAll": "सभी देखें",
+    "quickActions": "त्वरित कार्य",
+    "nav.ai-generator": "एआई जेनरेटर",
+    "nav.team": "टीम",
+    "nav.analytics": "विश्लेषणात्मक",
+    "nav.account": "खाता"
   },
   vi: {
     legalDisclaimer: "Tuyên Bố Miễn Trách Nhiệm Pháp Lý",
@@ -720,7 +780,22 @@ const translations = {
     "swms.job.name": "Tên Công Việc",
     "swms.job.number": "Số Công Việc",
     "swms.project.address": "Địa Chỉ Dự Án",
-    "swms.project.location": "Vị Trí/Mô Tả Dự Án"
+    "swms.project.location": "Vị Trí/Mô Tả Dự Án",
+    // Dashboard translations
+    "manageSafetyCompliance": "Quản Lý Tuân Thủ An Toàn",
+    "draftSwms": "Bản Nháp SWMS",
+    "saveCompleteLater": "Lưu và Hoàn Thành Sau",
+    "completedSwms": "SWMS Đã Hoàn Thành",
+    "projectSpecificDocumentation": "Tài Liệu Cụ Thể Dự Án",
+    "createNewSwms": "Tạo SWMS Mới",
+    "quickStart": "Bắt Đầu Nhanh",
+    "recentSwmsDocuments": "Tài Liệu SWMS Gần Đây",
+    "viewAll": "Xem Tất Cả",
+    "quickActions": "Hành Động Nhanh",
+    "nav.ai-generator": "Trình Tạo AI",
+    "nav.team": "Nhóm",
+    "nav.analytics": "Phân Tích",
+    "nav.account": "Tài Khoản"
   },
   th: {
     legalDisclaimer: "ข้อจำกัดความรับผิดชอบทางกฎหมาย",
@@ -762,7 +837,22 @@ const translations = {
     "swms.job.name": "ชื่องาน",
     "swms.job.number": "หมายเลขงาน",
     "swms.project.address": "ที่อยู่โครงการ",
-    "swms.project.location": "ตำแหน่ง/คำอธิบายโครงการ"
+    "swms.project.location": "ตำแหน่ง/คำอธิบายโครงการ",
+    // Dashboard translations
+    "manageSafetyCompliance": "จัดการการปฏิบัติตามความปลอดภัย",
+    "draftSwms": "ร่าง SWMS",
+    "saveCompleteLater": "บันทึกและทำให้เสร็จในภายหลัง",
+    "completedSwms": "SWMS ที่เสร็จสิ้น",
+    "projectSpecificDocumentation": "เอกสารเฉพาะโครงการ",
+    "createNewSwms": "สร้าง SWMS ใหม่",
+    "quickStart": "เริ่มต้นอย่างรวดเร็ว",
+    "recentSwmsDocuments": "เอกสาร SWMS ล่าสุด",
+    "viewAll": "ดูทั้งหมด",
+    "quickActions": "การดำเนินการที่รวดเร็ว",
+    "nav.ai-generator": "เครื่องมือสร้าง AI",
+    "nav.team": "ทีม",
+    "nav.analytics": "การวิเคราะห์",
+    "nav.account": "บัญชี"
   },
   tr: {
     legalDisclaimer: "Yasal Sorumluluk Reddi",
@@ -804,7 +894,22 @@ const translations = {
     "swms.job.name": "İş Adı",
     "swms.job.number": "İş Numarası",
     "swms.project.address": "Proje Adresi",
-    "swms.project.location": "Proje Konumu/Açıklaması"
+    "swms.project.location": "Proje Konumu/Açıklaması",
+    // Dashboard translations
+    "manageSafetyCompliance": "Güvenlik Uyumluluğu Yönetimi",
+    "draftSwms": "Taslak SWMS",
+    "saveCompleteLater": "Kaydet ve Daha Sonra Tamamla",
+    "completedSwms": "Tamamlanmış SWMS",
+    "projectSpecificDocumentation": "Projeye Özel Dokümantasyon",
+    "createNewSwms": "Yeni SWMS Oluştur",
+    "quickStart": "Hızlı Başlangıç",
+    "recentSwmsDocuments": "Son SWMS Belgeleri",
+    "viewAll": "Tümünü Görüntüle",
+    "quickActions": "Hızlı İşlemler",
+    "nav.ai-generator": "AI Üretici",
+    "nav.team": "Takım",
+    "nav.analytics": "Analitik",
+    "nav.account": "Hesap"
   }
 };
 
