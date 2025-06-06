@@ -1,18 +1,31 @@
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useState, useCallback } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAdmin } from "@/App";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Lock, Crown, Unlock, Search, ExternalLink, Filter, Shield } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
+import { Lock, Crown, Unlock, Search, ExternalLink, Filter, Shield, Upload, FileText, X, CheckCircle, AlertCircle } from "lucide-react";
 
 export default function SafetyLibrary() {
   const { isAdminMode } = useAdmin();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [adminUnlocked, setAdminUnlocked] = useState(false);
+  const [uploadFiles, setUploadFiles] = useState<File[]>([]);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadResults, setUploadResults] = useState<{success: number, failed: number, errors: string[]}>({
+    success: 0,
+    failed: 0,
+    errors: []
+  });
 
   // Check if user has access to Safety Library
   const { data: subscription } = useQuery({
@@ -23,6 +36,81 @@ export default function SafetyLibrary() {
   const { data: safetyLibrary = [] } = useQuery({
     queryKey: ['/api/safety-library']
   });
+
+  // File upload handlers
+  const handleFileSelect = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+    setUploadFiles(prev => [...prev, ...files]);
+  }, []);
+
+  const removeFile = useCallback((index: number) => {
+    setUploadFiles(prev => prev.filter((_, i) => i !== index));
+  }, []);
+
+  const uploadMutation = useMutation({
+    mutationFn: async (files: File[]) => {
+      setIsUploading(true);
+      setUploadProgress(0);
+      setUploadResults({ success: 0, failed: 0, errors: [] });
+
+      const results = { success: 0, failed: 0, errors: [] as string[] };
+      
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        try {
+          const formData = new FormData();
+          formData.append('file', file);
+          formData.append('category', file.name.toLowerCase().includes('construction') ? 'Construction' :
+                          file.name.toLowerCase().includes('electrical') ? 'Electrical' :
+                          file.name.toLowerCase().includes('manual') ? 'Manual Handling' :
+                          file.name.toLowerCase().includes('noise') ? 'Noise Control' :
+                          file.name.toLowerCase().includes('plant') ? 'Plant & Equipment' :
+                          file.name.toLowerCase().includes('stevedoring') ? 'Stevedoring' :
+                          'General Safety');
+
+          await apiRequest('POST', '/api/safety-library/upload', formData);
+          results.success++;
+        } catch (error) {
+          results.failed++;
+          results.errors.push(`${file.name}: ${error instanceof Error ? error.message : 'Upload failed'}`);
+        }
+        
+        setUploadProgress(Math.round(((i + 1) / files.length) * 100));
+        setUploadResults({ ...results });
+      }
+
+      return results;
+    },
+    onSuccess: (results) => {
+      toast({
+        title: "Upload Complete",
+        description: `${results.success} files uploaded successfully${results.failed > 0 ? `, ${results.failed} failed` : ''}`,
+        variant: results.failed > 0 ? "destructive" : "default"
+      });
+      
+      if (results.success > 0) {
+        queryClient.invalidateQueries({ queryKey: ['/api/safety-library'] });
+      }
+      
+      setUploadFiles([]);
+      setIsUploading(false);
+      setUploadProgress(0);
+    },
+    onError: (error) => {
+      toast({
+        title: "Upload Failed",
+        description: error instanceof Error ? error.message : "Failed to upload files",
+        variant: "destructive"
+      });
+      setIsUploading(false);
+    }
+  });
+
+  const startUpload = () => {
+    if (uploadFiles.length > 0) {
+      uploadMutation.mutate(uploadFiles);
+    }
+  };
 
   const hasAccess = isAdminMode || adminUnlocked || 
     (subscription as any)?.plan === "pro" || 
@@ -121,6 +209,115 @@ export default function SafetyLibrary() {
           </Badge>
         )}
       </div>
+
+      {/* Admin Upload Interface */}
+      {(isAdminMode || adminUnlocked) && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Upload className="h-5 w-5" />
+              Document Upload (Admin Only)
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {/* File Selection */}
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                <input
+                  type="file"
+                  multiple
+                  accept=".pdf,.doc,.docx"
+                  onChange={handleFileSelect}
+                  className="hidden"
+                  id="file-upload"
+                />
+                <label htmlFor="file-upload" className="cursor-pointer">
+                  <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                  <p className="text-lg font-medium text-gray-700">Upload Safety Documents</p>
+                  <p className="text-sm text-gray-500">Select multiple PDF, DOC, or DOCX files (500+ supported)</p>
+                  <Button type="button" className="mt-4">
+                    Choose Files
+                  </Button>
+                </label>
+              </div>
+
+              {/* Selected Files List */}
+              {uploadFiles.length > 0 && (
+                <div className="space-y-2">
+                  <h3 className="font-medium">Selected Files ({uploadFiles.length})</h3>
+                  <div className="max-h-40 overflow-y-auto space-y-1">
+                    {uploadFiles.map((file, index) => (
+                      <div key={index} className="flex items-center justify-between bg-gray-50 p-2 rounded">
+                        <div className="flex items-center gap-2">
+                          <FileText className="h-4 w-4" />
+                          <span className="text-sm truncate">{file.name}</span>
+                          <span className="text-xs text-gray-500">({Math.round(file.size / 1024)} KB)</span>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeFile(index)}
+                          className="h-6 w-6 p-0"
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <div className="flex gap-2 pt-2">
+                    <Button 
+                      onClick={startUpload} 
+                      disabled={isUploading}
+                      className="flex-1"
+                    >
+                      {isUploading ? 'Uploading...' : `Upload ${uploadFiles.length} Files`}
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setUploadFiles([])}
+                      disabled={isUploading}
+                    >
+                      Clear All
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              {/* Upload Progress */}
+              {isUploading && (
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span>Upload Progress</span>
+                    <span>{uploadProgress}%</span>
+                  </div>
+                  <Progress value={uploadProgress} className="w-full" />
+                  <div className="text-sm text-gray-600">
+                    {uploadResults.success > 0 && (
+                      <span className="text-green-600">✓ {uploadResults.success} uploaded</span>
+                    )}
+                    {uploadResults.failed > 0 && (
+                      <span className="text-red-600 ml-2">✗ {uploadResults.failed} failed</span>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Upload Results */}
+              {uploadResults.errors.length > 0 && (
+                <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded">
+                  <h4 className="text-sm font-medium text-red-800 mb-2">Upload Errors:</h4>
+                  <div className="space-y-1 max-h-20 overflow-y-auto">
+                    {uploadResults.errors.map((error, index) => (
+                      <p key={index} className="text-xs text-red-700">{error}</p>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Search and Filter Controls */}
       <Card>
