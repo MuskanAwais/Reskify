@@ -48,8 +48,16 @@ export function ComprehensiveProjectDetails({ formData, onDataChange }: Comprehe
   const [responsiblePersons, setResponsiblePersons] = useState(formData.responsiblePersons || []);
   const [emergencyContacts, setEmergencyContacts] = useState(formData.emergencyContacts || []);
 
+  const updateFormData = (updates: any) => {
+    if (onDataChange && typeof onDataChange === 'function') {
+      onDataChange({ ...formData, ...updates });
+    }
+  };
+
   const updateData = (updates: any) => {
-    onDataChange({ ...formData, ...updates });
+    if (onDataChange && typeof onDataChange === 'function') {
+      onDataChange({ ...formData, ...updates });
+    }
   };
 
   const addResponsiblePerson = () => {

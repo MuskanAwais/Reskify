@@ -245,7 +245,7 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
 
           <ComprehensiveProjectDetails 
             formData={formData}
-            updateFormData={updateFormData}
+            onDataChange={updateFormData}
           />
 
           <Card>
