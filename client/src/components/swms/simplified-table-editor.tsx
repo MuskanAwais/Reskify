@@ -365,7 +365,7 @@ export function SimplifiedTableEditor({ riskAssessments = [], onUpdate, tradeTyp
                         Hazards
                       </h4>
                       <ul className="list-disc list-inside space-y-1 text-sm">
-                        {assessment.hazards.map((hazard, index) => (
+                        {(assessment.hazards || []).map((hazard, index) => (
                           <li key={index}>{hazard}</li>
                         ))}
                       </ul>
@@ -376,7 +376,7 @@ export function SimplifiedTableEditor({ riskAssessments = [], onUpdate, tradeTyp
                         Control Measures
                       </h4>
                       <ul className="list-disc list-inside space-y-1 text-sm">
-                        {assessment.controlMeasures.map((control, index) => (
+                        {(assessment.controlMeasures || []).map((control, index) => (
                           <li key={index}>{control}</li>
                         ))}
                       </ul>

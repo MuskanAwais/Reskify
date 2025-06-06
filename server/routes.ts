@@ -613,8 +613,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       for (const trade of allTrades) {
         const tradeTasks = getComprehensiveSafetyTasksByTrade(trade);
         const foundTask = tradeTasks.find((task: any) => 
-          task.taskName.toLowerCase().includes(activityName.toLowerCase()) ||
-          activityName.toLowerCase().includes(task.taskName.toLowerCase())
+          task.activity && task.activity.toLowerCase().includes(activityName.toLowerCase()) ||
+          activityName.toLowerCase().includes(task.activity?.toLowerCase() || '')
         );
         
         if (foundTask) {
@@ -648,18 +648,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Transform database format to risk assessment format
       const riskAssessment = {
         activity: activityName,
-        description: activityData.description || `Risk assessment for ${activityName}`,
+        description: `Risk assessment for ${activityName}`,
         hazards: activityData.hazards || [],
-        initialRiskScore: activityData.riskScore || 6,
+        initialRiskScore: activityData.initialRiskScore || 6,
         riskLevel: activityData.riskLevel || 'Medium',
         controlMeasures: activityData.controlMeasures || [],
-        legislation: activityData.complianceCodes || ['Work Health and Safety Act 2011'],
-        residualRiskScore: Math.max(1, (activityData.riskScore || 6) - 3),
-        residualRiskLevel: activityData.riskScore > 6 ? 'Medium' : 'Low',
-        responsible: 'Site Supervisor',
+        legislation: activityData.legislation || ['Work Health and Safety Act 2011'],
+        residualRiskScore: activityData.residualRiskScore || Math.max(1, (activityData.initialRiskScore || 6) - 3),
+        residualRiskLevel: activityData.residualRiskLevel || 'Low',
+        responsible: activityData.responsible || 'Site Supervisor',
         ppe: activityData.ppe || [],
         trainingRequired: activityData.trainingRequired || [],
-        permitRequired: activityData.highRiskWork ? ['High Risk Work Permit'] : [],
+        permitRequired: activityData.permitRequired || (activityData.highRiskWork ? ['High Risk Work Permit'] : []),
         inspectionFrequency: activityData.inspectionFrequency || 'Daily',
         emergencyProcedures: activityData.emergencyProcedures || [],
         environmentalControls: activityData.environmentalControls || []
