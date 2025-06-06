@@ -54,7 +54,14 @@ const translations = {
     "nav.ai-generator": "AI Generator",
     "nav.team": "Team",
     "nav.analytics": "Analytics",
-    "nav.account": "Account"
+    "nav.account": "Account",
+    // Placeholder texts
+    "placeholder.selectTrade": "Select your trade",
+    "placeholder.jobName": "e.g., Office Tower Construction",
+    "placeholder.jobNumber": "e.g., JOB-2025-001 (optional)",
+    "placeholder.projectAddress": "Enter the complete project address",
+    "placeholder.projectLocation": "e.g., Level 5 Office Fitout, Main Building",
+    "placeholder.swmsTitle": "e.g., Electrical Installation - Office Fitout"
   },
   zh: {
     legalDisclaimer: "法律免责声明",
@@ -111,7 +118,14 @@ const translations = {
     "nav.ai-generator": "AI生成器",
     "nav.team": "团队",
     "nav.analytics": "分析",
-    "nav.account": "账户"
+    "nav.account": "账户",
+    // Placeholder texts
+    "placeholder.selectTrade": "选择您的工种",
+    "placeholder.jobName": "例如：办公大楼建设",
+    "placeholder.jobNumber": "例如：JOB-2025-001（可选）",
+    "placeholder.projectAddress": "输入完整的项目地址",
+    "placeholder.projectLocation": "例如：5楼办公室装修，主楼",
+    "placeholder.swmsTitle": "例如：电气安装 - 办公室装修"
   },
   es: {
     legalDisclaimer: "Descargo Legal",
@@ -396,7 +410,14 @@ const translations = {
     "nav.ai-generator": "AI 생성기",
     "nav.team": "팀",
     "nav.analytics": "분석",
-    "nav.account": "계정"
+    "nav.account": "계정",
+    // Placeholder texts
+    "placeholder.selectTrade": "직종을 선택하세요",
+    "placeholder.jobName": "예: 오피스 타워 건설",
+    "placeholder.jobNumber": "예: JOB-2025-001 (선택사항)",
+    "placeholder.projectAddress": "완전한 프로젝트 주소를 입력하세요",
+    "placeholder.projectLocation": "예: 5층 오피스 피트아웃, 본관",
+    "placeholder.swmsTitle": "예: 전기 설치 - 오피스 피트아웃"
   },
   ar: {
     legalDisclaimer: "إخلاء المسؤولية القانونية",
