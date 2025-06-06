@@ -154,7 +154,22 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
 
   const getActivitiesForTrade = (tradeName: string) => {
     const trade = (Array.isArray(trades) ? trades : []).find((t: any) => t.name === tradeName);
-    return trade?.activities || [];
+    if (!trade?.categories) return [];
+    
+    // Flatten all activities from all categories
+    const allActivities: any[] = [];
+    trade.categories.forEach((category: any) => {
+      if (category.activities) {
+        category.activities.forEach((activity: string) => {
+          allActivities.push({
+            name: activity,
+            category: category.name
+          });
+        });
+      }
+    });
+    
+    return allActivities;
   };
 
   const allActivities = formData.tradeType ? getActivitiesForTrade(formData.tradeType) : [];
