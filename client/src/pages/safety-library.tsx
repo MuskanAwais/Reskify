@@ -210,9 +210,6 @@ export default function SafetyLibrary() {
         )}
       </div>
 
-      {/* Debug Admin State */}
-      {console.log('Admin Mode Debug:', { isAdminMode, adminUnlocked })}
-      
       {/* Admin Upload Interface */}
       {(isAdminMode || adminUnlocked) && (
         <Card>

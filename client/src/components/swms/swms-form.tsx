@@ -763,42 +763,112 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-5 gap-1 text-xs">
-                  <div className="font-medium text-center p-2 bg-gray-100 rounded">Risk</div>
-                  <div className="font-medium text-center p-2 bg-gray-100 rounded">Very Rare</div>
-                  <div className="font-medium text-center p-2 bg-gray-100 rounded">Unlikely</div>
-                  <div className="font-medium text-center p-2 bg-gray-100 rounded">Possible</div>
-                  <div className="font-medium text-center p-2 bg-gray-100 rounded">Likely</div>
+                {/* Section A: Qualitative and Quantitative Scales */}
+                <div className="grid grid-cols-4 gap-1 text-xs border border-gray-300 mb-4">
+                  <div className="p-2 bg-cyan-200 font-medium text-center border-r">Qualitative Scale</div>
+                  <div className="p-2 bg-cyan-200 font-medium text-center border-r">Quantitative Scale</div>
+                  <div className="p-2 bg-green-300 font-medium text-center border-r">Magnitude Scale</div>
+                  <div className="p-2 bg-green-300 font-medium text-center">Probability Scale</div>
                   
-                  <div className="font-medium p-2 bg-gray-100 rounded">Catastrophic</div>
-                  <div className="p-2 bg-yellow-300 rounded text-center">Medium</div>
-                  <div className="p-2 bg-orange-400 rounded text-center text-white">High</div>
-                  <div className="p-2 bg-red-500 rounded text-center text-white">Extreme</div>
-                  <div className="p-2 bg-red-600 rounded text-center text-white">Extreme</div>
+                  <div className="p-2 bg-cyan-100 border-r">
+                    <div className="font-medium">Extreme</div>
+                    <div className="text-xs text-gray-600">Fatality, significant disability, catastrophic property damage</div>
+                  </div>
+                  <div className="p-2 bg-cyan-100 border-r">$50,000+</div>
+                  <div className="p-2 bg-green-200 border-r">
+                    <div className="font-medium">Likely</div>
+                    <div className="text-xs">Monthly in the industry</div>
+                  </div>
+                  <div className="p-2 bg-green-200">Good chance</div>
                   
-                  <div className="font-medium p-2 bg-gray-100 rounded">Major</div>
-                  <div className="p-2 bg-green-400 rounded text-center">Low</div>
-                  <div className="p-2 bg-yellow-300 rounded text-center">Medium</div>
-                  <div className="p-2 bg-orange-400 rounded text-center text-white">High</div>
-                  <div className="p-2 bg-red-500 rounded text-center text-white">Extreme</div>
+                  <div className="p-2 bg-cyan-100 border-r">
+                    <div className="font-medium">High</div>
+                    <div className="text-xs text-gray-600">Minor amputation, minor permanent disability, moderate property damage</div>
+                  </div>
+                  <div className="p-2 bg-cyan-100 border-r">$15,000 - $50,000</div>
+                  <div className="p-2 bg-green-200 border-r">
+                    <div className="font-medium">Possible</div>
+                    <div className="text-xs">Yearly in the industry</div>
+                  </div>
+                  <div className="p-2 bg-green-200">Even chance</div>
                   
-                  <div className="font-medium p-2 bg-gray-100 rounded">Moderate</div>
-                  <div className="p-2 bg-green-300 rounded text-center">Low</div>
-                  <div className="p-2 bg-green-400 rounded text-center">Low</div>
-                  <div className="p-2 bg-yellow-300 rounded text-center">Medium</div>
-                  <div className="p-2 bg-orange-400 rounded text-center text-white">High</div>
+                  <div className="p-2 bg-cyan-100 border-r">
+                    <div className="font-medium">Medium</div>
+                    <div className="text-xs text-gray-600">Minor injury resulting in Lost Time Injury or Medically Treated Injury</div>
+                  </div>
+                  <div className="p-2 bg-cyan-100 border-r">$1,000 - $15,000</div>
+                  <div className="p-2 bg-green-200 border-r">
+                    <div className="font-medium">Unlikely</div>
+                    <div className="text-xs">Every 10 years in the industry</div>
+                  </div>
+                  <div className="p-2 bg-green-200">Low chance</div>
                   
-                  <div className="font-medium p-2 bg-gray-100 rounded">Minor</div>
-                  <div className="p-2 bg-green-200 rounded text-center">Low</div>
-                  <div className="p-2 bg-green-300 rounded text-center">Low</div>
-                  <div className="p-2 bg-green-400 rounded text-center">Low</div>
-                  <div className="p-2 bg-yellow-300 rounded text-center">Medium</div>
+                  <div className="p-2 bg-cyan-100 border-r">
+                    <div className="font-medium">Low</div>
+                    <div className="text-xs text-gray-600">First Aid Treatment with no lost time</div>
+                  </div>
+                  <div className="p-2 bg-cyan-100 border-r">$0 - $1,000</div>
+                  <div className="p-2 bg-green-200 border-r">
+                    <div className="font-medium">Very Rarely</div>
+                    <div className="text-xs">Once in a lifetime in the industry</div>
+                  </div>
+                  <div className="p-2 bg-green-200">Practically no chance</div>
+                </div>
+
+                {/* Section B & C: Risk Matrix */}
+                <div className="grid grid-cols-4 gap-1 text-xs border border-gray-300 mb-4">
+                  <div className="p-2 bg-cyan-200 font-medium text-center border-r">Likely</div>
+                  <div className="p-2 bg-cyan-200 font-medium text-center border-r">Possible</div>
+                  <div className="p-2 bg-cyan-200 font-medium text-center border-r">Unlikely</div>
+                  <div className="p-2 bg-cyan-200 font-medium text-center">Very Rare</div>
                   
-                  <div className="font-medium p-2 bg-gray-100 rounded">Insignificant</div>
-                  <div className="p-2 bg-green-100 rounded text-center">Low</div>
-                  <div className="p-2 bg-green-200 rounded text-center">Low</div>
-                  <div className="p-2 bg-green-300 rounded text-center">Low</div>
-                  <div className="p-2 bg-green-400 rounded text-center">Low</div>
+                  <div className="p-2 bg-red-500 text-white text-center font-bold border-r">16</div>
+                  <div className="p-2 bg-red-400 text-white text-center font-bold border-r">14</div>
+                  <div className="p-2 bg-yellow-400 text-center font-bold border-r">11</div>
+                  <div className="p-2 bg-yellow-300 text-center font-bold">7</div>
+                  
+                  <div className="p-2 bg-orange-400 text-white text-center font-bold border-r">15</div>
+                  <div className="p-2 bg-yellow-400 text-center font-bold border-r">12</div>
+                  <div className="p-2 bg-green-400 text-center font-bold border-r">8</div>
+                  <div className="p-2 bg-green-300 text-center font-bold">5</div>
+                  
+                  <div className="p-2 bg-yellow-400 text-center font-bold border-r">13</div>
+                  <div className="p-2 bg-green-400 text-center font-bold border-r">9</div>
+                  <div className="p-2 bg-green-300 text-center font-bold border-r">6</div>
+                  <div className="p-2 bg-green-200 text-center font-bold">3</div>
+                  
+                  <div className="p-2 bg-green-400 text-center font-bold border-r">10</div>
+                  <div className="p-2 bg-green-300 text-center font-bold border-r">7</div>
+                  <div className="p-2 bg-green-200 text-center font-bold border-r">4</div>
+                  <div className="p-2 bg-green-100 text-center font-bold">2</div>
+                </div>
+
+                {/* Section D: Action Matrix */}
+                <div className="grid grid-cols-4 gap-1 text-xs border border-gray-300">
+                  <div className="p-2 bg-gray-100 font-medium text-center border-r">Score</div>
+                  <div className="p-2 bg-gray-100 font-medium text-center border-r">Ranking</div>
+                  <div className="p-2 bg-gray-100 font-medium text-center border-r">Action</div>
+                  <div className="p-2 bg-gray-100 font-medium text-center">Timeline</div>
+                  
+                  <div className="p-2 bg-red-500 text-white font-bold text-center border-r">14 - 16</div>
+                  <div className="p-2 bg-red-500 text-white font-bold text-center border-r">Severe (5)</div>
+                  <div className="p-2 bg-red-500 text-white text-xs text-center border-r">Action required</div>
+                  <div className="p-2 bg-red-500 text-white text-xs text-center">Immediately</div>
+                  
+                  <div className="p-2 bg-orange-400 text-white font-bold text-center border-r">11 - 13</div>
+                  <div className="p-2 bg-orange-400 text-white font-bold text-center border-r">High (4)</div>
+                  <div className="p-2 bg-orange-400 text-white text-xs text-center border-r">Action within</div>
+                  <div className="p-2 bg-orange-400 text-white text-xs text-center">24 hrs</div>
+                  
+                  <div className="p-2 bg-yellow-400 font-bold text-center border-r">7 - 10</div>
+                  <div className="p-2 bg-yellow-400 font-bold text-center border-r">Medium (3)</div>
+                  <div className="p-2 bg-yellow-400 text-xs text-center border-r">Action within</div>
+                  <div className="p-2 bg-yellow-400 text-xs text-center">14 days</div>
+                  
+                  <div className="p-2 bg-green-400 text-white font-bold text-center border-r">3 - 6</div>
+                  <div className="p-2 bg-green-400 text-white font-bold text-center border-r">Low (1-2)</div>
+                  <div className="p-2 bg-green-400 text-white text-xs text-center border-r">Action within</div>
+                  <div className="p-2 bg-green-400 text-white text-xs text-center">Business cycle</div>
                 </div>
               </CardContent>
             </Card>

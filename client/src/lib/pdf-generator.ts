@@ -453,53 +453,149 @@ export async function generateProtectedPDF(document: SwmsDocument, user: User | 
     pdf.text('Risk Assessment Matrix', 20, yPosition);
     yPosition += 15;
 
-    // Comprehensive Risk Matrix based on provided image
-    const riskMatrixData = [
-      ['', '', 'Consequence/Impact', '', '', '', ''],
-      ['Likelihood', 'Qualitative Scale', 'Quantitative Scale', 'Magnitude', 'Probability Description', 'Likely', 'Possible', 'Unlikely', 'Very Rare'],
-      ['Extreme', 'Fatality, significant disability, catastrophic property damage', '$50,000+', 'Likely', 'Monthly in the industry', '16', '14', '11', '7'],
-      ['High', 'Minor amputation, minor permanent disability, moderate property damage', '$15,000 - $50,000', 'Possible', 'Yearly in the industry', '15', '12', '8', '5'],
-      ['Medium', 'Minor injury resulting in less than 5 Lost Time Injury or Medically Treated Injury', '$1,000 - $15,000', 'Unlikely', 'Every 10 years in the industry', '13', '9', '6', '3'],
-      ['Low', 'First Aid Treatment with no lost time', '$0 - $1,000', 'Very Rarely', 'Once in a lifetime in the industry', '10', '7', '4', '2']
+    // Comprehensive Risk Matrix based on provided image - Section A
+    const riskMatrixDataA = [
+      ['Qualitative Scale', 'Quantitative Scale', 'Magnitude Scale', 'Probability Scale'],
+      ['Extreme\nFatality, significant disability, catastrophic property damage', '$50,000+', 'Likely\nMonthly in the industry', 'Good chance'],
+      ['High\nMinor amputation, minor permanent disability, moderate property damage', '$15,000 - $50,000', 'Possible\nYearly in the industry', 'Even chance'],
+      ['Medium\nMinor injury resulting in Lost Time Injury or Medically Treated Injury', '$1,000 - $15,000', 'Unlikely\nEvery 10 years in the industry', 'Low chance'],
+      ['Low\nFirst Aid Treatment with no lost time', '$0 - $1,000', 'Very Rarely\nOnce in a lifetime in the industry', 'Practically no chance']
     ];
 
+    // Risk Matrix Section B & C - Risk Scores
+    const riskMatrixDataBC = [
+      ['', 'Likely', 'Possible', 'Unlikely', 'Very Rare'],
+      ['Extreme', '16', '14', '11', '7'],
+      ['High', '15', '12', '8', '5'],
+      ['Medium', '13', '9', '6', '3'],
+      ['Low', '10', '7', '4', '2']
+    ];
+
+    // Risk Matrix Section D - Action Matrix
+    const riskMatrixDataD = [
+      ['Score', 'Ranking', 'Action', 'Timeline'],
+      ['14 - 16', 'Severe (5)', 'Action required', 'Immediately'],
+      ['11 - 13', 'High (4)', 'Action within', '24 hrs'],
+      ['7 - 10', 'Medium (3)', 'Action within', '14 days'],
+      ['3 - 6', 'Low (1-2)', 'Action within', 'Business cycle']
+    ];
+
+    // Section A: Qualitative and Quantitative Scales
     pdf.autoTable({
       startY: yPosition,
-      body: riskMatrixData,
+      body: riskMatrixDataA,
       theme: 'grid',
       margin: { left: 20, right: 20 },
-      styles: { fontSize: 8, cellPadding: 2 },
+      styles: { fontSize: 8, cellPadding: 3 },
       columnStyles: {
-        0: { cellWidth: 20, fontStyle: 'bold' },
-        1: { cellWidth: 35 },
-        2: { cellWidth: 25 },
-        3: { cellWidth: 20 },
-        4: { cellWidth: 30 },
-        5: { cellWidth: 15 },
-        6: { cellWidth: 15 },
-        7: { cellWidth: 15 },
-        8: { cellWidth: 15 }
+        0: { cellWidth: 45 },
+        1: { cellWidth: 30 },
+        2: { cellWidth: 35 },
+        3: { cellWidth: 35 }
       },
       didParseCell: function(data) {
-        // Color coding for risk levels
-        if (data.row.index >= 2) {
+        if (data.row.index === 0) {
+          // Header row - cyan background
+          data.cell.styles.fillColor = [183, 234, 230]; // Cyan-200
+          data.cell.styles.textColor = [0, 0, 0];
+          data.cell.styles.fontStyle = 'bold';
+        } else {
+          // Data rows - cyan background
+          data.cell.styles.fillColor = [207, 250, 254]; // Cyan-100
+          data.cell.styles.textColor = [0, 0, 0];
+        }
+      }
+    });
+
+    yPosition = (pdf as any).lastAutoTable.finalY + 10;
+
+    // Section B & C: Risk Score Matrix
+    pdf.autoTable({
+      startY: yPosition,
+      body: riskMatrixDataBC,
+      theme: 'grid',
+      margin: { left: 20, right: 20 },
+      styles: { fontSize: 10, cellPadding: 4, textColor: [0, 0, 0] },
+      columnStyles: {
+        0: { cellWidth: 30, fontStyle: 'bold' },
+        1: { cellWidth: 25 },
+        2: { cellWidth: 25 },
+        3: { cellWidth: 25 },
+        4: { cellWidth: 25 }
+      },
+      didParseCell: function(data) {
+        if (data.row.index === 0) {
+          // Header row
+          data.cell.styles.fillColor = [183, 234, 230]; // Cyan-200
+          data.cell.styles.fontStyle = 'bold';
+        } else if (data.column.index === 0) {
+          // First column - severity labels
+          data.cell.styles.fillColor = [207, 250, 254]; // Cyan-100
+          data.cell.styles.fontStyle = 'bold';
+        } else {
+          // Risk score cells with color coding
           const cellValue = data.cell.text[0];
-          if (['16', '15', '14', '13'].includes(cellValue)) {
-            data.cell.styles.fillColor = [220, 53, 69]; // Red for extreme/high
+          if (['16', '15', '14'].includes(cellValue)) {
+            data.cell.styles.fillColor = [239, 68, 68]; // Red-500
             data.cell.styles.textColor = [255, 255, 255];
-          } else if (['12', '11', '10', '9'].includes(cellValue)) {
-            data.cell.styles.fillColor = [255, 193, 7]; // Yellow for medium
+            data.cell.styles.fontStyle = 'bold';
+          } else if (['13', '12', '11'].includes(cellValue)) {
+            data.cell.styles.fillColor = [251, 146, 60]; // Orange-400
+            data.cell.styles.textColor = [255, 255, 255];
+            data.cell.styles.fontStyle = 'bold';
+          } else if (['10', '9', '8', '7'].includes(cellValue)) {
+            data.cell.styles.fillColor = [250, 204, 21]; // Yellow-400
             data.cell.styles.textColor = [0, 0, 0];
-          } else if (['8', '7', '6', '5', '4', '3', '2'].includes(cellValue)) {
-            data.cell.styles.fillColor = [40, 167, 69]; // Green for low
+            data.cell.styles.fontStyle = 'bold';
+          } else if (['6', '5', '4', '3', '2'].includes(cellValue)) {
+            data.cell.styles.fillColor = [34, 197, 94]; // Green-400
             data.cell.styles.textColor = [255, 255, 255];
+            data.cell.styles.fontStyle = 'bold';
           }
         }
-        // Header styling
-        if (data.row.index <= 1) {
-          data.cell.styles.fillColor = [21, 101, 192];
+      }
+    });
+
+    yPosition = (pdf as any).lastAutoTable.finalY + 10;
+
+    // Section D: Action Matrix
+    pdf.autoTable({
+      startY: yPosition,
+      body: riskMatrixDataD,
+      theme: 'grid',
+      margin: { left: 20, right: 20 },
+      styles: { fontSize: 9, cellPadding: 3 },
+      columnStyles: {
+        0: { cellWidth: 25 },
+        1: { cellWidth: 30 },
+        2: { cellWidth: 30 },
+        3: { cellWidth: 30 }
+      },
+      didParseCell: function(data) {
+        if (data.row.index === 0) {
+          // Header row
+          data.cell.styles.fillColor = [156, 163, 175]; // Gray-400
           data.cell.styles.textColor = [255, 255, 255];
           data.cell.styles.fontStyle = 'bold';
+        } else {
+          // Color code based on risk level
+          if (data.row.index === 1) { // 14-16 Severe
+            data.cell.styles.fillColor = [239, 68, 68]; // Red-500
+            data.cell.styles.textColor = [255, 255, 255];
+            data.cell.styles.fontStyle = 'bold';
+          } else if (data.row.index === 2) { // 11-13 High
+            data.cell.styles.fillColor = [251, 146, 60]; // Orange-400
+            data.cell.styles.textColor = [255, 255, 255];
+            data.cell.styles.fontStyle = 'bold';
+          } else if (data.row.index === 3) { // 7-10 Medium
+            data.cell.styles.fillColor = [250, 204, 21]; // Yellow-400
+            data.cell.styles.textColor = [0, 0, 0];
+            data.cell.styles.fontStyle = 'bold';
+          } else if (data.row.index === 4) { // 3-6 Low
+            data.cell.styles.fillColor = [34, 197, 94]; // Green-400
+            data.cell.styles.textColor = [255, 255, 255];
+            data.cell.styles.fontStyle = 'bold';
+          }
         }
       }
     });
