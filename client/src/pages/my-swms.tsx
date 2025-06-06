@@ -122,7 +122,7 @@ export default function MySwms() {
       <div className="container mx-auto px-6 py-8">
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
-            <Clock className="h-8 w-8 animate-spin mx-auto mb-4 text-blue-600" />
+            <Clock className="h-8 w-8 animate-spin mx-auto mb-4 text-primary/600" />
             <p className="text-gray-600">Loading your SWMS documents...</p>
           </div>
         </div>
@@ -139,7 +139,7 @@ export default function MySwms() {
           <p className="text-gray-600 mt-1">Manage and track your Safe Work Method Statements</p>
         </div>
         <Link href="/swms-builder">
-          <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+          <Button className="bg-primary/600 hover:bg-primary/700 text-white">
             <Plus className="mr-2 h-4 w-4" />
             Create New SWMS
           </Button>
@@ -205,7 +205,7 @@ export default function MySwms() {
                   : "Get started by creating your first SWMS document"}
               </p>
               <Link href="/swms-builder">
-                <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+                <Button className="bg-primary/600 hover:bg-primary/700 text-white">
                   <Plus className="mr-2 h-4 w-4" />
                   Create First SWMS
                 </Button>

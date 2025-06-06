@@ -64,7 +64,7 @@ export default function Demo() {
                 <Card className="overflow-hidden">
                   <CardHeader>
                     <div className="flex items-center gap-4">
-                      <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold">
+                      <div className="w-8 h-8 bg-primary/600 text-white rounded-full flex items-center justify-center font-bold">
                         {index + 1}
                       </div>
                       <div>
@@ -95,11 +95,11 @@ export default function Demo() {
             <Card className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
               <CardContent className="p-8">
                 <h3 className="text-2xl font-bold mb-4">Ready to Get Started?</h3>
-                <p className="text-blue-100 mb-6">
+                <p className="text-primary/100 mb-6">
                   Join thousands of construction professionals using Safety Sensei
                 </p>
                 <Link href="/register">
-                  <Button size="lg" variant="secondary" className="bg-white text-blue-600 hover:bg-gray-100">
+                  <Button size="lg" variant="secondary" className="bg-white text-primary/600 hover:bg-gray-100">
                     Start Free Trial
                   </Button>
                 </Link>

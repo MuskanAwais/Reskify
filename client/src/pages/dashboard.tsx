@@ -108,7 +108,7 @@ export default function Dashboard() {
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle>{translate('createNewSwms')}</CardTitle>
-              <Badge variant="outline" className="bg-blue-50 text-primary border-primary/20">
+              <Badge variant="outline" className="bg-primary/50 text-primary border-primary/20">
                 {translate('quickStart')}
               </Badge>
             </div>

@@ -337,7 +337,7 @@ export default function Landing() {
                     <Button 
                       variant="outline" 
                       size="lg" 
-                      className="w-full border-blue-600 text-blue-600 hover:bg-blue-50 px-6 py-3"
+                      className="w-full border-primary/600 text-primary/600 hover:bg-primary/50 px-6 py-3"
                     >
                       <Lock className="mr-2 h-4 w-4" />
                       Sign In
@@ -375,7 +375,7 @@ export default function Landing() {
                 <FloatingCard key={index} delay={index * 0.1}>
                   <Card className="text-center border-0 shadow-lg bg-white/80 backdrop-blur-sm">
                     <CardContent className="p-6">
-                      <div className="text-blue-600 mb-2 flex justify-center">
+                      <div className="text-primary/600 mb-2 flex justify-center">
                         {stat.icon}
                       </div>
                       <div className="text-2xl font-bold text-gray-900">{stat.number}</div>
@@ -402,7 +402,7 @@ export default function Landing() {
           }}
           className="absolute bottom-20 right-10 opacity-20"
         >
-          <FileText className="h-32 w-32 text-blue-700" />
+          <FileText className="h-32 w-32 text-primary/700" />
         </motion.div>
       </section>
 
@@ -445,10 +445,10 @@ export default function Landing() {
               <div className="mt-8 text-center">
                 <p className="text-gray-600 mb-4">See the complete workflow:</p>
                 <div className="flex flex-wrap justify-center gap-4 text-sm">
-                  <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full">AI Project Setup</span>
-                  <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full">Activity Selection</span>
-                  <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full">Risk Assessment</span>
-                  <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full">PDF Generation</span>
+                  <span className="bg-primary/100 text-primary/800 px-3 py-1 rounded-full">AI Project Setup</span>
+                  <span className="bg-primary/100 text-primary/800 px-3 py-1 rounded-full">Activity Selection</span>
+                  <span className="bg-primary/100 text-primary/800 px-3 py-1 rounded-full">Risk Assessment</span>
+                  <span className="bg-primary/100 text-primary/800 px-3 py-1 rounded-full">PDF Generation</span>
                 </div>
               </div>
             </div>
@@ -476,7 +476,7 @@ export default function Landing() {
                 <EnhancedTooltip content={`Learn more about ${feature.title}: ${feature.description}`} side="top">
                   <Card className="h-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-white to-blue-50/30 cursor-pointer">
                     <CardHeader>
-                      <div className="text-blue-600 mb-4">
+                      <div className="text-primary/600 mb-4">
                         {feature.icon}
                       </div>
                       <CardTitle className="text-xl">{feature.title}</CardTitle>
@@ -512,7 +512,7 @@ export default function Landing() {
                 <button
                   onClick={() => setBillingPeriod(billingPeriod === 'monthly' ? 'yearly' : 'monthly')}
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-                    billingPeriod === 'yearly' ? 'bg-blue-600' : 'bg-gray-200'
+                    billingPeriod === 'yearly' ? 'bg-primary/600' : 'bg-gray-200'
                   }`}
                 >
                   <span
@@ -538,11 +538,11 @@ export default function Landing() {
               <FloatingCard key={index} delay={index * 0.15}>
                 <EnhancedTooltip content={`${plan.name} plan includes: ${plan.features.join(', ')}. Perfect for ${plan.name === 'Basic' ? 'small teams getting started' : plan.name === 'Pro Plan' ? 'medium teams with advanced needs' : 'large enterprises with full requirements'}.`} side="top">
                   <Card className={`h-full relative cursor-pointer ${
-                    plan.popular ? 'border-blue-500 border-2 scale-105' : 'border-gray-200'
+                    plan.popular ? 'border-primary/500 border-2 scale-105' : 'border-gray-200'
                   } shadow-lg hover:shadow-xl transition-all duration-300`}>
                   {plan.popular && (
                     <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                      <Badge className="bg-blue-600 text-white px-4 py-1">
+                      <Badge className="bg-primary/600 text-white px-4 py-1">
                         Most Popular
                       </Badge>
                     </div>
@@ -566,7 +566,7 @@ export default function Landing() {
                         </div>
                       )}
                     </div>
-                    <p className="font-medium mt-2 text-blue-600">
+                    <p className="font-medium mt-2 text-primary/600">
                       {plan.credits}
                     </p>
                   </CardHeader>
@@ -584,7 +584,7 @@ export default function Landing() {
                     <Link href="/register">
                       <Button 
                         className={`w-full ${
-                          plan.popular ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-900 hover:bg-gray-800'
+                          plan.popular ? 'bg-primary/600 hover:bg-primary/700' : 'bg-gray-900 hover:bg-gray-800'
                         } text-white`}
                         size="lg"
                       >
@@ -636,13 +636,13 @@ export default function Landing() {
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link href="/register">
-                <Button size="lg" variant="secondary" className="px-8 py-4 text-lg bg-white text-blue-600 hover:bg-gray-100">
+                <Button size="lg" variant="secondary" className="px-8 py-4 text-lg bg-white text-primary/600 hover:bg-gray-100">
                   Start Your Free Trial
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
               <Link href="/pricing">
-                <Button size="lg" variant="outline" className="px-8 py-4 text-lg border-white text-white hover:bg-white hover:text-blue-600">
+                <Button size="lg" variant="outline" className="px-8 py-4 text-lg border-white text-white hover:bg-white hover:text-primary/600">
                   View Pricing
                 </Button>
               </Link>

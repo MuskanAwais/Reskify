@@ -32,7 +32,7 @@ export default function CreditCounter({ className }: CreditCounterProps) {
   if (className === "compact") {
     return (
       <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-3 py-2 shadow-sm">
-        <CreditCard className="h-4 w-4 text-blue-600" />
+        <CreditCard className="h-4 w-4 text-primary/600" />
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium text-gray-900">{credits} Credits</span>
           {credits <= 2 && (
@@ -56,7 +56,7 @@ export default function CreditCounter({ className }: CreditCounterProps) {
       <CardContent className="p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <CreditCard className="h-5 w-5 text-blue-600" />
+            <CreditCard className="h-5 w-5 text-primary/600" />
             <div>
               <div className="flex items-center gap-2">
                 <span className="font-medium text-gray-900">SWMS Credits: {credits}</span>

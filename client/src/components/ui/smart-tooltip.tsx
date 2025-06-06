@@ -35,7 +35,7 @@ export default function SmartTooltip({
   const getContentClass = () => {
     switch (type) {
       case "help":
-        return "bg-blue-50 border-blue-200 text-blue-900";
+        return "bg-primary/10 border-primary/20 text-primary";
       case "warning":
         return "bg-orange-50 border-orange-200 text-orange-900";
       case "tip":

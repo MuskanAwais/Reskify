@@ -20,7 +20,7 @@ const Logo: React.FC<LogoProps> = ({
 
   const colorClasses = {
     light: "text-white",
-    dark: "text-blue-600"
+    dark: "text-primary"
   };
 
   return (

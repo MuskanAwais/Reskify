@@ -184,7 +184,7 @@ export default function DigitalTwinDashboard() {
                 <p className="text-2xl font-bold">24</p>
                 <p className="text-xs text-green-600">+3 from yesterday</p>
               </div>
-              <Users className="h-8 w-8 text-blue-600" />
+              <Users className="h-8 w-8 text-primary/600" />
             </div>
           </CardContent>
         </Card>
@@ -311,7 +311,7 @@ export default function DigitalTwinDashboard() {
         </CardHeader>
         <CardContent>
           <div className="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-lg p-8 text-center">
-            <Building className="h-16 w-16 text-blue-600 mx-auto mb-4" />
+            <Building className="h-16 w-16 text-primary/600 mx-auto mb-4" />
             <h3 className="text-lg font-semibold mb-2">Interactive 3D Site Model</h3>
             <p className="text-gray-600 mb-4">
               Explore your construction site in real-time 3D with live worker positions, equipment status, and safety zones
@@ -326,7 +326,7 @@ export default function DigitalTwinDashboard() {
                 <div className="text-sm font-medium">Safety Zones</div>
               </div>
               <div className="bg-white rounded-lg p-3">
-                <Users className="h-6 w-6 text-blue-600 mx-auto mb-1" />
+                <Users className="h-6 w-6 text-primary/600 mx-auto mb-1" />
                 <div className="text-sm font-medium">Worker Tracking</div>
               </div>
               <div className="bg-white rounded-lg p-3">
@@ -334,7 +334,7 @@ export default function DigitalTwinDashboard() {
                 <div className="text-sm font-medium">Equipment Status</div>
               </div>
             </div>
-            <Button className="bg-blue-600 hover:bg-blue-700">
+            <Button className="bg-primary/600 hover:bg-primary/700">
               Launch 3D Viewer
             </Button>
           </div>

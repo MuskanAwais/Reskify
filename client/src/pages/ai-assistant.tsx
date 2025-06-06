@@ -229,13 +229,13 @@ export default function AiAssistant() {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 gap-4">
-                <div className="flex items-center space-x-3 p-3 rounded-lg bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800">
+                <div className="flex items-center space-x-3 p-3 rounded-lg bg-primary/50 dark:bg-primary/950/20 border border-primary/200 dark:border-primary/800">
                   <div className="flex-shrink-0">
-                    <Shield className="w-5 h-5 text-blue-600" />
+                    <Shield className="w-5 h-5 text-primary/600" />
                   </div>
                   <div className="flex-1">
-                    <p className="font-medium text-sm text-blue-900 dark:text-blue-100">Risk Analysis</p>
-                    <p className="text-xs text-blue-700 dark:text-blue-300">Identify and assess workplace hazards</p>
+                    <p className="font-medium text-sm text-primary/900 dark:text-primary/100">Risk Analysis</p>
+                    <p className="text-xs text-primary/700 dark:text-primary/300">Identify and assess workplace hazards</p>
                   </div>
                 </div>
                 

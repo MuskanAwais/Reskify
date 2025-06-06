@@ -53,7 +53,7 @@ export default function Header() {
                   }
                 }}
               />
-              <HardHat className="w-6 h-6 text-blue-600 hidden" />
+              <HardHat className="w-6 h-6 text-primary/600 hidden" />
             </div>
             <div>
               <h1 className="text-xl font-bold tracking-tight text-foreground">Riskify</h1>

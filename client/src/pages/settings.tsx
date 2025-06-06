@@ -74,7 +74,7 @@ export default function Settings() {
     <div className="container mx-auto px-6 py-8">
       {/* Header */}
       <div className="flex items-center mb-8">
-        <SettingsIcon className="h-8 w-8 text-blue-600 mr-3" />
+        <SettingsIcon className="h-8 w-8 text-primary/600 mr-3" />
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
           <p className="text-gray-600 mt-1">Manage your account and application preferences</p>
@@ -153,7 +153,7 @@ export default function Settings() {
             <CardTitle>Quick Actions</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <Button onClick={saveSettings} className="w-full bg-blue-600 hover:bg-blue-700">
+            <Button onClick={saveSettings} className="w-full bg-primary/600 hover:bg-primary/700">
               <Save className="h-4 w-4 mr-2" />
               Save All Settings
             </Button>
@@ -352,7 +352,7 @@ export default function Settings() {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div className="text-center">
-                <p className="text-2xl font-bold text-blue-600">10,000+</p>
+                <p className="text-2xl font-bold text-primary/600">10,000+</p>
                 <p className="text-sm text-gray-600">Construction Tasks</p>
               </div>
               <div className="text-center">

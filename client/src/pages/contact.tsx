@@ -82,7 +82,7 @@ export default function Contact() {
               <Card className="shadow-lg">
                 <CardHeader>
                   <CardTitle className="text-2xl flex items-center gap-2">
-                    <MessageSquare className="h-6 w-6 text-blue-600" />
+                    <MessageSquare className="h-6 w-6 text-primary/600" />
                     Send us a Message
                   </CardTitle>
                 </CardHeader>
@@ -138,7 +138,7 @@ export default function Contact() {
                       />
                     </div>
                     
-                    <Button type="submit" size="lg" className="w-full bg-blue-600 hover:bg-blue-700">
+                    <Button type="submit" size="lg" className="w-full bg-primary/600 hover:bg-primary/700">
                       Send Message
                     </Button>
                   </form>
@@ -163,14 +163,14 @@ export default function Contact() {
                   <Card className="shadow-lg hover:shadow-xl transition-shadow">
                     <CardContent className="p-6">
                       <div className="flex items-start gap-4">
-                        <div className="text-blue-600">
+                        <div className="text-primary/600">
                           {info.icon}
                         </div>
                         <div>
                           <h3 className="font-semibold text-lg text-gray-900 mb-1">
                             {info.title}
                           </h3>
-                          <p className="text-blue-600 font-medium mb-1">
+                          <p className="text-primary/600 font-medium mb-1">
                             {info.details}
                           </p>
                           <p className="text-gray-600 text-sm">
@@ -194,12 +194,12 @@ export default function Contact() {
                     <h3 className="text-xl font-bold mb-4">Need Immediate Help?</h3>
                     <div className="space-y-3">
                       <Link href="/demo">
-                        <Button variant="secondary" className="w-full bg-white text-blue-600 hover:bg-gray-100">
+                        <Button variant="secondary" className="w-full bg-white text-primary/600 hover:bg-gray-100">
                           Watch Product Demo
                         </Button>
                       </Link>
                       <Link href="/register">
-                        <Button variant="outline" className="w-full border-white text-white hover:bg-white hover:text-blue-600">
+                        <Button variant="outline" className="w-full border-white text-white hover:bg-white hover:text-primary/600">
                           Start Free Trial
                         </Button>
                       </Link>

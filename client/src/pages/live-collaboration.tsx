@@ -142,7 +142,7 @@ export default function LiveCollaboration() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "editing": return "bg-blue-100 text-blue-800";
+      case "editing": return "bg-primary/100 text-primary/800";
       case "reviewing": return "bg-yellow-100 text-yellow-800"; 
       case "online": return "bg-green-100 text-green-800";
       default: return "bg-gray-100 text-gray-800";
@@ -228,7 +228,7 @@ export default function LiveCollaboration() {
                           <AvatarFallback className="text-xs">{participant.avatar}</AvatarFallback>
                         </Avatar>
                         <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-white ${
-                          participant.status === 'editing' ? 'bg-blue-500' : 
+                          participant.status === 'editing' ? 'bg-primary/500' : 
                           participant.status === 'reviewing' ? 'bg-yellow-500' : 'bg-green-500'
                         }`}></div>
                       </div>
@@ -245,14 +245,14 @@ export default function LiveCollaboration() {
 
               {/* Live Cursors Simulation */}
               {session.participants.some(p => p.cursor) && (
-                <div className="bg-blue-50 rounded-lg p-3">
+                <div className="bg-primary/50 rounded-lg p-3">
                   <div className="flex items-center space-x-2 text-sm">
-                    <Edit3 className="h-4 w-4 text-blue-600" />
-                    <span className="font-medium text-blue-800">Live Activity:</span>
+                    <Edit3 className="h-4 w-4 text-primary/600" />
+                    <span className="font-medium text-primary/800">Live Activity:</span>
                     {session.participants
                       .filter(p => p.cursor)
                       .map(p => (
-                        <span key={p.id} className="text-blue-700">
+                        <span key={p.id} className="text-primary/700">
                           {p.name} is editing {p.cursor?.section}
                         </span>
                       ))}
@@ -333,8 +333,8 @@ export default function LiveCollaboration() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-3">
-              <div className="flex items-start space-x-3 p-3 bg-blue-50 rounded-lg">
-                <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+              <div className="flex items-start space-x-3 p-3 bg-primary/50 rounded-lg">
+                <div className="w-2 h-2 bg-primary/500 rounded-full mt-2"></div>
                 <div>
                   <p className="text-sm font-medium">Sarah Chen reviewed Risk Assessment</p>
                   <p className="text-xs text-gray-600">2 minutes ago</p>
@@ -393,7 +393,7 @@ export default function LiveCollaboration() {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4">
-              <Edit3 className="h-8 w-8 text-blue-600 mb-2" />
+              <Edit3 className="h-8 w-8 text-primary/600 mb-2" />
               <h3 className="font-semibold mb-1">Real-time Editing</h3>
               <p className="text-sm text-gray-600">See live cursors and changes as team members edit</p>
             </div>

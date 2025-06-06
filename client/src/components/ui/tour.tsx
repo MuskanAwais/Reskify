@@ -112,7 +112,7 @@ export function Tour({ steps, isActive, onComplete, onSkip }: TourProps) {
       {/* Highlight ring for target element */}
       {targetElement && (
         <div 
-          className="fixed border-4 border-blue-500 rounded-lg pointer-events-none animate-pulse"
+          className="fixed border-4 border-primary/500 rounded-lg pointer-events-none animate-pulse"
           style={{
             top: targetElement.getBoundingClientRect().top - 4,
             left: targetElement.getBoundingClientRect().left - 4,
@@ -127,7 +127,7 @@ export function Tour({ steps, isActive, onComplete, onSkip }: TourProps) {
 
       {/* Tooltip */}
       <Card 
-        className="fixed max-w-sm z-1002 shadow-xl border-2 border-blue-500 bg-white"
+        className="fixed max-w-sm z-1002 shadow-xl border-2 border-primary/500 bg-white"
         style={{
           top: Math.max(10, Math.min(window.innerHeight - 200, tooltipPosition.top)),
           left: Math.max(10, Math.min(window.innerWidth - 400, tooltipPosition.left)),
@@ -137,7 +137,7 @@ export function Tour({ steps, isActive, onComplete, onSkip }: TourProps) {
       >
         <CardContent className="p-4">
           <div className="flex justify-between items-start mb-2">
-            <h3 className="font-semibold text-blue-700">{step.title}</h3>
+            <h3 className="font-semibold text-primary/700">{step.title}</h3>
             <Button
               variant="ghost"
               size="sm"

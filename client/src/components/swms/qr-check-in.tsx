@@ -255,8 +255,8 @@ export default function QRCheckIn({
                         </Button>
                       </div>
                     ) : (
-                      <div className="p-3 bg-blue-50 rounded-lg">
-                        <p className="text-sm text-blue-800">Getting location...</p>
+                      <div className="p-3 bg-primary/50 rounded-lg">
+                        <p className="text-sm text-primary/800">Getting location...</p>
                       </div>
                     )}
                   </div>

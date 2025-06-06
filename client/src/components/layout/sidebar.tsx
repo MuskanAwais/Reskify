@@ -298,7 +298,7 @@ export default function Sidebar() {
                     onClick={toggleDemoMode}
                     className={`px-3 py-1 text-xs ${
                       demoMode 
-                        ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                        ? 'bg-primary/600 text-white hover:bg-primary/700' 
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                   >
@@ -336,7 +336,7 @@ export default function Sidebar() {
               variant="outline"
               size="sm"
               onClick={startTour}
-              className="w-full px-3 py-1 text-xs bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100"
+              className="w-full px-3 py-1 text-xs bg-primary/50 text-primary/700 border-primary/200 hover:bg-primary/100"
             >
               <Play className="mr-1 h-3 w-3" />
               Start Interface Tour
@@ -387,7 +387,7 @@ export default function Sidebar() {
                   variant="ghost"
                   className={`w-full justify-start ${
                     isActive 
-                      ? 'bg-blue-50 text-primary hover:bg-blue-50' 
+                      ? 'bg-primary/50 text-primary hover:bg-primary/50' 
                       : 'text-gray-600 hover:bg-gray-50'
                   }`}
                 >
@@ -460,7 +460,7 @@ export default function Sidebar() {
               </div>
               <div className="w-full bg-slate-200 rounded-full h-2">
                 <div 
-                  className="bg-blue-500 h-2 rounded-full transition-all duration-300" 
+                  className="bg-primary/500 h-2 rounded-full transition-all duration-300" 
                   style={{ 
                     width: `${((subscription?.creditsUsed || 0) / (subscription?.plan === 'pro' ? 25 : subscription?.plan === 'enterprise' ? 60 : subscription?.creditsTotal || 10)) * 100}%` 
                   }}

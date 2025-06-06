@@ -107,16 +107,16 @@ export default function SwmsTable({ formData, onDataChange, readOnly = false }: 
   return (
     <div className="space-y-6">
       {/* Company Header */}
-      <Card className="border-2 border-blue-600">
-        <CardHeader className="bg-blue-600 text-white">
+      <Card className="border-2 border-primary/600">
+        <CardHeader className="bg-primary/600 text-white">
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="text-2xl font-bold">SWMS Builder Pro</CardTitle>
-              <p className="text-blue-100">Australian Construction Safety Documentation</p>
+              <p className="text-primary/100">Australian Construction Safety Documentation</p>
             </div>
             <div className="text-right">
               <p className="font-medium">{user?.companyName || "Your Company"}</p>
-              <p className="text-blue-200 text-sm">ABN: 123 456 789</p>
+              <p className="text-primary/200 text-sm">ABN: 123 456 789</p>
             </div>
           </div>
         </CardHeader>
@@ -147,13 +147,13 @@ export default function SwmsTable({ formData, onDataChange, readOnly = false }: 
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center">
-              <Shield className="h-5 w-5 mr-2 text-blue-600" />
+              <Shield className="h-5 w-5 mr-2 text-primary/600" />
               Risk Assessment and Control Measures
             </CardTitle>
             {!readOnly && (
               <Button
                 onClick={() => setIsAddingNew(true)}
-                className="bg-blue-600 hover:bg-blue-700 text-white"
+                className="bg-primary/600 hover:bg-primary/700 text-white"
                 size="sm"
               >
                 <Plus className="h-4 w-4 mr-2" />
@@ -273,7 +273,7 @@ export default function SwmsTable({ formData, onDataChange, readOnly = false }: 
                       ) : (
                         <ul className="space-y-1">
                           {risk.legislation.map((law, idx) => (
-                            <li key={idx} className="text-sm text-blue-700 font-medium">{law}</li>
+                            <li key={idx} className="text-sm text-primary/700 font-medium">{law}</li>
                           ))}
                         </ul>
                       )}
@@ -357,7 +357,7 @@ export default function SwmsTable({ formData, onDataChange, readOnly = false }: 
 
                 {/* Add New Risk Row */}
                 {isAddingNew && (
-                  <tr className="bg-blue-50 border-2 border-blue-200">
+                  <tr className="bg-primary/50 border-2 border-primary/200">
                     <td className="border border-gray-300 p-3">
                       <Input
                         value={newRisk.activity || ""}

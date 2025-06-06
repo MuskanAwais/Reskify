@@ -52,7 +52,7 @@ export default function Analytics() {
       <div className="container mx-auto px-6 py-8">
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
-            <Clock className="h-8 w-8 animate-spin mx-auto mb-4 text-blue-600" />
+            <Clock className="h-8 w-8 animate-spin mx-auto mb-4 text-primary/600" />
             <p className="text-gray-600">Loading analytics data...</p>
           </div>
         </div>
@@ -104,8 +104,8 @@ export default function Analytics() {
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center">
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <FileText className="h-6 w-6 text-blue-600" />
+              <div className="p-2 bg-primary/100 rounded-lg">
+                <FileText className="h-6 w-6 text-primary/600" />
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Total Documents</p>
@@ -243,7 +243,7 @@ export default function Analytics() {
               {analytics.recentActivity.map((activity) => (
                 <div key={activity.id} className="flex items-center justify-between py-2 border-b last:border-b-0">
                   <div className="flex items-center">
-                    <div className="w-2 h-2 bg-blue-600 rounded-full mr-3"></div>
+                    <div className="w-2 h-2 bg-primary/600 rounded-full mr-3"></div>
                     <div>
                       <p className="text-sm font-medium text-gray-900">
                         {activity.eventType === 'created' && 'Created'}

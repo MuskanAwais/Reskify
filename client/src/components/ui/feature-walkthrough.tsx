@@ -98,10 +98,10 @@ export function FeatureWalkthrough({ steps, isActive, onComplete, onSkip }: Feat
             exit={{ opacity: 0, scale: 0.8 }}
             className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 w-96"
           >
-            <Card className="shadow-2xl border-2 border-blue-200">
+            <Card className="shadow-2xl border-2 border-primary/200">
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-lg text-blue-800">{step.title}</CardTitle>
+                  <CardTitle className="text-lg text-primary/800">{step.title}</CardTitle>
                   <Button variant="ghost" size="sm" onClick={handleSkip}>
                     <X className="h-4 w-4" />
                   </Button>
@@ -126,7 +126,7 @@ export function FeatureWalkthrough({ steps, isActive, onComplete, onSkip }: Feat
                   
                   <Button
                     onClick={nextStep}
-                    className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700"
+                    className="flex items-center gap-2 bg-primary/600 hover:bg-primary/700"
                   >
                     {currentStep === steps.length - 1 ? 'Finish' : 'Next'}
                     <ArrowRight className="h-4 w-4" />

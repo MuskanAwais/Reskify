@@ -155,8 +155,8 @@ export default function UserManagement() {
                       <tr key={user.id} className="border-b hover:bg-gray-50">
                         <td className="p-3">
                           <div className="flex items-center space-x-3">
-                            <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                              <span className="text-sm font-medium text-blue-600">
+                            <div className="w-8 h-8 bg-primary/100 rounded-full flex items-center justify-center">
+                              <span className="text-sm font-medium text-primary/600">
                                 {user.username?.charAt(0).toUpperCase()}
                               </span>
                             </div>

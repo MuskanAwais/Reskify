@@ -120,7 +120,7 @@ export default function AiAssistant({ tradeType, activities, currentStep }: AiAs
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
                   message.type === 'ai' 
                     ? 'bg-purple-100 text-purple-600' 
-                    : 'bg-blue-100 text-primary'
+                    : 'bg-primary/100 text-primary'
                 }`}>
                   {message.type === 'ai' ? (
                     <Bot className="h-4 w-4" />
@@ -135,7 +135,7 @@ export default function AiAssistant({ tradeType, activities, currentStep }: AiAs
                 }`}>
                   <p className="whitespace-pre-wrap">{message.content}</p>
                   <p className={`text-xs mt-2 ${
-                    message.type === 'ai' ? 'text-gray-500' : 'text-blue-100'
+                    message.type === 'ai' ? 'text-gray-500' : 'text-primary/100'
                   }`}>
                     {message.timestamp.toLocaleTimeString()}
                   </p>

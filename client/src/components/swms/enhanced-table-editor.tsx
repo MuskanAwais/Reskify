@@ -209,7 +209,7 @@ export default function EnhancedTableEditor({ formData, onDataChange }: Enhanced
           {items && items.length > 0 ? (
             <div className="space-y-1">
               {items.map((item, index) => (
-                <div key={index} className="bg-blue-50 text-blue-800 px-2 py-1 rounded text-xs">
+                <div key={index} className="bg-primary/50 text-primary/800 px-2 py-1 rounded text-xs">
                   {item}
                 </div>
               ))}
@@ -229,7 +229,7 @@ export default function EnhancedTableEditor({ formData, onDataChange }: Enhanced
           {items && items.length > 0 && (
             <div className="space-y-1 mb-2">
               {items.map((item, index) => (
-                <div key={index} className="bg-blue-50 text-blue-800 px-2 py-1 rounded text-xs flex items-center justify-between">
+                <div key={index} className="bg-primary/50 text-primary/800 px-2 py-1 rounded text-xs flex items-center justify-between">
                   <span>{item}</span>
                   <Button
                     size="sm"
@@ -322,7 +322,7 @@ export default function EnhancedTableEditor({ formData, onDataChange }: Enhanced
     if (!isEditing) {
       return (
         <div 
-          className="cursor-pointer hover:bg-blue-50 p-1 rounded text-xs min-h-[24px] flex items-center"
+          className="cursor-pointer hover:bg-primary/50 p-1 rounded text-xs min-h-[24px] flex items-center"
           onClick={() => setIsEditing(true)}
         >
           <span className={value ? "text-gray-900" : "text-gray-400"}>
@@ -585,7 +585,7 @@ export default function EnhancedTableEditor({ formData, onDataChange }: Enhanced
                   <Label className="text-sm font-medium">Control Measures</Label>
                   <div className="mt-2 space-y-1">
                     {selectedAssessment.controlMeasures?.map((measure, index) => (
-                      <div key={index} className="bg-blue-50 p-2 rounded text-sm">
+                      <div key={index} className="bg-primary/50 p-2 rounded text-sm">
                         {measure}
                       </div>
                     ))}

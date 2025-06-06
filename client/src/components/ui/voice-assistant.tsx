@@ -176,7 +176,7 @@ export default function VoiceAssistant({ onVoiceCommand, language = "en-US" }: V
           variant="ghost"
           size="sm"
           onClick={stopSpeaking}
-          className="text-blue-600 hover:text-blue-700"
+          className="text-primary/600 hover:text-primary/700"
           title="Stop speaking"
         >
           <VolumeX className="h-4 w-4" />

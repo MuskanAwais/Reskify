@@ -92,7 +92,7 @@ export default function LanguageTest() {
             </div>
 
             {testResults.length > 0 && (
-              <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+              <div className="mt-6 p-4 bg-primary/50 rounded-lg">
                 <h5 className="font-medium mb-2">Automated Test Results:</h5>
                 {testResults.map((result, index) => (
                   <p key={index} className="text-sm">{result}</p>

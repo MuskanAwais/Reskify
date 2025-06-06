@@ -91,13 +91,13 @@ export default function Register() {
                 {[1, 2, 3].map((step) => (
                   <div key={step} className="flex items-center">
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                      currentStep >= step ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'
+                      currentStep >= step ? 'bg-primary/600 text-white' : 'bg-gray-200 text-gray-600'
                     }`}>
                       {currentStep > step ? <CheckCircle className="h-4 w-4" /> : step}
                     </div>
                     {step < 3 && (
                       <div className={`w-16 h-1 mx-2 ${
-                        currentStep > step ? 'bg-blue-600' : 'bg-gray-200'
+                        currentStep > step ? 'bg-primary/600' : 'bg-gray-200'
                       }`} />
                     )}
                   </div>
@@ -206,13 +206,13 @@ export default function Register() {
                           <div
                             key={plan.id}
                             className={`relative p-4 border-2 rounded-lg cursor-pointer transition-all ${
-                              formData.plan === plan.id ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'
+                              formData.plan === plan.id ? 'border-primary/500 bg-primary/50' : 'border-gray-200 hover:border-gray-300'
                             }`}
                             onClick={() => setFormData({...formData, plan: plan.id})}
                           >
                             {plan.popular && (
                               <div className="absolute -top-3 left-4">
-                                <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-medium">
+                                <span className="bg-primary/600 text-white px-3 py-1 rounded-full text-sm font-medium">
                                   Most Popular
                                 </span>
                               </div>
@@ -226,7 +226,7 @@ export default function Register() {
                                   value={plan.id}
                                   checked={formData.plan === plan.id}
                                   onChange={(e) => setFormData({...formData, plan: e.target.value})}
-                                  className="text-blue-600"
+                                  className="text-primary/600"
                                 />
                                 <div>
                                   <h3 className="font-semibold text-lg">{plan.name}</h3>
@@ -256,7 +256,7 @@ export default function Register() {
                         animate={{ opacity: 1, x: 0 }}
                         className="space-y-6"
                       >
-                        <div className="bg-blue-50 p-6 rounded-lg">
+                        <div className="bg-primary/50 p-6 rounded-lg">
                           <h3 className="font-semibold text-lg mb-4">Registration Summary</h3>
                           <div className="space-y-2 text-sm">
                             <p><span className="font-medium">Name:</span> {formData.fullName}</p>
@@ -274,11 +274,11 @@ export default function Register() {
                           />
                           <div className="text-sm text-gray-600">
                             I agree to the{" "}
-                            <Link href="/terms" className="text-blue-600 hover:underline">
+                            <Link href="/terms" className="text-primary/600 hover:underline">
                               Terms of Service
                             </Link>{" "}
                             and{" "}
-                            <Link href="/privacy" className="text-blue-600 hover:underline">
+                            <Link href="/privacy" className="text-primary/600 hover:underline">
                               Privacy Policy
                             </Link>
                           </div>
@@ -299,7 +299,7 @@ export default function Register() {
                       
                       <Button
                         type="submit"
-                        className="ml-auto bg-blue-600 hover:bg-blue-700"
+                        className="ml-auto bg-primary/600 hover:bg-primary/700"
                         disabled={currentStep === 3 && !formData.agreeTerms}
                       >
                         {currentStep === 3 ? "Start Free Trial" : "Continue"}
@@ -315,7 +315,7 @@ export default function Register() {
               <Card className="shadow-lg sticky top-8">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Shield className="h-5 w-5 text-blue-600" />
+                    <Shield className="h-5 w-5 text-primary/600" />
                     Your Plan
                   </CardTitle>
                 </CardHeader>
@@ -324,7 +324,7 @@ export default function Register() {
                     <div className="space-y-4">
                       <div>
                         <h3 className="font-semibold text-lg">{selectedPlan.name}</h3>
-                        <p className="text-2xl font-bold text-blue-600">
+                        <p className="text-2xl font-bold text-primary/600">
                           {selectedPlan.price}<span className="text-sm text-gray-600">{selectedPlan.period}</span>
                         </p>
                         <p className="text-gray-600">{selectedPlan.credits}</p>

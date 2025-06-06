@@ -639,11 +639,11 @@ function SwmsPreviewModal({ swms, isOpen, onClose, onDownload }: {
         
         <div className="p-6 space-y-6">
           {/* Document Header with Watermark */}
-          <div className="relative bg-gradient-to-r from-blue-50 to-blue-100 p-6 rounded-lg border-l-4 border-blue-500">
-            <div className="absolute top-2 right-2 text-blue-300 text-xs font-medium opacity-60">
+          <div className="relative bg-gradient-to-r from-blue-50 to-blue-100 p-6 rounded-lg border-l-4 border-primary/500">
+            <div className="absolute top-2 right-2 text-primary/300 text-xs font-medium opacity-60">
               SAFETY SENSEI - AI GENERATED
             </div>
-            <h1 className="text-2xl font-bold text-blue-900 mb-2">
+            <h1 className="text-2xl font-bold text-primary/900 mb-2">
               {swms.projectDetails.title}
             </h1>
             <div className="grid grid-cols-2 gap-4 text-sm">
@@ -1005,8 +1005,8 @@ function SwmsEditorModal({ swms, isOpen, onClose, onSave }: {
           </div>
 
           {/* Note about editing */}
-          <div className="bg-blue-50 p-4 rounded-lg">
-            <p className="text-sm text-blue-700">
+          <div className="bg-primary/50 p-4 rounded-lg">
+            <p className="text-sm text-primary/700">
               💡 <strong>Note:</strong> This is a simplified editor. For detailed risk assessment editing, 
               save this SWMS and use the full editor in the "My SWMS" section.
             </p>

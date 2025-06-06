@@ -107,8 +107,8 @@ export default function LegalDisclaimer() {
             You accept full responsibility for the use of generated documents and agree to hold Safety Sensei harmless from any claims 
             arising from their use.
           </p>
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4">
-            <p className="text-sm text-blue-800">
+          <div className="bg-primary/50 border border-primary/200 rounded-lg p-4 mt-4">
+            <p className="text-sm text-primary/800">
               For questions about this disclaimer or our services, please contact our support team at support@safetysensei.com.au
             </p>
           </div>

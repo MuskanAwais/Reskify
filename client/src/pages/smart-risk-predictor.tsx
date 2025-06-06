@@ -217,7 +217,7 @@ export default function SmartRiskPredictor() {
                   <div className="text-sm text-gray-600">Overall Score</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-600">{prediction.weatherImpact}</div>
+                  <div className="text-2xl font-bold text-primary/600">{prediction.weatherImpact}</div>
                   <div className="text-sm text-gray-600">Weather Impact</div>
                 </div>
                 <div className="text-center">
