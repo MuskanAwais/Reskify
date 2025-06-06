@@ -64,6 +64,8 @@ const translations = {
     "activitySelection": "Activity Selection",
     "searchActivities": "Search activities...",
     "selected": "selected",
+    "selectAll": "Select All",
+    "deselectAll": "Deselect All",
     // Placeholder texts
     "placeholder.selectTrade": "Select your trade",
     "placeholder.jobName": "e.g., Office Tower Construction",
