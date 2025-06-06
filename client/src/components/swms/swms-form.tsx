@@ -252,7 +252,7 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
                 id="title"
                 value={formData.title}
                 onChange={(e) => updateFormData({ title: e.target.value })}
-                placeholder="e.g., Electrical Installation - Office Building"
+                placeholder={translate("placeholder.swmsTitle")}
               />
             </div>
 
@@ -286,7 +286,7 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
                 id="jobName"
                 value={formData.jobName || ""}
                 onChange={(e) => updateFormData({ jobName: e.target.value })}
-                placeholder="e.g., Office Tower Construction"
+                placeholder={translate("placeholder.jobName")}
                 required
               />
             </div>
@@ -300,7 +300,7 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
                 id="jobNumber"
                 value={formData.jobNumber || ""}
                 onChange={(e) => updateFormData({ jobNumber: e.target.value })}
-                placeholder="e.g., JOB-2025-001 (optional)"
+                placeholder={translate("placeholder.jobNumber")}
               />
             </div>
           </div>
@@ -314,7 +314,7 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
               id="projectAddress"
               value={formData.projectAddress || ""}
               onChange={(e) => updateFormData({ projectAddress: e.target.value })}
-              placeholder="Enter the complete project address"
+              placeholder={translate("placeholder.projectAddress")}
               required
             />
           </div>
@@ -328,7 +328,7 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
               id="projectLocation"
               value={formData.projectLocation}
               onChange={(e) => updateFormData({ projectLocation: e.target.value })}
-              placeholder="e.g., Level 5 Office Fitout, Main Building"
+              placeholder={translate("placeholder.projectLocation")}
             />
           </div>
 
