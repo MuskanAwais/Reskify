@@ -150,7 +150,7 @@ export default function QuickActionTooltip({
                 <ul className="space-y-1">
                   {tips.map((tip, index) => (
                     <li key={index} className="text-xs text-gray-600 dark:text-gray-400 flex items-start gap-1">
-                      <span className="text-blue-500 mt-0.5">•</span>
+                      <span className="text-primary mt-0.5">•</span>
                       <span>{tip}</span>
                     </li>
                   ))}

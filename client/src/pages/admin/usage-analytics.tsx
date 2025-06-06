@@ -66,7 +66,7 @@ export default function UsageAnalytics() {
                 <p className="text-sm text-gray-600">Total SWMS</p>
                 <p className="text-2xl font-bold">{data?.totalSwmsGenerated?.toLocaleString() || '0'}</p>
               </div>
-              <FileText className="h-8 w-8 text-blue-500" />
+              <FileText className="h-8 w-8 text-primary" />
             </div>
           </CardContent>
         </Card>

@@ -114,7 +114,7 @@ export default function SystemHealth() {
                 <p className="text-sm text-gray-600">Response Time</p>
                 <p className="text-2xl font-bold">{data.responseTime}</p>
               </div>
-              <Clock className="h-8 w-8 text-blue-500" />
+              <Clock className="h-8 w-8 text-primary" />
             </div>
           </CardContent>
         </Card>

@@ -138,7 +138,7 @@ export default function ContactLists() {
                 <p className="text-sm text-gray-600">Total Contacts</p>
                 <p className="text-2xl font-bold">{data.length}</p>
               </div>
-              <Contact className="h-8 w-8 text-blue-500" />
+              <Contact className="h-8 w-8 text-primary" />
             </div>
           </CardContent>
         </Card>

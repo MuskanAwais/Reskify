@@ -92,7 +92,7 @@ export function SubscriptionModal({ isOpen, onClose, onSubscribe }: Subscription
                 {plan.features.map((feature, index) => (
                   <li key={index} className="flex items-center gap-3">
                     <Check className={`h-5 w-5 ${
-                      plan.color === 'purple' ? 'text-purple-500' : 'text-blue-500'
+                      plan.color === 'purple' ? 'text-purple-500' : 'text-primary'
                     }`} />
                     <span className="text-gray-700">{feature}</span>
                   </li>

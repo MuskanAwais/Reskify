@@ -226,7 +226,7 @@ export default function OnboardingTour({ steps = TOUR_STEPS, onComplete, onSkip 
             <div className="flex items-start justify-between mb-3">
               <div className="flex items-center gap-2">
                 {step.id === "welcome" && <Lightbulb className="h-5 w-5 text-yellow-500" />}
-                {step.highlight && <Target className="h-5 w-5 text-blue-500" />}
+                {step.highlight && <Target className="h-5 w-5 text-primary" />}
                 {step.id === "ai-generator" && <Zap className="h-5 w-5 text-purple-500" />}
                 <h3 className="font-semibold text-sm">{step.title}</h3>
               </div>

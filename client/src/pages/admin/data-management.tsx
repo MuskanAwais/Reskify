@@ -84,7 +84,7 @@ export default function DataManagement() {
                 <p className="text-sm text-gray-600">Total Records</p>
                 <p className="text-2xl font-bold">{data.totalRecords.toLocaleString()}</p>
               </div>
-              <Database className="h-8 w-8 text-blue-500" />
+              <Database className="h-8 w-8 text-primary" />
             </div>
           </CardContent>
         </Card>

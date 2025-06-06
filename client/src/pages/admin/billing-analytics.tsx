@@ -70,7 +70,7 @@ export default function BillingAnalytics() {
                 <p className="text-sm text-gray-600">Monthly Revenue</p>
                 <p className="text-2xl font-bold">${data.monthlyRevenue.toLocaleString()}</p>
               </div>
-              <TrendingUp className="h-8 w-8 text-blue-500" />
+              <TrendingUp className="h-8 w-8 text-primary" />
             </div>
           </CardContent>
         </Card>

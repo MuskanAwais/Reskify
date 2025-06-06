@@ -105,7 +105,7 @@ export default function AdminDashboard() {
       case "warning":
         return <AlertTriangle className="w-4 h-4 text-yellow-500" />;
       case "info":
-        return <Info className="w-4 h-4 text-blue-500" />;
+        return <Info className="w-4 h-4 text-primary" />;
       default:
         return <CheckCircle className="w-4 h-4 text-green-500" />;
     }
@@ -147,7 +147,7 @@ export default function AdminDashboard() {
                 <p className="text-2xl font-bold">{dashboardData?.totalUsers || 0}</p>
                 <p className="text-xs text-green-600">+12% from last month</p>
               </div>
-              <Users className="h-8 w-8 text-blue-500" />
+              <Users className="h-8 w-8 text-primary" />
             </div>
           </CardContent>
         </Card>

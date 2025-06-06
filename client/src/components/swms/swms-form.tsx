@@ -756,7 +756,7 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
                     side="right"
                   >
                     <div className="flex items-center cursor-help">
-                      <Shield className="mr-2 h-4 w-4 text-blue-500" />
+                      <Shield className="mr-2 h-4 w-4 text-primary" />
                       Risk Assessment Matrix
                     </div>
                   </QuickActionTooltip>
@@ -806,7 +806,7 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
             <Card>
               <CardHeader>
                 <CardTitle className="text-sm flex items-center">
-                  <FileText className="mr-2 h-4 w-4 text-blue-500" />
+                  <FileText className="mr-2 h-4 w-4 text-primary" />
                   Safety Control Hierarchy
                 </CardTitle>
               </CardHeader>
@@ -1099,7 +1099,7 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
       return (
         <div className="space-y-6">
           <div className="text-center">
-            <Shield className="mx-auto h-12 w-12 text-blue-500 mb-4" />
+            <Shield className="mx-auto h-12 w-12 text-primary mb-4" />
             <h3 className="text-lg font-semibold mb-2">Safety Codes & Compliance</h3>
             <p className="text-gray-600 text-sm">
               Select applicable safety codes and compliance requirements
@@ -1117,7 +1117,7 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
               {formData.tradeType && (
                 <div className="space-y-4 mb-6">
                   <h4 className="font-medium text-gray-800 flex items-center gap-2">
-                    <Shield className="h-4 w-4 text-blue-500" />
+                    <Shield className="h-4 w-4 text-primary" />
                     Recommended for {formData.tradeType}
                   </h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -1160,7 +1160,7 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
       return (
         <div className="space-y-6">
           <div className="text-center">
-            <Wrench className="mx-auto h-12 w-12 text-blue-500 mb-4" />
+            <Wrench className="mx-auto h-12 w-12 text-primary mb-4" />
             <h3 className="text-lg font-semibold mb-2">Plant, Equipment & Training</h3>
             <p className="text-gray-600 text-sm">
               Specify required equipment, plant, and training requirements

@@ -22,7 +22,7 @@ export default function SmartTooltip({
   const getIcon = () => {
     switch (type) {
       case "help":
-        return <HelpCircle className="w-3 h-3 text-blue-500" />;
+        return <HelpCircle className="w-3 h-3 text-primary" />;
       case "warning":
         return <AlertCircle className="w-3 h-3 text-orange-500" />;
       case "tip":

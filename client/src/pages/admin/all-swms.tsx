@@ -129,7 +129,7 @@ export default function AllSwms() {
                 <p className="text-sm text-gray-600">Total Documents</p>
                 <p className="text-2xl font-bold">{totalSwms}</p>
               </div>
-              <FileText className="h-8 w-8 text-blue-500" />
+              <FileText className="h-8 w-8 text-primary" />
             </div>
           </CardContent>
         </Card>
