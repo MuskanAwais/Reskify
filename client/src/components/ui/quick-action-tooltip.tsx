@@ -47,7 +47,7 @@ const categoryIcons = {
 
 const categoryColors = {
   editing: "bg-primary/10 text-primary dark:text-primary",
-  navigation: "bg-green-500/10 text-green-700 dark:text-green-300",
+  navigation: "bg-primary/10 text-primary dark:text-primary",
   creation: "bg-purple-500/10 text-purple-700 dark:text-purple-300",
   safety: "bg-orange-500/10 text-orange-700 dark:text-orange-300",
   general: "bg-gray-500/10 text-gray-700 dark:text-gray-300"

@@ -36,7 +36,7 @@ const quickActions = [
     titleKey: "nav.swms-builder",
     icon: FileText,
     href: "/swms-builder",
-    className: "bg-green-50 text-green-700 border border-green-200 hover:bg-green-100 hover:border-green-300"
+    className: "bg-primary/5 text-primary border border-primary/20 hover:bg-primary/10 hover:border-primary/30"
   },
   {
     titleKey: "nav.ai-generator",

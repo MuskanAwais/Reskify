@@ -287,7 +287,7 @@
 }
 
 .status-approved {
-  @apply bg-green-100 text-green-800;
+  @apply bg-primary/10 text-primary;
 }
 
 /* Button variants using green theme */
@@ -308,7 +308,7 @@
 }
 
 .btn-success {
-  @apply bg-green-600 text-white focus:ring-green-500;
+  @apply bg-primary text-primary-foreground focus:ring-primary;
 }
 
 .btn-success:hover {
@@ -328,7 +328,7 @@
 
 /* Risk level colors */
 .risk-low {
-  @apply bg-green-100 text-green-800;
+  @apply bg-primary/10 text-primary;
 }
 
 .risk-medium {

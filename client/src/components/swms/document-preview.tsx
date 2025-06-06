@@ -197,7 +197,7 @@ export default function DocumentPreview({ formData }: DocumentPreviewProps) {
 
   const getRiskLevelColor = (level: string) => {
     switch (level?.toLowerCase()) {
-      case 'low': return 'bg-green-100 text-green-800';
+      case 'low': return 'bg-primary/10 text-primary';
       case 'medium': return 'bg-yellow-100 text-yellow-800';
       case 'high': return 'bg-orange-100 text-orange-800';
       case 'extreme': return 'bg-red-100 text-red-800';
@@ -210,7 +210,7 @@ export default function DocumentPreview({ formData }: DocumentPreviewProps) {
     switch (status.toLowerCase()) {
       case 'draft': return 'bg-gray-100 text-gray-800';
       case 'under_review': return 'bg-amber-100 text-amber-800';
-      case 'approved': return 'bg-green-100 text-green-800';
+      case 'approved': return 'bg-primary/10 text-primary';
       default: return 'bg-gray-100 text-gray-800';
     }
   };

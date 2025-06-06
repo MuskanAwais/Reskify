@@ -347,7 +347,7 @@ export default function Landing() {
                     <Button 
                       variant="outline" 
                       size="lg" 
-                      className="w-full border-green-600 text-green-600 hover:bg-green-50 px-6 py-3"
+                      className="w-full border-primary text-primary hover:bg-primary/5 px-6 py-3"
                     >
                       <Users className="mr-2 h-4 w-4" />
                       Sign Up
