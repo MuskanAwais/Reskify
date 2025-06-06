@@ -88,6 +88,123 @@ export async function registerRoutes(app: Express): Promise<Server> {
           jurisdiction: "NSW",
           pages: 43,
           keyTopics: ["Small Business Safety", "Hazard Checklists", "Emergency Procedures", "Mental Health"]
+        },
+        {
+          id: 6,
+          title: "Sexual and Gender-Based Harassment",
+          category: "Safe Work Australia Code of Practice",
+          type: "Guidance Document",
+          description: "Comprehensive code of practice for managing sexual and gender-based harassment in Australian workplaces",
+          url: "/safety-docs/swa/sexual-and-gender-based-harassment-cop.pdf",
+          lastUpdated: "2023-12",
+          applicableIndustries: ["All"],
+          jurisdiction: "National",
+          pages: 47,
+          keyTopics: ["Harassment Prevention", "Workplace Culture", "Risk Management", "Investigation Procedures", "Psychosocial Hazards"]
+        },
+        {
+          id: 7,
+          title: "Preparation of Safety Data Sheets for Hazardous Chemicals",
+          category: "Safe Work Australia Code of Practice",
+          type: "Guidance Document", 
+          description: "Code of practice for preparing safety data sheets for hazardous chemicals under the GHS framework",
+          url: "/safety-docs/swa/preparation-safety-data-sheets-hazardous-chemicals-cop.pdf",
+          lastUpdated: "2023-06",
+          applicableIndustries: ["Chemical Manufacturing", "Construction", "Mining", "Agriculture"],
+          jurisdiction: "National",
+          pages: 123,
+          keyTopics: ["GHS Classification", "Chemical Safety", "SDS Preparation", "Hazard Communication", "Chemical Risk Management"]
+        },
+        {
+          id: 8,
+          title: "Spray Painting and Powder Coating",
+          category: "Safe Work Australia Code of Practice",
+          type: "Guidance Document",
+          description: "Code of practice for managing health and safety risks in spray painting and powder coating operations",
+          url: "/safety-docs/swa/spray-painting-powder-coating-cop.pdf",
+          lastUpdated: "2020-07",
+          applicableIndustries: ["Manufacturing", "Automotive", "Construction", "Metal Fabrication"],
+          jurisdiction: "National", 
+          pages: 56,
+          keyTopics: ["Ventilation", "PPE", "Chemical Hazards", "Fire Prevention", "Confined Spaces", "Health Monitoring"]
+        },
+        {
+          id: 9,
+          title: "Welding Processes",
+          category: "Safe Work Australia Code of Practice",
+          type: "Guidance Document",
+          description: "Code of practice for managing health and safety risks associated with welding processes in workplaces",
+          url: "/safety-docs/swa/welding-processes-cop.pdf", 
+          lastUpdated: "2020-07",
+          applicableIndustries: ["Construction", "Manufacturing", "Mining", "Shipbuilding", "Metal Fabrication"],
+          jurisdiction: "National",
+          pages: 44,
+          keyTopics: ["Welding Safety", "Fume Control", "Radiation Protection", "Fire Prevention", "PPE", "Health Monitoring"]
+        },
+        {
+          id: 10,
+          title: "Managing the Work Environment and Facilities",
+          category: "Safe Work Australia Code of Practice",
+          type: "Guidance Document",
+          description: "Code of practice for managing work environment and facilities to ensure worker health, safety and welfare",
+          url: "/safety-docs/swa/managing-work-environment-facilities-cop.pdf",
+          lastUpdated: "2024-11",
+          applicableIndustries: ["All"],
+          jurisdiction: "National",
+          pages: 52,
+          keyTopics: ["Work Environment", "Facilities Design", "Ventilation", "Lighting", "Emergency Procedures", "Remote Work"]
+        },
+        {
+          id: 11,
+          title: "Safe Design of Structures", 
+          category: "Safe Work Australia Code of Practice",
+          type: "Guidance Document",
+          description: "Code of practice for safe design of structures to eliminate or minimize health and safety risks",
+          url: "/safety-docs/swa/safe-design-structures-cop.pdf",
+          lastUpdated: "2024-11",
+          applicableIndustries: ["Construction", "Engineering", "Architecture"],
+          jurisdiction: "National",
+          pages: 42,
+          keyTopics: ["Safe Design", "Risk Management", "Construction Safety", "Lifecycle Considerations", "Designer Duties"]
+        },
+        {
+          id: 12,
+          title: "Managing the Risk of Falls in Housing Construction",
+          category: "Safe Work Australia Code of Practice",
+          type: "Guidance Document",
+          description: "Code of practice specifically for preventing falls in housing construction projects",
+          url: "/safety-docs/swa/managing-risk-falls-housing-construction-cop.pdf",
+          lastUpdated: "2018-10",
+          applicableIndustries: ["Residential Construction", "Housing"],
+          jurisdiction: "National",
+          pages: 78,
+          keyTopics: ["Fall Prevention", "Housing Construction", "Scaffolding", "Roof Work", "Ladders", "Edge Protection"]
+        },
+        {
+          id: 13,
+          title: "Tower Cranes",
+          category: "Safe Work Australia Code of Practice", 
+          type: "Guidance Document",
+          description: "Code of practice for safe operation, maintenance and management of tower cranes in construction",
+          url: "/safety-docs/swa/tower-cranes-cop.pdf",
+          lastUpdated: "2023-06",
+          applicableIndustries: ["Construction", "High-rise Construction"],
+          jurisdiction: "National",
+          pages: 73,
+          keyTopics: ["Tower Crane Safety", "Crane Operation", "Maintenance", "Risk Management", "High Risk Work Licensing"]
+        },
+        {
+          id: 14,
+          title: "Work Health and Safety Consultation, Cooperation and Coordination",
+          category: "Safe Work Australia Code of Practice",
+          type: "Guidance Document", 
+          description: "Code of practice for effective consultation, cooperation and coordination on WHS matters in workplaces",
+          url: "/safety-docs/swa/whs-consultation-cooperation-coordination-cop.pdf",
+          lastUpdated: "2023-07",
+          applicableIndustries: ["All"],
+          jurisdiction: "National",
+          pages: 47,
+          keyTopics: ["WHS Consultation", "Worker Participation", "Health and Safety Representatives", "Cooperation", "Coordination"]
         }
       ];
 
@@ -96,11 +213,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         totalDocuments: safetyLibrary.length,
         categories: {
           "NSW Code of Practice": safetyLibrary.filter(doc => doc.category === "NSW Code of Practice").length,
-          "NSW Safety Guide": safetyLibrary.filter(doc => doc.category === "NSW Safety Guide").length
+          "NSW Safety Guide": safetyLibrary.filter(doc => doc.category === "NSW Safety Guide").length,
+          "Safe Work Australia Code of Practice": safetyLibrary.filter(doc => doc.category === "Safe Work Australia Code of Practice").length
         },
-        jurisdiction: "NSW",
-        publisher: "SafeWork NSW",
-        complianceFramework: "Work Health and Safety Act 2011 (NSW)",
+        jurisdictions: ["NSW", "National"],
+        publishers: ["SafeWork NSW", "Safe Work Australia"],
+        complianceFramework: "Work Health and Safety Act 2011",
         lastUpdated: new Date().toISOString().split('T')[0]
       });
     } catch (error: any) {
