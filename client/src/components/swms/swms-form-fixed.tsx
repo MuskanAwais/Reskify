@@ -915,40 +915,6 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
                   <Button
                     variant="outline"
                     className="flex items-center gap-2"
-                    onClick={async () => {
-                      try {
-                        const response = await fetch('/api/swms', {
-                          method: 'POST',
-                          headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({
-                            title: formData.title || formData.jobName || "Untitled Project",
-                            jobName: formData.jobName || formData.title || "Untitled Project", 
-                            jobNumber: formData.jobNumber || "AUTO-" + Date.now(),
-                            projectAddress: formData.projectAddress || formData.projectLocation || "",
-                            projectLocation: formData.projectLocation || formData.projectAddress || "",
-                            tradeType: formData.tradeType || "",
-                            activities: Array.isArray(formData.activities) ? formData.activities : [],
-                            riskAssessments: formData.riskAssessments || [],
-                            safetyMeasures: formData.safetyMeasures || [],
-                            complianceCodes: formData.complianceCodes || [],
-                            status: "draft",
-                            aiEnhanced: false
-                          })
-                        });
-                        
-                        if (response.ok) {
-                          const result = await response.json();
-                          // Open preview in new window/tab
-                          window.open(`/api/swms/${result.swmsId}/pdf`, '_blank');
-                        }
-                      } catch (error) {
-                        toast({
-                          title: "Preview Error",
-                          description: "Failed to generate preview",
-                          variant: "destructive"
-                        });
-                      }
-                    }}
                   >
                     <Eye className="h-4 w-4" />
                     Preview Document
@@ -956,54 +922,6 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
                   
                   <Button
                     className="flex items-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
-                    onClick={async () => {
-                      try {
-                        const response = await fetch('/api/swms', {
-                          method: 'POST',
-                          headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({
-                            title: formData.title || formData.jobName || "Untitled Project",
-                            jobName: formData.jobName || formData.title || "Untitled Project", 
-                            jobNumber: formData.jobNumber || "AUTO-" + Date.now(),
-                            projectAddress: formData.projectAddress || formData.projectLocation || "",
-                            projectLocation: formData.projectLocation || formData.projectAddress || "",
-                            tradeType: formData.tradeType || "",
-                            activities: Array.isArray(formData.activities) ? formData.activities : [],
-                            riskAssessments: formData.riskAssessments || [],
-                            safetyMeasures: formData.safetyMeasures || [],
-                            complianceCodes: formData.complianceCodes || [],
-                            status: "draft",
-                            aiEnhanced: false
-                          })
-                        });
-                        
-                        if (response.ok) {
-                          const result = await response.json();
-                          // Download PDF
-                          const pdfResponse = await fetch(`/api/swms/${result.swmsId}/pdf`);
-                          const blob = await pdfResponse.blob();
-                          const url = window.URL.createObjectURL(blob);
-                          const a = document.createElement('a');
-                          a.href = url;
-                          a.download = `SWMS-${result.swmsId}.pdf`;
-                          document.body.appendChild(a);
-                          a.click();
-                          window.URL.revokeObjectURL(url);
-                          document.body.removeChild(a);
-                          
-                          toast({
-                            title: "Download Complete",
-                            description: "SWMS document downloaded successfully",
-                          });
-                        }
-                      } catch (error) {
-                        toast({
-                          title: "Download Error",
-                          description: "Failed to download PDF",
-                          variant: "destructive"
-                        });
-                      }
-                    }}
                   >
                     <Download className="h-4 w-4" />
                     Download PDF
@@ -1012,41 +930,6 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
                   <Button
                     variant="outline"
                     className="flex items-center gap-2"
-                    onClick={async () => {
-                      try {
-                        const response = await fetch('/api/swms', {
-                          method: 'POST',
-                          headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({
-                            title: formData.title || formData.jobName || "Untitled Project",
-                            jobName: formData.jobName || formData.title || "Untitled Project", 
-                            jobNumber: formData.jobNumber || "AUTO-" + Date.now(),
-                            projectAddress: formData.projectAddress || formData.projectLocation || "",
-                            projectLocation: formData.projectLocation || formData.projectAddress || "",
-                            tradeType: formData.tradeType || "",
-                            activities: Array.isArray(formData.activities) ? formData.activities : [],
-                            riskAssessments: formData.riskAssessments || [],
-                            safetyMeasures: formData.safetyMeasures || [],
-                            complianceCodes: formData.complianceCodes || [],
-                            status: "draft",
-                            aiEnhanced: false
-                          })
-                        });
-                        
-                        if (response.ok) {
-                          toast({
-                            title: "Draft Saved",
-                            description: "SWMS draft saved successfully",
-                          });
-                        }
-                      } catch (error) {
-                        toast({
-                          title: "Save Error",
-                          description: "Failed to save draft",
-                          variant: "destructive"
-                        });
-                      }
-                    }}
                   >
                     <Save className="h-4 w-4" />
                     Save Draft

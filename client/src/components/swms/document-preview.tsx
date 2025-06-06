@@ -207,9 +207,10 @@ export default function DocumentPreview({ formData }: DocumentPreviewProps) {
 
   const getStatusColor = (status: string) => {
     if (!status) return 'bg-gray-100 text-gray-800';
-    switch (status.toLowerCase()) {
+    const normalizedStatus = status.toLowerCase().replace(/[^a-z]/g, '');
+    switch (normalizedStatus) {
       case 'draft': return 'bg-gray-100 text-gray-800';
-      case 'under_review': return 'bg-amber-100 text-amber-800';
+      case 'underreview': return 'bg-amber-100 text-amber-800';
       case 'approved': return 'bg-primary/10 text-primary';
       default: return 'bg-gray-100 text-gray-800';
     }
