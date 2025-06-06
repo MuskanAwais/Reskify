@@ -55,6 +55,15 @@ const translations = {
     "nav.team": "Team",
     "nav.analytics": "Analytics",
     "nav.account": "Account",
+    // Missing translation keys
+    "projectDetails": "Project Details",
+    "projectDetailsDesc": "Enter comprehensive project information and contractor details",
+    "tradeSelection": "Trade Selection", 
+    "selectTrade": "Select your trade type",
+    "activities": "Activities",
+    "activitySelection": "Activity Selection",
+    "searchActivities": "Search activities...",
+    "selected": "selected",
     // Placeholder texts
     "placeholder.selectTrade": "Select your trade",
     "placeholder.jobName": "e.g., Office Tower Construction",
@@ -119,6 +128,15 @@ const translations = {
     "nav.team": "团队",
     "nav.analytics": "分析",
     "nav.account": "账户",
+    // Missing translation keys for Chinese
+    "projectDetails": "项目详情",
+    "projectDetailsDesc": "输入全面的项目信息和承包商详情",
+    "tradeSelection": "行业选择",
+    "selectTrade": "选择您的行业类型",
+    "activities": "活动",
+    "activitySelection": "活动选择",
+    "searchActivities": "搜索活动...",
+    "selected": "已选择",
     // Placeholder texts
     "placeholder.selectTrade": "选择您的工种",
     "placeholder.jobName": "例如：办公大楼建设",
