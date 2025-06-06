@@ -12,17 +12,19 @@ import { Link, useLocation } from "wouter";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { translate } from "@/lib/language-direct";
 
-const STEPS = [
-  { id: 1, title: "Project & Contractor Details", description: "Project information, contractor details, and high-risk work identification" },
-  { id: 2, title: "Work Activities & Risk Assessment", description: "Detailed work breakdown and comprehensive risk assessments" },
-  { id: 3, title: "Plant, Equipment & Training", description: "Equipment specifications, training requirements, and permits" },
-  { id: 4, title: "Emergency & Monitoring", description: "Emergency procedures and review/monitoring processes" },
-  { id: 5, title: "Legal Disclaimer", description: "Accept terms and liability disclaimer" },
-  { id: 6, title: "Final Document", description: "Generate complete SWMS document" }
+const getSteps = () => [
+  { id: 1, title: translate("swms.step1.title"), description: translate("swms.step1.desc") },
+  { id: 2, title: translate("swms.step2.title"), description: translate("swms.step2.desc") },
+  { id: 3, title: translate("swms.step3.title"), description: translate("swms.step3.desc") },
+  { id: 4, title: translate("swms.step4.title"), description: translate("swms.step4.desc") },
+  { id: 5, title: translate("swms.step5.title"), description: translate("swms.step5.desc") },
+  { id: 6, title: translate("swms.step6.title"), description: translate("swms.step6.desc") }
 ];
 
 export default function SwmsBuilder() {
+  const STEPS = getSteps();
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
     title: "",
@@ -189,12 +191,12 @@ export default function SwmsBuilder() {
           <Link href="/dashboard">
             <Button variant="ghost" size="sm">
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Dashboard
+              {translate("swms.back.dashboard")}
             </Button>
           </Link>
           <div>
-            <h2 className="text-3xl font-bold text-gray-800">SWMS Builder</h2>
-            <p className="text-gray-600">Create comprehensive safety documentation</p>
+            <h2 className="text-3xl font-bold text-gray-800">{translate("swms.builder")}</h2>
+            <p className="text-gray-600">{translate("swms.create.comprehensive")}</p>
             {isDraft && (
               <p className="text-sm text-amber-600 font-medium">Draft saved automatically</p>
             )}
@@ -208,10 +210,10 @@ export default function SwmsBuilder() {
             className="gap-2"
           >
             <Save className="h-4 w-4" />
-            {saveDraftMutation.isPending ? "Saving..." : "Save & Close"}
+            {saveDraftMutation.isPending ? "Saving..." : translate("swms.save.close")}
           </Button>
           <Badge variant="outline" className="bg-green-50 text-primary border-primary/20">
-            Step {currentStep} of {STEPS.length}
+            {translate("swms.step")} {currentStep} {translate("swms.of")} {STEPS.length}
           </Badge>
         </div>
       </div>
