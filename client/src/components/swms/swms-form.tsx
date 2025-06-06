@@ -246,7 +246,7 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
             <div className="space-y-2">
               <Label htmlFor="title" className="flex items-center">
                 <FileText className="mr-2 h-4 w-4" />
-                SWMS Title
+                {translate("swms.title")}
               </Label>
               <Input
                 id="title"
@@ -259,11 +259,11 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
             <div className="space-y-2">
               <Label htmlFor="tradeType" className="flex items-center">
                 <Briefcase className="mr-2 h-4 w-4" />
-                Trade Type
+                {translate("swms.trade.type")}
               </Label>
               <Select value={formData.tradeType} onValueChange={(value) => updateFormData({ tradeType: value })}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select your trade" />
+                  <SelectValue placeholder={translate("swms.select.trade")} />
                 </SelectTrigger>
                 <SelectContent>
                   {trades?.map((trade: any) => (
@@ -280,7 +280,7 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
             <div className="space-y-2">
               <Label htmlFor="jobName" className="flex items-center">
                 <Briefcase className="mr-2 h-4 w-4" />
-                Job Name <span className="text-red-500 ml-1">*</span>
+                {translate("swms.job.name")} <span className="text-red-500 ml-1">*</span>
               </Label>
               <Input
                 id="jobName"
@@ -294,7 +294,7 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
             <div className="space-y-2">
               <Label htmlFor="jobNumber" className="flex items-center">
                 <FileText className="mr-2 h-4 w-4" />
-                Job Number
+                {translate("swms.job.number")}
               </Label>
               <Input
                 id="jobNumber"
@@ -308,7 +308,7 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
           <div className="space-y-2">
             <Label htmlFor="projectAddress" className="flex items-center">
               <MapPin className="mr-2 h-4 w-4" />
-              Project Address <span className="text-red-500 ml-1">*</span>
+              {translate("swms.project.address")} <span className="text-red-500 ml-1">*</span>
             </Label>
             <Input
               id="projectAddress"
@@ -322,7 +322,7 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
           <div className="space-y-2">
             <Label htmlFor="projectLocation" className="flex items-center">
               <MapPin className="mr-2 h-4 w-4" />
-              Project Location/Description
+              {translate("swms.project.location")}
             </Label>
             <Input
               id="projectLocation"
