@@ -278,7 +278,7 @@ export default function Sidebar() {
                 onClick={toggleAdminMode}
                 className={`px-3 py-1 text-xs ${
                   adminMode 
-                    ? 'bg-green-600 text-white hover:bg-green-700' 
+                    ? 'bg-primary text-primary-foreground hover:bg-primary/90' 
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
