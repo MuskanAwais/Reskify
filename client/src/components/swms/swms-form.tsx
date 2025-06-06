@@ -584,29 +584,48 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => {
-                          const newRisk = {
-                            id: `activity-${Date.now()}-${index}`,
-                            activity: activity,
-                            description: `Risk assessment for ${activity}`,
-                            hazards: ['Identify specific hazards'],
-                            initialRiskScore: 4,
-                            riskLevel: 'Medium',
-                            controlMeasures: ['Add control measures'],
-                            legislation: ['Work Health and Safety Act'],
-                            residualRiskScore: 2,
-                            residualRiskLevel: 'Low',
-                            responsible: 'Site Supervisor',
-                            ppe: [],
-                            trainingRequired: [],
-                            permitRequired: [],
-                            inspectionFrequency: 'Daily',
-                            emergencyProcedures: [],
-                            environmentalControls: []
-                          };
-                          updateFormData({ 
-                            riskAssessments: [...(formData.riskAssessments || []), newRisk] 
-                          });
+                        onClick={async () => {
+                          try {
+                            // Fetch pre-filled risk assessment data from API
+                            const response = await fetch(`/api/risk-assessment/${encodeURIComponent(activity)}`);
+                            const riskData = await response.json();
+                            
+                            const newRisk = {
+                              id: `activity-${Date.now()}-${index}`,
+                              activity: activity,
+                              description: riskData.description,
+                              hazards: riskData.hazards,
+                              initialRiskScore: riskData.initialRiskScore,
+                              riskLevel: riskData.riskLevel,
+                              controlMeasures: riskData.controlMeasures,
+                              legislation: riskData.legislation,
+                              residualRiskScore: riskData.residualRiskScore,
+                              residualRiskLevel: riskData.residualRiskLevel,
+                              responsible: riskData.responsible,
+                              ppe: riskData.ppe,
+                              trainingRequired: riskData.trainingRequired,
+                              permitRequired: riskData.permitRequired,
+                              inspectionFrequency: riskData.inspectionFrequency,
+                              emergencyProcedures: riskData.emergencyProcedures,
+                              environmentalControls: riskData.environmentalControls
+                            };
+                            
+                            updateFormData({ 
+                              riskAssessments: [...(formData.riskAssessments || []), newRisk] 
+                            });
+                            
+                            toast({
+                              title: "Risk Assessment Added",
+                              description: `Pre-filled risk assessment for ${activity} has been added`,
+                            });
+                          } catch (error) {
+                            console.error('Error fetching risk assessment:', error);
+                            toast({
+                              title: "Error",
+                              description: "Failed to fetch risk assessment data",
+                              variant: "destructive",
+                            });
+                          }
                         }}
                         className="text-xs"
                       >

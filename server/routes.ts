@@ -600,6 +600,78 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get pre-filled risk assessment data for a specific activity
+  app.get("/api/risk-assessment/:activityName", async (req, res) => {
+    try {
+      const { activityName } = req.params;
+      const { getComprehensiveSafetyTasksByTrade } = await import('./comprehensive-safety-task-database');
+      
+      // Search for the activity across all trades
+      const allTrades = ['Electrical', 'Plumbing', 'Carpentry', 'Roofing', 'Demolition', 'Concrete Work', 'Steelwork', 'Painting', 'Landscaping', 'Bricklaying'];
+      let activityData = null;
+      
+      for (const trade of allTrades) {
+        const tradeTasks = getComprehensiveSafetyTasksByTrade(trade);
+        const foundTask = tradeTasks.find((task: any) => 
+          task.taskName.toLowerCase().includes(activityName.toLowerCase()) ||
+          activityName.toLowerCase().includes(task.taskName.toLowerCase())
+        );
+        
+        if (foundTask) {
+          activityData = foundTask;
+          break;
+        }
+      }
+      
+      if (!activityData) {
+        // Provide default risk assessment structure
+        return res.json({
+          activity: activityName,
+          description: `Risk assessment for ${activityName}`,
+          hazards: ['Identify specific hazards for this activity'],
+          initialRiskScore: 6,
+          riskLevel: 'Medium',
+          controlMeasures: ['Implement appropriate control measures'],
+          legislation: ['Work Health and Safety Act 2011', 'Work Health and Safety Regulation 2017'],
+          residualRiskScore: 3,
+          residualRiskLevel: 'Low',
+          responsible: 'Site Supervisor',
+          ppe: ['Safety glasses', 'Hard hat', 'Safety boots'],
+          trainingRequired: ['General construction induction', 'Activity-specific training'],
+          permitRequired: [],
+          inspectionFrequency: 'Daily',
+          emergencyProcedures: ['Emergency stop procedures', 'First aid procedures'],
+          environmentalControls: []
+        });
+      }
+      
+      // Transform database format to risk assessment format
+      const riskAssessment = {
+        activity: activityName,
+        description: activityData.description || `Risk assessment for ${activityName}`,
+        hazards: activityData.hazards || [],
+        initialRiskScore: activityData.riskScore || 6,
+        riskLevel: activityData.riskLevel || 'Medium',
+        controlMeasures: activityData.controlMeasures || [],
+        legislation: activityData.complianceCodes || ['Work Health and Safety Act 2011'],
+        residualRiskScore: Math.max(1, (activityData.riskScore || 6) - 3),
+        residualRiskLevel: activityData.riskScore > 6 ? 'Medium' : 'Low',
+        responsible: 'Site Supervisor',
+        ppe: activityData.ppe || [],
+        trainingRequired: activityData.trainingRequired || [],
+        permitRequired: activityData.highRiskWork ? ['High Risk Work Permit'] : [],
+        inspectionFrequency: activityData.inspectionFrequency || 'Daily',
+        emergencyProcedures: activityData.emergencyProcedures || [],
+        environmentalControls: activityData.environmentalControls || []
+      };
+      
+      res.json(riskAssessment);
+    } catch (error: any) {
+      console.error('Get risk assessment error:', error);
+      res.status(500).json({ message: 'Failed to fetch risk assessment data' });
+    }
+  });
+
   // Auto-generate SWMS from activities
   app.post("/api/auto-generate-swms", async (req, res) => {
     try {
