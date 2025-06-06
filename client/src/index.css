@@ -174,10 +174,10 @@
   --border: 214 32% 91%; /* #E2E8F0 - Light blue-gray */
   --input: 214 32% 91%; /* #E2E8F0 */
   --primary: 152 100% 13%; /* #0F4037 - Dark green */
-  --primary-foreground: 0 0% 100%; /* #FFFFFF */
-  --secondary: 152 50% 25%; /* Lighter green for secondary */
+  --primary-foreground: 0 0% 100%; /* #FFFFFF - High contrast white text */
+  --secondary: 152 45% 20%; /* #1A5D52 - Darker green for better contrast */
   --secondary-foreground: 0 0% 100%; /* #FFFFFF */
-  --accent: 152 30% 35%; /* Even lighter green for accents */
+  --accent: 152 40% 25%; /* #266B5C - Medium green with better contrast */
   --accent-foreground: 0 0% 100%; /* #FFFFFF */
   --destructive: 0 72% 51%; /* #C62828 */
   --destructive-foreground: 60 9.1% 97.8%;
@@ -222,7 +222,7 @@
   }
 }
 
-/* Custom utility classes */
+/* Custom utility classes with improved accessibility */
 .text-primary {
   color: hsl(var(--primary));
 }
@@ -241,10 +241,37 @@
 
 .bg-primary {
   background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
 }
 
 .bg-secondary {
   background-color: hsl(var(--secondary));
+  color: hsl(var(--secondary-foreground));
+}
+
+/* High contrast button styles for accessibility */
+.btn-primary {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary:hover {
+  background-color: hsl(152 100% 15%); /* Slightly lighter on hover */
+  color: hsl(var(--primary-foreground));
+}
+
+.btn-secondary {
+  background-color: hsl(var(--secondary));
+  color: hsl(var(--secondary-foreground));
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.btn-secondary:hover {
+  background-color: hsl(152 45% 22%); /* Slightly lighter on hover */
+  color: hsl(var(--secondary-foreground));
 }
 
 .bg-success {
