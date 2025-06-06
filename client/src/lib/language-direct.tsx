@@ -39,7 +39,22 @@ const translations = {
     "swms.job.name": "Job Name",
     "swms.job.number": "Job Number",
     "swms.project.address": "Project Address",
-    "swms.project.location": "Project Location/Description"
+    "swms.project.location": "Project Location/Description",
+    // Dashboard translations
+    "manageSafetyCompliance": "Manage Safety Compliance",
+    "draftSwms": "Draft SWMS",
+    "saveCompleteLater": "Save & Complete Later",
+    "completedSwms": "Completed SWMS",
+    "projectSpecificDocumentation": "Project-Specific Documentation",
+    "createNewSwms": "Create New SWMS",
+    "quickStart": "Quick Start",
+    "recentSwmsDocuments": "Recent SWMS Documents",
+    "viewAll": "View All",
+    "quickActions": "Quick Actions",
+    "nav.ai-generator": "AI Generator",
+    "nav.team": "Team",
+    "nav.analytics": "Analytics",
+    "nav.account": "Account"
   },
   zh: {
     legalDisclaimer: "法律免责声明",
@@ -81,7 +96,22 @@ const translations = {
     "swms.job.name": "工作名称",
     "swms.job.number": "工作编号",
     "swms.project.address": "项目地址",
-    "swms.project.location": "项目位置/描述"
+    "swms.project.location": "项目位置/描述",
+    // Dashboard translations
+    "manageSafetyCompliance": "管理安全合规性",
+    "draftSwms": "草稿SWMS",
+    "saveCompleteLater": "保存并稍后完成",
+    "completedSwms": "已完成的SWMS",
+    "projectSpecificDocumentation": "项目特定文档",
+    "createNewSwms": "创建新SWMS",
+    "quickStart": "快速开始",
+    "recentSwmsDocuments": "最近的SWMS文档",
+    "viewAll": "查看全部",
+    "quickActions": "快速操作",
+    "nav.ai-generator": "AI生成器",
+    "nav.team": "团队",
+    "nav.analytics": "分析",
+    "nav.account": "账户"
   },
   es: {
     legalDisclaimer: "Descargo Legal",
@@ -123,7 +153,22 @@ const translations = {
     "swms.job.name": "Nombre del Trabajo",
     "swms.job.number": "Número de Trabajo",
     "swms.project.address": "Dirección del Proyecto",
-    "swms.project.location": "Ubicación/Descripción del Proyecto"
+    "swms.project.location": "Ubicación/Descripción del Proyecto",
+    // Dashboard translations
+    "manageSafetyCompliance": "Gestionar Cumplimiento de Seguridad",
+    "draftSwms": "Borrador SWMS",
+    "saveCompleteLater": "Guardar y Completar Más Tarde",
+    "completedSwms": "SWMS Completados",
+    "projectSpecificDocumentation": "Documentación Específica del Proyecto",
+    "createNewSwms": "Crear Nuevo SWMS",
+    "quickStart": "Inicio Rápido",
+    "recentSwmsDocuments": "Documentos SWMS Recientes",
+    "viewAll": "Ver Todo",
+    "quickActions": "Acciones Rápidas",
+    "nav.ai-generator": "Generador IA",
+    "nav.team": "Equipo",
+    "nav.analytics": "Análisis",
+    "nav.account": "Cuenta"
   },
   fr: {
     legalDisclaimer: "Avertissement Légal",
@@ -165,7 +210,22 @@ const translations = {
     "swms.job.name": "Nom du Travail",
     "swms.job.number": "Numéro de Travail",
     "swms.project.address": "Adresse du Projet",
-    "swms.project.location": "Emplacement/Description du Projet"
+    "swms.project.location": "Emplacement/Description du Projet",
+    // Dashboard translations
+    "manageSafetyCompliance": "Gérer la Conformité de Sécurité",
+    "draftSwms": "Brouillon SWMS",
+    "saveCompleteLater": "Enregistrer et Terminer Plus Tard",
+    "completedSwms": "SWMS Terminés",
+    "projectSpecificDocumentation": "Documentation Spécifique au Projet",
+    "createNewSwms": "Créer Nouveau SWMS",
+    "quickStart": "Démarrage Rapide",
+    "recentSwmsDocuments": "Documents SWMS Récents",
+    "viewAll": "Voir Tout",
+    "quickActions": "Actions Rapides",
+    "nav.ai-generator": "Générateur IA",
+    "nav.team": "Équipe",
+    "nav.analytics": "Analytique",
+    "nav.account": "Compte"
   },
   de: {
     legalDisclaimer: "Rechtlicher Haftungsausschluss",
@@ -207,7 +267,22 @@ const translations = {
     "swms.job.name": "Arbeitsname",
     "swms.job.number": "Arbeitsnummer",
     "swms.project.address": "Projektadresse",
-    "swms.project.location": "Projektstandort/Beschreibung"
+    "swms.project.location": "Projektstandort/Beschreibung",
+    // Dashboard translations
+    "manageSafetyCompliance": "Sicherheitskonformität Verwalten",
+    "draftSwms": "Entwurf SWMS",
+    "saveCompleteLater": "Speichern und Später Vervollständigen",
+    "completedSwms": "Abgeschlossene SWMS",
+    "projectSpecificDocumentation": "Projektspezifische Dokumentation",
+    "createNewSwms": "Neue SWMS Erstellen",
+    "quickStart": "Schnellstart",
+    "recentSwmsDocuments": "Kürzliche SWMS-Dokumente",
+    "viewAll": "Alle Anzeigen",
+    "quickActions": "Schnelle Aktionen",
+    "nav.ai-generator": "KI-Generator",
+    "nav.team": "Team",
+    "nav.analytics": "Analytik",
+    "nav.account": "Konto"
   },
   ja: {
     legalDisclaimer: "法的免責事項",
@@ -249,7 +324,22 @@ const translations = {
     "swms.job.name": "作業名",
     "swms.job.number": "作業番号",
     "swms.project.address": "プロジェクト住所",
-    "swms.project.location": "プロジェクト場所/説明"
+    "swms.project.location": "プロジェクト場所/説明",
+    // Dashboard translations
+    "manageSafetyCompliance": "安全コンプライアンス管理",
+    "draftSwms": "下書きSWMS",
+    "saveCompleteLater": "保存して後で完成",
+    "completedSwms": "完成したSWMS",
+    "projectSpecificDocumentation": "プロジェクト固有のドキュメント",
+    "createNewSwms": "新しいSWMSを作成",
+    "quickStart": "クイックスタート",
+    "recentSwmsDocuments": "最近のSWMS文書",
+    "viewAll": "すべて表示",
+    "quickActions": "クイックアクション",
+    "nav.ai-generator": "AIジェネレーター",
+    "nav.team": "チーム",
+    "nav.analytics": "分析",
+    "nav.account": "アカウント"
   },
   ko: {
     legalDisclaimer: "법적 면책조항",
@@ -291,7 +381,22 @@ const translations = {
     "swms.job.name": "작업명",
     "swms.job.number": "작업번호",
     "swms.project.address": "프로젝트 주소",
-    "swms.project.location": "프로젝트 위치/설명"
+    "swms.project.location": "프로젝트 위치/설명",
+    // Dashboard translations
+    "manageSafetyCompliance": "안전 준수 관리",
+    "draftSwms": "초안 SWMS",
+    "saveCompleteLater": "저장하고 나중에 완료",
+    "completedSwms": "완료된 SWMS",
+    "projectSpecificDocumentation": "프로젝트별 문서",
+    "createNewSwms": "새 SWMS 생성",
+    "quickStart": "빠른 시작",
+    "recentSwmsDocuments": "최근 SWMS 문서",
+    "viewAll": "모두 보기",
+    "quickActions": "빠른 작업",
+    "nav.ai-generator": "AI 생성기",
+    "nav.team": "팀",
+    "nav.analytics": "분석",
+    "nav.account": "계정"
   },
   ar: {
     legalDisclaimer: "إخلاء المسؤولية القانونية",
@@ -333,7 +438,22 @@ const translations = {
     "swms.job.name": "اسم العمل",
     "swms.job.number": "رقم العمل",
     "swms.project.address": "عنوان المشروع",
-    "swms.project.location": "موقع/وصف المشروع"
+    "swms.project.location": "موقع/وصف المشروع",
+    // Dashboard translations
+    "manageSafetyCompliance": "إدارة الامتثال للسلامة",
+    "draftSwms": "مسودة SWMS",
+    "saveCompleteLater": "حفظ واستكمال لاحقاً",
+    "completedSwms": "SWMS مكتملة",
+    "projectSpecificDocumentation": "وثائق خاصة بالمشروع",
+    "createNewSwms": "إنشاء SWMS جديد",
+    "quickStart": "بداية سريعة",
+    "recentSwmsDocuments": "وثائق SWMS الحديثة",
+    "viewAll": "عرض الكل",
+    "quickActions": "إجراءات سريعة",
+    "nav.ai-generator": "منشئ الذكاء الاصطناعي",
+    "nav.team": "الفريق",
+    "nav.analytics": "التحليلات",
+    "nav.account": "الحساب"
   },
   pt: {
     legalDisclaimer: "Isenção de Responsabilidade Legal",
@@ -375,7 +495,22 @@ const translations = {
     "swms.job.name": "Nome do Trabalho",
     "swms.job.number": "Número do Trabalho",
     "swms.project.address": "Endereço do Projeto",
-    "swms.project.location": "Localização/Descrição do Projeto"
+    "swms.project.location": "Localização/Descrição do Projeto",
+    // Dashboard translations
+    "manageSafetyCompliance": "Gerenciar Conformidade de Segurança",
+    "draftSwms": "Rascunho SWMS",
+    "saveCompleteLater": "Salvar e Completar Depois",
+    "completedSwms": "SWMS Concluídos",
+    "projectSpecificDocumentation": "Documentação Específica do Projeto",
+    "createNewSwms": "Criar Novo SWMS",
+    "quickStart": "Início Rápido",
+    "recentSwmsDocuments": "Documentos SWMS Recentes",
+    "viewAll": "Ver Todos",
+    "quickActions": "Ações Rápidas",
+    "nav.ai-generator": "Gerador IA",
+    "nav.team": "Equipe",
+    "nav.analytics": "Análises",
+    "nav.account": "Conta"
   },
   ru: {
     legalDisclaimer: "Правовой Отказ от Ответственности",
