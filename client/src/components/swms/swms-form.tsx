@@ -683,6 +683,9 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
             </CardContent>
           </Card>
 
+          {/* Debug: Show current risk assessments count */}
+          {console.log('Current risk assessments:', formData.riskAssessments)}
+          
           {/* Risk Assessment Display */}
           {formData.riskAssessments && formData.riskAssessments.length > 0 && (
             <Card>
