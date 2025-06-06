@@ -684,337 +684,396 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
             </CardContent>
           </Card>
 
-          {/* Mobile-Optimized Risk Assessment Display */}
+          {/* Comprehensive Risk Assessment Table */}
           {formData.riskAssessments && formData.riskAssessments.length > 0 && (
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Risk Assessments ({formData.riskAssessments.length})</CardTitle>
+                <CardTitle className="text-base">Risk Assessment Table ({formData.riskAssessments.length} assessments)</CardTitle>
                 <p className="text-sm text-gray-600">
-                  Tap any assessment to expand and edit details
+                  Complete risk assessment details with all required compliance data
                 </p>
               </CardHeader>
               <CardContent>
-                <div className="space-y-3">
+                <div className="space-y-6">
                   {formData.riskAssessments.map((risk: any, index: number) => (
-                    <Collapsible key={risk.id || index}>
-                      <div className="border border-gray-200 rounded-lg overflow-hidden">
-                        <CollapsibleTrigger className="w-full p-4 text-left hover:bg-gray-50 transition-colors">
-                          <div className="flex items-center justify-between">
-                            <div className="flex-1">
-                              <h4 className="font-medium text-gray-900 text-sm mb-1">{risk.activity}</h4>
-                              <div className="flex items-center gap-2">
-                                <Badge
-                                  variant={
-                                    risk.riskLevel === 'Extreme' ? 'destructive' :
-                                    risk.riskLevel === 'High' ? 'destructive' :
-                                    risk.riskLevel === 'Medium' ? 'default' : 'secondary'
-                                  }
-                                  className="text-xs"
-                                >
-                                  {risk.riskLevel || 'Medium'}
-                                </Badge>
-                                <span className="text-xs text-gray-500">
-                                  Risk: {risk.initialRiskScore || 6} → {risk.residualRiskScore || 3}
-                                </span>
-                              </div>
-                            </div>
-                            <ChevronDown className="h-4 w-4 text-gray-400" />
+                    <div key={risk.id || index} className="border border-gray-300 rounded-lg overflow-hidden">
+                      {/* Header with Task and Risk Level */}
+                      <div className="bg-gray-100 p-4 border-b border-gray-300">
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="flex-1">
+                            <label className="text-xs font-medium text-gray-700 block mb-1">Task Description</label>
+                            <Textarea
+                              value={risk.activity}
+                              onChange={(e) => {
+                                const updated = [...formData.riskAssessments];
+                                updated[index] = { ...risk, activity: e.target.value };
+                                updateFormData({ riskAssessments: updated });
+                              }}
+                              className="text-sm font-medium bg-white"
+                              placeholder="Enter detailed task description"
+                            />
                           </div>
-                        </CollapsibleTrigger>
+                          <Button
+                            type="button"
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => {
+                              const updated = formData.riskAssessments.filter((_: any, i: number) => i !== index);
+                              updateFormData({ riskAssessments: updated });
+                            }}
+                            className="ml-3"
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
+                        </div>
                         
-                        <CollapsibleContent>
-                          <div className="border-t border-gray-100 p-4 space-y-4 bg-gray-50">
-                            {/* Activity and Description */}
-                            <div>
-                              <label className="text-xs font-medium text-gray-700 block mb-1">Activity</label>
-                              <Input
-                                value={risk.activity}
-                                onChange={(e) => {
-                                  const updated = [...formData.riskAssessments];
-                                  updated[index] = { ...risk, activity: e.target.value };
-                                  updateFormData({ riskAssessments: updated });
-                                }}
-                                className="text-sm"
-                              />
-                            </div>
-                            
-                            {/* Hazards */}
-                            <div>
-                              <label className="text-xs font-medium text-gray-700 block mb-2">Hazards</label>
-                              <div className="space-y-2">
-                                {(Array.isArray(risk.hazards) ? risk.hazards : [risk.hazards || '']).map((hazard: string, hIndex: number) => (
-                                  <div key={hIndex} className="flex gap-2">
-                                    <Textarea
-                                      value={hazard}
-                                      onChange={(e) => {
-                                        const updated = [...formData.riskAssessments];
-                                        if (!Array.isArray(updated[index].hazards)) {
-                                          updated[index].hazards = [updated[index].hazards || ''];
-                                        }
-                                        updated[index].hazards[hIndex] = e.target.value;
-                                        updateFormData({ riskAssessments: updated });
-                                      }}
-                                      placeholder="Describe hazard"
-                                      className="flex-1 text-sm min-h-[60px]"
-                                    />
-                                    <Button
-                                      type="button"
-                                      variant="outline"
-                                      size="sm"
-                                      onClick={() => {
-                                        const updated = [...formData.riskAssessments];
-                                        if (Array.isArray(updated[index].hazards)) {
-                                          updated[index].hazards = updated[index].hazards.filter((_: any, i: number) => i !== hIndex);
-                                        }
-                                        updateFormData({ riskAssessments: updated });
-                                      }}
-                                      className="self-start"
-                                    >
-                                      <X className="h-3 w-3" />
-                                    </Button>
-                                  </div>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                          <div>
+                            <label className="text-xs font-medium text-gray-700 block mb-1">Risk Level</label>
+                            <Select
+                              value={risk.riskLevel || 'Medium'}
+                              onValueChange={(value) => {
+                                const updated = [...formData.riskAssessments];
+                                updated[index] = { ...updated[index], riskLevel: value };
+                                updateFormData({ riskAssessments: updated });
+                              }}
+                            >
+                              <SelectTrigger className="text-sm">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Low">Low</SelectItem>
+                                <SelectItem value="Medium">Medium</SelectItem>
+                                <SelectItem value="High">High</SelectItem>
+                                <SelectItem value="Extreme">Extreme</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          
+                          <div>
+                            <label className="text-xs font-medium text-gray-700 block mb-1">Initial Risk Score</label>
+                            <Select
+                              value={String(risk.initialRiskScore || 6)}
+                              onValueChange={(value) => {
+                                const updated = [...formData.riskAssessments];
+                                updated[index] = { ...updated[index], initialRiskScore: parseInt(value) };
+                                updateFormData({ riskAssessments: updated });
+                              }}
+                            >
+                              <SelectTrigger className="text-sm">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {[1,2,3,4,5,6,7,8].map(score => (
+                                  <SelectItem key={score} value={String(score)}>{score}</SelectItem>
                                 ))}
-                                <Button
-                                  type="button"
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => {
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          
+                          <div>
+                            <label className="text-xs font-medium text-gray-700 block mb-1">Residual Risk Score</label>
+                            <Select
+                              value={String(risk.residualRiskScore || 3)}
+                              onValueChange={(value) => {
+                                const updated = [...formData.riskAssessments];
+                                updated[index] = { ...updated[index], residualRiskScore: parseInt(value) };
+                                updateFormData({ riskAssessments: updated });
+                              }}
+                            >
+                              <SelectTrigger className="text-sm">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {[1,2,3,4,5,6,7,8].map(score => (
+                                  <SelectItem key={score} value={String(score)}>{score}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          
+                          <div>
+                            <label className="text-xs font-medium text-gray-700 block mb-1">Responsible Person</label>
+                            <Input
+                              value={risk.responsible || 'Site Supervisor'}
+                              onChange={(e) => {
+                                const updated = [...formData.riskAssessments];
+                                updated[index] = { ...updated[index], responsible: e.target.value };
+                                updateFormData({ riskAssessments: updated });
+                              }}
+                              className="text-sm"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Detailed Risk Assessment Data */}
+                      <div className="p-4 space-y-4">
+                        {/* Hazards Section */}
+                        <div>
+                          <label className="text-sm font-medium text-gray-900 block mb-2">Identified Hazards</label>
+                          <div className="space-y-2">
+                            {(Array.isArray(risk.hazards) ? risk.hazards : [risk.hazards || '']).map((hazard: string, hIndex: number) => (
+                              <div key={hIndex} className="flex gap-2">
+                                <span className="text-xs bg-gray-100 px-2 py-1 rounded mt-1 shrink-0">{hIndex + 1}</span>
+                                <Textarea
+                                  value={hazard}
+                                  onChange={(e) => {
                                     const updated = [...formData.riskAssessments];
                                     if (!Array.isArray(updated[index].hazards)) {
                                       updated[index].hazards = [updated[index].hazards || ''];
                                     }
-                                    updated[index].hazards.push('');
+                                    updated[index].hazards[hIndex] = e.target.value;
                                     updateFormData({ riskAssessments: updated });
                                   }}
-                                  className="w-full"
-                                >
-                                  <Plus className="h-3 w-3 mr-1" />
-                                  Add Hazard
-                                </Button>
-                              </div>
-                            </div>
-
-                            {/* Control Measures */}
-                            <div>
-                              <label className="text-xs font-medium text-gray-700 block mb-2">Control Measures</label>
-                              <div className="space-y-2">
-                                {(Array.isArray(risk.controlMeasures) ? risk.controlMeasures : [risk.controlMeasures || '']).map((control: string, cIndex: number) => (
-                                  <div key={cIndex} className="flex gap-2">
-                                    <Textarea
-                                      value={control}
-                                      onChange={(e) => {
-                                        const updated = [...formData.riskAssessments];
-                                        if (!Array.isArray(updated[index].controlMeasures)) {
-                                          updated[index].controlMeasures = [updated[index].controlMeasures || ''];
-                                        }
-                                        updated[index].controlMeasures[cIndex] = e.target.value;
-                                        updateFormData({ riskAssessments: updated });
-                                      }}
-                                      placeholder="Describe control measure"
-                                      className="flex-1 text-sm min-h-[60px]"
-                                    />
-                                    <Button
-                                      type="button"
-                                      variant="outline"
-                                      size="sm"
-                                      onClick={() => {
-                                        const updated = [...formData.riskAssessments];
-                                        if (Array.isArray(updated[index].controlMeasures)) {
-                                          updated[index].controlMeasures = updated[index].controlMeasures.filter((_: any, i: number) => i !== cIndex);
-                                        }
-                                        updateFormData({ riskAssessments: updated });
-                                      }}
-                                      className="self-start"
-                                    >
-                                      <X className="h-3 w-3" />
-                                    </Button>
-                                  </div>
-                                ))}
+                                  placeholder="Describe specific hazard (e.g., electrical shock from exposed wiring)"
+                                  className="flex-1 text-sm min-h-[60px]"
+                                />
                                 <Button
                                   type="button"
                                   variant="outline"
                                   size="sm"
                                   onClick={() => {
+                                    const updated = [...formData.riskAssessments];
+                                    if (Array.isArray(updated[index].hazards) && updated[index].hazards.length > 1) {
+                                      updated[index].hazards = updated[index].hazards.filter((_: any, i: number) => i !== hIndex);
+                                      updateFormData({ riskAssessments: updated });
+                                    }
+                                  }}
+                                  className="self-start"
+                                >
+                                  <X className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            ))}
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                const updated = [...formData.riskAssessments];
+                                if (!Array.isArray(updated[index].hazards)) {
+                                  updated[index].hazards = [updated[index].hazards || ''];
+                                }
+                                updated[index].hazards.push('');
+                                updateFormData({ riskAssessments: updated });
+                              }}
+                              className="w-full"
+                            >
+                              <Plus className="h-3 w-3 mr-1" />
+                              Add Additional Hazard
+                            </Button>
+                          </div>
+                        </div>
+
+                        {/* Control Measures Section */}
+                        <div>
+                          <label className="text-sm font-medium text-gray-900 block mb-2">Control Measures</label>
+                          <div className="space-y-2">
+                            {(Array.isArray(risk.controlMeasures) ? risk.controlMeasures : [risk.controlMeasures || '']).map((control: string, cIndex: number) => (
+                              <div key={cIndex} className="flex gap-2">
+                                <span className="text-xs bg-blue-100 px-2 py-1 rounded mt-1 shrink-0">{cIndex + 1}</span>
+                                <Textarea
+                                  value={control}
+                                  onChange={(e) => {
                                     const updated = [...formData.riskAssessments];
                                     if (!Array.isArray(updated[index].controlMeasures)) {
                                       updated[index].controlMeasures = [updated[index].controlMeasures || ''];
                                     }
-                                    updated[index].controlMeasures.push('');
+                                    updated[index].controlMeasures[cIndex] = e.target.value;
                                     updateFormData({ riskAssessments: updated });
                                   }}
-                                  className="w-full"
-                                >
-                                  <Plus className="h-3 w-3 mr-1" />
-                                  Add Control Measure
-                                </Button>
-                              </div>
-                            </div>
-
-                            {/* Risk Scoring */}
-                            <div className="grid grid-cols-2 gap-4">
-                              <div>
-                                <label className="text-xs font-medium text-gray-700 block mb-1">Initial Risk Score</label>
-                                <Select
-                                  value={String(risk.initialRiskScore || 6)}
-                                  onValueChange={(value) => {
-                                    const updated = [...formData.riskAssessments];
-                                    updated[index] = { ...updated[index], initialRiskScore: parseInt(value) };
-                                    updateFormData({ riskAssessments: updated });
-                                  }}
-                                >
-                                  <SelectTrigger className="text-sm">
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="1">1 - Very Low</SelectItem>
-                                    <SelectItem value="2">2 - Low</SelectItem>
-                                    <SelectItem value="3">3 - Low-Medium</SelectItem>
-                                    <SelectItem value="4">4 - Medium</SelectItem>
-                                    <SelectItem value="5">5 - Medium-High</SelectItem>
-                                    <SelectItem value="6">6 - High</SelectItem>
-                                    <SelectItem value="7">7 - Very High</SelectItem>
-                                    <SelectItem value="8">8 - Extreme</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                              <div>
-                                <label className="text-xs font-medium text-gray-700 block mb-1">Residual Risk Score</label>
-                                <Select
-                                  value={String(risk.residualRiskScore || 3)}
-                                  onValueChange={(value) => {
-                                    const updated = [...formData.riskAssessments];
-                                    updated[index] = { ...updated[index], residualRiskScore: parseInt(value) };
-                                    updateFormData({ riskAssessments: updated });
-                                  }}
-                                >
-                                  <SelectTrigger className="text-sm">
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="1">1 - Very Low</SelectItem>
-                                    <SelectItem value="2">2 - Low</SelectItem>
-                                    <SelectItem value="3">3 - Low-Medium</SelectItem>
-                                    <SelectItem value="4">4 - Medium</SelectItem>
-                                    <SelectItem value="5">5 - Medium-High</SelectItem>
-                                    <SelectItem value="6">6 - High</SelectItem>
-                                    <SelectItem value="7">7 - Very High</SelectItem>
-                                    <SelectItem value="8">8 - Extreme</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                            </div>
-
-                            {/* PPE Required */}
-                            <div>
-                              <label className="text-xs font-medium text-gray-700 block mb-2">PPE Required</label>
-                              <div className="space-y-2">
-                                {(risk.ppe || []).map((equipment: string, pIndex: number) => (
-                                  <div key={pIndex} className="flex gap-2">
-                                    <Input
-                                      value={equipment}
-                                      onChange={(e) => {
-                                        const updated = [...formData.riskAssessments];
-                                        const newPpe = [...(updated[index].ppe || [])];
-                                        newPpe[pIndex] = e.target.value;
-                                        updated[index] = { ...updated[index], ppe: newPpe };
-                                        updateFormData({ riskAssessments: updated });
-                                      }}
-                                      placeholder="PPE item"
-                                      className="flex-1 text-sm"
-                                    />
-                                    <Button
-                                      type="button"
-                                      variant="outline"
-                                      size="sm"
-                                      onClick={() => {
-                                        const updated = [...formData.riskAssessments];
-                                        const newPpe = (updated[index].ppe || []).filter((_: any, i: number) => i !== pIndex);
-                                        updated[index] = { ...updated[index], ppe: newPpe };
-                                        updateFormData({ riskAssessments: updated });
-                                      }}
-                                    >
-                                      <X className="h-3 w-3" />
-                                    </Button>
-                                  </div>
-                                ))}
+                                  placeholder="Describe control measure (e.g., Use insulated tools and test equipment before work)"
+                                  className="flex-1 text-sm min-h-[60px]"
+                                />
                                 <Button
                                   type="button"
                                   variant="outline"
                                   size="sm"
                                   onClick={() => {
                                     const updated = [...formData.riskAssessments];
-                                    updated[index] = { 
-                                      ...updated[index], 
-                                      ppe: [...(updated[index].ppe || []), ''] 
-                                    };
-                                    updateFormData({ riskAssessments: updated });
+                                    if (Array.isArray(updated[index].controlMeasures) && updated[index].controlMeasures.length > 1) {
+                                      updated[index].controlMeasures = updated[index].controlMeasures.filter((_: any, i: number) => i !== cIndex);
+                                      updateFormData({ riskAssessments: updated });
+                                    }
                                   }}
-                                  className="w-full"
+                                  className="self-start"
                                 >
-                                  <Plus className="h-3 w-3 mr-1" />
-                                  Add PPE Item
+                                  <X className="h-3 w-3" />
                                 </Button>
                               </div>
-                            </div>
+                            ))}
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                const updated = [...formData.riskAssessments];
+                                if (!Array.isArray(updated[index].controlMeasures)) {
+                                  updated[index].controlMeasures = [updated[index].controlMeasures || ''];
+                                }
+                                updated[index].controlMeasures.push('');
+                                updateFormData({ riskAssessments: updated });
+                              }}
+                              className="w-full"
+                            >
+                              <Plus className="h-3 w-3 mr-1" />
+                              Add Additional Control Measure
+                            </Button>
+                          </div>
+                        </div>
 
-                            {/* Responsible Person and Inspection Frequency */}
-                            <div className="grid grid-cols-1 gap-4">
-                              <div>
-                                <label className="text-xs font-medium text-gray-700 block mb-1">Responsible Person</label>
-                                <Input
-                                  value={risk.responsible || 'Site Supervisor'}
-                                  onChange={(e) => {
-                                    const updated = [...formData.riskAssessments];
-                                    updated[index] = { ...updated[index], responsible: e.target.value };
-                                    updateFormData({ riskAssessments: updated });
-                                  }}
-                                  className="text-sm"
-                                />
-                              </div>
-                              <div>
-                                <label className="text-xs font-medium text-gray-700 block mb-1">Inspection Frequency</label>
-                                <Select
-                                  value={risk.inspectionFrequency || 'Daily'}
-                                  onValueChange={(value) => {
-                                    const updated = [...formData.riskAssessments];
-                                    updated[index] = { ...updated[index], inspectionFrequency: value };
-                                    updateFormData({ riskAssessments: updated });
-                                  }}
-                                >
-                                  <SelectTrigger className="text-sm">
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="Daily">Daily</SelectItem>
-                                    <SelectItem value="Weekly">Weekly</SelectItem>
-                                    <SelectItem value="Monthly">Monthly</SelectItem>
-                                    <SelectItem value="Before each use">Before each use</SelectItem>
-                                    <SelectItem value="As required">As required</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                            </div>
-
-                            {/* Remove Assessment Button */}
-                            <div className="pt-2 border-t border-gray-200">
+                        {/* PPE and Legislation Row */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="text-sm font-medium text-gray-900 block mb-2">PPE Required</label>
+                            <div className="space-y-2">
+                              {(risk.ppe || []).map((equipment: string, pIndex: number) => (
+                                <div key={pIndex} className="flex gap-2">
+                                  <Input
+                                    value={equipment}
+                                    onChange={(e) => {
+                                      const updated = [...formData.riskAssessments];
+                                      const newPpe = [...(updated[index].ppe || [])];
+                                      newPpe[pIndex] = e.target.value;
+                                      updated[index] = { ...updated[index], ppe: newPpe };
+                                      updateFormData({ riskAssessments: updated });
+                                    }}
+                                    placeholder="PPE item (e.g., Insulated gloves)"
+                                    className="flex-1 text-sm"
+                                  />
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => {
+                                      const updated = [...formData.riskAssessments];
+                                      const newPpe = (updated[index].ppe || []).filter((_: any, i: number) => i !== pIndex);
+                                      updated[index] = { ...updated[index], ppe: newPpe };
+                                      updateFormData({ riskAssessments: updated });
+                                    }}
+                                  >
+                                    <X className="h-3 w-3" />
+                                  </Button>
+                                </div>
+                              ))}
                               <Button
                                 type="button"
-                                variant="destructive"
+                                variant="outline"
                                 size="sm"
                                 onClick={() => {
-                                  const updated = formData.riskAssessments.filter((_: any, i: number) => i !== index);
+                                  const updated = [...formData.riskAssessments];
+                                  updated[index] = { 
+                                    ...updated[index], 
+                                    ppe: [...(updated[index].ppe || []), ''] 
+                                  };
                                   updateFormData({ riskAssessments: updated });
                                 }}
                                 className="w-full"
                               >
-                                <X className="h-3 w-3 mr-1" />
-                                Remove Assessment
+                                <Plus className="h-3 w-3 mr-1" />
+                                Add PPE Item
                               </Button>
                             </div>
                           </div>
-                        </CollapsibleContent>
+
+                          <div>
+                            <label className="text-sm font-medium text-gray-900 block mb-2">Applicable Legislation</label>
+                            <div className="space-y-2">
+                              {(risk.legislation || []).map((law: string, lIndex: number) => (
+                                <div key={lIndex} className="flex gap-2">
+                                  <Input
+                                    value={law}
+                                    onChange={(e) => {
+                                      const updated = [...formData.riskAssessments];
+                                      const newLegislation = [...(updated[index].legislation || [])];
+                                      newLegislation[lIndex] = e.target.value;
+                                      updated[index] = { ...updated[index], legislation: newLegislation };
+                                      updateFormData({ riskAssessments: updated });
+                                    }}
+                                    placeholder="Legislation reference"
+                                    className="flex-1 text-sm"
+                                  />
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => {
+                                      const updated = [...formData.riskAssessments];
+                                      const newLegislation = (updated[index].legislation || []).filter((_: any, i: number) => i !== lIndex);
+                                      updated[index] = { ...updated[index], legislation: newLegislation };
+                                      updateFormData({ riskAssessments: updated });
+                                    }}
+                                  >
+                                    <X className="h-3 w-3" />
+                                  </Button>
+                                </div>
+                              ))}
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  const updated = [...formData.riskAssessments];
+                                  updated[index] = { 
+                                    ...updated[index], 
+                                    legislation: [...(updated[index].legislation || []), ''] 
+                                  };
+                                  updateFormData({ riskAssessments: updated });
+                                }}
+                                className="w-full"
+                              >
+                                <Plus className="h-3 w-3 mr-1" />
+                                Add Legislation
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Additional Details */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-3 border-t border-gray-200">
+                          <div>
+                            <label className="text-xs font-medium text-gray-700 block mb-1">Inspection Frequency</label>
+                            <Select
+                              value={risk.inspectionFrequency || 'Daily'}
+                              onValueChange={(value) => {
+                                const updated = [...formData.riskAssessments];
+                                updated[index] = { ...updated[index], inspectionFrequency: value };
+                                updateFormData({ riskAssessments: updated });
+                              }}
+                            >
+                              <SelectTrigger className="text-sm">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Before each use">Before each use</SelectItem>
+                                <SelectItem value="Daily">Daily</SelectItem>
+                                <SelectItem value="Weekly">Weekly</SelectItem>
+                                <SelectItem value="Monthly">Monthly</SelectItem>
+                                <SelectItem value="As required">As required</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          
+                          <div>
+                            <label className="text-xs font-medium text-gray-700 block mb-1">Training Required</label>
+                            <Input
+                              value={(risk.trainingRequired || []).join(', ')}
+                              onChange={(e) => {
+                                const updated = [...formData.riskAssessments];
+                                updated[index] = { 
+                                  ...updated[index], 
+                                  trainingRequired: e.target.value.split(',').map(t => t.trim()).filter(t => t)
+                                };
+                                updateFormData({ riskAssessments: updated });
+                              }}
+                              placeholder="Training requirements (comma separated)"
+                              className="text-sm"
+                            />
+                          </div>
+                        </div>
                       </div>
-                    </Collapsible>
+                    </div>
                   ))}
                 </div>
               </CardContent>
