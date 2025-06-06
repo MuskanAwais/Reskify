@@ -55,7 +55,53 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
   const updateFormData = (updates: any) => {
     const newData = { ...formData, ...updates };
     setFormData(newData);
-    onDataChange(newData);
+    if (onDataChange) {
+      onDataChange(newData);
+    }
+  };
+
+  // CSV parsing function for hazards and control measures
+  const parseCSVData = (csvText: string) => {
+    const lines = csvText.split('\n').filter(line => line.trim());
+    const parsedData = [];
+    
+    for (const line of lines) {
+      const parts = line.split(';').map(part => part.trim());
+      if (parts.length >= 2) {
+        parsedData.push({
+          id: Date.now() + Math.random(),
+          hazard: parts[0] || '',
+          controlMeasure: parts[1] || '',
+          riskLevel: parts[2] || 'Medium'
+        });
+      }
+    }
+    
+    return parsedData;
+  };
+
+  // Handle CSV file upload
+  const handleCSVUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const csvText = e.target?.result as string;
+      const parsedRisks = parseCSVData(csvText);
+      
+      updateFormData({
+        riskAssessments: [...(formData.riskAssessments || []), ...parsedRisks]
+      });
+      
+      toast({
+        title: "CSV Data Imported",
+        description: `Added ${parsedRisks.length} risk assessments from CSV file`,
+      });
+    };
+    
+    reader.readAsText(file);
+    event.target.value = ''; // Reset input
   };
 
   // Load trades data
@@ -79,11 +125,19 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
   const isEnterpriseUser = subscription?.plan === "enterprise";
 
   useEffect(() => {
-    updateFormData({ activities: Array.from(selectedActivities) });
+    if (onDataChange) {
+      const newData = { ...formData, activities: Array.from(selectedActivities) };
+      setFormData(newData);
+      onDataChange(newData);
+    }
   }, [selectedActivities]);
 
   useEffect(() => {
-    updateFormData({ complianceCodes: Array.from(selectedComplianceCodes) });
+    if (onDataChange) {
+      const newData = { ...formData, complianceCodes: Array.from(selectedComplianceCodes) };
+      setFormData(newData);
+      onDataChange(newData);
+    }
   }, [selectedComplianceCodes]);
 
   const handleActivityToggle = (activityName: string) => {
