@@ -867,7 +867,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { id } = req.params;
       // Mock signatures data - replace with actual database storage
-      const signatures = [];
+      const signatures: any[] = [];
       res.json({ signatures });
     } catch (error) {
       console.error("Error fetching signatures:", error);
@@ -1331,6 +1331,162 @@ startxref
       fs.mkdirSync(uploadPath, { recursive: true });
     }
     next();
+  });
+
+  // Team collaboration endpoints
+  app.get("/api/team/members", async (req, res) => {
+    try {
+      const teamMembers = [
+        {
+          id: "1",
+          name: "John Smith",
+          email: "john.smith@abcconstruction.com",
+          role: "admin",
+          status: "active",
+          joinedAt: "2024-01-15",
+          lastActive: "2024-06-08"
+        },
+        {
+          id: "2",
+          name: "Sarah Johnson", 
+          email: "sarah.johnson@abcconstruction.com",
+          role: "editor",
+          status: "active",
+          joinedAt: "2024-02-20",
+          lastActive: "2024-06-07"
+        },
+        {
+          id: "3",
+          name: "Mike Chen",
+          email: "mike.chen@abcconstruction.com",
+          role: "editor", 
+          status: "active",
+          joinedAt: "2024-03-10",
+          lastActive: "2024-06-06"
+        },
+        {
+          id: "4",
+          name: "Emma Wilson",
+          email: "emma.wilson@abcconstruction.com",
+          role: "viewer",
+          status: "pending",
+          joinedAt: "2024-06-01", 
+          lastActive: "2024-06-01"
+        },
+        {
+          id: "5",
+          name: "David Brown",
+          email: "david.brown@abcconstruction.com",
+          role: "editor",
+          status: "active",
+          joinedAt: "2024-04-15",
+          lastActive: "2024-06-05"
+        }
+      ];
+      
+      res.json(teamMembers);
+    } catch (error) {
+      console.error("Error fetching team members:", error);
+      res.status(500).json({ error: "Failed to fetch team members" });
+    }
+  });
+
+  app.get("/api/team/projects", async (req, res) => {
+    try {
+      const teamProjects = [
+        {
+          id: "proj-1",
+          title: "Office Tower Construction - Level 15-20",
+          status: "in-review",
+          assignedTo: ["1", "2", "3"],
+          createdBy: "1",
+          createdAt: "2024-05-20",
+          dueDate: "2024-06-15",
+          progress: 75,
+          comments: 8
+        },
+        {
+          id: "proj-2",
+          title: "Electrical Installation - Main Building", 
+          status: "draft",
+          assignedTo: ["2", "5"],
+          createdBy: "2",
+          createdAt: "2024-06-01",
+          dueDate: "2024-06-20",
+          progress: 30,
+          comments: 3
+        },
+        {
+          id: "proj-3",
+          title: "HVAC System Installation",
+          status: "approved",
+          assignedTo: ["1", "3", "5"],
+          createdBy: "3",
+          createdAt: "2024-05-10",
+          dueDate: "2024-06-10", 
+          progress: 95,
+          comments: 12
+        },
+        {
+          id: "proj-4",
+          title: "Safety Compliance Audit - Phase 2",
+          status: "completed",
+          assignedTo: ["1", "2"],
+          createdBy: "1",
+          createdAt: "2024-04-25",
+          dueDate: "2024-05-30",
+          progress: 100,
+          comments: 15
+        }
+      ];
+      
+      res.json(teamProjects);
+    } catch (error) {
+      console.error("Error fetching team projects:", error);
+      res.status(500).json({ error: "Failed to fetch team projects" });
+    }
+  });
+
+  app.post("/api/team/invite", async (req, res) => {
+    try {
+      const { email, role } = req.body;
+      
+      const invitation = {
+        id: Date.now().toString(),
+        email,
+        role,
+        invitedAt: new Date().toISOString(),
+        status: "pending"
+      };
+      
+      res.json({ success: true, invitation });
+    } catch (error) {
+      console.error("Error sending invitation:", error);
+      res.status(500).json({ error: "Failed to send invitation" });
+    }
+  });
+
+  app.patch("/api/team/members/:id/role", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { role } = req.body;
+      
+      res.json({ success: true, memberId: id, newRole: role });
+    } catch (error) {
+      console.error("Error updating member role:", error);
+      res.status(500).json({ error: "Failed to update member role" });
+    }
+  });
+
+  app.delete("/api/team/members/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      
+      res.json({ success: true, removedMemberId: id });
+    } catch (error) {
+      console.error("Error removing team member:", error);
+      res.status(500).json({ error: "Failed to remove team member" });
+    }
   });
 
   const httpServer = createServer(app);
