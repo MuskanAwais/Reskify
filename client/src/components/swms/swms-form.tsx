@@ -12,6 +12,8 @@ import { useToast } from "@/hooks/use-toast";
 import RiskComplianceChecker from "./risk-compliance-checker";
 import DigitalSignatureSystem from "./digital-signature-system";
 import PDFPrintSystem from "./pdf-print-system";
+import RiskValidationSystem from "./risk-validation-system";
+import PlantEquipmentSystem from "./plant-equipment-system";
 import { 
   MapPin, 
   Briefcase, 
@@ -213,6 +215,16 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
             </p>
           </div>
 
+          <RiskValidationSystem
+            riskAssessments={formData.riskAssessments || []}
+            onValidationComplete={(validatedRisks, corrections) => {
+              updateFormData({
+                riskAssessments: validatedRisks,
+                riskCorrections: corrections
+              });
+            }}
+          />
+          
           <RiskComplianceChecker
             riskAssessments={formData.riskAssessments || []}
             tradeType={formData.tradeType || 'general'}
@@ -236,14 +248,13 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
             </p>
           </div>
 
-          <Card>
-            <CardContent className="pt-6">
-              <div className="text-center py-8">
-                <Wrench className="mx-auto h-8 w-8 text-gray-400 mb-3" />
-                <p className="text-gray-500">Plant & Equipment manager placeholder</p>
-              </div>
-            </CardContent>
-          </Card>
+          <PlantEquipmentSystem
+            tradeType={formData.tradeType || 'general'}
+            activities={formData.activities || []}
+            onEquipmentUpdate={(equipment) => {
+              updateFormData({ plantEquipment: equipment });
+            }}
+          />
         </div>
       );
 
