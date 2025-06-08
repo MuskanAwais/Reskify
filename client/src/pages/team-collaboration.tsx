@@ -64,7 +64,7 @@ export default function TeamCollaboration() {
     queryKey: ["/api/user/subscription"],
   });
 
-  // Check for Enterprise mode toggle
+  // Check for Enterprise mode toggle and admin mode
   const [enterpriseMode, setEnterpriseMode] = useState(() => {
     try {
       return localStorage.getItem('enterpriseMode') === 'true';
@@ -73,18 +73,124 @@ export default function TeamCollaboration() {
     }
   });
 
-  const hasTeamAccess = subscription?.plan === "Enterprise" || enterpriseMode;
+  const [adminMode, setAdminMode] = useState(() => {
+    try {
+      return localStorage.getItem('adminMode') === 'true';
+    } catch {
+      return false;
+    }
+  });
+
+  const hasTeamAccess = (subscription && (subscription.plan === "Enterprise" || subscription.plan === "Pro")) || enterpriseMode || adminMode;
+
+  // Mock team data for demonstration
+  const mockTeamMembers: TeamMember[] = [
+    {
+      id: "1",
+      name: "John Smith",
+      email: "john.smith@abcconstruction.com",
+      role: "admin",
+      status: "active",
+      joinedAt: "2024-01-15",
+      lastActive: "2024-06-08"
+    },
+    {
+      id: "2", 
+      name: "Sarah Johnson",
+      email: "sarah.johnson@abcconstruction.com",
+      role: "editor",
+      status: "active",
+      joinedAt: "2024-02-20",
+      lastActive: "2024-06-07"
+    },
+    {
+      id: "3",
+      name: "Mike Chen",
+      email: "mike.chen@abcconstruction.com", 
+      role: "editor",
+      status: "active",
+      joinedAt: "2024-03-10",
+      lastActive: "2024-06-06"
+    },
+    {
+      id: "4",
+      name: "Emma Wilson",
+      email: "emma.wilson@abcconstruction.com",
+      role: "viewer",
+      status: "pending",
+      joinedAt: "2024-06-01",
+      lastActive: "2024-06-01"
+    },
+    {
+      id: "5",
+      name: "David Brown",
+      email: "david.brown@abcconstruction.com",
+      role: "editor", 
+      status: "active",
+      joinedAt: "2024-04-15",
+      lastActive: "2024-06-05"
+    }
+  ];
+
+  const mockTeamProjects: TeamProject[] = [
+    {
+      id: "proj-1",
+      title: "Office Tower Construction - Level 15-20",
+      status: "in-review",
+      assignedTo: ["1", "2", "3"],
+      createdBy: "1",
+      createdAt: "2024-05-20",
+      dueDate: "2024-06-15",
+      progress: 75,
+      comments: 8
+    },
+    {
+      id: "proj-2", 
+      title: "Electrical Installation - Main Building",
+      status: "draft",
+      assignedTo: ["2", "5"],
+      createdBy: "2",
+      createdAt: "2024-06-01",
+      dueDate: "2024-06-20",
+      progress: 30,
+      comments: 3
+    },
+    {
+      id: "proj-3",
+      title: "HVAC System Installation",
+      status: "approved",
+      assignedTo: ["1", "3", "5"],
+      createdBy: "3", 
+      createdAt: "2024-05-10",
+      dueDate: "2024-06-10",
+      progress: 95,
+      comments: 12
+    },
+    {
+      id: "proj-4",
+      title: "Safety Compliance Audit - Phase 2",
+      status: "completed",
+      assignedTo: ["1", "2"],
+      createdBy: "1",
+      createdAt: "2024-04-25",
+      dueDate: "2024-05-30",
+      progress: 100,
+      comments: 15
+    }
+  ];
 
   // Team members query
-  const { data: teamMembers = [], isLoading: membersLoading } = useQuery({
+  const { data: teamMembers = mockTeamMembers, isLoading: membersLoading } = useQuery<TeamMember[]>({
     queryKey: ["/api/team/members"],
     enabled: hasTeamAccess,
+    queryFn: () => Promise.resolve(mockTeamMembers),
   });
 
   // Team projects query
-  const { data: teamProjects = [], isLoading: projectsLoading } = useQuery({
+  const { data: teamProjects = mockTeamProjects, isLoading: projectsLoading } = useQuery<TeamProject[]>({
     queryKey: ["/api/team/projects"],
     enabled: hasTeamAccess,
+    queryFn: () => Promise.resolve(mockTeamProjects),
   });
 
   // Invite team member mutation
