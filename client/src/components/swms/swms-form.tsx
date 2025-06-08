@@ -1160,28 +1160,6 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
       return (
         <div className="space-y-6">
           <div className="text-center">
-            <PenTool className="mx-auto h-12 w-12 text-primary mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Digital Signatures</h3>
-            <p className="text-gray-600 text-sm">
-              Collect digital signatures and manage document approval workflow
-            </p>
-          </div>
-
-          <DigitalSignatureSystem
-            swmsId={formData.draftId || `draft-${Date.now()}`}
-            swmsTitle={formData.projectDetails?.jobName || 'SWMS Document'}
-            isCompliant={formData.complianceStatus?.isCompliant || false}
-            onSignaturesUpdate={(signatures) => {
-              updateFormData({ signatures });
-            }}
-          />
-        </div>
-      );
-
-    case 6:
-      return (
-        <div className="space-y-6">
-          <div className="text-center">
             <Wrench className="mx-auto h-12 w-12 text-primary mb-4" />
             <h3 className="text-lg font-semibold mb-2">Plant & Equipment</h3>
             <p className="text-gray-600 text-sm">
@@ -1197,6 +1175,39 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
           <ReviewMonitoringManager 
             formData={formData}
             updateFormData={updateFormData}
+          />
+        </div>
+      );
+
+    case 6:
+      return (
+        <div className="space-y-6">
+          <div className="text-center">
+            <PenTool className="mx-auto h-12 w-12 text-primary mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Digital Signatures (Optional)</h3>
+            <p className="text-gray-600 text-sm">
+              Optionally collect digital signatures for document approval workflow
+            </p>
+          </div>
+
+          <Card>
+            <CardContent className="pt-6">
+              <div className="text-center mb-6">
+                <p className="text-gray-600">
+                  Digital signatures are optional. You can skip this step and add signatures later, 
+                  or proceed directly to generate your SWMS document.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <DigitalSignatureSystem
+            swmsId={formData.draftId || `draft-${Date.now()}`}
+            swmsTitle={formData.projectDetails?.jobName || 'SWMS Document'}
+            isCompliant={formData.complianceStatus?.isCompliant || false}
+            onSignaturesUpdate={(signatures) => {
+              updateFormData({ signatures });
+            }}
           />
         </div>
       );
@@ -1316,167 +1327,124 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
         </div>
       );
 
-    case 6:
+    default:
       return (
-        <div className="space-y-6">
-          <div className="text-center">
-            <FileText className="mx-auto h-12 w-12 text-primary mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Final Document</h3>
-            <p className="text-gray-600 text-sm">
-              Review your completed SWMS and generate the final document
-            </p>
-          </div>
+        <div className="text-center py-8">
+          <p className="text-gray-500">Invalid step</p>
+        </div>
+      );
+  }
+};
 
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-center mb-4">
-                <FileText className="h-12 w-12 text-primary" />
-              </div>
-              <div className="text-center">
-                <h3 className="text-lg font-semibold mb-2">Final Document</h3>
-                <p className="text-gray-600 text-sm">
-                  Review your completed SWMS and generate the final document
-                </p>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="bg-green-50 border border-green-200 rounded-lg p-6 mb-6">
-                <h4 className="text-lg font-semibold text-green-800 mb-4">Document Summary</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <h5 className="font-medium text-green-700 mb-2">Project Details</h5>
-                    <div className="space-y-1 text-sm text-green-600">
-                      <div><strong>Title:</strong> {formData.title || 'Not specified'}</div>
-                      <div><strong>Trade:</strong> {formData.tradeType || 'Not specified'}</div>
-                      <div><strong>Location:</strong> {formData.projectLocation || 'Not specified'}</div>
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <h5 className="font-medium text-green-700 mb-2">Risk Assessments</h5>
-                    <div className="space-y-1 text-sm text-green-600">
-                      <div><strong>Total Assessments:</strong> {formData.riskAssessments?.length || 0}</div>
-                      <div><strong>Activities:</strong> {formData.activities?.length || 0}</div>
-                      <div><strong>Compliance Codes:</strong> {formData.complianceCodes?.length || 0}</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
+  return (
+    <div className="max-w-4xl mx-auto">
+      {renderStepContent(step, formData, onDataChange)}
+    </div>
+  );
+};
 
-              <div className="space-y-4">
-                <h5 className="font-medium text-gray-700">Document Actions</h5>
-                <div className="flex flex-wrap gap-3">
-                  <Button
-                    variant="outline"
-                    className="flex items-center gap-2"
-                    onClick={async () => {
-                      try {
-                        const response = await fetch('/api/swms', {
-                          method: 'POST',
-                          headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({
-                            title: formData.title || formData.jobName || "Untitled Project",
-                            jobName: formData.jobName || formData.title || "Untitled Project", 
-                            jobNumber: formData.jobNumber || "AUTO-" + Date.now(),
-                            projectAddress: formData.projectAddress || formData.projectLocation || "",
-                            projectLocation: formData.projectLocation || formData.projectAddress || "",
-                            tradeType: formData.tradeType || "",
-                            activities: Array.isArray(formData.activities) ? formData.activities : [],
-                            riskAssessments: formData.riskAssessments || [],
-                            safetyMeasures: formData.safetyMeasures || [],
-                            complianceCodes: formData.complianceCodes || [],
-                            status: "draft",
-                            aiEnhanced: false
-                          })
-                        });
-                        
-                        if (response.ok) {
-                          const result = await response.json();
-                          // Open preview in new window/tab
-                          window.open(`/api/swms/${result.swmsId}/pdf`, '_blank');
-                        }
-                      } catch (error) {
-                        toast({
-                          title: "Preview Error",
-                          description: "Failed to generate preview",
-                          variant: "destructive"
-                        });
-                      }
-                    }}
-                  >
-                    <Eye className="h-4 w-4" />
-                    Preview Document
-                  </Button>
-                  
-                  <Button
-                    className="flex items-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
-                    onClick={async () => {
-                      try {
-                        const response = await fetch('/api/swms', {
-                          method: 'POST',
-                          headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({
-                            title: formData.title || formData.jobName || "Untitled Project",
-                            jobName: formData.jobName || formData.title || "Untitled Project", 
-                            jobNumber: formData.jobNumber || "AUTO-" + Date.now(),
-                            projectAddress: formData.projectAddress || formData.projectLocation || "",
-                            projectLocation: formData.projectLocation || formData.projectAddress || "",
-                            tradeType: formData.tradeType || "",
-                            activities: Array.isArray(formData.activities) ? formData.activities : [],
-                            riskAssessments: formData.riskAssessments || [],
-                            safetyMeasures: formData.safetyMeasures || [],
-                            complianceCodes: formData.complianceCodes || [],
-                            status: "draft",
-                            aiEnhanced: false
-                          })
-                        });
-                        
-                        if (response.ok) {
-                          const result = await response.json();
-                          // Download PDF
-                          const pdfResponse = await fetch(`/api/swms/${result.swmsId}/pdf`);
-                          const blob = await pdfResponse.blob();
-                          const url = window.URL.createObjectURL(blob);
-                          const a = document.createElement('a');
-                          a.href = url;
-                          a.download = `SWMS-${result.swmsId}.pdf`;
-                          document.body.appendChild(a);
-                          a.click();
-                          window.URL.revokeObjectURL(url);
-                          document.body.removeChild(a);
-                          
-                          toast({
-                            title: "Download Complete",
-                            description: "SWMS document downloaded successfully",
-                          });
-                        }
-                      } catch (error) {
-                        toast({
-                          title: "Download Error",
-                          description: "Failed to download PDF",
-                          variant: "destructive"
-                        });
-                      }
-                    }}
-                  >
-                    <Download className="h-4 w-4" />
-                    Download PDF
-                  </Button>
-                  
-                  <Button
-                    variant="outline"
-                    className="flex items-center gap-2"
-                    onClick={async () => {
-                      try {
-                        const response = await fetch('/api/swms', {
-                          method: 'POST',
-                          headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({
-                            title: formData.title || formData.jobName || "Untitled Project",
-                            jobName: formData.jobName || formData.title || "Untitled Project", 
-                            jobNumber: formData.jobNumber || "AUTO-" + Date.now(),
-                            projectAddress: formData.projectAddress || formData.projectLocation || "",
-                            projectLocation: formData.projectLocation || formData.projectAddress || "",
+interface SWMSFormProps {
+  data?: any;
+  onStepChange?: (step: number) => void;
+  onDataChange?: (data: any) => void;
+}
+
+const TOTAL_STEPS = 7;
+
+export default function SWMSForm({ data = {}, onStepChange, onDataChange }: SWMSFormProps) {
+  const [currentStep, setCurrentStep] = useState(1);
+  const [formData, setFormData] = useState(data);
+
+  const nextStep = () => {
+    if (currentStep < TOTAL_STEPS) {
+      const newStep = currentStep + 1;
+      setCurrentStep(newStep);
+      if (onStepChange) onStepChange(newStep);
+    }
+  };
+
+  const prevStep = () => {
+    if (currentStep > 1) {
+      const newStep = currentStep - 1;
+      setCurrentStep(newStep);
+      if (onStepChange) onStepChange(newStep);
+    }
+  };
+
+  const updateFormData = (updates: any) => {
+    const newData = { 
+      ...formData, 
+      ...updates,
+      complianceStatus: updates.complianceStatus || formData.complianceStatus || { isCompliant: false, issues: [] },
+      signatures: updates.signatures || formData.signatures || []
+    };
+    setFormData(newData);
+    if (onDataChange) {
+      onDataChange(newData);
+    }
+  };
+
+  return (
+    <div className="w-full max-w-6xl mx-auto p-6">
+      {/* Progress Steps */}
+      <div className="mb-8">
+        <div className="flex items-center justify-between">
+          {Array.from({ length: TOTAL_STEPS }, (_, i) => i + 1).map((step) => (
+            <div key={step} className="flex items-center">
+              <div
+                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                  step <= currentStep
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-gray-200 text-gray-600'
+                }`}
+              >
+                {step}
+              </div>
+              {step < TOTAL_STEPS && (
+                <div
+                  className={`w-12 h-0.5 ${
+                    step < currentStep ? 'bg-primary' : 'bg-gray-200'
+                  }`}
+                />
+              )}
+            </div>
+          ))}
+        </div>
+        <div className="mt-2 text-center">
+          <p className="text-sm text-gray-600">
+            Step {currentStep} of {TOTAL_STEPS}
+          </p>
+        </div>
+      </div>
+
+      {/* Step Content */}
+      <StepContent 
+        step={currentStep} 
+        formData={formData} 
+        onDataChange={updateFormData}
+      />
+
+      {/* Navigation */}
+      <div className="mt-8 flex justify-between">
+        <Button
+          onClick={prevStep}
+          disabled={currentStep === 1}
+          variant="outline"
+        >
+          Previous
+        </Button>
+        
+        <Button
+          onClick={nextStep}
+          disabled={currentStep === TOTAL_STEPS}
+        >
+          {currentStep === TOTAL_STEPS ? 'Complete' : 'Next'}
+        </Button>
+      </div>
+    </div>
+  );
+}
                             tradeType: formData.tradeType || "",
                             activities: Array.isArray(formData.activities) ? formData.activities : [],
                             riskAssessments: formData.riskAssessments || [],

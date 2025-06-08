@@ -11,7 +11,8 @@ import {
   FileText, 
   Check, 
   Settings,
-  Eye
+  Eye,
+  PenTool
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 
@@ -324,6 +325,31 @@ export default function PDFPrintSystem({
               >
                 <Printer className="h-4 w-4 mr-2" />
                 {isPrinting ? "Printing..." : "Print Document"}
+              </Button>
+            </div>
+
+            {/* Send for Signature Option */}
+            <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <h4 className="font-medium text-blue-900 mb-2 flex items-center gap-2">
+                <PenTool className="h-4 w-4" />
+                Need Signatures?
+              </h4>
+              <p className="text-sm text-blue-700 mb-3">
+                If you need to collect digital signatures on this document, you can send it for signature after generating the PDF.
+              </p>
+              <Button
+                onClick={() => {
+                  // Navigate to signature step or open signature modal
+                  window.dispatchEvent(new CustomEvent('openSignatureWorkflow', {
+                    detail: { swmsId, swmsTitle, formData }
+                  }));
+                }}
+                variant="outline"
+                size="sm"
+                className="border-blue-300 text-blue-700 hover:bg-blue-100"
+              >
+                <PenTool className="h-4 w-4 mr-2" />
+                Send for Signature
               </Button>
             </div>
 
