@@ -12,6 +12,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { useToast } from "@/hooks/use-toast";
 import RiskComplianceChecker from "./risk-compliance-checker";
 import DigitalSignatureSystem from "./digital-signature-system";
+import PDFPrintSystem from "./pdf-print-system";
 import { 
   MapPin, 
   Briefcase, 
@@ -29,7 +30,8 @@ import {
   Eye,
   Download,
   Save,
-  CheckCircle
+  CheckCircle,
+  PenTool
 } from "lucide-react";
 import { SimplifiedTableEditor } from "./simplified-table-editor";
 import { translate } from "@/lib/language-direct";
@@ -56,7 +58,13 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
   const [selectedComplianceCodes, setSelectedComplianceCodes] = useState<Set<string>>(new Set(data.complianceCodes || []));
 
   const updateFormData = (updates: any) => {
-    const newData = { ...formData, ...updates };
+    const newData = { 
+      ...formData, 
+      ...updates,
+      // Ensure compliance and signature fields exist
+      complianceStatus: updates.complianceStatus || formData.complianceStatus || { isCompliant: false, issues: [] },
+      signatures: updates.signatures || formData.signatures || []
+    };
     setFormData(newData);
     if (onDataChange) {
       onDataChange(newData);
@@ -1129,6 +1137,51 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
       return (
         <div className="space-y-6">
           <div className="text-center">
+            <Shield className="mx-auto h-12 w-12 text-primary mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Compliance Validation</h3>
+            <p className="text-gray-600 text-sm">
+              Verify compliance with Australian safety standards and validate risk assessments
+            </p>
+          </div>
+
+          <RiskComplianceChecker
+            riskAssessments={formData.riskAssessments || []}
+            tradeType={formData.tradeType || 'general'}
+            onComplianceUpdate={(isCompliant, issues) => {
+              updateFormData({
+                complianceStatus: { isCompliant, issues }
+              });
+            }}
+          />
+        </div>
+      );
+
+    case 5:
+      return (
+        <div className="space-y-6">
+          <div className="text-center">
+            <PenTool className="mx-auto h-12 w-12 text-primary mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Digital Signatures</h3>
+            <p className="text-gray-600 text-sm">
+              Collect digital signatures and manage document approval workflow
+            </p>
+          </div>
+
+          <DigitalSignatureSystem
+            swmsId={formData.draftId || `draft-${Date.now()}`}
+            swmsTitle={formData.projectDetails?.jobName || 'SWMS Document'}
+            isCompliant={formData.complianceStatus?.isCompliant || false}
+            onSignaturesUpdate={(signatures) => {
+              updateFormData({ signatures });
+            }}
+          />
+        </div>
+      );
+
+    case 6:
+      return (
+        <div className="space-y-6">
+          <div className="text-center">
             <Wrench className="mx-auto h-12 w-12 text-primary mb-4" />
             <h3 className="text-lg font-semibold mb-2">Plant & Equipment</h3>
             <p className="text-gray-600 text-sm">
@@ -1148,7 +1201,7 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
         </div>
       );
 
-    case 5:
+    case 7:
       return (
         <div className="space-y-6">
           <div className="text-center">
@@ -1239,6 +1292,27 @@ export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormP
               </div>
             </CardContent>
           </Card>
+        </div>
+      );
+
+    case 7:
+      return (
+        <div className="space-y-6">
+          <div className="text-center">
+            <Download className="mx-auto h-12 w-12 text-primary mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Generate & Print Final Document</h3>
+            <p className="text-gray-600 text-sm">
+              Download PDF and print your completed SWMS with all signatures and compliance validation
+            </p>
+          </div>
+
+          <PDFPrintSystem
+            swmsId={formData.draftId || `swms-${Date.now()}`}
+            swmsTitle={formData.projectDetails?.jobName || 'SWMS Document'}
+            formData={formData}
+            signatures={formData.signatures || []}
+            isCompliant={formData.complianceStatus?.isCompliant || false}
+          />
         </div>
       );
 
