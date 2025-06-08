@@ -10,6 +10,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useToast } from "@/hooks/use-toast";
+import RiskComplianceChecker from "./risk-compliance-checker";
+import DigitalSignatureSystem from "./digital-signature-system";
 import { 
   MapPin, 
   Briefcase, 

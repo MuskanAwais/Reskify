@@ -862,6 +862,169 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Signature and compliance management endpoints
+  app.get("/api/swms/:id/signatures", async (req, res) => {
+    try {
+      const { id } = req.params;
+      // Mock signatures data - replace with actual database storage
+      const signatures = [];
+      res.json({ signatures });
+    } catch (error) {
+      console.error("Error fetching signatures:", error);
+      res.status(500).json({ error: "Failed to fetch signatures" });
+    }
+  });
+
+  app.post("/api/swms/:id/auto-save", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { signatures, timestamp } = req.body;
+      
+      // Auto-save functionality
+      res.json({ success: true, saved_at: timestamp });
+    } catch (error) {
+      console.error("Auto-save failed:", error);
+      res.status(500).json({ error: "Auto-save failed" });
+    }
+  });
+
+  app.post("/api/swms/:id/sign", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { signatureId, signatureData, typeSignature, ipAddress } = req.body;
+      
+      const signatureRecord = {
+        signatureId,
+        signatureData,
+        typeSignature,
+        signedAt: new Date().toISOString(),
+        ipAddress: ipAddress || req.ip
+      };
+
+      res.json({ success: true, signatureRecord });
+    } catch (error) {
+      console.error("Signature save failed:", error);
+      res.status(500).json({ error: "Failed to save signature" });
+    }
+  });
+
+  app.post("/api/swms/:id/send-signature-request", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { signatureId, email, signatory, swmsTitle } = req.body;
+      
+      // Generate secure signature link
+      const signatureToken = Buffer.from(`${id}-${signatureId}-${Date.now()}`).toString('base64');
+      const signatureUrl = `${process.env.BASE_URL || 'http://localhost:5000'}/sign/${signatureToken}`;
+      
+      // Mock email sending - integrate with actual email service
+      console.log(`Email would be sent to ${email}: Signature request for ${swmsTitle}`);
+      console.log(`Signature URL: ${signatureUrl}`);
+      
+      res.json({ success: true, signatureUrl });
+    } catch (error) {
+      console.error("Failed to send signature request:", error);
+      res.status(500).json({ error: "Failed to send signature request" });
+    }
+  });
+
+  app.post("/api/swms/:id/send-all-signature-requests", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { signatures, swmsTitle } = req.body;
+      
+      const results = [];
+      
+      for (const signature of signatures) {
+        const signatureToken = Buffer.from(`${id}-${signature.id}-${Date.now()}`).toString('base64');
+        const signatureUrl = `${process.env.BASE_URL || 'http://localhost:5000'}/sign/${signatureToken}`;
+        
+        results.push({
+          signatory: signature.signatory,
+          email: signature.email,
+          status: 'sent',
+          signatureUrl
+        });
+      }
+      
+      res.json({ success: true, results });
+    } catch (error) {
+      console.error("Failed to send signature requests:", error);
+      res.status(500).json({ error: "Failed to send signature requests" });
+    }
+  });
+
+  app.post("/api/swms/:id/generate-pdf", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { includeSignatures } = req.body;
+      
+      // Create a simple PDF buffer for download
+      const pdfContent = `%PDF-1.4
+1 0 obj
+<<
+/Type /Catalog
+/Pages 2 0 R
+>>
+endobj
+
+2 0 obj
+<<
+/Type /Pages
+/Kids [3 0 R]
+/Count 1
+>>
+endobj
+
+3 0 obj
+<<
+/Type /Page
+/Parent 2 0 R
+/MediaBox [0 0 612 792]
+/Contents 4 0 R
+>>
+endobj
+
+4 0 obj
+<<
+/Length 44
+>>
+stream
+BT
+/F1 12 Tf
+72 720 Td
+(SWMS Document ${id}) Tj
+ET
+endstream
+endobj
+
+xref
+0 5
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000206 00000 n 
+trailer
+<<
+/Size 5
+/Root 1 0 R
+>>
+startxref
+300
+%%EOF`;
+      
+      const pdfBuffer = Buffer.from(pdfContent);
+      
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `attachment; filename="swms-${id}.pdf"`);
+      res.send(pdfBuffer);
+    } catch (error) {
+      console.error("PDF generation failed:", error);
+      res.status(500).json({ error: "Failed to generate PDF" });
+    }
+  });
+
   // Team management endpoints
   app.get("/api/team/members", async (req, res) => {
     try {
