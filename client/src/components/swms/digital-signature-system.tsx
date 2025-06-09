@@ -96,6 +96,38 @@ export default function DigitalSignatureSystem({
     }
   };
 
+  const sendSignatureRequest = async (signature: Signature) => {
+    try {
+      const response = await apiRequest('POST', `/api/swms/${swmsId}/send-signature-request`, {
+        signatory: signature.signatory,
+        email: signature.email,
+        role: signature.role,
+        swmsTitle,
+        signatureId: signature.id
+      });
+      
+      if (response.ok) {
+        toast({
+          title: "Signature request sent",
+          description: `Email sent to ${signature.email} for signature approval`,
+        });
+        
+        // Update signature status to pending
+        const updatedSignatures = signatures.map(sig => 
+          sig.id === signature.id ? { ...sig, status: 'pending' as const } : sig
+        );
+        setSignatures(updatedSignatures);
+        onSignaturesUpdate(updatedSignatures);
+      }
+    } catch (error) {
+      toast({
+        title: "Failed to send request",
+        description: "Could not send signature request email",
+        variant: "destructive"
+      });
+    }
+  };
+
   const addSignatory = () => {
     if (!newSignatory.name || !newSignatory.email) {
       toast({

@@ -14,6 +14,7 @@ import DigitalSignatureSystem from "./digital-signature-system";
 import PDFPrintSystem from "./pdf-print-system";
 import RiskValidationSystem from "./risk-validation-system";
 import PlantEquipmentSystem from "./plant-equipment-system";
+import ComprehensiveRiskComplianceTool from "./comprehensive-risk-compliance-tool";
 import { 
   MapPin, 
   Briefcase, 
@@ -215,22 +216,17 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
             </p>
           </div>
 
-          <RiskValidationSystem
-            riskAssessments={formData.riskAssessments || []}
-            onValidationComplete={(validatedRisks, corrections) => {
-              updateFormData({
-                riskAssessments: validatedRisks,
-                riskCorrections: corrections
-              });
-            }}
-          />
-          
-          <RiskComplianceChecker
+          <ComprehensiveRiskComplianceTool
             riskAssessments={formData.riskAssessments || []}
             tradeType={formData.tradeType || 'general'}
-            onComplianceUpdate={(isCompliant, issues) => {
+            onComplianceUpdate={(result) => {
               updateFormData({
-                complianceStatus: { isCompliant, issues }
+                complianceResult: result,
+                complianceStatus: { 
+                  isCompliant: result.isCompliant, 
+                  issues: result.issues,
+                  overallScore: result.overallScore 
+                }
               });
             }}
           />
