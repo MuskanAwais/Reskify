@@ -40,6 +40,7 @@ export default function PDFPrintSystem({
     includeLegislation: true,
     includeRiskMatrix: true,
     includeCompliance: true,
+    includePlantEquipment: true,
     paperSize: 'A4',
     orientation: 'portrait',
     copies: 1

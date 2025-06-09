@@ -205,6 +205,8 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
                 onWorkDescriptionUpdate={(description) => updateFormData({ workDescription: description })}
                 selectedTasks={formData.selectedTasks || []}
                 workDescription={formData.workDescription || ""}
+                onRiskAssessmentsUpdate={(assessments) => updateFormData({ riskAssessments: assessments })}
+                riskAssessments={formData.riskAssessments || []}
               />
             </CardContent>
           </Card>

@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { Search, Brain, Edit, Plus, X, Loader2, CheckCircle } from "lucide-react";
+import { SimplifiedTableEditor } from "./simplified-table-editor";
 
 interface Task {
   id?: string;
@@ -28,6 +29,8 @@ interface TaskSelectionWithAIProps {
   onWorkDescriptionUpdate: (description: string) => void;
   selectedTasks: Task[];
   workDescription: string;
+  onRiskAssessmentsUpdate?: (assessments: any[]) => void;
+  riskAssessments?: any[];
 }
 
 export default function TaskSelectionWithAI({
@@ -35,7 +38,9 @@ export default function TaskSelectionWithAI({
   onTasksUpdate,
   onWorkDescriptionUpdate,
   selectedTasks,
-  workDescription
+  workDescription,
+  onRiskAssessmentsUpdate,
+  riskAssessments = []
 }: TaskSelectionWithAIProps) {
   const [activeTab, setActiveTab] = useState("search");
   const [searchQuery, setSearchQuery] = useState("");
@@ -365,11 +370,30 @@ export default function TaskSelectionWithAI({
               <div className="bg-amber-50 p-3 rounded-lg border border-amber-200">
                 <p className="text-sm text-amber-800">
                   <strong>Note:</strong> Custom tasks will require you to manually add risk assessments, 
-                  hazards, and control measures in the following steps of the SWMS builder.
+                  hazards, and control measures using the Risk Assessment Matrix below.
                 </p>
               </div>
             </CardContent>
           </Card>
+
+          {/* Risk Assessment Matrix - Only in Manual Entry Tab */}
+          {onRiskAssessmentsUpdate && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Risk Assessment Matrix</CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  Add detailed risk assessments for your custom tasks
+                </p>
+              </CardHeader>
+              <CardContent>
+                <SimplifiedTableEditor 
+                  riskAssessments={riskAssessments}
+                  onUpdate={onRiskAssessmentsUpdate}
+                  tradeType={tradeType}
+                />
+              </CardContent>
+            </Card>
+          )}
         </TabsContent>
       </Tabs>
 
