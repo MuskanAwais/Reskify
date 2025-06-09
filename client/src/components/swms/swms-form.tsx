@@ -165,11 +165,65 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
           </div>
 
           <Card>
-            <CardContent className="pt-6">
-              <div className="text-center py-8">
-                <AlertTriangle className="mx-auto h-8 w-8 text-gray-400 mb-3" />
-                <p className="text-gray-500">Risk assessment functionality placeholder</p>
+            <CardHeader>
+              <CardTitle>Work Activities</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="workDescription">Work Description</Label>
+                <Textarea
+                  id="workDescription"
+                  value={formData.workDescription || ""}
+                  onChange={(e) => updateFormData({ workDescription: e.target.value })}
+                  placeholder="Describe the work activities and tasks to be performed"
+                  rows={4}
+                />
               </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="startDate">Start Date</Label>
+                  <Input
+                    id="startDate"
+                    type="date"
+                    value={formData.startDate || ""}
+                    onChange={(e) => updateFormData({ startDate: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="duration">Duration (days)</Label>
+                  <Input
+                    id="duration"
+                    type="number"
+                    value={formData.duration || ""}
+                    onChange={(e) => updateFormData({ duration: e.target.value })}
+                    placeholder="Enter duration"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="workLocation">Specific Work Location</Label>
+                <Input
+                  id="workLocation"
+                  value={formData.workLocation || ""}
+                  onChange={(e) => updateFormData({ workLocation: e.target.value })}
+                  placeholder="Specific area or location where work will be performed"
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Risk Assessment Matrix</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <SimplifiedTableEditor 
+                riskAssessments={formData.riskAssessments || []}
+                onUpdate={(assessments) => updateFormData({ riskAssessments: assessments })}
+                tradeType={formData.tradeType || 'General'}
+              />
             </CardContent>
           </Card>
         </div>
@@ -250,20 +304,45 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
       return (
         <div className="space-y-6">
           <div className="text-center">
-            <Wrench className="mx-auto h-12 w-12 text-primary mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Plant & Equipment</h3>
+            <FileText className="mx-auto h-12 w-12 text-primary mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Legal Disclaimer</h3>
             <p className="text-gray-600 text-sm">
-              Document plant, equipment, and machinery required for your work
+              Accept terms and liability disclaimer
             </p>
           </div>
 
-          <PlantEquipmentSystem
-            tradeType={formData.tradeType || 'general'}
-            activities={formData.activities || []}
-            onEquipmentUpdate={(equipment) => {
-              updateFormData({ plantEquipment: equipment });
-            }}
-          />
+          <Card>
+            <CardHeader>
+              <CardTitle>Terms and Conditions</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <h4 className="font-semibold mb-2">Legal Disclaimer</h4>
+                <p className="text-sm text-gray-700 leading-relaxed">
+                  By proceeding with this SWMS document, you acknowledge that:
+                </p>
+                <ul className="text-sm text-gray-700 mt-2 space-y-1 list-disc list-inside">
+                  <li>This document is a template and must be reviewed by qualified safety professionals</li>
+                  <li>Site-specific hazards and conditions must be assessed independently</li>
+                  <li>All work must comply with current Australian WHS legislation and standards</li>
+                  <li>Regular review and updates of this SWMS are required</li>
+                  <li>The principal contractor is responsible for final approval and implementation</li>
+                </ul>
+              </div>
+              
+              <div className="flex items-start space-x-2">
+                <Checkbox
+                  id="disclaimer"
+                  checked={formData.acceptedDisclaimer || false}
+                  onCheckedChange={(checked) => updateFormData({ acceptedDisclaimer: checked })}
+                />
+                <Label htmlFor="disclaimer" className="text-sm leading-relaxed">
+                  I acknowledge that I have read, understood, and accept the terms and conditions above. 
+                  I understand that this SWMS must be reviewed by appropriate safety professionals before implementation.
+                </Label>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       );
 
@@ -271,10 +350,52 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
       return (
         <div className="space-y-6">
           <div className="text-center">
-            <PenTool className="mx-auto h-12 w-12 text-primary mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Digital Signatures (Optional)</h3>
+            <FileText className="mx-auto h-12 w-12 text-primary mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Final Document</h3>
             <p className="text-gray-600 text-sm">
-              Optionally collect digital signatures for document approval workflow
+              Generate complete SWMS document with all sections and compliance validation
+            </p>
+          </div>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Document Generation & Compliance</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                <h4 className="font-semibold text-green-800 mb-2">Document Ready</h4>
+                <p className="text-sm text-green-700">
+                  Your SWMS document is ready for generation with all required sections completed.
+                </p>
+              </div>
+              
+              <ComprehensiveRiskComplianceTool
+                riskAssessments={formData.riskAssessments || []}
+                tradeType={formData.tradeType || 'general'}
+                onComplianceUpdate={(result) => {
+                  updateFormData({
+                    complianceResult: result,
+                    complianceStatus: { 
+                      isCompliant: result.isCompliant, 
+                      issues: result.issues,
+                      overallScore: result.overallScore 
+                    }
+                  });
+                }}
+              />
+            </CardContent>
+          </Card>
+        </div>
+      );
+
+    case 7:
+      return (
+        <div className="space-y-6">
+          <div className="text-center">
+            <PenTool className="mx-auto h-12 w-12 text-primary mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Digital Signatures & PDF</h3>
+            <p className="text-gray-600 text-sm">
+              Optional signatures and final PDF generation
             </p>
           </div>
 
@@ -282,8 +403,7 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
             <CardContent className="pt-6">
               <div className="text-center mb-6">
                 <p className="text-gray-600">
-                  Digital signatures are optional. You can skip this step and add signatures later, 
-                  or proceed directly to generate your SWMS document.
+                  Digital signatures are optional. You can skip this step and proceed directly to generate your SWMS document.
                 </p>
               </div>
             </CardContent>
@@ -297,27 +417,16 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
               updateFormData({ signatures });
             }}
           />
-        </div>
-      );
 
-    case 7:
-      return (
-        <div className="space-y-6">
-          <div className="text-center">
-            <Download className="mx-auto h-12 w-12 text-primary mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Generate & Print Final Document</h3>
-            <p className="text-gray-600 text-sm">
-              Download PDF and print your completed SWMS with all signatures and compliance validation
-            </p>
+          <div className="mt-8 pt-6 border-t">
+            <PDFPrintSystem
+              swmsId={formData.draftId || `swms-${Date.now()}`}
+              swmsTitle={formData.jobName || 'SWMS Document'}
+              formData={formData}
+              signatures={formData.signatures || []}
+              isCompliant={formData.complianceStatus?.isCompliant || false}
+            />
           </div>
-
-          <PDFPrintSystem
-            swmsId={formData.draftId || `swms-${Date.now()}`}
-            swmsTitle={formData.jobName || 'SWMS Document'}
-            formData={formData}
-            signatures={formData.signatures || []}
-            isCompliant={formData.complianceStatus?.isCompliant || false}
-          />
         </div>
       );
 
