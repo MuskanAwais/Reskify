@@ -30,9 +30,8 @@ interface PlantEquipment {
 }
 
 interface PlantEquipmentSystemProps {
-  tradeType: string;
-  activities: string[];
-  onEquipmentUpdate: (equipment: PlantEquipment[]) => void;
+  plantEquipment: PlantEquipment[];
+  onUpdate: (equipment: PlantEquipment[]) => void;
 }
 
 const EQUIPMENT_CATEGORIES = {
@@ -60,8 +59,8 @@ const SAFETY_REQUIREMENTS = {
   'Critical': ['Daily inspection required', 'Licensed operator only', 'Supervisor approval required', 'Emergency response plan active']
 };
 
-export default function PlantEquipmentSystem({ tradeType, activities, onEquipmentUpdate }: PlantEquipmentSystemProps) {
-  const [equipment, setEquipment] = useState<PlantEquipment[]>([]);
+export default function PlantEquipmentSystem({ plantEquipment, onUpdate }: PlantEquipmentSystemProps) {
+  const [equipment, setEquipment] = useState<PlantEquipment[]>(plantEquipment || []);
   const [isAddingEquipment, setIsAddingEquipment] = useState(false);
   const [editingEquipment, setEditingEquipment] = useState<PlantEquipment | null>(null);
   const [newEquipment, setNewEquipment] = useState<Partial<PlantEquipment>>({
@@ -74,35 +73,13 @@ export default function PlantEquipmentSystem({ tradeType, activities, onEquipmen
     riskLevel: 'Low'
   });
 
-  // Generate trade-specific equipment suggestions
-  const getTradeEquipment = (): PlantEquipment[] => {
-    const tradeEquipment = TRADE_SPECIFIC_EQUIPMENT[tradeType as keyof typeof TRADE_SPECIFIC_EQUIPMENT] || [];
-    
-    return tradeEquipment.map((item, index) => ({
-      id: `trade-${index}`,
-      name: item,
-      type: 'Equipment' as const,
-      category: item.includes('Crane') || item.includes('Excavator') ? 'Heavy Machinery' : 'Standard Equipment',
-      model: 'Standard',
-      serialNumber: `SN-${Date.now()}-${index}`,
-      certificationRequired: item.includes('Crane') || item.includes('Welder') || item.includes('Pressure'),
-      lastInspection: new Date().toISOString().split('T')[0],
-      nextInspection: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-      inspectionStatus: 'Current' as const,
-      operator: 'TBD',
-      safetyRequirements: item.includes('Crane') || item.includes('Welder') ? SAFETY_REQUIREMENTS['Critical'] : SAFETY_REQUIREMENTS['High'],
-      documentation: ['Operation Manual', 'Safety Data Sheet'],
-      riskLevel: item.includes('Crane') || item.includes('Excavator') ? 'Critical' as const : 'Medium' as const,
-      maintenanceSchedule: 'Monthly',
-      notes: `${item} for ${tradeType} work`
-    }));
-  };
+  useEffect(() => {
+    setEquipment(plantEquipment || []);
+  }, [plantEquipment]);
 
   useEffect(() => {
-    const tradeEquipment = getTradeEquipment();
-    setEquipment(tradeEquipment);
-    onEquipmentUpdate(tradeEquipment);
-  }, [tradeType]);
+    onUpdate(equipment);
+  }, [equipment, onUpdate]);
 
   const addEquipment = () => {
     if (!newEquipment.name || !newEquipment.type) return;

@@ -34,7 +34,7 @@ import {
   PenTool
 } from "lucide-react";
 import { SimplifiedTableEditor } from "./simplified-table-editor";
-import TaskSelectionWithAI from "./task-selection-with-ai";
+import TaskSelectionClean from "./task-selection-clean";
 import { translate } from "@/lib/language-direct";
 import SmartTooltip from "@/components/ui/smart-tooltip";
 import QuickActionTooltip, { presetTooltips } from "@/components/ui/quick-action-tooltip";
@@ -199,12 +199,10 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
               <CardTitle>Task Selection Methods</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <TaskSelectionWithAI
+              <TaskSelectionClean
                 tradeType={formData.tradeType || 'General'}
                 onTasksUpdate={(tasks) => updateFormData({ selectedTasks: tasks })}
-                onWorkDescriptionUpdate={(description) => updateFormData({ workDescription: description })}
                 selectedTasks={formData.selectedTasks || []}
-                workDescription={formData.workDescription || ""}
                 onRiskAssessmentsUpdate={(assessments) => updateFormData({ riskAssessments: assessments })}
                 riskAssessments={formData.riskAssessments || []}
               />
@@ -399,14 +397,14 @@ export default function SWMSForm({ data = {}, onStepChange, onDataChange }: SWMS
           onClick={prevStep}
           disabled={currentStep === 1}
         >
-          {translate("btn.back")}
+          Back
         </Button>
         
         <Button
           onClick={nextStep}
           disabled={currentStep === TOTAL_STEPS}
         >
-          {currentStep === TOTAL_STEPS ? translate("btn.finish") : translate("btn.next")}
+          {currentStep === TOTAL_STEPS ? "Finish" : "Next"}
         </Button>
       </div>
     </div>
