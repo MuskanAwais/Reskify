@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -13,1336 +12,34 @@ import { useToast } from "@/hooks/use-toast";
 import RiskComplianceChecker from "./risk-compliance-checker";
 import DigitalSignatureSystem from "./digital-signature-system";
 import PDFPrintSystem from "./pdf-print-system";
+import RiskValidationSystem from "./risk-validation-system";
+import PlantEquipmentSystem from "./plant-equipment-system";
+import ComprehensiveRiskComplianceTool from "./comprehensive-risk-compliance-tool";
 import { 
   MapPin, 
   Briefcase, 
   CheckSquare, 
-  AlertTriangle, 
-  Shield, 
-  FileText,
-  Plus,
-  X,
+  AlertTriangle,
   ChevronDown,
   ChevronUp,
-  Layers,
   Search,
+  Layers,
+  Shield,
+  FileText,
   Wrench,
   Eye,
-  Download,
+  Heart,
   Save,
   CheckCircle,
   PenTool
 } from "lucide-react";
 import { SimplifiedTableEditor } from "./simplified-table-editor";
+import TaskSelectionWithAI from "./task-selection-with-ai";
 import { translate } from "@/lib/language-direct";
 import SmartTooltip from "@/components/ui/smart-tooltip";
 import QuickActionTooltip, { presetTooltips } from "@/components/ui/quick-action-tooltip";
-import { ComprehensiveProjectDetails } from "./comprehensive-project-details";
-import { PlantEquipmentManager } from "./plant-equipment-manager";
-import { ReviewMonitoringManager } from "./review-monitoring-manager";
 
-interface SwmsFormProps {
-  step: number;
-  data: any;
-  onDataChange: (data: any) => void;
-  onNext?: () => void;
-}
-
-export default function SwmsForm({ step, data, onDataChange, onNext }: SwmsFormProps) {
-  const { toast } = useToast();
-  
-  const [formData, setFormData] = useState(data);
-  const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set());
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedActivities, setSelectedActivities] = useState<Set<string>>(new Set(data.activities || []));
-  const [selectedComplianceCodes, setSelectedComplianceCodes] = useState<Set<string>>(new Set(data.complianceCodes || []));
-
-  const updateFormData = (updates: any) => {
-    const newData = { 
-      ...formData, 
-      ...updates,
-      // Ensure compliance and signature fields exist
-      complianceStatus: updates.complianceStatus || formData.complianceStatus || { isCompliant: false, issues: [] },
-      signatures: updates.signatures || formData.signatures || []
-    };
-    setFormData(newData);
-    if (onDataChange) {
-      onDataChange(newData);
-    }
-  };
-
-  // CSV parsing function for hazards and control measures
-  const parseCSVData = (csvText: string) => {
-    const lines = csvText.split('\n').filter(line => line.trim());
-    const parsedData = [];
-    
-    for (const line of lines) {
-      const parts = line.split(';').map(part => part.trim());
-      if (parts.length >= 2) {
-        parsedData.push({
-          id: Date.now() + Math.random(),
-          hazard: parts[0] || '',
-          controlMeasure: parts[1] || '',
-          riskLevel: parts[2] || 'Medium'
-        });
-      }
-    }
-    
-    return parsedData;
-  };
-
-  // Handle CSV file upload
-  const handleCSVUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const csvText = e.target?.result as string;
-      const parsedRisks = parseCSVData(csvText);
-      
-      updateFormData({
-        riskAssessments: [...(formData.riskAssessments || []), ...parsedRisks]
-      });
-      
-      toast({
-        title: "CSV Data Imported",
-        description: `Added ${parsedRisks.length} risk assessments from CSV file`,
-      });
-    };
-    
-    reader.readAsText(file);
-    event.target.value = ''; // Reset input
-  };
-
-  // Load trades data
-  const { data: trades } = useQuery({
-    queryKey: ["/api/trades"],
-    enabled: step === 1
-  });
-
-  // Load safety library data for compliance codes
-  const { data: safetyLibrary } = useQuery({
-    queryKey: ["/api/safety-library"],
-    enabled: step === 5
-  });
-
-  // Load subscription data for feature access
-  const { data: subscription } = useQuery({
-    queryKey: ["/api/user/subscription"]
-  });
-
-  const isProUser = subscription?.plan === "pro" || subscription?.plan === "enterprise";
-  const isEnterpriseUser = subscription?.plan === "enterprise";
-
-  useEffect(() => {
-    if (onDataChange) {
-      const newData = { ...formData, activities: Array.from(selectedActivities) };
-      setFormData(newData);
-      onDataChange(newData);
-    }
-  }, [selectedActivities]);
-
-  useEffect(() => {
-    if (onDataChange) {
-      const newData = { ...formData, complianceCodes: Array.from(selectedComplianceCodes) };
-      setFormData(newData);
-      onDataChange(newData);
-    }
-  }, [selectedComplianceCodes]);
-
-  const handleActivityToggle = (activityName: string) => {
-    setSelectedActivities((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(activityName)) {
-        newSet.delete(activityName);
-      } else {
-        newSet.add(activityName);
-      }
-      
-      // Update form data with selected activities array
-      const activitiesArray = Array.from(newSet);
-      updateFormData({ activities: activitiesArray });
-      
-      return newSet;
-    });
-  };
-
-  const getActivitiesForTrade = (tradeName: string) => {
-    const trade = (Array.isArray(trades) ? trades : []).find((t: any) => t.name === tradeName);
-    if (!trade?.categories) return [];
-    
-    // Flatten all activities from all categories
-    const allActivities: any[] = [];
-    trade.categories.forEach((category: any) => {
-      if (category.activities) {
-        category.activities.forEach((activity: string) => {
-          allActivities.push({
-            name: activity,
-            category: category.name
-          });
-        });
-      }
-    });
-    
-    return allActivities;
-  };
-
-  const allActivities = formData.tradeType ? getActivitiesForTrade(formData.tradeType) : [];
-  const filteredActivities = allActivities.filter((activity: any) =>
-    activity.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    activity.category.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const activitiesByCategory = filteredActivities.reduce((acc: any, activity: any) => {
-    const category = activity.category;
-    if (!acc[category]) {
-      acc[category] = [];
-    }
-    acc[category].push(activity);
-    return acc;
-  }, {});
-
-  const categories = Object.keys(activitiesByCategory).sort((a, b) => a.localeCompare(b));
-
-  const toggleCategory = (category: string) => {
-    setCollapsedCategories((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(category)) {
-        newSet.delete(category);
-      } else {
-        newSet.add(category);
-      }
-      return newSet;
-    });
-  };
-
-  const selectAllInCategory = (category: string) => {
-    const activitiesInCategory = activitiesByCategory[category].map((a: any) => a.name);
-    setSelectedActivities((prev) => {
-      const newSet = new Set(prev);
-      activitiesInCategory.forEach((activity: string) => newSet.add(activity));
-      
-      // Update form data with selected activities array
-      const activitiesArray = Array.from(newSet);
-      updateFormData({ activities: activitiesArray });
-      
-      return newSet;
-    });
-  };
-
-  const deselectAllInCategory = (category: string) => {
-    const activitiesInCategory = activitiesByCategory[category].map((a: any) => a.name);
-    setSelectedActivities((prev) => {
-      const newSet = new Set(prev);
-      activitiesInCategory.forEach((activity: string) => newSet.delete(activity));
-      
-      // Update form data with selected activities array
-      const activitiesArray = Array.from(newSet);
-      updateFormData({ activities: activitiesArray });
-      
-      return newSet;
-    });
-  };
-
-  const enhanceDataWithAI = async (currentData: any) => {
-    try {
-      const response = await fetch('/api/ai/enhance-swms', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          activities: currentData.activities,
-          tradeType: currentData.tradeType,
-          projectLocation: currentData.projectLocation
-        })
-      });
-      
-      if (response.ok) {
-        const aiData = await response.json();
-        return {
-          ...currentData,
-          riskAssessments: aiData.riskAssessments,
-          safetyMeasures: aiData.safetyMeasures,
-          complianceCodes: [...(currentData.complianceCodes || []), ...aiData.complianceRecommendations]
-        };
-      }
-    } catch (error) {
-      console.error('AI enhancement error:', error);
-    }
-    return currentData;
-  };
-
-  switch (step) {
-    case 1:
-      return (
-        <div className="space-y-6">
-          <div className="text-center">
-            <Briefcase className="mx-auto h-12 w-12 text-primary mb-4" />
-            <h3 className="text-lg font-semibold mb-2">{translate("projectDetails")}</h3>
-            <p className="text-gray-600 text-sm">
-              {translate("projectDetailsDesc")}
-            </p>
-          </div>
-
-          <ComprehensiveProjectDetails 
-            formData={formData}
-            onDataChange={updateFormData}
-          />
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">{translate("tradeSelection")}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Select value={formData.tradeType || ""} onValueChange={(value) => updateFormData({ tradeType: value })}>
-                <SelectTrigger>
-                  <SelectValue placeholder={translate("selectTrade")} />
-                </SelectTrigger>
-                <SelectContent>
-                  {(Array.isArray(trades) ? trades : []).map((trade: any) => (
-                    <SelectItem key={trade.name} value={trade.name}>
-                      {trade.name} ({trade.totalTasks} {translate("activities")})
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </CardContent>
-          </Card>
-
-          {formData.tradeType && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">{translate("activitySelection")}</CardTitle>
-                <div className="flex items-center space-x-2">
-                  <Search className="h-4 w-4 text-gray-400" />
-                  <Input
-                    placeholder={translate("searchActivities")}
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="flex-1"
-                  />
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="mb-4">
-                  <Badge variant="secondary" className="text-xs">
-                    {selectedActivities.size} {translate("selected")}
-                  </Badge>
-                </div>
-                
-                <div className="space-y-4 max-h-96 overflow-y-auto">
-                  {categories.map((category) => {
-                    const isCollapsed = collapsedCategories.has(category);
-                    const activitiesInCategory = activitiesByCategory[category];
-                    const selectedInCategory = activitiesInCategory.filter((a: any) => selectedActivities.has(a.name)).length;
-                    
-                    return (
-                      <div key={category} className="border border-gray-200 rounded-lg">
-                        <div 
-                          className="flex items-center justify-between p-3 cursor-pointer hover:bg-gray-50"
-                          onClick={() => toggleCategory(category)}
-                        >
-                          <div className="flex items-center space-x-2">
-                            {isCollapsed ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
-                            <span className="font-medium">{category}</span>
-                            <Badge variant="outline" className="text-xs">
-                              {selectedInCategory}/{activitiesInCategory.length}
-                            </Badge>
-                          </div>
-                          <div className="flex space-x-2">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                selectAllInCategory(category);
-                              }}
-                              className="text-xs"
-                            >
-                              {translate("selectAll")}
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                deselectAllInCategory(category);
-                              }}
-                              className="text-xs"
-                            >
-                              {translate("deselectAll")}
-                            </Button>
-                          </div>
-                        </div>
-                        
-                        {!isCollapsed && (
-                          <div className="px-3 pb-3 space-y-2">
-                            {activitiesInCategory.map((activity: any) => (
-                              <div key={activity.name} className="flex items-center space-x-2">
-                                <Checkbox
-                                  id={activity.name}
-                                  checked={selectedActivities.has(activity.name)}
-                                  onCheckedChange={() => handleActivityToggle(activity.name)}
-                                />
-                                <Label htmlFor={activity.name} className="text-sm cursor-pointer flex-1">
-                                  {activity.name}
-                                </Label>
-                                <Badge variant="outline" className="text-xs">
-                                  {activity.riskLevel}
-                                </Badge>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </Card>
-          )}
-        </div>
-      );
-
-    case 2:
-      return (
-        <div className="space-y-6">
-          <div className="text-center">
-            <Shield className="mx-auto h-12 w-12 text-primary mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Risk Assessment</h3>
-            <p className="text-gray-600 text-sm">
-              Identify and assess potential hazards for your work activities
-            </p>
-          </div>
-
-          {/* Risk Assessment Matrix */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-sm flex items-center">
-                  <Shield className="mr-2 h-4 w-4 text-primary" />
-                  Risk Assessment Matrix
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {/* Qualitative vs Quantitative Scale */}
-                  <div className="grid grid-cols-4 gap-1 text-xs border border-gray-300">
-                    <div className="p-2 bg-cyan-100 font-medium text-center border-r">Qualitative Scale</div>
-                    <div className="p-2 bg-cyan-100 font-medium text-center border-r">Quantitative Scale</div>
-                    <div className="p-2 bg-green-200 font-medium text-center border-r">Magnitude Scale</div>
-                    <div className="p-2 bg-green-300 font-medium text-center">Probability Scale</div>
-                    
-                    <div className="p-2 bg-cyan-50 text-center border-r">Extreme</div>
-                    <div className="p-2 bg-cyan-50 text-center border-r">$50,000+</div>
-                    <div className="p-2 bg-green-100 text-center border-r">Likely</div>
-                    <div className="p-2 bg-green-200 text-center">Good chance</div>
-                    
-                    <div className="p-2 bg-cyan-50 text-center border-r">Fatality, significant disability, catastrophic property damage</div>
-                    <div className="p-2 bg-green-100 text-center border-r">Monthly in the industry</div>
-                    <div className="p-2 bg-green-200 text-center">High</div>
-                    
-                    <div className="p-2 bg-cyan-50 text-center border-r">High</div>
-                    <div className="p-2 bg-cyan-50 text-center border-r">$15,000 - $50,000</div>
-                    <div className="p-2 bg-green-100 text-center border-r">Possible</div>
-                    <div className="p-2 bg-green-200 text-center">Even chance</div>
-                    
-                    <div className="p-2 bg-cyan-50 text-center border-r">Minor amputation, minor permanent disability, moderate property damage</div>
-                    <div className="p-2 bg-green-100 text-center border-r">Yearly in the industry</div>
-                    <div className="p-2 bg-green-200 text-center">Medium</div>
-                    
-                    <div className="p-2 bg-cyan-50 text-center border-r">Medium</div>
-                    <div className="p-2 bg-cyan-50 text-center border-r">$1,000 - $15,000</div>
-                    <div className="p-2 bg-green-100 text-center border-r">Unlikely</div>
-                    <div className="p-2 bg-green-200 text-center">Low chance</div>
-                    
-                    <div className="p-2 bg-cyan-50 text-center border-r">Minor injury resulting in Lost Time injury or Medically Treated injury</div>
-                    <div className="p-2 bg-green-100 text-center border-r">Every 10 years in the industry</div>
-                    <div className="p-2 bg-green-200 text-center">Low</div>
-                    
-                    <div className="p-2 bg-cyan-50 text-center border-r">Low</div>
-                    <div className="p-2 bg-cyan-50 text-center border-r">$0 - $1,000</div>
-                    <div className="p-2 bg-green-100 text-center border-r">Very Rarely</div>
-                    <div className="p-2 bg-green-200 text-center">Practically no chance</div>
-                    
-                    <div className="p-2 bg-cyan-50 text-center border-r">First Aid Treatment, with no lost time</div>
-                    <div className="p-2 bg-green-100 text-center border-r">Once in a lifetime in the industry</div>
-                    <div className="p-2 bg-green-200 text-center"></div>
-                  </div>
-
-                  {/* Risk Score Matrix */}
-                  <div className="grid grid-cols-4 gap-1 text-xs border border-gray-300 mt-4">
-                    <div className="p-2 bg-gray-100 font-medium text-center border-r">Likely</div>
-                    <div className="p-2 bg-gray-100 font-medium text-center border-r">Possible</div>
-                    <div className="p-2 bg-gray-100 font-medium text-center border-r">Unlikely</div>
-                    <div className="p-2 bg-gray-100 font-medium text-center">Very Rare</div>
-                    
-                    <div className="p-2 bg-red-500 text-white font-bold text-center border-r">16</div>
-                    <div className="p-2 bg-orange-400 text-white font-bold text-center border-r">14</div>
-                    <div className="p-2 bg-yellow-400 font-bold text-center border-r">11</div>
-                    <div className="p-2 bg-yellow-400 font-bold text-center">7</div>
-                    
-                    <div className="p-2 bg-orange-400 text-white font-bold text-center border-r">15</div>
-                    <div className="p-2 bg-yellow-400 font-bold text-center border-r">12</div>
-                    <div className="p-2 bg-green-400 text-white font-bold text-center border-r">8</div>
-                    <div className="p-2 bg-green-400 text-white font-bold text-center">5</div>
-                    
-                    <div className="p-2 bg-yellow-400 font-bold text-center border-r">13</div>
-                    <div className="p-2 bg-green-400 text-white font-bold text-center border-r">9</div>
-                    <div className="p-2 bg-green-400 text-white font-bold text-center border-r">6</div>
-                    <div className="p-2 bg-green-400 text-white font-bold text-center">3</div>
-                    
-                    <div className="p-2 bg-green-400 text-white font-bold text-center border-r">10</div>
-                    <div className="p-2 bg-green-400 text-white font-bold text-center border-r">7</div>
-                    <div className="p-2 bg-green-400 text-white font-bold text-center border-r">4</div>
-                    <div className="p-2 bg-green-400 text-white font-bold text-center">2</div>
-                  </div>
-
-                  {/* Action Required Legend */}
-                  <div className="grid grid-cols-4 gap-1 text-xs border border-gray-300 mt-4">
-                    <div className="p-2 bg-gray-100 font-medium text-center border-r">Score</div>
-                    <div className="p-2 bg-gray-100 font-medium text-center border-r">Ranking</div>
-                    <div className="p-2 bg-gray-100 font-medium text-center border-r">Action</div>
-                    <div className="p-2 bg-gray-100 font-medium text-center">Timeline</div>
-                    
-                    <div className="p-2 bg-red-500 text-white font-bold text-center border-r">14 - 16</div>
-                    <div className="p-2 bg-red-500 text-white font-bold text-center border-r">Severe (5)</div>
-                    <div className="p-2 bg-red-500 text-white text-xs text-center border-r">Action required</div>
-                    <div className="p-2 bg-red-500 text-white text-xs text-center">Immediately</div>
-                    
-                    <div className="p-2 bg-orange-400 text-white font-bold text-center border-r">11 - 13</div>
-                    <div className="p-2 bg-orange-400 text-white font-bold text-center border-r">High (4)</div>
-                    <div className="p-2 bg-orange-400 text-white text-xs text-center border-r">Action within</div>
-                    <div className="p-2 bg-orange-400 text-white text-xs text-center">24 hrs</div>
-                    
-                    <div className="p-2 bg-yellow-400 font-bold text-center border-r">7 - 10</div>
-                    <div className="p-2 bg-yellow-400 font-bold text-center border-r">Medium (3)</div>
-                    <div className="p-2 bg-yellow-400 text-xs text-center border-r">Action within</div>
-                    <div className="p-2 bg-yellow-400 text-xs text-center">14 days</div>
-                    
-                    <div className="p-2 bg-green-400 text-white font-bold text-center border-r">3 - 6</div>
-                    <div className="p-2 bg-green-400 text-white font-bold text-center border-r">Low (1-2)</div>
-                    <div className="p-2 bg-green-400 text-white text-xs text-center border-r">Action within</div>
-                    <div className="p-2 bg-green-400 text-white text-xs text-center">Business cycle</div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-sm flex items-center">
-                  <FileText className="mr-2 h-4 w-4 text-primary" />
-                  Safety Control Hierarchy
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2 text-xs">
-                  <div className="flex items-center p-2 bg-red-50 border border-red-200 rounded">
-                    <div className="w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center mr-3 text-xs font-bold">1</div>
-                    <div>
-                      <div className="font-medium text-red-800">Eliminate</div>
-                      <div className="text-red-600">Remove the hazard completely</div>
-                    </div>
-                  </div>
-                  <div className="flex items-center p-2 bg-orange-50 border border-orange-200 rounded">
-                    <div className="w-6 h-6 bg-orange-500 text-white rounded-full flex items-center justify-center mr-3 text-xs font-bold">2</div>
-                    <div>
-                      <div className="font-medium text-orange-800">Substitute</div>
-                      <div className="text-orange-600">Replace with safer alternative</div>
-                    </div>
-                  </div>
-                  <div className="flex items-center p-2 bg-yellow-50 border border-yellow-200 rounded">
-                    <div className="w-6 h-6 bg-yellow-500 text-white rounded-full flex items-center justify-center mr-3 text-xs font-bold">3</div>
-                    <div>
-                      <div className="font-medium text-yellow-800">Engineering</div>
-                      <div className="text-yellow-600">Physical barriers & controls</div>
-                    </div>
-                  </div>
-                  <div className="flex items-center p-2 bg-blue-50 border border-blue-200 rounded">
-                    <div className="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center mr-3 text-xs font-bold">4</div>
-                    <div>
-                      <div className="font-medium text-blue-800">Administrative</div>
-                      <div className="text-blue-600">Procedures & training</div>
-                    </div>
-                  </div>
-                  <div className="flex items-center p-2 bg-purple-50 border border-purple-200 rounded">
-                    <div className="w-6 h-6 bg-purple-500 text-white rounded-full flex items-center justify-center mr-3 text-xs font-bold">5</div>
-                    <div>
-                      <div className="font-medium text-purple-800">PPE</div>
-                      <div className="text-purple-600">Personal protective equipment</div>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Selected Activities Summary */}
-          {formData.activities && formData.activities.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">Selected Activities</CardTitle>
-                <p className="text-sm text-gray-600">
-                  Activities selected from {formData.tradeType} that require risk assessment
-                </p>
-              </CardHeader>
-              <CardContent>
-                <div className="grid gap-2">
-                  {formData.activities.map((activity: string, index: number) => (
-                    <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded border">
-                      <span className="text-sm font-medium">{activity}</span>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={async () => {
-                          try {
-                            // Fetch pre-filled risk assessment data from API
-                            const response = await fetch(`/api/risk-assessment/${encodeURIComponent(activity)}`);
-                            const riskData = await response.json();
-                            
-                            const newRisk = {
-                              id: `activity-${Date.now()}-${index}`,
-                              activity: activity,
-                              description: riskData.description,
-                              hazards: riskData.hazards,
-                              initialRiskScore: riskData.initialRiskScore,
-                              riskLevel: riskData.riskLevel,
-                              controlMeasures: riskData.controlMeasures,
-                              legislation: riskData.legislation,
-                              residualRiskScore: riskData.residualRiskScore,
-                              residualRiskLevel: riskData.residualRiskLevel,
-                              responsible: riskData.responsible,
-                              ppe: riskData.ppe,
-                              trainingRequired: riskData.trainingRequired,
-                              permitRequired: riskData.permitRequired,
-                              inspectionFrequency: riskData.inspectionFrequency,
-                              emergencyProcedures: riskData.emergencyProcedures,
-                              environmentalControls: riskData.environmentalControls
-                            };
-                            
-                            updateFormData({ 
-                              riskAssessments: [...(formData.riskAssessments || []), newRisk] 
-                            });
-                            
-                            toast({
-                              title: "Risk Assessment Added",
-                              description: `Pre-filled risk assessment for ${activity} has been added`,
-                            });
-                          } catch (error) {
-                            console.error('Error fetching risk assessment:', error);
-                            toast({
-                              title: "Error",
-                              description: "Failed to fetch risk assessment data",
-                              variant: "destructive",
-                            });
-                          }
-                        }}
-                        className="text-xs"
-                      >
-                        <Plus className="mr-1 h-3 w-3" />
-                        Add Risk Assessment
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Manual Risk Assessment Entry */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Manual Risk Assessment</CardTitle>
-              <p className="text-sm text-gray-600">
-                Add and edit risk assessments manually. Use AI Generator from sidebar for automated suggestions.
-              </p>
-            </CardHeader>
-            <CardContent>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => {
-                  const newRisk = {
-                    id: `manual-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-                    activity: formData.activities[0] || 'General Activity',
-                    description: '',
-                    hazards: [''],
-                    initialRiskScore: 4,
-                    riskLevel: 'Medium',
-                    controlMeasures: [''],
-                    legislation: ['Work Health and Safety Act'],
-                    residualRiskScore: 2,
-                    residualRiskLevel: 'Low',
-                    responsible: 'Site Supervisor',
-                    ppe: [],
-                    trainingRequired: [],
-                    permitRequired: [],
-                    inspectionFrequency: 'Daily',
-                    emergencyProcedures: [],
-                    environmentalControls: []
-                  };
-                  updateFormData({ 
-                    riskAssessments: [...(formData.riskAssessments || []), newRisk] 
-                  });
-                }}
-                className="mb-4"
-              >
-                <Plus className="mr-2 h-4 w-4" />
-                Add New Risk Assessment
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Comprehensive Risk Assessment Table */}
-          {formData.riskAssessments && formData.riskAssessments.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">Risk Assessment Table ({formData.riskAssessments.length} assessments)</CardTitle>
-                <p className="text-sm text-gray-600">
-                  Complete risk assessment details with all required compliance data
-                </p>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-6">
-                  {formData.riskAssessments.map((risk: any, index: number) => (
-                    <div key={risk.id || index} className="border border-gray-300 rounded-lg overflow-hidden">
-                      {/* Header with Task and Risk Level */}
-                      <div className="bg-gray-100 p-4 border-b border-gray-300">
-                        <div className="flex items-start justify-between mb-3">
-                          <div className="flex-1">
-                            <label className="text-xs font-medium text-gray-700 block mb-1">Task Description</label>
-                            <Textarea
-                              value={risk.activity}
-                              onChange={(e) => {
-                                const updated = [...formData.riskAssessments];
-                                updated[index] = { ...risk, activity: e.target.value };
-                                updateFormData({ riskAssessments: updated });
-                              }}
-                              className="text-sm font-medium bg-white"
-                              placeholder="Enter detailed task description"
-                            />
-                          </div>
-                          <Button
-                            type="button"
-                            variant="destructive"
-                            size="sm"
-                            onClick={() => {
-                              const updated = formData.riskAssessments.filter((_: any, i: number) => i !== index);
-                              updateFormData({ riskAssessments: updated });
-                            }}
-                            className="ml-3"
-                          >
-                            <X className="h-3 w-3" />
-                          </Button>
-                        </div>
-                        
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                          <div>
-                            <label className="text-xs font-medium text-gray-700 block mb-1">Risk Level</label>
-                            <Select
-                              value={risk.riskLevel || 'Medium'}
-                              onValueChange={(value) => {
-                                const updated = [...formData.riskAssessments];
-                                updated[index] = { ...updated[index], riskLevel: value };
-                                updateFormData({ riskAssessments: updated });
-                              }}
-                            >
-                              <SelectTrigger className="text-sm">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="Low">Low</SelectItem>
-                                <SelectItem value="Medium">Medium</SelectItem>
-                                <SelectItem value="High">High</SelectItem>
-                                <SelectItem value="Extreme">Extreme</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          
-                          <div>
-                            <label className="text-xs font-medium text-gray-700 block mb-1">Initial Risk Score</label>
-                            <Select
-                              value={String(risk.initialRiskScore || 6)}
-                              onValueChange={(value) => {
-                                const updated = [...formData.riskAssessments];
-                                updated[index] = { ...updated[index], initialRiskScore: parseInt(value) };
-                                updateFormData({ riskAssessments: updated });
-                              }}
-                            >
-                              <SelectTrigger className="text-sm">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {[1,2,3,4,5,6,7,8].map(score => (
-                                  <SelectItem key={score} value={String(score)}>{score}</SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          
-                          <div>
-                            <label className="text-xs font-medium text-gray-700 block mb-1">Residual Risk Score</label>
-                            <Select
-                              value={String(risk.residualRiskScore || 3)}
-                              onValueChange={(value) => {
-                                const updated = [...formData.riskAssessments];
-                                updated[index] = { ...updated[index], residualRiskScore: parseInt(value) };
-                                updateFormData({ riskAssessments: updated });
-                              }}
-                            >
-                              <SelectTrigger className="text-sm">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {[1,2,3,4,5,6,7,8].map(score => (
-                                  <SelectItem key={score} value={String(score)}>{score}</SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          
-                          <div>
-                            <label className="text-xs font-medium text-gray-700 block mb-1">Responsible Person</label>
-                            <Input
-                              value={risk.responsible || 'Site Supervisor'}
-                              onChange={(e) => {
-                                const updated = [...formData.riskAssessments];
-                                updated[index] = { ...updated[index], responsible: e.target.value };
-                                updateFormData({ riskAssessments: updated });
-                              }}
-                              className="text-sm"
-                            />
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Detailed Risk Assessment Data */}
-                      <div className="p-4 space-y-4">
-                        {/* Hazards Section */}
-                        <div>
-                          <label className="text-sm font-medium text-gray-900 block mb-2">Identified Hazards</label>
-                          <div className="space-y-2">
-                            {(Array.isArray(risk.hazards) ? risk.hazards : [risk.hazards || '']).map((hazard: string, hIndex: number) => (
-                              <div key={hIndex} className="flex gap-2">
-                                <span className="text-xs bg-gray-100 px-2 py-1 rounded mt-1 shrink-0">{hIndex + 1}</span>
-                                <Textarea
-                                  value={hazard}
-                                  onChange={(e) => {
-                                    const updated = [...formData.riskAssessments];
-                                    if (!Array.isArray(updated[index].hazards)) {
-                                      updated[index].hazards = [updated[index].hazards || ''];
-                                    }
-                                    updated[index].hazards[hIndex] = e.target.value;
-                                    updateFormData({ riskAssessments: updated });
-                                  }}
-                                  placeholder="Describe specific hazard (e.g., electrical shock from exposed wiring)"
-                                  className="flex-1 text-sm min-h-[60px]"
-                                />
-                                <Button
-                                  type="button"
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => {
-                                    const updated = [...formData.riskAssessments];
-                                    if (Array.isArray(updated[index].hazards) && updated[index].hazards.length > 1) {
-                                      updated[index].hazards = updated[index].hazards.filter((_: any, i: number) => i !== hIndex);
-                                      updateFormData({ riskAssessments: updated });
-                                    }
-                                  }}
-                                  className="self-start"
-                                >
-                                  <X className="h-3 w-3" />
-                                </Button>
-                              </div>
-                            ))}
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              onClick={() => {
-                                const updated = [...formData.riskAssessments];
-                                if (!Array.isArray(updated[index].hazards)) {
-                                  updated[index].hazards = [updated[index].hazards || ''];
-                                }
-                                updated[index].hazards.push('');
-                                updateFormData({ riskAssessments: updated });
-                              }}
-                              className="w-full"
-                            >
-                              <Plus className="h-3 w-3 mr-1" />
-                              Add Additional Hazard
-                            </Button>
-                          </div>
-                        </div>
-
-                        {/* Control Measures Section */}
-                        <div>
-                          <label className="text-sm font-medium text-gray-900 block mb-2">Control Measures</label>
-                          <div className="space-y-2">
-                            {(Array.isArray(risk.controlMeasures) ? risk.controlMeasures : [risk.controlMeasures || '']).map((control: string, cIndex: number) => (
-                              <div key={cIndex} className="flex gap-2">
-                                <span className="text-xs bg-blue-100 px-2 py-1 rounded mt-1 shrink-0">{cIndex + 1}</span>
-                                <Textarea
-                                  value={control}
-                                  onChange={(e) => {
-                                    const updated = [...formData.riskAssessments];
-                                    if (!Array.isArray(updated[index].controlMeasures)) {
-                                      updated[index].controlMeasures = [updated[index].controlMeasures || ''];
-                                    }
-                                    updated[index].controlMeasures[cIndex] = e.target.value;
-                                    updateFormData({ riskAssessments: updated });
-                                  }}
-                                  placeholder="Describe control measure (e.g., Use insulated tools and test equipment before work)"
-                                  className="flex-1 text-sm min-h-[60px]"
-                                />
-                                <Button
-                                  type="button"
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => {
-                                    const updated = [...formData.riskAssessments];
-                                    if (Array.isArray(updated[index].controlMeasures) && updated[index].controlMeasures.length > 1) {
-                                      updated[index].controlMeasures = updated[index].controlMeasures.filter((_: any, i: number) => i !== cIndex);
-                                      updateFormData({ riskAssessments: updated });
-                                    }
-                                  }}
-                                  className="self-start"
-                                >
-                                  <X className="h-3 w-3" />
-                                </Button>
-                              </div>
-                            ))}
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              onClick={() => {
-                                const updated = [...formData.riskAssessments];
-                                if (!Array.isArray(updated[index].controlMeasures)) {
-                                  updated[index].controlMeasures = [updated[index].controlMeasures || ''];
-                                }
-                                updated[index].controlMeasures.push('');
-                                updateFormData({ riskAssessments: updated });
-                              }}
-                              className="w-full"
-                            >
-                              <Plus className="h-3 w-3 mr-1" />
-                              Add Additional Control Measure
-                            </Button>
-                          </div>
-                        </div>
-
-                        {/* PPE and Legislation Row */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div>
-                            <label className="text-sm font-medium text-gray-900 block mb-2">PPE Required</label>
-                            <div className="space-y-2">
-                              {(risk.ppe || []).map((equipment: string, pIndex: number) => (
-                                <div key={pIndex} className="flex gap-2">
-                                  <Input
-                                    value={equipment}
-                                    onChange={(e) => {
-                                      const updated = [...formData.riskAssessments];
-                                      const newPpe = [...(updated[index].ppe || [])];
-                                      newPpe[pIndex] = e.target.value;
-                                      updated[index] = { ...updated[index], ppe: newPpe };
-                                      updateFormData({ riskAssessments: updated });
-                                    }}
-                                    placeholder="PPE item (e.g., Insulated gloves)"
-                                    className="flex-1 text-sm"
-                                  />
-                                  <Button
-                                    type="button"
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => {
-                                      const updated = [...formData.riskAssessments];
-                                      const newPpe = (updated[index].ppe || []).filter((_: any, i: number) => i !== pIndex);
-                                      updated[index] = { ...updated[index], ppe: newPpe };
-                                      updateFormData({ riskAssessments: updated });
-                                    }}
-                                  >
-                                    <X className="h-3 w-3" />
-                                  </Button>
-                                </div>
-                              ))}
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={() => {
-                                  const updated = [...formData.riskAssessments];
-                                  updated[index] = { 
-                                    ...updated[index], 
-                                    ppe: [...(updated[index].ppe || []), ''] 
-                                  };
-                                  updateFormData({ riskAssessments: updated });
-                                }}
-                                className="w-full"
-                              >
-                                <Plus className="h-3 w-3 mr-1" />
-                                Add PPE Item
-                              </Button>
-                            </div>
-                          </div>
-
-                          <div>
-                            <label className="text-sm font-medium text-gray-900 block mb-2">Applicable Legislation</label>
-                            <div className="space-y-2">
-                              {(risk.legislation || []).map((law: string, lIndex: number) => (
-                                <div key={lIndex} className="flex gap-2">
-                                  <Input
-                                    value={law}
-                                    onChange={(e) => {
-                                      const updated = [...formData.riskAssessments];
-                                      const newLegislation = [...(updated[index].legislation || [])];
-                                      newLegislation[lIndex] = e.target.value;
-                                      updated[index] = { ...updated[index], legislation: newLegislation };
-                                      updateFormData({ riskAssessments: updated });
-                                    }}
-                                    placeholder="Legislation reference"
-                                    className="flex-1 text-sm"
-                                  />
-                                  <Button
-                                    type="button"
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => {
-                                      const updated = [...formData.riskAssessments];
-                                      const newLegislation = (updated[index].legislation || []).filter((_: any, i: number) => i !== lIndex);
-                                      updated[index] = { ...updated[index], legislation: newLegislation };
-                                      updateFormData({ riskAssessments: updated });
-                                    }}
-                                  >
-                                    <X className="h-3 w-3" />
-                                  </Button>
-                                </div>
-                              ))}
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={() => {
-                                  const updated = [...formData.riskAssessments];
-                                  updated[index] = { 
-                                    ...updated[index], 
-                                    legislation: [...(updated[index].legislation || []), ''] 
-                                  };
-                                  updateFormData({ riskAssessments: updated });
-                                }}
-                                className="w-full"
-                              >
-                                <Plus className="h-3 w-3 mr-1" />
-                                Add Legislation
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Additional Details */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-3 border-t border-gray-200">
-                          <div>
-                            <label className="text-xs font-medium text-gray-700 block mb-1">Inspection Frequency</label>
-                            <Select
-                              value={risk.inspectionFrequency || 'Daily'}
-                              onValueChange={(value) => {
-                                const updated = [...formData.riskAssessments];
-                                updated[index] = { ...updated[index], inspectionFrequency: value };
-                                updateFormData({ riskAssessments: updated });
-                              }}
-                            >
-                              <SelectTrigger className="text-sm">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="Before each use">Before each use</SelectItem>
-                                <SelectItem value="Daily">Daily</SelectItem>
-                                <SelectItem value="Weekly">Weekly</SelectItem>
-                                <SelectItem value="Monthly">Monthly</SelectItem>
-                                <SelectItem value="As required">As required</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          
-                          <div>
-                            <label className="text-xs font-medium text-gray-700 block mb-1">Training Required</label>
-                            <Input
-                              value={(risk.trainingRequired || []).join(', ')}
-                              onChange={(e) => {
-                                const updated = [...formData.riskAssessments];
-                                updated[index] = { 
-                                  ...updated[index], 
-                                  trainingRequired: e.target.value.split(',').map(t => t.trim()).filter(t => t)
-                                };
-                                updateFormData({ riskAssessments: updated });
-                              }}
-                              placeholder="Training requirements (comma separated)"
-                              className="text-sm"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {formData.activities.length === 0 && (
-            <Card>
-              <CardContent className="text-center py-8">
-                <AlertTriangle className="mx-auto h-8 w-8 text-gray-400 mb-3" />
-                <p className="text-gray-500">
-                  Please select activities in Step 1 to continue with risk assessment
-                </p>
-              </CardContent>
-            </Card>
-          )}
-        </div>
-      );
-
-    case 3:
-      return (
-        <div className="space-y-6">
-          <div className="text-center">
-            <Layers className="mx-auto h-12 w-12 text-primary mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Visual Table Editor</h3>
-            <p className="text-gray-600 text-sm">
-              Edit and customize your risk assessments in an interactive table format
-            </p>
-          </div>
-
-          {formData.riskAssessments && formData.riskAssessments.length > 0 ? (
-            <SimplifiedTableEditor 
-              riskAssessments={formData.riskAssessments}
-              onUpdate={(assessments) => updateFormData({ riskAssessments: assessments })}
-              tradeType={formData.tradeType || 'General'}
-            />
-          ) : (
-            <Card>
-              <CardContent className="text-center py-8">
-                <AlertTriangle className="mx-auto h-8 w-8 text-gray-400 mb-3" />
-                <p className="text-gray-500">
-                  No risk assessments found. Please complete Step 2 first.
-                </p>
-              </CardContent>
-            </Card>
-          )}
-        </div>
-      );
-
-    case 4:
-      return (
-        <div className="space-y-6">
-          <div className="text-center">
-            <Shield className="mx-auto h-12 w-12 text-primary mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Compliance Validation</h3>
-            <p className="text-gray-600 text-sm">
-              Verify compliance with Australian safety standards and validate risk assessments
-            </p>
-          </div>
-
-          <RiskComplianceChecker
-            riskAssessments={formData.riskAssessments || []}
-            tradeType={formData.tradeType || 'general'}
-            onComplianceUpdate={(isCompliant, issues) => {
-              updateFormData({
-                complianceStatus: { isCompliant, issues }
-              });
-            }}
-          />
-        </div>
-      );
-
-    case 5:
-      return (
-        <div className="space-y-6">
-          <div className="text-center">
-            <Wrench className="mx-auto h-12 w-12 text-primary mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Plant & Equipment</h3>
-            <p className="text-gray-600 text-sm">
-              Document plant, equipment, and machinery required for your work
-            </p>
-          </div>
-
-          <PlantEquipmentManager 
-            formData={formData}
-            updateFormData={updateFormData}
-          />
-
-          <ReviewMonitoringManager 
-            formData={formData}
-            updateFormData={updateFormData}
-          />
-        </div>
-      );
-
-    case 6:
-      return (
-        <div className="space-y-6">
-          <div className="text-center">
-            <PenTool className="mx-auto h-12 w-12 text-primary mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Digital Signatures (Optional)</h3>
-            <p className="text-gray-600 text-sm">
-              Optionally collect digital signatures for document approval workflow
-            </p>
-          </div>
-
-          <Card>
-            <CardContent className="pt-6">
-              <div className="text-center mb-6">
-                <p className="text-gray-600">
-                  Digital signatures are optional. You can skip this step and add signatures later, 
-                  or proceed directly to generate your SWMS document.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <DigitalSignatureSystem
-            swmsId={formData.draftId || `draft-${Date.now()}`}
-            swmsTitle={formData.projectDetails?.jobName || 'SWMS Document'}
-            isCompliant={formData.complianceStatus?.isCompliant || false}
-            onSignaturesUpdate={(signatures) => {
-              updateFormData({ signatures });
-            }}
-          />
-        </div>
-      );
-
-    case 7:
-      return (
-        <div className="space-y-6">
-          <div className="text-center">
-            <Shield className="mx-auto h-12 w-12 text-primary mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Legal Disclaimer</h3>
-            <p className="text-gray-600 text-sm">
-              Select applicable safety codes and compliance requirements
-            </p>
-          </div>
-          
-          <Card>
-            <CardHeader>
-              <CardTitle>Applicable Safety Codes</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-gray-600 mb-4">Select safety codes and compliance requirements that apply to your project</p>
-              
-              {/* Trade-specific recommended codes */}
-              {formData.tradeType && (
-                <div className="space-y-4 mb-6">
-                  <h4 className="font-medium text-gray-800 flex items-center gap-2">
-                    <Shield className="h-4 w-4 text-primary" />
-                    Recommended for {formData.tradeType}
-                  </h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                    {(Array.isArray(safetyLibrary) ? safetyLibrary : safetyLibrary?.documents || [])
-                      ?.filter((code: any) => code.applicableIndustries?.includes(formData.tradeType))
-                      .slice(0, 9)
-                      .map((code: any) => (
-                        <div key={code.id} className="flex items-start space-x-2 p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
-                          <Checkbox
-                            id={code.id}
-                            checked={selectedComplianceCodes.has(code.title)}
-                            onCheckedChange={(checked) => {
-                              if (checked) {
-                                setSelectedComplianceCodes(prev => new Set([...prev, code.title]));
-                              } else {
-                                setSelectedComplianceCodes(prev => {
-                                  const newSet = new Set(prev);
-                                  newSet.delete(code.title);
-                                  return newSet;
-                                });
-                              }
-                            }}
-                          />
-                          <div className="flex-1 min-w-0">
-                            <label htmlFor={code.id} className="text-sm font-medium text-gray-900 cursor-pointer">
-                              {code.title}
-                            </label>
-                            <p className="text-xs text-gray-500 mt-1">{code.description}</p>
-                          </div>
-                        </div>
-                      ))}
-                  </div>
-                </div>
-              )}
-
-              {/* All available codes */}
-              <div className="space-y-4">
-                <h4 className="font-medium text-gray-800">All Available Safety Codes</h4>
-                <div className="max-h-64 overflow-y-auto space-y-2">
-                  {(Array.isArray(safetyLibrary) ? safetyLibrary : safetyLibrary?.documents || [])
-                    ?.map((code: any) => (
-                      <div key={code.id} className="flex items-start space-x-2 p-2 border border-gray-200 rounded hover:bg-gray-50">
-                        <Checkbox
-                          id={`all-${code.id}`}
-                          checked={selectedComplianceCodes.has(code.title)}
-                          onCheckedChange={(checked) => {
-                            if (checked) {
-                              setSelectedComplianceCodes(prev => new Set([...prev, code.title]));
-                            } else {
-                              setSelectedComplianceCodes(prev => {
-                                const newSet = new Set(prev);
-                                newSet.delete(code.title);
-                                return newSet;
-                              });
-                            }
-                          }}
-                        />
-                        <div className="flex-1 min-w-0">
-                          <label htmlFor={`all-${code.id}`} className="text-sm text-gray-900 cursor-pointer">
-                            {code.title}
-                          </label>
-                        </div>
-                      </div>
-                    ))}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      );
-
-    case 7:
-      return (
-        <div className="space-y-6">
-          <div className="text-center">
-            <Download className="mx-auto h-12 w-12 text-primary mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Generate & Print Final Document</h3>
-            <p className="text-gray-600 text-sm">
-              Download PDF and print your completed SWMS with all signatures and compliance validation
-            </p>
-          </div>
-
-          <PDFPrintSystem
-            swmsId={formData.draftId || `swms-${Date.now()}`}
-            swmsTitle={formData.projectDetails?.jobName || 'SWMS Document'}
-            formData={formData}
-            signatures={formData.signatures || []}
-            isCompliant={formData.complianceStatus?.isCompliant || false}
-          />
-        </div>
-      );
-
-    default:
-      return (
-        <div className="text-center py-8">
-          <p className="text-gray-500">Invalid step</p>
-        </div>
-      );
-  }
-};
-
-const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
-  return (
-    <div className="max-w-4xl mx-auto">
-      {renderStepContent(step, formData, onDataChange)}
-    </div>
-  );
-};
+const TOTAL_STEPS = 7;
 
 interface SWMSFormProps {
   data?: any;
@@ -1350,7 +47,163 @@ interface SWMSFormProps {
   onDataChange?: (data: any) => void;
 }
 
-const TOTAL_STEPS = 7;
+const StepContent = ({ step, formData, updateFormData }: { step: number; formData: any; updateFormData: (data: any) => void }) => {
+  const { toast } = useToast();
+
+  switch (step) {
+    case 1:
+      return (
+        <div className="space-y-6">
+          <div className="text-center">
+            <MapPin className="mx-auto h-12 w-12 text-primary mb-4" />
+            <h3 className="text-lg font-semibold mb-2">{translate("projectDetails")}</h3>
+            <p className="text-gray-600 text-sm">
+              {translate("projectDetailsDesc")}
+            </p>
+          </div>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Project Information</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="jobName">Job Name</Label>
+                <Input
+                  id="jobName"
+                  value={formData.jobName || ""}
+                  onChange={(e) => updateFormData({ jobName: e.target.value })}
+                  placeholder="Enter job name"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="jobNumber">Job Number</Label>
+                  <Input
+                    id="jobNumber"
+                    value={formData.jobNumber || ""}
+                    onChange={(e) => updateFormData({ jobNumber: e.target.value })}
+                    placeholder="Enter job number"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="projectAddress">Project Address</Label>
+                <Input
+                  id="projectAddress"
+                  value={formData.projectAddress || ""}
+                  onChange={(e) => updateFormData({ projectAddress: e.target.value })}
+                  placeholder="Enter project address"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="tradeType">Trade Type</Label>
+                <Select
+                  value={formData.tradeType || ""}
+                  onValueChange={(value) => updateFormData({ tradeType: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select trade type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="General">General Construction</SelectItem>
+                    <SelectItem value="Electrical">Electrical</SelectItem>
+                    <SelectItem value="Plumbing">Plumbing</SelectItem>
+                    <SelectItem value="HVAC">HVAC</SelectItem>
+                    <SelectItem value="Carpentry">Carpentry</SelectItem>
+                    <SelectItem value="Roofing">Roofing</SelectItem>
+                    <SelectItem value="Demolition">Demolition</SelectItem>
+                    <SelectItem value="Excavation">Excavation</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label htmlFor="description">Project Description</Label>
+                <Textarea
+                  id="description"
+                  value={formData.description || ""}
+                  onChange={(e) => updateFormData({ description: e.target.value })}
+                  placeholder="Describe the project scope and objectives"
+                  rows={4}
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="startDate">Start Date</Label>
+                  <Input
+                    id="startDate"
+                    type="date"
+                    value={formData.startDate || ""}
+                    onChange={(e) => updateFormData({ startDate: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="duration">Duration (days)</Label>
+                  <Input
+                    id="duration"
+                    type="number"
+                    value={formData.duration || ""}
+                    onChange={(e) => updateFormData({ duration: e.target.value })}
+                    placeholder="Enter duration"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="workLocation">Specific Work Location</Label>
+                <Input
+                  id="workLocation"
+                  value={formData.workLocation || ""}
+                  onChange={(e) => updateFormData({ workLocation: e.target.value })}
+                  placeholder="Specific area or location where work will be performed"
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      );
+
+    case 2:
+      return (
+        <div className="space-y-6">
+          <div className="text-center">
+            <AlertTriangle className="mx-auto h-12 w-12 text-primary mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Work Activities & Risk Assessment</h3>
+            <p className="text-gray-600 text-sm">
+              Detailed work breakdown and comprehensive risk assessments
+            </p>
+          </div>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Work Activities</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <TaskSelectionWithAI
+                tradeType={formData.tradeType || 'General'}
+                onTasksUpdate={(tasks) => updateFormData({ selectedTasks: tasks })}
+                onWorkDescriptionUpdate={(description) => updateFormData({ workDescription: description })}
+                selectedTasks={formData.selectedTasks || []}
+                workDescription={formData.workDescription || ""}
+              />
+            </CardContent>
+          </Card>
+        </div>
+      );
+
+    default:
+      return (
+        <div className="text-center py-8">
+          <p className="text-gray-500">More steps coming soon...</p>
+        </div>
+      );
+  }
+};
 
 export default function SWMSForm({ data = {}, onStepChange, onDataChange }: SWMSFormProps) {
   const [currentStep, setCurrentStep] = useState(1);
@@ -1376,45 +229,34 @@ export default function SWMSForm({ data = {}, onStepChange, onDataChange }: SWMS
     const newData = { 
       ...formData, 
       ...updates,
-      complianceStatus: updates.complianceStatus || formData.complianceStatus || { isCompliant: false, issues: [] },
-      signatures: updates.signatures || formData.signatures || []
+      lastModified: new Date().toISOString()
     };
     setFormData(newData);
-    if (onDataChange) {
-      onDataChange(newData);
-    }
+    if (onDataChange) onDataChange(newData);
   };
 
+  useEffect(() => {
+    setFormData(data);
+  }, [data]);
+
   return (
-    <div className="w-full max-w-6xl mx-auto p-6">
-      {/* Progress Steps */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between">
-          {Array.from({ length: TOTAL_STEPS }, (_, i) => i + 1).map((step) => (
-            <div key={step} className="flex items-center">
-              <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                  step <= currentStep
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-gray-200 text-gray-600'
-                }`}
-              >
-                {step}
-              </div>
-              {step < TOTAL_STEPS && (
-                <div
-                  className={`w-12 h-0.5 ${
-                    step < currentStep ? 'bg-primary' : 'bg-gray-200'
-                  }`}
-                />
-              )}
-            </div>
-          ))}
+    <div className="max-w-4xl mx-auto p-6 space-y-8">
+      {/* Progress Bar */}
+      <div className="bg-white rounded-lg shadow-sm border p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-semibold text-gray-900">
+            {translate("swms.step")} {currentStep} {translate("swms.of")} {TOTAL_STEPS}
+          </h2>
+          <div className="text-sm text-gray-500">
+            {Math.round((currentStep / TOTAL_STEPS) * 100)}% {translate("swms.complete")}
+          </div>
         </div>
-        <div className="mt-2 text-center">
-          <p className="text-sm text-gray-600">
-            Step {currentStep} of {TOTAL_STEPS}
-          </p>
+        
+        <div className="w-full bg-gray-200 rounded-full h-2">
+          <div
+            className="bg-primary h-2 rounded-full transition-all duration-300"
+            style={{ width: `${(currentStep / TOTAL_STEPS) * 100}%` }}
+          />
         </div>
       </div>
 
@@ -1422,71 +264,26 @@ export default function SWMSForm({ data = {}, onStepChange, onDataChange }: SWMS
       <StepContent 
         step={currentStep} 
         formData={formData} 
-        onDataChange={updateFormData}
+        updateFormData={updateFormData} 
       />
 
       {/* Navigation */}
-      <div className="mt-8 flex justify-between">
+      <div className="flex justify-between pt-6">
         <Button
+          variant="outline"
           onClick={prevStep}
           disabled={currentStep === 1}
-          variant="outline"
         >
-          Previous
+          {translate("btn.back")}
         </Button>
         
         <Button
           onClick={nextStep}
           disabled={currentStep === TOTAL_STEPS}
         >
-          {currentStep === TOTAL_STEPS ? 'Complete' : 'Next'}
+          {currentStep === TOTAL_STEPS ? translate("btn.finish") : translate("btn.next")}
         </Button>
       </div>
     </div>
   );
-}
-                    }}
-                  >
-                    <Save className="h-4 w-4" />
-                    Save Draft
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-green-50 border-green-200">
-            <CardHeader>
-              <div className="flex items-center gap-2">
-                <CheckCircle className="h-5 w-5 text-green-600" />
-                <h4 className="font-medium text-green-800">Completion Checklist</h4>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <div className="flex items-center gap-2 text-sm">
-                  <CheckCircle className="h-4 w-4 text-green-600" />
-                  <span>Project details completed</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <CheckCircle className="h-4 w-4 text-green-600" />
-                  <span>Risk assessments generated</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <CheckCircle className="h-4 w-4 text-green-600" />
-                  <span>Safety measures documented</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <CheckCircle className="h-4 w-4 text-green-600" />
-                  <span>Legal disclaimer accepted</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      );
-
-    default:
-      return <div>Invalid step</div>;
-  }
 }

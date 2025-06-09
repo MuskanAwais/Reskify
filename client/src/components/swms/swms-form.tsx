@@ -28,7 +28,7 @@ import {
   FileText,
   Wrench,
   Eye,
-  Download,
+  Heart,
   Save,
   CheckCircle,
   PenTool
@@ -38,6 +38,8 @@ import TaskSelectionWithAI from "./task-selection-with-ai";
 import { translate } from "@/lib/language-direct";
 import SmartTooltip from "@/components/ui/smart-tooltip";
 import QuickActionTooltip, { presetTooltips } from "@/components/ui/quick-action-tooltip";
+
+const TOTAL_STEPS = 7;
 
 interface StepContentProps {
   step: number;
@@ -51,20 +53,14 @@ interface SWMSFormProps {
   onDataChange?: (data: any) => void;
 }
 
-const TOTAL_STEPS = 7;
-
 const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
   const { toast } = useToast();
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedActivities, setSelectedActivities] = useState<Set<string>>(new Set(formData.activities || []));
-  const [selectedComplianceCodes, setSelectedComplianceCodes] = useState<Set<string>>(new Set(formData.complianceCodes || []));
-  
+
   const updateFormData = (updates: any) => {
     const newData = { 
       ...formData, 
       ...updates,
-      complianceStatus: updates.complianceStatus || formData.complianceStatus || { isCompliant: false, issues: [] },
-      signatures: updates.signatures || formData.signatures || []
+      lastModified: new Date().toISOString()
     };
     onDataChange(newData);
   };
@@ -75,9 +71,9 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
         <div className="space-y-6">
           <div className="text-center">
             <MapPin className="mx-auto h-12 w-12 text-primary mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Project & Contractor Details</h3>
+            <h3 className="text-lg font-semibold mb-2">{translate("projectDetails")}</h3>
             <p className="text-gray-600 text-sm">
-              Project information, contractor details, and high-risk work identification
+              {translate("projectDetailsDesc")}
             </p>
           </div>
 
@@ -86,16 +82,17 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
               <CardTitle>Project Information</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="jobName">Job Name</Label>
+                <Input
+                  id="jobName"
+                  value={formData.jobName || ""}
+                  onChange={(e) => updateFormData({ jobName: e.target.value })}
+                  placeholder="Enter job name"
+                />
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="jobName">Job Name</Label>
-                  <Input
-                    id="jobName"
-                    value={formData.jobName || ""}
-                    onChange={(e) => updateFormData({ jobName: e.target.value })}
-                    placeholder="Enter job name"
-                  />
-                </div>
                 <div>
                   <Label htmlFor="jobNumber">Job Number</Label>
                   <Input
@@ -149,34 +146,6 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
                   rows={4}
                 />
               </div>
-            </CardContent>
-          </Card>
-        </div>
-      );
-
-    case 2:
-      return (
-        <div className="space-y-6">
-          <div className="text-center">
-            <AlertTriangle className="mx-auto h-12 w-12 text-primary mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Work Activities & Risk Assessment</h3>
-            <p className="text-gray-600 text-sm">
-              Detailed work breakdown and comprehensive risk assessments
-            </p>
-          </div>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Work Activities</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <TaskSelectionWithAI
-                tradeType={formData.tradeType || 'General'}
-                onTasksUpdate={(tasks) => updateFormData({ selectedTasks: tasks })}
-                onWorkDescriptionUpdate={(description) => updateFormData({ workDescription: description })}
-                selectedTasks={formData.selectedTasks || []}
-                workDescription={formData.workDescription || ""}
-              />
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -211,16 +180,31 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
               </div>
             </CardContent>
           </Card>
+        </div>
+      );
+
+    case 2:
+      return (
+        <div className="space-y-6">
+          <div className="text-center">
+            <AlertTriangle className="mx-auto h-12 w-12 text-primary mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Work Activities & Task Selection</h3>
+            <p className="text-gray-600 text-sm">
+              Choose how to add tasks to your SWMS - search existing tasks, generate with AI, or create custom tasks
+            </p>
+          </div>
 
           <Card>
             <CardHeader>
-              <CardTitle>Risk Assessment Matrix</CardTitle>
+              <CardTitle>Task Selection Methods</CardTitle>
             </CardHeader>
-            <CardContent>
-              <SimplifiedTableEditor 
-                riskAssessments={formData.riskAssessments || []}
-                onUpdate={(assessments) => updateFormData({ riskAssessments: assessments })}
+            <CardContent className="space-y-4">
+              <TaskSelectionWithAI
                 tradeType={formData.tradeType || 'General'}
+                onTasksUpdate={(tasks) => updateFormData({ selectedTasks: tasks })}
+                onWorkDescriptionUpdate={(description) => updateFormData({ workDescription: description })}
+                selectedTasks={formData.selectedTasks || []}
+                workDescription={formData.workDescription || ""}
               />
             </CardContent>
           </Card>
@@ -232,19 +216,23 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
         <div className="space-y-6">
           <div className="text-center">
             <Wrench className="mx-auto h-12 w-12 text-primary mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Plant, Equipment & Training</h3>
+            <h3 className="text-lg font-semibold mb-2">Plant & Equipment (Optional)</h3>
             <p className="text-gray-600 text-sm">
-              Equipment specifications, training requirements, and permits
+              Add any plant, equipment, or tools required for this project. This section is optional and will only appear in your SWMS if you add items.
             </p>
           </div>
 
-          <PlantEquipmentSystem
-            tradeType={formData.tradeType || 'general'}
-            activities={formData.activities || []}
-            onEquipmentUpdate={(equipment) => {
-              updateFormData({ plantEquipment: equipment });
-            }}
-          />
+          <Card>
+            <CardHeader>
+              <CardTitle>Plant, Equipment & Tools</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <PlantEquipmentSystem
+                plantEquipment={formData.plantEquipment || []}
+                onUpdate={(equipment) => updateFormData({ plantEquipment: equipment })}
+              />
+            </CardContent>
+          </Card>
         </div>
       );
 
@@ -252,49 +240,18 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
       return (
         <div className="space-y-6">
           <div className="text-center">
-            <AlertTriangle className="mx-auto h-12 w-12 text-primary mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Emergency & Monitoring</h3>
+            <Shield className="mx-auto h-12 w-12 text-primary mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Risk Assessment & Compliance</h3>
             <p className="text-gray-600 text-sm">
-              Emergency procedures and review/monitoring processes
+              Comprehensive risk analysis and compliance verification
             </p>
           </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Emergency Procedures</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="emergencyContact">Emergency Contact</Label>
-                <Input
-                  id="emergencyContact"
-                  value={formData.emergencyContact || ""}
-                  onChange={(e) => updateFormData({ emergencyContact: e.target.value })}
-                  placeholder="Emergency contact number"
-                />
-              </div>
-              <div>
-                <Label htmlFor="evacuationPlan">Evacuation Procedures</Label>
-                <Textarea
-                  id="evacuationPlan"
-                  value={formData.evacuationPlan || ""}
-                  onChange={(e) => updateFormData({ evacuationPlan: e.target.value })}
-                  placeholder="Describe evacuation procedures and emergency exits"
-                  rows={3}
-                />
-              </div>
-              <div>
-                <Label htmlFor="monitoringProcedures">Monitoring & Review Process</Label>
-                <Textarea
-                  id="monitoringProcedures"
-                  value={formData.monitoringProcedures || ""}
-                  onChange={(e) => updateFormData({ monitoringProcedures: e.target.value })}
-                  placeholder="Describe how work will be monitored and reviewed"
-                  rows={3}
-                />
-              </div>
-            </CardContent>
-          </Card>
+          <ComprehensiveRiskComplianceTool
+            formData={formData}
+            onUpdate={updateFormData}
+            tradeType={formData.tradeType || 'General'}
+          />
         </div>
       );
 
@@ -302,45 +259,17 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
       return (
         <div className="space-y-6">
           <div className="text-center">
-            <FileText className="mx-auto h-12 w-12 text-primary mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Legal Disclaimer</h3>
+            <Eye className="mx-auto h-12 w-12 text-primary mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Review & Validation</h3>
             <p className="text-gray-600 text-sm">
-              Accept terms and liability disclaimer
+              Final review of your SWMS and compliance validation
             </p>
           </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Terms and Conditions</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <h4 className="font-semibold mb-2">Legal Disclaimer</h4>
-                <p className="text-sm text-gray-700 leading-relaxed">
-                  By proceeding with this SWMS document, you acknowledge that:
-                </p>
-                <ul className="text-sm text-gray-700 mt-2 space-y-1 list-disc list-inside">
-                  <li>This document is a template and must be reviewed by qualified safety professionals</li>
-                  <li>Site-specific hazards and conditions must be assessed independently</li>
-                  <li>All work must comply with current Australian WHS legislation and standards</li>
-                  <li>Regular review and updates of this SWMS are required</li>
-                  <li>The principal contractor is responsible for final approval and implementation</li>
-                </ul>
-              </div>
-              
-              <div className="flex items-start space-x-2">
-                <Checkbox
-                  id="disclaimer"
-                  checked={formData.acceptedDisclaimer || false}
-                  onCheckedChange={(checked) => updateFormData({ acceptedDisclaimer: checked })}
-                />
-                <Label htmlFor="disclaimer" className="text-sm leading-relaxed">
-                  I acknowledge that I have read, understood, and accept the terms and conditions above. 
-                  I understand that this SWMS must be reviewed by appropriate safety professionals before implementation.
-                </Label>
-              </div>
-            </CardContent>
-          </Card>
+          <RiskValidationSystem
+            formData={formData}
+            onUpdate={updateFormData}
+          />
         </div>
       );
 
@@ -348,58 +277,20 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
       return (
         <div className="space-y-6">
           <div className="text-center">
-            <FileText className="mx-auto h-12 w-12 text-primary mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Final Document</h3>
+            <PenTool className="mx-auto h-12 w-12 text-primary mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Digital Signatures (Optional)</h3>
             <p className="text-gray-600 text-sm">
-              Generate complete SWMS document with all sections and compliance validation
+              Digital signatures are optional. You can skip this step and proceed directly to generate your SWMS document.
             </p>
           </div>
 
           <Card>
             <CardHeader>
-              <CardTitle>Document Generation & Compliance</CardTitle>
+              <CardTitle>Digital Signature Collection</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="bg-green-50 p-4 rounded-lg border border-green-200">
-                <h4 className="font-semibold text-green-800 mb-2">Document Ready</h4>
-                <p className="text-sm text-green-700">
-                  Your SWMS document is ready for generation with all required sections completed.
-                </p>
-              </div>
-              
-              <ComprehensiveRiskComplianceTool
-                riskAssessments={formData.riskAssessments || []}
-                tradeType={formData.tradeType || 'general'}
-                onComplianceUpdate={(result) => {
-                  updateFormData({
-                    complianceResult: result,
-                    complianceStatus: { 
-                      isCompliant: result.isCompliant, 
-                      issues: result.issues,
-                      overallScore: result.overallScore 
-                    }
-                  });
-                }}
-              />
-            </CardContent>
-          </Card>
-        </div>
-      );
-
-    case 7:
-      return (
-        <div className="space-y-6">
-          <div className="text-center">
-            <PenTool className="mx-auto h-12 w-12 text-primary mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Digital Signatures & PDF</h3>
-            <p className="text-gray-600 text-sm">
-              Optional signatures and final PDF generation
-            </p>
-          </div>
-
-          <Card>
-            <CardContent className="pt-6">
-              <div className="text-center mb-6">
+            <CardContent>
+              <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                <p className="text-blue-800 font-medium mb-2">Optional Step</p>
                 <p className="text-gray-600">
                   Digital signatures are optional. You can skip this step and proceed directly to generate your SWMS document.
                 </p>
@@ -461,72 +352,59 @@ export default function SWMSForm({ data = {}, onStepChange, onDataChange }: SWMS
     const newData = { 
       ...formData, 
       ...updates,
-      complianceStatus: updates.complianceStatus || formData.complianceStatus || { isCompliant: false, issues: [] },
-      signatures: updates.signatures || formData.signatures || []
+      lastModified: new Date().toISOString()
     };
     setFormData(newData);
-    if (onDataChange) {
-      onDataChange(newData);
-    }
+    if (onDataChange) onDataChange(newData);
   };
 
+  useEffect(() => {
+    setFormData(data);
+  }, [data]);
+
   return (
-    <div className="w-full max-w-6xl mx-auto p-6">
-      {/* Progress Steps */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between">
-          {Array.from({ length: TOTAL_STEPS }, (_, i) => i + 1).map((step) => (
-            <div key={step} className="flex items-center">
-              <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                  step <= currentStep
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-gray-200 text-gray-600'
-                }`}
-              >
-                {step}
-              </div>
-              {step < TOTAL_STEPS && (
-                <div
-                  className={`w-12 h-0.5 ${
-                    step < currentStep ? 'bg-primary' : 'bg-gray-200'
-                  }`}
-                />
-              )}
-            </div>
-          ))}
+    <div className="max-w-4xl mx-auto p-6 space-y-8">
+      {/* Progress Bar */}
+      <div className="bg-white rounded-lg shadow-sm border p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-semibold text-gray-900">
+            {translate("swms.step")} {currentStep} {translate("swms.of")} {TOTAL_STEPS}
+          </h2>
+          <div className="text-sm text-gray-500">
+            {Math.round((currentStep / TOTAL_STEPS) * 100)}% {translate("swms.complete")}
+          </div>
         </div>
-        <div className="mt-2 text-center">
-          <p className="text-sm text-gray-600">
-            Step {currentStep} of {TOTAL_STEPS}
-          </p>
+        
+        <div className="w-full bg-gray-200 rounded-full h-2">
+          <div
+            className="bg-primary h-2 rounded-full transition-all duration-300"
+            style={{ width: `${(currentStep / TOTAL_STEPS) * 100}%` }}
+          />
         </div>
       </div>
 
       {/* Step Content */}
-      <div className="max-w-4xl mx-auto">
-        <StepContent 
-          step={currentStep} 
-          formData={formData} 
-          onDataChange={updateFormData}
-        />
-      </div>
+      <StepContent 
+        step={currentStep} 
+        formData={formData} 
+        onDataChange={updateFormData} 
+      />
 
       {/* Navigation */}
-      <div className="mt-8 flex justify-between">
+      <div className="flex justify-between pt-6">
         <Button
+          variant="outline"
           onClick={prevStep}
           disabled={currentStep === 1}
-          variant="outline"
         >
-          Previous
+          {translate("btn.back")}
         </Button>
         
         <Button
           onClick={nextStep}
           disabled={currentStep === TOTAL_STEPS}
         >
-          {currentStep === TOTAL_STEPS ? 'Complete' : 'Next'}
+          {currentStep === TOTAL_STEPS ? translate("btn.finish") : translate("btn.next")}
         </Button>
       </div>
     </div>
