@@ -37,7 +37,7 @@ export default function TaskSelectionClean({
   onRiskAssessmentsUpdate,
   riskAssessments = []
 }: TaskSelectionCleanProps) {
-  const [activeMethods, setActiveMethods] = useState<Set<"search" | "ai" | "manual">>(new Set(["search"]));
+  const [activeMethods, setActiveMethods] = useState<Set<"search" | "ai" | "manual">>(new Set<"search" | "ai" | "manual">(["search"]));
   const [searchQuery, setSearchQuery] = useState("");
   const [aiDescription, setAiDescription] = useState("");
   const [generationProgress, setGenerationProgress] = useState(0);
