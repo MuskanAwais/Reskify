@@ -15,12 +15,13 @@ import { useToast } from "@/hooks/use-toast";
 import { translate } from "@/lib/language-direct";
 
 const getSteps = () => [
-  { id: 1, title: translate("swms.step1.title"), description: translate("swms.step1.desc") },
-  { id: 2, title: translate("swms.step2.title"), description: translate("swms.step2.desc") },
-  { id: 3, title: translate("swms.step3.title"), description: translate("swms.step3.desc") },
-  { id: 4, title: translate("swms.step4.title"), description: translate("swms.step4.desc") },
-  { id: 5, title: translate("swms.step5.title"), description: translate("swms.step5.desc") },
-  { id: 6, title: translate("swms.step6.title"), description: translate("swms.step6.desc") }
+  { id: 1, title: "Project & Contractor Details", description: "Project information, contractor details, and high-risk work identification" },
+  { id: 2, title: "Work Activities & Risk Assessment", description: "Detailed work breakdown and comprehensive risk assessments" },
+  { id: 3, title: "Plant, Equipment & Training", description: "Equipment specifications, training requirements, and permits" },
+  { id: 4, title: "Emergency & Monitoring", description: "Emergency procedures and review/monitoring processes" },
+  { id: 5, title: "Legal Disclaimer", description: "Accept terms and liability disclaimer" },
+  { id: 6, title: "Final Document", description: "Generate complete SWMS document" },
+  { id: 7, title: "Digital Signatures & PDF", description: "Optional signatures and final PDF generation" }
 ];
 
 export default function SwmsBuilder() {

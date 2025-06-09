@@ -74,9 +74,9 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
         <div className="space-y-6">
           <div className="text-center">
             <MapPin className="mx-auto h-12 w-12 text-primary mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Project Details</h3>
+            <h3 className="text-lg font-semibold mb-2">Project & Contractor Details</h3>
             <p className="text-gray-600 text-sm">
-              Enter basic information about your construction project
+              Project information, contractor details, and high-risk work identification
             </p>
           </div>
 
@@ -158,9 +158,9 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
         <div className="space-y-6">
           <div className="text-center">
             <AlertTriangle className="mx-auto h-12 w-12 text-primary mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Risk Assessment</h3>
+            <h3 className="text-lg font-semibold mb-2">Work Activities & Risk Assessment</h3>
             <p className="text-gray-600 text-sm">
-              Identify and assess potential risks for your project
+              Detailed work breakdown and comprehensive risk assessments
             </p>
           </div>
 
@@ -179,29 +179,20 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
       return (
         <div className="space-y-6">
           <div className="text-center">
-            <Layers className="mx-auto h-12 w-12 text-primary mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Visual Table Editor</h3>
+            <Wrench className="mx-auto h-12 w-12 text-primary mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Plant, Equipment & Training</h3>
             <p className="text-gray-600 text-sm">
-              Edit and customize your risk assessments in an interactive table format
+              Equipment specifications, training requirements, and permits
             </p>
           </div>
 
-          {formData.riskAssessments && formData.riskAssessments.length > 0 ? (
-            <SimplifiedTableEditor 
-              riskAssessments={formData.riskAssessments}
-              onUpdate={(assessments) => updateFormData({ riskAssessments: assessments })}
-              tradeType={formData.tradeType || 'General'}
-            />
-          ) : (
-            <Card>
-              <CardContent className="text-center py-8">
-                <AlertTriangle className="mx-auto h-8 w-8 text-gray-400 mb-3" />
-                <p className="text-gray-500">
-                  No risk assessments found. Please complete Step 2 first.
-                </p>
-              </CardContent>
-            </Card>
-          )}
+          <PlantEquipmentSystem
+            tradeType={formData.tradeType || 'general'}
+            activities={formData.activities || []}
+            onEquipmentUpdate={(equipment) => {
+              updateFormData({ plantEquipment: equipment });
+            }}
+          />
         </div>
       );
 
@@ -209,27 +200,49 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
       return (
         <div className="space-y-6">
           <div className="text-center">
-            <Shield className="mx-auto h-12 w-12 text-primary mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Compliance Validation</h3>
+            <AlertTriangle className="mx-auto h-12 w-12 text-primary mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Emergency & Monitoring</h3>
             <p className="text-gray-600 text-sm">
-              Verify compliance with Australian safety standards and validate risk assessments
+              Emergency procedures and review/monitoring processes
             </p>
           </div>
 
-          <ComprehensiveRiskComplianceTool
-            riskAssessments={formData.riskAssessments || []}
-            tradeType={formData.tradeType || 'general'}
-            onComplianceUpdate={(result) => {
-              updateFormData({
-                complianceResult: result,
-                complianceStatus: { 
-                  isCompliant: result.isCompliant, 
-                  issues: result.issues,
-                  overallScore: result.overallScore 
-                }
-              });
-            }}
-          />
+          <Card>
+            <CardHeader>
+              <CardTitle>Emergency Procedures</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="emergencyContact">Emergency Contact</Label>
+                <Input
+                  id="emergencyContact"
+                  value={formData.emergencyContact || ""}
+                  onChange={(e) => updateFormData({ emergencyContact: e.target.value })}
+                  placeholder="Emergency contact number"
+                />
+              </div>
+              <div>
+                <Label htmlFor="evacuationPlan">Evacuation Procedures</Label>
+                <Textarea
+                  id="evacuationPlan"
+                  value={formData.evacuationPlan || ""}
+                  onChange={(e) => updateFormData({ evacuationPlan: e.target.value })}
+                  placeholder="Describe evacuation procedures and emergency exits"
+                  rows={3}
+                />
+              </div>
+              <div>
+                <Label htmlFor="monitoringProcedures">Monitoring & Review Process</Label>
+                <Textarea
+                  id="monitoringProcedures"
+                  value={formData.monitoringProcedures || ""}
+                  onChange={(e) => updateFormData({ monitoringProcedures: e.target.value })}
+                  placeholder="Describe how work will be monitored and reviewed"
+                  rows={3}
+                />
+              </div>
+            </CardContent>
+          </Card>
         </div>
       );
 
