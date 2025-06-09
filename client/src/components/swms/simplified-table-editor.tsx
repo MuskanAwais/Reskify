@@ -171,6 +171,88 @@ export function SimplifiedTableEditor({ riskAssessments = [], onUpdate, tradeTyp
 
   return (
     <div className="space-y-6">
+      {/* Risk Assessment Matrix Overview */}
+      {riskAssessments.length > 0 && (
+        <Card className="border-primary/20 bg-primary/5">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-primary">
+              <AlertTriangle className="h-5 w-5" />
+              Risk Assessment Matrix ({riskAssessments.length} assessments)
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4">
+              {riskAssessments.map((assessment) => {
+                const initialRisk = getRiskLevel(assessment.initialRiskScore);
+                const residualRisk = getRiskLevel(assessment.residualRiskScore);
+                
+                return (
+                  <div key={assessment.id} className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-gray-900">{assessment.activity}</h4>
+                        <p className="text-sm text-gray-600 mt-1">{assessment.description}</p>
+                      </div>
+                      <div className="flex gap-2 ml-4">
+                        <Badge className={`${initialRisk.color} text-xs`}>
+                          Initial: {initialRisk.level}
+                        </Badge>
+                        <Badge className={`${residualRisk.color} text-xs`}>
+                          Residual: {residualRisk.level}
+                        </Badge>
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <span className="font-medium text-red-700">Hazards:</span>
+                        <ul className="list-disc list-inside text-gray-700 mt-1">
+                          {assessment.hazards.map((hazard, idx) => (
+                            <li key={idx}>{hazard}</li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div>
+                        <span className="font-medium text-green-700">Control Measures:</span>
+                        <ul className="list-disc list-inside text-gray-700 mt-1">
+                          {assessment.controlMeasures.map((measure, idx) => (
+                            <li key={idx}>{measure}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
+                      <span className="text-sm text-gray-600">
+                        <strong>Responsible:</strong> {assessment.responsible}
+                      </span>
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setEditingId(editingId === assessment.id ? null : assessment.id)}
+                        >
+                          <Edit2 className="h-3 w-3 mr-1" />
+                          Edit
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => removeRisk(assessment.id)}
+                        >
+                          <Trash2 className="h-3 w-3 mr-1" />
+                          Remove
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Add New Risk Assessment */}
       <Card>
         <CardHeader>
@@ -179,39 +261,42 @@ export function SimplifiedTableEditor({ riskAssessments = [], onUpdate, tradeTyp
             Add New Risk Assessment
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="text-sm font-medium mb-2 block">Activity Name</label>
+        <CardContent className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">Activity Name</label>
               <Input
                 value={newAssessment.activity || ''}
                 onChange={(e) => setNewAssessment({ ...newAssessment, activity: e.target.value })}
                 placeholder="e.g., Power point installation"
+                className="w-full"
               />
             </div>
-            <div>
-              <label className="text-sm font-medium mb-2 block">Responsible Person</label>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">Responsible Person</label>
               <Input
                 value={newAssessment.responsible || ''}
                 onChange={(e) => setNewAssessment({ ...newAssessment, responsible: e.target.value })}
                 placeholder="Site Supervisor"
+                className="w-full"
               />
             </div>
           </div>
 
-          <div>
-            <label className="text-sm font-medium mb-2 block">Activity Description</label>
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700">Activity Description</label>
             <Textarea
               value={newAssessment.description || ''}
               onChange={(e) => setNewAssessment({ ...newAssessment, description: e.target.value })}
               placeholder="Detailed description of the activity and work involved"
-              className="min-h-[60px]"
+              className="min-h-[80px] w-full"
+              rows={3}
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="text-sm font-medium mb-2 block">Hazards</label>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">Hazards</label>
               <ArrayEditor
                 items={newAssessment.hazards || ['']}
                 setItems={(items) => setNewAssessment({ ...newAssessment, hazards: items })}
@@ -219,8 +304,8 @@ export function SimplifiedTableEditor({ riskAssessments = [], onUpdate, tradeTyp
                 type="textarea"
               />
             </div>
-            <div>
-              <label className="text-sm font-medium mb-2 block">Control Measures</label>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">Control Measures</label>
               <ArrayEditor
                 items={newAssessment.controlMeasures || ['']}
                 setItems={(items) => setNewAssessment({ ...newAssessment, controlMeasures: items })}
@@ -230,25 +315,25 @@ export function SimplifiedTableEditor({ riskAssessments = [], onUpdate, tradeTyp
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label className="text-sm font-medium mb-2 block">PPE Required</label>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">PPE Required</label>
               <ArrayEditor
                 items={newAssessment.ppe || ['']}
                 setItems={(items) => setNewAssessment({ ...newAssessment, ppe: items })}
                 placeholder="e.g., Insulated gloves"
               />
             </div>
-            <div>
-              <label className="text-sm font-medium mb-2 block">Training Required</label>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">Training Required</label>
               <ArrayEditor
                 items={newAssessment.training || ['']}
                 setItems={(items) => setNewAssessment({ ...newAssessment, training: items })}
                 placeholder="e.g., Electrical license"
               />
             </div>
-            <div>
-              <label className="text-sm font-medium mb-2 block">Legislation</label>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">Legislation</label>
               <ArrayEditor
                 items={newAssessment.legislation || ['']}
                 setItems={(items) => setNewAssessment({ ...newAssessment, legislation: items })}
@@ -257,25 +342,27 @@ export function SimplifiedTableEditor({ riskAssessments = [], onUpdate, tradeTyp
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="text-sm font-medium mb-2 block">Initial Risk Score (1-5)</label>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">Initial Risk Score (1-5)</label>
               <Input
                 type="number"
                 min="1"
                 max="5"
                 value={newAssessment.initialRiskScore || 3}
                 onChange={(e) => setNewAssessment({ ...newAssessment, initialRiskScore: parseInt(e.target.value) || 3 })}
+                className="w-full"
               />
             </div>
-            <div>
-              <label className="text-sm font-medium mb-2 block">Residual Risk Score (1-5)</label>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">Residual Risk Score (1-5)</label>
               <Input
                 type="number"
                 min="1"
                 max="5"
                 value={newAssessment.residualRiskScore || 2}
                 onChange={(e) => setNewAssessment({ ...newAssessment, residualRiskScore: parseInt(e.target.value) || 2 })}
+                className="w-full"
               />
             </div>
           </div>
