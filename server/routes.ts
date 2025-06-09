@@ -1489,6 +1489,68 @@ startxref
     }
   });
 
+  // Stripe subscription endpoints
+  app.post("/api/subscriptions/create", async (req, res) => {
+    try {
+      const { planId, planName, amount } = req.body;
+      
+      if (!process.env.STRIPE_SECRET_KEY) {
+        return res.status(400).json({ error: "Stripe not configured" });
+      }
+      
+      const Stripe = require('stripe');
+      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+      
+      // Create payment intent for subscription
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: amount,
+        currency: 'aud',
+        metadata: {
+          planId,
+          planName,
+          type: 'subscription'
+        }
+      });
+      
+      res.json({
+        clientSecret: paymentIntent.client_secret,
+        subscriptionId: paymentIntent.id
+      });
+    } catch (error: any) {
+      console.error('Stripe subscription error:', error);
+      res.status(500).json({ error: 'Failed to create subscription' });
+    }
+  });
+
+  app.post("/api/subscriptions/webhook", async (req, res) => {
+    try {
+      const sig = req.headers['stripe-signature'];
+      const Stripe = require('stripe');
+      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+      
+      const event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
+      
+      switch (event.type) {
+        case 'payment_intent.succeeded':
+          const paymentIntent = event.data.object;
+          console.log('Payment succeeded:', paymentIntent.id);
+          // Update user subscription status in database
+          break;
+        case 'payment_intent.payment_failed':
+          const failedPayment = event.data.object;
+          console.log('Payment failed:', failedPayment.id);
+          break;
+        default:
+          console.log(`Unhandled event type ${event.type}`);
+      }
+      
+      res.json({ received: true });
+    } catch (error: any) {
+      console.error('Webhook error:', error);
+      res.status(400).send(`Webhook Error: ${error.message}`);
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

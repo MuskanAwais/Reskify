@@ -15,6 +15,7 @@ import {
   PenTool
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
+import PDFWatermarkSystem, { printWatermarkStyles } from "./pdf-watermark-system";
 
 interface PDFPrintSystemProps {
   swmsId: string;
@@ -48,6 +49,15 @@ export default function PDFPrintSystem({
     try {
       setIsGenerating(true);
       
+      // Prepare watermark data from form data
+      const watermarkData = {
+        projectName: formData.jobName || formData.projectName || 'SWMS Project',
+        projectNumber: formData.jobNumber || formData.projectNumber || '',
+        projectAddress: formData.projectLocation || formData.location || formData.address || '',
+        companyName: formData.principalContractor || formData.company || '',
+        documentDate: new Date().toISOString()
+      };
+      
       const response = await apiRequest('POST', `/api/swms/${swmsId}/generate-pdf`, {
         includeSignatures: printOptions.includeSignatures,
         includeLegislation: printOptions.includeLegislation,
@@ -55,7 +65,8 @@ export default function PDFPrintSystem({
         includeCompliance: printOptions.includeCompliance,
         formData,
         signatures,
-        printOptions
+        printOptions,
+        watermarkData // Send watermark data to backend
       });
       
       if (download) {
@@ -71,7 +82,7 @@ export default function PDFPrintSystem({
         
         toast({
           title: "PDF Generated",
-          description: "Your SWMS document has been downloaded successfully",
+          description: "Your SWMS document has been downloaded with project watermarks",
         });
       }
       
