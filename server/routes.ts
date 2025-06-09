@@ -693,6 +693,62 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Search tasks in database
+  app.get("/api/search-tasks", async (req, res) => {
+    try {
+      const { query, trade } = req.query;
+      
+      if (!query || typeof query !== 'string') {
+        return res.status(400).json({ message: 'Search query required' });
+      }
+
+      const { searchMegaTasks } = await import('./mega-construction-database');
+      const results = searchMegaTasks(query as string);
+      
+      res.json(results.slice(0, 20)); // Limit to 20 results
+    } catch (error: any) {
+      console.error('Task search error:', error);
+      res.status(500).json({ message: 'Failed to search tasks' });
+    }
+  });
+
+  // Generate task data with AI
+  app.post("/api/generate-task-data", async (req, res) => {
+    try {
+      const { description, tradeType, requestType } = req.body;
+      
+      if (!description || !tradeType) {
+        return res.status(400).json({ message: 'Description and trade type required' });
+      }
+
+      const { generateComprehensiveAISwms } = await import('./comprehensive-ai-swms-generator');
+      
+      const aiData = await generateComprehensiveAISwms({
+        jobDescription: description,
+        trade: tradeType,
+        projectType: 'Construction',
+        location: 'Australia',
+        duration: 'TBD',
+        requirements: description
+      });
+
+      // Extract tasks from AI response
+      const tasks = aiData.suggestedTasks.map((task: any) => ({
+        activity: task.activity,
+        category: task.category || tradeType,
+        priority: task.priority,
+        riskLevel: 'Medium', // Default for AI generated
+        hazards: aiData.riskAssessments.find((r: any) => r.activity === task.activity)?.hazards || [],
+        controlMeasures: aiData.riskAssessments.find((r: any) => r.activity === task.activity)?.controlMeasures || []
+      }));
+
+      res.json({ tasks, fullSwmsData: aiData });
+    } catch (error: any) {
+      console.error('AI task generation error:', error);
+      res.status(500).json({ message: 'Failed to generate task data' });
+    }
+  });
+
   // Generate SWMS with comprehensive risk assessments and safety data
   app.post("/api/generate-swms", async (req, res) => {
     try {

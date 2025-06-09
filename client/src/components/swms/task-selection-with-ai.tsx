@@ -321,23 +321,33 @@ export default function TaskSelectionWithAI({
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Edit className="h-5 w-5" />
-                Add Custom Tasks
+                <Edit className="h-5 w-5 text-green-600" />
+                Option 3: Manual Task Entry
               </CardTitle>
+              <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                <h4 className="font-semibold text-green-800 mb-2">How this works:</h4>
+                <p className="text-sm text-green-700">
+                  Enter your own custom tasks exactly as you want them. You'll have complete control over the task descriptions
+                  and will manually add all safety data, risk assessments, and control measures in the next steps.
+                </p>
+                <p className="text-xs text-green-600 mt-2 font-medium">
+                  ✓ Full control • ✓ Custom task names • ✓ Manual safety data entry required
+                </p>
+              </div>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="custom-activity">Task Activity</Label>
+                  <Label htmlFor="custom-activity">Task Description</Label>
                   <Input
                     id="custom-activity"
                     value={customTask.activity}
                     onChange={(e) => setCustomTask({ ...customTask, activity: e.target.value })}
-                    placeholder="Enter task description"
+                    placeholder="Enter your custom task description"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="custom-category">Category</Label>
+                  <Label htmlFor="custom-category">Category (optional)</Label>
                   <Input
                     id="custom-category"
                     value={customTask.category}
@@ -352,8 +362,11 @@ export default function TaskSelectionWithAI({
                 Add Custom Task
               </Button>
               
-              <div className="text-sm text-muted-foreground">
-                Note: Custom tasks will need manual risk assessment and safety measures in later steps.
+              <div className="bg-amber-50 p-3 rounded-lg border border-amber-200">
+                <p className="text-sm text-amber-800">
+                  <strong>Note:</strong> Custom tasks will require you to manually add risk assessments, 
+                  hazards, and control measures in the following steps of the SWMS builder.
+                </p>
               </div>
             </CardContent>
           </Card>

@@ -39,9 +39,9 @@ const quickActions = [
     className: "bg-primary/5 text-primary border border-primary/20 hover:bg-primary/10 hover:border-primary/30"
   },
   {
-    titleKey: "nav.ai-generator",
+    titleKey: "nav.safework-ai",
     icon: Bot,
-    href: "/ai-swms-generator",
+    href: "/safework-ai",
     className: "bg-purple-50 text-purple-700 border border-purple-200 hover:bg-purple-100 hover:border-purple-300"
   }
 ];
