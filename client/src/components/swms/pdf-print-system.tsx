@@ -59,11 +59,15 @@ export default function PDFPrintSystem({
         documentDate: new Date().toISOString()
       };
       
+      // Auto-detect if plant equipment should be included
+      const hasPlantEquipment = formData.plantEquipment && formData.plantEquipment.length > 0;
+      
       const response = await apiRequest('POST', `/api/swms/${swmsId}/generate-pdf`, {
         includeSignatures: printOptions.includeSignatures,
         includeLegislation: printOptions.includeLegislation,
         includeRiskMatrix: printOptions.includeRiskMatrix,
         includeCompliance: printOptions.includeCompliance,
+        includePlantEquipment: hasPlantEquipment && printOptions.includePlantEquipment,
         formData,
         signatures,
         printOptions,
@@ -243,6 +247,23 @@ export default function PDFPrintSystem({
                       }
                     />
                     <label htmlFor="compliance" className="text-sm">Compliance Report</label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="plantEquipment"
+                      checked={printOptions.includePlantEquipment}
+                      disabled={!(formData.plantEquipment && formData.plantEquipment.length > 0)}
+                      onCheckedChange={(checked) => 
+                        setPrintOptions(prev => ({ ...prev, includePlantEquipment: !!checked }))
+                      }
+                    />
+                    <label htmlFor="plantEquipment" className="text-sm">
+                      Plant & Equipment 
+                      {formData.plantEquipment && formData.plantEquipment.length > 0 
+                        ? ` (${formData.plantEquipment.length} items)` 
+                        : ' (none added)'
+                      }
+                    </label>
                   </div>
                 </div>
               </div>
