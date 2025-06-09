@@ -105,7 +105,6 @@ export default function PlantEquipmentSystem({ plantEquipment, onUpdate }: Plant
 
     const updatedEquipment = [...equipment, equipmentItem];
     setEquipment(updatedEquipment);
-    onEquipmentUpdate(updatedEquipment);
     setIsAddingEquipment(false);
     setNewEquipment({
       type: 'Equipment',
@@ -121,7 +120,6 @@ export default function PlantEquipmentSystem({ plantEquipment, onUpdate }: Plant
   const deleteEquipment = (id: string) => {
     const updatedEquipment = equipment.filter(eq => eq.id !== id);
     setEquipment(updatedEquipment);
-    onEquipmentUpdate(updatedEquipment);
   };
 
   const getRiskColor = (level: string) => {

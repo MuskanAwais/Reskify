@@ -45,7 +45,7 @@ export default function TaskSelectionClean({
   const { toast } = useToast();
 
   // Search database tasks
-  const { data: searchResults, isLoading: isSearching } = useQuery({
+  const { data: searchResults, isLoading: isSearching } = useQuery<any[]>({
     queryKey: ['/api/search-tasks', searchQuery, tradeType],
     enabled: searchQuery.length > 2,
   });

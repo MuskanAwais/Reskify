@@ -238,7 +238,10 @@ export function SimplifiedTableEditor({ riskAssessments = [], onUpdate, tradeTyp
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => removeRisk(assessment.id)}
+                          onClick={() => {
+                            const updated = riskAssessments.filter(r => r.id !== assessment.id);
+                            onUpdate(updated);
+                          }}
                         >
                           <Trash2 className="h-3 w-3 mr-1" />
                           Remove
