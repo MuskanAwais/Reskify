@@ -34,6 +34,7 @@ import {
   PenTool
 } from "lucide-react";
 import { SimplifiedTableEditor } from "./simplified-table-editor";
+import TaskSelectionWithAI from "./task-selection-with-ai";
 import { translate } from "@/lib/language-direct";
 import SmartTooltip from "@/components/ui/smart-tooltip";
 import QuickActionTooltip, { presetTooltips } from "@/components/ui/quick-action-tooltip";
@@ -169,16 +170,13 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
               <CardTitle>Work Activities</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="workDescription">Work Description</Label>
-                <Textarea
-                  id="workDescription"
-                  value={formData.workDescription || ""}
-                  onChange={(e) => updateFormData({ workDescription: e.target.value })}
-                  placeholder="Describe the work activities and tasks to be performed"
-                  rows={4}
-                />
-              </div>
+              <TaskSelectionWithAI
+                tradeType={formData.tradeType || 'General'}
+                onTasksUpdate={(tasks) => updateFormData({ selectedTasks: tasks })}
+                onWorkDescriptionUpdate={(description) => updateFormData({ workDescription: description })}
+                selectedTasks={formData.selectedTasks || []}
+                workDescription={formData.workDescription || ""}
+              />
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
