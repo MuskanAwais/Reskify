@@ -105,7 +105,7 @@ const LEGISLATION_REQUIREMENTS = {
 };
 
 export default function ComprehensiveRiskComplianceTool({ 
-  riskAssessments, 
+  riskAssessments = [], 
   tradeType, 
   onComplianceUpdate 
 }: RiskComplianceToolProps) {
