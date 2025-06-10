@@ -63,7 +63,7 @@ const validateRiskScore = (likelihood: number, consequence: number, reportedScor
   };
 };
 
-export default function RiskValidationSystem({ riskAssessments, onValidationComplete }: RiskValidationProps) {
+export default function RiskValidationSystem({ riskAssessments = [], onValidationComplete }: RiskValidationProps) {
   const [validatedRisks, setValidatedRisks] = useState<RiskAssessment[]>([]);
   const [corrections, setCorrections] = useState<any[]>([]);
   const [isValidating, setIsValidating] = useState(false);

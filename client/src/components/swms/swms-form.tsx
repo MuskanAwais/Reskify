@@ -39,7 +39,7 @@ import { translate } from "@/lib/language-direct";
 import SmartTooltip from "@/components/ui/smart-tooltip";
 import QuickActionTooltip, { presetTooltips } from "@/components/ui/quick-action-tooltip";
 
-const TOTAL_STEPS = 7;
+const TOTAL_STEPS = 4;
 
 interface StepContentProps {
   step: number;
@@ -237,43 +237,6 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
       );
 
     case 4:
-      return (
-        <div className="space-y-6">
-          <div className="text-center">
-            <Shield className="mx-auto h-12 w-12 text-primary mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Risk Assessment & Compliance</h3>
-            <p className="text-gray-600 text-sm">
-              Comprehensive risk analysis and compliance verification
-            </p>
-          </div>
-
-          <ComprehensiveRiskComplianceTool
-            formData={formData}
-            onUpdate={updateFormData}
-            tradeType={formData.tradeType || 'General'}
-          />
-        </div>
-      );
-
-    case 5:
-      return (
-        <div className="space-y-6">
-          <div className="text-center">
-            <Eye className="mx-auto h-12 w-12 text-primary mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Review & Validation</h3>
-            <p className="text-gray-600 text-sm">
-              Final review of your SWMS and compliance validation
-            </p>
-          </div>
-
-          <RiskValidationSystem
-            formData={formData}
-            onUpdate={updateFormData}
-          />
-        </div>
-      );
-
-    case 6:
       return (
         <div className="space-y-6">
           <div className="text-center">
