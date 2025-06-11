@@ -36,7 +36,7 @@ export default function Header() {
 
 
   return (
-    <header className="bg-white border-b border-border shadow-sm m-4 mb-0 rounded-t-2xl">
+    <header className="bg-white border-b border-border shadow-sm m-4 mb-0 rounded-2xl">
       <div className="container mx-auto px-6 py-4">
         <div className="flex justify-between items-center h-16">
           {/* Logo and Title */}
