@@ -52,8 +52,8 @@ export interface GeneratedSWMSData {
 
 export async function generateSWMSFromTask(request: TaskGenerationRequest): Promise<GeneratedSWMSData> {
   try {
-    // Enable demo mode for testing - remove this line for production
-    return generateDemoSWMSData(request);
+    // Use real OpenAI API for authentic SWMS generation
+    console.log('Generating SWMS with OpenAI GPT-4o...');
 
     const prompt = request.plainTextDescription 
       ? `Generate a comprehensive SWMS (Safe Work Method Statement) for the following work description:
