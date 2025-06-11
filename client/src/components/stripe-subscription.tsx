@@ -23,54 +23,35 @@ interface SubscriptionPlan {
 
 const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
   {
-    id: 'basic',
-    name: 'Basic',
+    id: 'one-off',
+    name: 'One-Off SWMS',
+    price: 15,
+    interval: 'one-time',
+    swmsLimit: 1,
+    icon: <Star className="h-6 w-6" />,
+    features: [
+      'Single SWMS document',
+      'Standard templates',
+      'Visual table editor',
+      'PDF generation',
+      'Credits never expire'
+    ]
+  },
+  {
+    id: 'subscription',
+    name: 'Subscription',
     price: 50,
     interval: 'month',
     swmsLimit: 10,
-    icon: <Star className="h-6 w-6" />,
-    features: [
-      '10 SWMS documents per month',
-      'Basic risk assessment templates',
-      'Standard compliance checking',
-      'PDF generation and download',
-      'Email support'
-    ]
-  },
-  {
-    id: 'pro',
-    name: 'Pro',
-    price: 100,
-    interval: 'month',
-    swmsLimit: 25,
     popular: true,
     icon: <Zap className="h-6 w-6" />,
     features: [
-      '25 SWMS documents per month',
-      'Advanced AI risk assessment',
-      'Team collaboration (up to 5 users)',
-      'Digital signature collection',
-      'Advanced compliance validation',
-      'Priority email support',
-      'Custom branding'
-    ]
-  },
-  {
-    id: 'enterprise',
-    name: 'Enterprise',
-    price: 200,
-    interval: 'month',
-    swmsLimit: 60,
-    icon: <Crown className="h-6 w-6" />,
-    features: [
-      '60 SWMS documents per month',
-      'Unlimited team members',
-      'Advanced reporting and analytics',
-      'Custom risk matrix configuration',
-      'API access for integrations',
-      'Dedicated account manager',
-      'Phone and email support',
-      'Custom training sessions'
+      '10 SWMS documents per month',
+      'Standard templates',
+      'Visual table editor',
+      'Team collaboration',
+      'Priority support',
+      'Email support'
     ]
   }
 ];
