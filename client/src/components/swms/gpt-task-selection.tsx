@@ -90,6 +90,23 @@ export default function GPTTaskSelection({
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
   const [editingTask, setEditingTask] = useState<any>(null);
 
+  // Risk matrix mapping
+  const getRiskDescription = (score: number): string => {
+    if (score >= 16) return "Extreme";
+    if (score >= 11) return "High";
+    if (score >= 6) return "Medium";
+    if (score >= 3) return "Low";
+    return "Very Low";
+  };
+
+  const getRiskColor = (score: number): string => {
+    if (score >= 16) return "bg-red-100 text-red-800";
+    if (score >= 11) return "bg-orange-100 text-orange-800";
+    if (score >= 6) return "bg-yellow-100 text-yellow-800";
+    if (score >= 3) return "bg-green-100 text-green-800";
+    return "bg-blue-100 text-blue-800";
+  };
+
   // Fetch available tasks for the trade type
   const { data: taskOptions } = useQuery<{ trade: string; tasks: TaskOption[] }>({
     queryKey: [`/api/gpt-tasks/${projectDetails.tradeType}`],
@@ -559,7 +576,7 @@ export default function GPTTaskSelection({
 
               {/* Progress Bar */}
               {generateSWMSMutation.isPending && (
-                <div className="space-y-2">
+                <div className="space-y-2 mt-8">
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium">{progressStatus || "Generating SWMS with Riskify AI..."}</span>
                     <span className="text-sm text-gray-500">{generationProgress}%</span>
@@ -673,12 +690,8 @@ export default function GPTTaskSelection({
                               <div className="flex items-center gap-4">
                                 <div className="text-sm">
                                   <span className="font-medium text-gray-700">Risk Score:</span>
-                                  <span className={`ml-2 px-2 py-1 rounded text-xs font-medium ${
-                                    (task.riskScore || 12) >= 15 ? 'bg-red-100 text-red-800' :
-                                    (task.riskScore || 12) >= 10 ? 'bg-yellow-100 text-yellow-800' :
-                                    'bg-green-100 text-green-800'
-                                  }`}>
-                                    {task.riskScore || 12}/20
+                                  <span className={`ml-2 px-2 py-1 rounded text-xs font-medium ${getRiskColor(task.riskScore || 12)}`}>
+                                    {task.riskScore || 12}/20 - {getRiskDescription(task.riskScore || 12)}
                                   </span>
                                 </div>
                                 <div className="text-sm">
@@ -753,25 +766,206 @@ export default function GPTTaskSelection({
                         {/* Risk Score and Legislation */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div>
-                            <Label htmlFor="risk-score">Risk Score (1-20)</Label>
-                            <Input
-                              id="risk-score"
-                              type="number"
-                              min="1"
-                              max="20"
-                              value={editingTask.riskScore || 12}
-                              onChange={(e) => updateEditingTaskField('riskScore', parseInt(e.target.value))}
-                              className="mt-1"
-                            />
+                            <Label htmlFor="risk-score">Initial Risk Score (1-20)</Label>
+                            <div className="flex items-center gap-2 mt-1">
+                              <Input
+                                id="risk-score"
+                                type="number"
+                                min="1"
+                                max="20"
+                                value={editingTask.riskScore || 12}
+                                onChange={(e) => updateEditingTaskField('riskScore', parseInt(e.target.value))}
+                                className="flex-1"
+                              />
+                              <span className={`px-2 py-1 rounded text-xs font-medium ${getRiskColor(editingTask.riskScore || 12)}`}>
+                                {getRiskDescription(editingTask.riskScore || 12)}
+                              </span>
+                            </div>
                           </div>
                           <div>
-                            <Label htmlFor="legislation">Applicable Legislation</Label>
-                            <Input
-                              id="legislation"
-                              value={editingTask.legislation || "WHS Act 2011, WHS Regulation 2017"}
-                              onChange={(e) => updateEditingTaskField('legislation', e.target.value)}
-                              className="mt-1"
-                            />
+                            <Label htmlFor="residual-risk">Residual Risk Score (1-20)</Label>
+                            <div className="flex items-center gap-2 mt-1">
+                              <Input
+                                id="residual-risk"
+                                type="number"
+                                min="1"
+                                max="20"
+                                value={editingTask.residualRisk || 6}
+                                onChange={(e) => updateEditingTaskField('residualRisk', parseInt(e.target.value))}
+                                className="flex-1"
+                              />
+                              <span className={`px-2 py-1 rounded text-xs font-medium ${getRiskColor(editingTask.residualRisk || 6)}`}>
+                                {getRiskDescription(editingTask.residualRisk || 6)}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Legislation */}
+                        <div>
+                          <Label htmlFor="legislation">Applicable Legislation</Label>
+                          <Input
+                            id="legislation"
+                            value={editingTask.legislation || "WHS Act 2011, WHS Regulation 2017"}
+                            onChange={(e) => updateEditingTaskField('legislation', e.target.value)}
+                            className="mt-1"
+                          />
+                        </div>
+
+                        {/* Hazards Section */}
+                        <div>
+                          <Label>Hazards & Control Measures</Label>
+                          <div className="mt-2 space-y-4">
+                            {editingTask.hazards?.map((hazard: any, index: number) => (
+                              <div key={index} className="border rounded-lg p-4 bg-gray-50">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                  <div>
+                                    <Label className="text-sm">Hazard Type</Label>
+                                    <Input
+                                      value={hazard.type || ''}
+                                      onChange={(e) => {
+                                        const newHazards = [...(editingTask.hazards || [])];
+                                        newHazards[index] = { ...newHazards[index], type: e.target.value };
+                                        updateEditingTaskField('hazards', newHazards);
+                                      }}
+                                      placeholder="e.g., Electrical, Physical, Chemical"
+                                      className="mt-1"
+                                    />
+                                  </div>
+                                  <div>
+                                    <Label className="text-sm">Risk Rating</Label>
+                                    <div className="flex items-center gap-2 mt-1">
+                                      <Input
+                                        type="number"
+                                        min="1"
+                                        max="20"
+                                        value={hazard.riskRating || 8}
+                                        onChange={(e) => {
+                                          const newHazards = [...(editingTask.hazards || [])];
+                                          newHazards[index] = { ...newHazards[index], riskRating: parseInt(e.target.value) };
+                                          updateEditingTaskField('hazards', newHazards);
+                                        }}
+                                        className="flex-1"
+                                      />
+                                      <span className={`px-2 py-1 rounded text-xs font-medium ${getRiskColor(hazard.riskRating || 8)}`}>
+                                        {getRiskDescription(hazard.riskRating || 8)}
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="mt-4">
+                                  <Label className="text-sm">Hazard Description</Label>
+                                  <Textarea
+                                    value={hazard.description || ''}
+                                    onChange={(e) => {
+                                      const newHazards = [...(editingTask.hazards || [])];
+                                      newHazards[index] = { ...newHazards[index], description: e.target.value };
+                                      updateEditingTaskField('hazards', newHazards);
+                                    }}
+                                    placeholder="Describe the hazard and potential consequences"
+                                    rows={2}
+                                    className="mt-1"
+                                  />
+                                </div>
+                                <div className="mt-4">
+                                  <Label className="text-sm">Control Measures</Label>
+                                  <div className="mt-2 space-y-2">
+                                    {hazard.controlMeasures?.map((control: string, controlIndex: number) => (
+                                      <div key={controlIndex} className="flex items-center gap-2">
+                                        <Input
+                                          value={control}
+                                          onChange={(e) => {
+                                            const newHazards = [...(editingTask.hazards || [])];
+                                            const newControls = [...(newHazards[index].controlMeasures || [])];
+                                            newControls[controlIndex] = e.target.value;
+                                            newHazards[index] = { ...newHazards[index], controlMeasures: newControls };
+                                            updateEditingTaskField('hazards', newHazards);
+                                          }}
+                                          placeholder="Control measure"
+                                          className="flex-1"
+                                        />
+                                        <Button
+                                          variant="ghost"
+                                          size="sm"
+                                          onClick={() => {
+                                            const newHazards = [...(editingTask.hazards || [])];
+                                            const newControls = newHazards[index].controlMeasures?.filter((_: any, i: number) => i !== controlIndex) || [];
+                                            newHazards[index] = { ...newHazards[index], controlMeasures: newControls };
+                                            updateEditingTaskField('hazards', newHazards);
+                                          }}
+                                        >
+                                          <Trash2 className="h-4 w-4" />
+                                        </Button>
+                                      </div>
+                                    ))}
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => {
+                                        const newHazards = [...(editingTask.hazards || [])];
+                                        const newControls = [...(newHazards[index].controlMeasures || []), ''];
+                                        newHazards[index] = { ...newHazards[index], controlMeasures: newControls };
+                                        updateEditingTaskField('hazards', newHazards);
+                                      }}
+                                    >
+                                      <Plus className="h-4 w-4 mr-2" />
+                                      Add Control Measure
+                                    </Button>
+                                  </div>
+                                </div>
+                                <div className="mt-4">
+                                  <Label className="text-sm">Residual Risk (After Controls)</Label>
+                                  <div className="flex items-center gap-2 mt-1">
+                                    <Input
+                                      type="number"
+                                      min="1"
+                                      max="20"
+                                      value={hazard.residualRisk || 4}
+                                      onChange={(e) => {
+                                        const newHazards = [...(editingTask.hazards || [])];
+                                        newHazards[index] = { ...newHazards[index], residualRisk: parseInt(e.target.value) };
+                                        updateEditingTaskField('hazards', newHazards);
+                                      }}
+                                      className="w-20"
+                                    />
+                                    <span className={`px-2 py-1 rounded text-xs font-medium ${getRiskColor(hazard.residualRisk || 4)}`}>
+                                      {getRiskDescription(hazard.residualRisk || 4)}
+                                    </span>
+                                  </div>
+                                </div>
+                                <div className="flex justify-end mt-4">
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => {
+                                      const newHazards = editingTask.hazards?.filter((_: any, i: number) => i !== index) || [];
+                                      updateEditingTaskField('hazards', newHazards);
+                                    }}
+                                    className="text-red-600 hover:text-red-700"
+                                  >
+                                    <Trash2 className="h-4 w-4 mr-2" />
+                                    Remove Hazard
+                                  </Button>
+                                </div>
+                              </div>
+                            ))}
+                            <Button
+                              variant="outline"
+                              onClick={() => {
+                                const newHazard = {
+                                  type: '',
+                                  description: '',
+                                  riskRating: 8,
+                                  controlMeasures: [''],
+                                  residualRisk: 4
+                                };
+                                const newHazards = [...(editingTask.hazards || []), newHazard];
+                                updateEditingTaskField('hazards', newHazards);
+                              }}
+                            >
+                              <Plus className="h-4 w-4 mr-2" />
+                              Add New Hazard
+                            </Button>
                           </div>
                         </div>
 
