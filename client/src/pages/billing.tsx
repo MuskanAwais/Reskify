@@ -162,9 +162,9 @@ export default function Billing() {
       tier: 0,
       features: [
         "Single SWMS document",
-        "Standard templates",
+        "AI-powered risk assessment",
         "Visual table editor",
-        "PDF generation",
+        "PDF generation with watermarks",
         "Credits never expire"
       ],
       popular: false
@@ -179,11 +179,11 @@ export default function Billing() {
       tier: 1,
       features: [
         "10 SWMS per month",
-        "Standard templates",
+        "AI-powered risk assessment",
         "Visual table editor",
         "Team collaboration",
         "Priority support",
-        "Email support"
+        "Advanced analytics"
       ],
       popular: true
     }
