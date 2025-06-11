@@ -178,11 +178,32 @@ export default function GPTTaskSelection({
         setGeneratedTasks(convertedActivities);
         setIsEditing(true);
         
+        // Auto-extract plant and equipment from generated tasks
+        const autoPlantEquipment: any[] = [];
+        convertedActivities.forEach((activity: any, index: number) => {
+          if (activity.tools && activity.tools.length > 0) {
+            activity.tools.forEach((tool: string, toolIndex: number) => {
+              autoPlantEquipment.push({
+                id: `auto-equipment-${index}-${toolIndex}`,
+                name: tool,
+                type: 'Equipment',
+                category: 'Hand Tools',
+                certificationRequired: false,
+                inspectionStatus: 'Current',
+                riskLevel: 'Low',
+                safetyRequirements: ['Pre-use inspection', 'Proper handling']
+              });
+            });
+          }
+        });
+
+        const allPlantEquipment = [...convertedPlantEquipment, ...autoPlantEquipment];
+
         setTimeout(() => {
-          onActivitiesGenerated(convertedActivities, convertedPlantEquipment);
+          onActivitiesGenerated(convertedActivities, allPlantEquipment);
           toast({
             title: "SWMS Generated Successfully",
-            description: `Generated ${convertedActivities.length} tasks. You can edit them below before finalizing.`,
+            description: `Generated ${convertedActivities.length} tasks with ${allPlantEquipment.length} equipment items auto-populated. You can edit them below before finalizing.`,
           });
         }, 1000);
       }

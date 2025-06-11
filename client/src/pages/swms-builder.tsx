@@ -19,9 +19,10 @@ const getSteps = () => [
   { id: 2, title: "Work Activities & Risk Assessment", description: "Detailed work breakdown and comprehensive risk assessments" },
   { id: 3, title: "Plant, Equipment & Training", description: "Equipment specifications, training requirements, and permits" },
   { id: 4, title: "Emergency & Monitoring", description: "Emergency procedures and review/monitoring processes" },
-  { id: 5, title: "Legal Disclaimer", description: "Accept terms and liability disclaimer" },
-  { id: 6, title: "Final Document", description: "Generate complete SWMS document" },
-  { id: 7, title: "Digital Signatures & PDF", description: "Optional signatures and final PDF generation" }
+  { id: 5, title: "Payment & Access", description: "Select payment option to complete SWMS generation" },
+  { id: 6, title: "Legal Disclaimer", description: "Accept terms and liability disclaimer" },
+  { id: 7, title: "Final Document", description: "Generate complete SWMS document" },
+  { id: 8, title: "Digital Signatures & PDF", description: "Optional signatures and final PDF generation" }
 ];
 
 export default function SwmsBuilder() {
@@ -174,11 +175,16 @@ export default function SwmsBuilder() {
       }
     }
     
-    // Check for credits before proceeding to final document step (step 6)
-    if (currentStep === 5) {
+    // Check for credits before proceeding to payment step (step 5)
+    if (currentStep === 4) {
       const creditsRemaining = subscription ? (subscription as any).creditsRemaining || 0 : 0;
-      if (creditsRemaining === 0) {
-        // Redirect to payment page if no credits
+      const hasProPlan = (subscription as any)?.plan === "Pro" || (subscription as any)?.plan === "Enterprise";
+      
+      // Check if admin demo mode is enabled
+      const isAdminDemo = localStorage.getItem('adminDemoMode') === 'true';
+      
+      if (creditsRemaining === 0 && !hasProPlan && !isAdminDemo) {
+        // Redirect to payment page if no credits and not in admin demo mode
         setLocation("/payment");
         return;
       }
