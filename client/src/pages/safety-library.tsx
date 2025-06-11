@@ -346,9 +346,9 @@ export default function SafetyLibrary() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Categories</SelectItem>
-                  {categories.map((category, index) => (
-                    <SelectItem key={`${String(category)}-${index}`} value={String(category) || 'unknown'}>
-                      {String(category) || 'Unknown Category'}
+                  {categories.map((category: any, index) => (
+                    <SelectItem key={`${category}-${index}`} value={category || 'unknown'}>
+                      {category || 'Unknown Category'}
                     </SelectItem>
                   ))}
                 </SelectContent>
