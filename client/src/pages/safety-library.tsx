@@ -36,7 +36,7 @@ export default function SafetyLibrary() {
   });
 
   // Get safety library data
-  const { data: safetyLibrary = [] } = useQuery({
+  const { data: safetyLibrary } = useQuery({
     queryKey: ['/api/safety-library']
   });
 
@@ -181,7 +181,7 @@ export default function SafetyLibrary() {
   }
 
   // Filter data based on search and category
-  const safetyData = Array.isArray(safetyLibrary?.documents) ? safetyLibrary.documents : Array.isArray(safetyLibrary) ? safetyLibrary : [];
+  const safetyData = (safetyLibrary as any)?.documents || [];
   const filteredLibrary = safetyData.filter((item: any) => {
     const matchesSearch = !searchTerm || 
       item.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -193,7 +193,7 @@ export default function SafetyLibrary() {
     return matchesSearch && matchesCategory;
   });
 
-  const categories = Array.from(new Set(safetyData.map((item: any) => item.category))).filter(cat => cat && cat.trim() !== '');
+  const categories = Array.from(new Set(safetyData.map((item: any) => item.category))).filter(cat => cat && typeof cat === 'string' && cat.trim() !== '');
 
   // If user has access, show full Safety Library interface
   return (
@@ -347,8 +347,8 @@ export default function SafetyLibrary() {
                 <SelectContent>
                   <SelectItem value="all">All Categories</SelectItem>
                   {categories.map((category, index) => (
-                    <SelectItem key={`${category}-${index}`} value={category || 'unknown'}>
-                      {category || 'Unknown Category'}
+                    <SelectItem key={`${String(category)}-${index}`} value={String(category) || 'unknown'}>
+                      {String(category) || 'Unknown Category'}
                     </SelectItem>
                   ))}
                 </SelectContent>

@@ -1622,10 +1622,41 @@ startxref
   });
 
   // Serve PDF files from attached_assets folder
-  app.get("/api/safety-library/pdf/:filename", (req, res) => {
+  app.get("/api/safety-library/pdf/*", (req: any, res) => {
     try {
-      const filename = req.params.filename;
-      const filePath = path.join(process.cwd(), 'attached_assets', filename);
+      const requestedPath = req.params[0];
+      // Map URLs to actual filenames in attached_assets
+      const fileMapping: Record<string, string> = {
+        'safety-docs/swa/construction-work-cop.pdf': 'Construction-work-COP.pdf',
+        'safety-docs/swa/hazardous-manual-tasks-cop.pdf': 'Hazardous-manual-tasks-COP.pdf',
+        'safety-docs/swa/managing-electrical-risks-cop-2018.pdf': 'Managing-electrical-risks-in-the-workplace-COP.pdf',
+        'safety-docs/swa/managing-risk-falls-cop.pdf': 'Managing-the-risk-of-falls-at-workplaces-COP.pdf',
+        'safety-docs/swa/managing-risk-falls-housing-construction-cop.pdf': 'Managing-the-risk-of-falls-at-workplaces-COP.pdf',
+        'safety-docs/swa/model-whs-regulations-2024.pdf': 'model-whs-regulations-1_september_2024.pdf',
+        'safety-docs/swa/how-to-manage-whs-risks-cop.pdf': 'model_code_of_practice-how_to_manage_work_health_and_safety_risks-nov24.pdf',
+        'safety-docs/swa/managing-noise-preventing-hearing-loss-cop.pdf': 'model_code_of_practice-managing_noise_and_preventing_hearing_loss_at_work-nov24.pdf',
+        'safety-docs/swa/managing-risks-plant-workplace-cop.pdf': 'model_code_of_practice-managing_the_risks_of_plant_in_the_workplace-nov24.pdf',
+        'safety-docs/swa/managing-work-environment-facilities-cop.pdf': 'model_code_of_practice-managing_the_work_environment_and_facilities-nov24.pdf',
+        'safety-docs/swa/safe-design-structures-cop.pdf': 'model_code_of_practice-safe_design_of_structures-nov24.pdf',
+        'safety-docs/swa/tower-cranes-cop.pdf': 'tower_crane_model_code_of_practice_-_june23.pdf',
+        'safety-docs/swa/whs-consultation-cooperation-coordination-cop.pdf': 'model Code of Practice - WHS consultation, cooperation and coordination - July 2023_2.pdf',
+        'safety-docs/swa/model-whs-bill-2023.pdf': 'model-whs-bill-23_november_2023.pdf',
+        'safety-docs/swa/abrasive-blasting-cop.pdf': 'model_code_of_practice_abrasive_blasting _0.pdf',
+        'safety-docs/swa/confined-spaces-cop.pdf': 'model_code_of_practice-confined_spaces-nov24.pdf',
+        'safety-docs/swa/construction-work-cop-2024.pdf': 'model_code_of_practice-construction_work-nov24.pdf',
+        'safety-docs/swa/demolition-work-cop.pdf': 'model-cop-demolition-work.pdf',
+        'safety-docs/swa/excavation-work-cop.pdf': 'model-cop-excavation-work_21102022_1.pdf',
+        'safety-docs/swa/managing-psychosocial-hazards-cop.pdf': 'model_code_of_practice_-_managing_psychosocial_hazards_at_work_25082022_0.pdf',
+        'safety-docs/swa/managing-asbestos-workplace-cop.pdf': 'model_code_of_practice_how_to_manage_and_control_asbestos_in_the_workplace.pdf',
+        'safety-docs/swa/safely-remove-asbestos-cop.pdf': 'model_code_of_practice_how_to_safely_remove_asbestos.pdf',
+        'safety-docs/swa/labelling-hazardous-chemicals-cop.pdf': 'model_code_of_practice_labelling_of_workplace_hazardous_chemicals.pdf',
+        'safety-docs/swa/managing-risks-hazardous-chemicals-cop.pdf': 'model_code_of_practice_managing_the_risks_of_hazardous_chemicals_in_the_workplace.pdf',
+        'safety-docs/swa/spray-painting-powder-coating-cop.pdf': 'model_code_of_practice_spray_painting_and_powder_coating.pdf',
+        'safety-docs/swa/welding-processes-cop.pdf': 'model_code_of_practice_welding_processes.pdf'
+      };
+      
+      const actualFilename = fileMapping[requestedPath] || requestedPath;
+      const filePath = path.join(process.cwd(), 'attached_assets', actualFilename);
       
       if (!fs.existsSync(filePath)) {
         return res.status(404).json({ message: "PDF file not found" });
