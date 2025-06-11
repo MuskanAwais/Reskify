@@ -74,14 +74,16 @@ export default function PlantEquipmentSystem({ plantEquipment, onUpdate }: Plant
   });
 
   useEffect(() => {
-    setEquipment(plantEquipment || []);
+    if (JSON.stringify(equipment) !== JSON.stringify(plantEquipment || [])) {
+      setEquipment(plantEquipment || []);
+    }
   }, [plantEquipment]);
 
   useEffect(() => {
-    if (equipment.length > 0 || plantEquipment.length === 0) {
+    if (JSON.stringify(equipment) !== JSON.stringify(plantEquipment || [])) {
       onUpdate(equipment);
     }
-  }, [equipment, onUpdate, plantEquipment.length]);
+  }, [equipment, onUpdate]);
 
   const addEquipment = () => {
     if (!newEquipment.name || !newEquipment.type) return;

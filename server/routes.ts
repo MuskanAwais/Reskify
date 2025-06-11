@@ -3,6 +3,7 @@ import express from "express";
 import { createServer, type Server } from "http";
 import multer from "multer";
 import { setupAuth } from "./auth";
+import { generateSWMSFromTask, TASK_DATABASE, type TaskGenerationRequest } from "./openai-integration";
 import path from "path";
 import fs from "fs";
 // import pdfParse from "pdf-parse";
@@ -839,6 +840,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error('Get trade tasks error:', error);
       res.status(500).json({ message: 'Failed to fetch trade tasks' });
+    }
+  });
+
+  // NEW GPT-POWERED ROUTES
+  
+  // Get available tasks by trade
+  app.get("/api/gpt-tasks/:tradeType", (req, res) => {
+    try {
+      const { tradeType } = req.params;
+      const tasks = TASK_DATABASE[tradeType as keyof typeof TASK_DATABASE] || [];
+      
+      res.json({
+        trade: tradeType,
+        tasks: tasks.map(task => ({ name: task, id: task.toLowerCase().replace(/\s+/g, '-') }))
+      });
+    } catch (error: any) {
+      console.error('Get GPT tasks error:', error);
+      res.status(500).json({ message: 'Failed to fetch tasks' });
+    }
+  });
+
+  // Generate SWMS data from task selection
+  app.post("/api/generate-swms", async (req, res) => {
+    try {
+      const request: TaskGenerationRequest = req.body;
+      
+      if (!request.taskName && !request.plainTextDescription) {
+        return res.status(400).json({ message: 'Either taskName or plainTextDescription is required' });
+      }
+
+      const generatedData = await generateSWMSFromTask(request);
+      
+      res.json({
+        success: true,
+        data: generatedData,
+        generated_at: new Date().toISOString()
+      });
+    } catch (error: any) {
+      console.error('SWMS generation error:', error);
+      res.status(500).json({ 
+        message: 'Failed to generate SWMS data',
+        error: error.message 
+      });
     }
   });
 
