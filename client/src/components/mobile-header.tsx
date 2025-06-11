@@ -53,9 +53,8 @@ export function MobileHeader() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 items-center justify-between px-4">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center">
           <Logo size="sm" />
-          <Badge variant="secondary" className="text-xs">AI SWMS Generator</Badge>
         </div>
 
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -66,11 +65,8 @@ export function MobileHeader() {
           </SheetTrigger>
           <SheetContent side="right" className="w-80 p-0">
             <div className="flex flex-col h-full">
-              <div className="flex items-center justify-between p-4 border-b">
+              <div className="flex items-center p-4 border-b">
                 <Logo size="sm" />
-                <Button variant="ghost" size="sm" onClick={() => setIsOpen(false)}>
-                  <X className="h-4 w-4" />
-                </Button>
               </div>
 
               <div className="flex-1 overflow-auto p-4">
