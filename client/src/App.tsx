@@ -9,6 +9,7 @@ import { ProtectedRoute } from "@/lib/protected-route";
 import AuthPage from "@/pages/auth-page";
 import Header from "@/components/layout/header";
 import Sidebar from "@/components/layout/sidebar";
+import { MobileHeader } from "@/components/mobile-header";
 import OnboardingTour from "@/components/ui/onboarding-tour";
 import { SimpleLanguageProvider } from "@/lib/simple-language";
 import Watermark from "@/components/ui/watermark";
@@ -144,10 +145,21 @@ function Layout({ children }: { children: React.ReactNode }) {
   
   return (
     <div className="min-h-screen bg-background">
-      <Header />
-      <div className="flex">
-        <Sidebar />
-        <main className="flex-1 p-6">
+      {/* Desktop Layout */}
+      <div className="hidden lg:block">
+        <Header />
+        <div className="flex">
+          <Sidebar />
+          <main className="flex-1 p-6">
+            {children}
+          </main>
+        </div>
+      </div>
+      
+      {/* Mobile Layout */}
+      <div className="lg:hidden">
+        <MobileHeader />
+        <main className="p-4">
           {children}
         </main>
       </div>

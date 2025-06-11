@@ -475,10 +475,11 @@ export default function SafetyLibrary() {
                           <div className="flex-1 px-6 pb-6">
                             {item.url && (
                               <iframe
-                                src={`/api/safety-library/pdf/${item.url}`}
+                                src={`/api/safety-library/pdf/${item.url}#toolbar=1&navpanes=1&scrollbar=1&page=1&view=FitH`}
                                 className="w-full h-full border-0 rounded"
                                 title={item.title}
                                 style={{ minHeight: '600px' }}
+                                allow="fullscreen"
                               />
                             )}
                           </div>
