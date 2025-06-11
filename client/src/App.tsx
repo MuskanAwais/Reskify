@@ -166,6 +166,7 @@ function Router() {
         <Route path="/register" component={Register} />
         <Route path="/auth" component={AuthPage} />
         <ProtectedRoute path="/dashboard" component={Dashboard} />
+        <ProtectedRoute path="/generate" component={SwmsBuilder} />
         <ProtectedRoute path="/swms-builder" component={SwmsBuilder} />
         <ProtectedRoute path="/my-swms" component={MySwms} />
         <ProtectedRoute path="/analytics" component={Analytics} />
