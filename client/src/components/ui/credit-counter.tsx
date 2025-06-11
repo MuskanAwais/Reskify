@@ -19,10 +19,12 @@ export default function CreditCounter({ className }: CreditCounterProps) {
 
   const getSubscriptionDetails = () => {
     switch (subscriptionType) {
-      case "premium":
-        return { name: "Premium", monthlyCredits: 25, price: "$100/month" };
+      case "subscription":
+        return { name: "Subscription", monthlyCredits: 10, price: "$50/month" };
+      case "one-off":
+        return { name: "One-Off", monthlyCredits: 0, price: "$15/SWMS" };
       default:
-        return { name: "Basic", monthlyCredits: 10, price: "$50/month" };
+        return { name: "Subscription", monthlyCredits: 10, price: "$50/month" };
     }
   };
 

@@ -37,14 +37,14 @@ export default function Header() {
 
   return (
     <header className="bg-white border-b border-border shadow-sm">
-      <div className="container mx-auto px-6 py-6">
-        <div className="flex justify-between items-center min-h-[80px]">
+      <div className="container mx-auto px-6 py-4">
+        <div className="flex justify-between items-center h-16">
           {/* Logo and Title */}
-          <div className="flex items-center justify-center h-full">
+          <div className="flex items-center">
             <img 
               src="/assets/riskify-logo.png" 
               alt="Riskify Logo" 
-              className="h-20 w-auto object-contain"
+              className="h-12 w-auto object-contain"
             />
           </div>
 

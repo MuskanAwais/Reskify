@@ -155,7 +155,23 @@ export default function Billing() {
 
   const plans = [
     {
-      name: "Basic",
+      name: "One-Off SWMS",
+      type: "one-off",
+      price: 15,
+      credits: 1,
+      tier: 0,
+      features: [
+        "Single SWMS document",
+        "Standard templates",
+        "Visual table editor",
+        "PDF generation",
+        "Credits never expire"
+      ],
+      popular: false
+    },
+    {
+      name: "Subscription",
+      type: "subscription",
       monthlyPrice: 50,
       yearlyPrice: 540,
       originalYearlyPrice: 600,
@@ -165,45 +181,26 @@ export default function Billing() {
         "10 SWMS per month",
         "Standard templates",
         "Visual table editor",
-        "Email support",
-        "Single user"
-      ],
-      popular: false
-    },
-    {
-      name: "Pro",
-      monthlyPrice: 100,
-      yearlyPrice: 1080,
-      originalYearlyPrice: 1200,
-      credits: 25,
-      tier: 2,
-      features: [
-        "25 SWMS per month",
-        "AI-powered generation",
-        "Visual table editor",
-        "Custom branding",
-        "Multi-language support",
-        "Voice control",
-        "Priority support"
+        "Team collaboration",
+        "Priority support",
+        "Email support"
       ],
       popular: true
+    }
+  ];
+
+  const creditAddOns = [
+    {
+      name: "+5 Credits",
+      price: 60,
+      credits: 5,
+      description: "Additional credits that never expire"
     },
     {
-      name: "Enterprise",
-      monthlyPrice: 200,
-      yearlyPrice: 2160,
-      originalYearlyPrice: 2400,
-      credits: 60,
-      tier: 3,
-      features: [
-        "60 SWMS per month",
-        "Everything in Pro",
-        "Advanced analytics",
-        "Team collaboration",
-        "24/7 phone support",
-        "Priority development"
-      ],
-      popular: false
+      name: "+10 Credits",
+      price: 100,
+      credits: 10,
+      description: "Additional credits that never expire"
     }
   ];
 
@@ -345,15 +342,37 @@ export default function Billing() {
                   <Progress value={calculateProgress()} className="h-2" />
                 </div>
 
-                <div className="grid grid-cols-2 gap-2">
-                  <Button onClick={() => purchaseCredits(5)} variant="outline" size="sm">
-                    <Plus className="w-4 h-4 mr-1" />
-                    5 Credits ($50)
-                  </Button>
-                  <Button onClick={() => purchaseCredits(10)} variant="outline" size="sm">
-                    <Plus className="w-4 h-4 mr-1" />
-                    10 Credits ($90)
-                  </Button>
+                <div className="space-y-3">
+                  <div className="text-center">
+                    <h4 className="font-semibold text-primary mb-2">Buy Extra Credits</h4>
+                    <p className="text-xs text-muted-foreground">Credits never expire!</p>
+                  </div>
+                  <div className="grid grid-cols-1 gap-3">
+                    <Button 
+                      onClick={() => purchaseCredits(5)} 
+                      variant="outline" 
+                      size="lg"
+                      className="h-12 border-2 border-primary/30 hover:border-primary hover:bg-primary/5"
+                    >
+                      <Plus className="w-4 h-4 mr-2" />
+                      <div className="text-left">
+                        <div className="font-semibold">+5 Credits</div>
+                        <div className="text-sm text-muted-foreground">$60</div>
+                      </div>
+                    </Button>
+                    <Button 
+                      onClick={() => purchaseCredits(10)} 
+                      variant="outline" 
+                      size="lg"
+                      className="h-12 border-2 border-primary/30 hover:border-primary hover:bg-primary/5"
+                    >
+                      <Plus className="w-4 h-4 mr-2" />
+                      <div className="text-left">
+                        <div className="font-semibold">+10 Credits</div>
+                        <div className="text-sm text-muted-foreground">$100</div>
+                      </div>
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -452,25 +471,41 @@ export default function Billing() {
                     <div className="space-y-4">
                       <div>
                         <h3 className="text-xl font-bold">{plan.name}</h3>
-                        <div className="flex items-baseline">
-                          <span className="text-3xl font-bold">
-                            ${billingPeriod === 'yearly' ? plan.yearlyPrice : plan.monthlyPrice}
-                          </span>
-                          <span className="text-muted-foreground">
-                            /{billingPeriod === 'yearly' ? 'year' : 'month'}
-                          </span>
-                        </div>
-                        {billingPeriod === 'yearly' && (
-                          <div className="flex items-center space-x-2">
-                            <span className="text-sm text-muted-foreground line-through">
-                              ${plan.originalYearlyPrice}
-                            </span>
-                            <Badge variant="secondary" className="bg-green-100 text-green-700">
-                              Save 10%
-                            </Badge>
+                        {plan.type === 'one-off' ? (
+                          <div className="flex items-baseline">
+                            <span className="text-3xl font-bold">${plan.price}</span>
+                            <span className="text-muted-foreground">/SWMS</span>
                           </div>
+                        ) : (
+                          <>
+                            <div className="flex items-baseline">
+                              <span className="text-3xl font-bold">
+                                ${billingPeriod === 'yearly' ? plan.yearlyPrice : plan.monthlyPrice}
+                              </span>
+                              <span className="text-muted-foreground">
+                                /{billingPeriod === 'yearly' ? 'year' : 'month'}
+                              </span>
+                            </div>
+                            {billingPeriod === 'yearly' && (
+                              <div className="flex items-center space-x-2">
+                                <span className="text-sm text-muted-foreground line-through">
+                                  ${plan.originalYearlyPrice}
+                                </span>
+                                <Badge variant="secondary" className="bg-green-100 text-green-700">
+                                  Save 10%
+                                </Badge>
+                              </div>
+                            )}
+                          </>
                         )}
-                        <p className="text-sm text-muted-foreground">{plan.credits} SWMS credits per month</p>
+                        <p className="text-sm text-muted-foreground">
+                          {plan.type === 'one-off' ? '1 SWMS document' : `${plan.credits} SWMS credits per month`}
+                        </p>
+                        {plan.type === 'subscription' && (
+                          <p className="text-xs text-orange-600 font-medium">
+                            Note: Subscription credits reset monthly
+                          </p>
+                        )}
                       </div>
 
                       <ul className="space-y-2">

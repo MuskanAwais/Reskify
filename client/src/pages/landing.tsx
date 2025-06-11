@@ -161,7 +161,23 @@ export default function Landing() {
 
   const pricing = [
     {
-      name: "Basic",
+      name: "One-Off SWMS",
+      type: "one-off",
+      price: "$15",
+      period: " + GST/SWMS",
+      credits: "Single SWMS document",
+      features: [
+        "Single SWMS document",
+        "Standard templates",
+        "Visual table editor",
+        "PDF generation",
+        "Credits never expire"
+      ],
+      popular: false
+    },
+    {
+      name: "Subscription",
+      type: "subscription",
       price: billingPeriod === 'yearly' ? "$540" : "$50",
       period: billingPeriod === 'yearly' ? " + GST/year" : " + GST/month",
       credits: "10 SWMS per month",
@@ -171,45 +187,11 @@ export default function Landing() {
         "10 SWMS per month",
         "Standard templates",
         "Visual table editor",
-        "Email support",
-        "Single user"
-      ],
-      popular: false
-    },
-    {
-      name: "Pro",
-      price: billingPeriod === 'yearly' ? "$1,080" : "$100",
-      period: billingPeriod === 'yearly' ? " + GST/year" : " + GST/month",
-      credits: "25 SWMS per month",
-      originalPrice: billingPeriod === 'yearly' ? "$1,200" : null,
-      discount: billingPeriod === 'yearly' ? "Save 10%" : null,
-      features: [
-        "25 SWMS per month",
-        "AI-powered generation",
-        "Visual table editor",
-        "Custom branding",
-        "Multi-language support",
-        "Voice control",
-        "Priority support"
+        "Team collaboration",
+        "Priority support",
+        "Email support"
       ],
       popular: true
-    },
-    {
-      name: "Enterprise",
-      price: billingPeriod === 'yearly' ? "$2,160" : "$200",
-      period: billingPeriod === 'yearly' ? " + GST/year" : " + GST/month",
-      credits: "60 SWMS per month",
-      originalPrice: billingPeriod === 'yearly' ? "$2,400" : null,
-      discount: billingPeriod === 'yearly' ? "Save 10%" : null,
-      features: [
-        "60 SWMS per month",
-        "Everything in Pro",
-        "Advanced analytics",
-        "Team collaboration",
-        "24/7 phone support",
-        "Priority development"
-      ],
-      popular: false
     }
   ];
 
