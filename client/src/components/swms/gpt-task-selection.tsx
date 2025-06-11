@@ -151,7 +151,7 @@ export default function GPTTaskSelection({
           selected: true
         }));
 
-        const convertedPlantEquipment = response.data.plantEquipment?.map((equipment: any, index: number) => ({
+        const convertedPlantEquipment = data.data.plantEquipment?.map((equipment: any, index: number) => ({
           id: `equipment-${index + 1}`,
           ...equipment
         })) || [];
