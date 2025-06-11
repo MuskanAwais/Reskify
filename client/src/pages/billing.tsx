@@ -215,10 +215,14 @@ export default function Billing() {
     
     if (planName === billingData.currentPlan) {
       return "Current Plan";
+    } else if (planName === "One-Off SWMS") {
+      return "Buy One-Off SWMS ($15)";
+    } else if (planName === "Subscription") {
+      return "Upgrade to Subscription";
     } else if (planTier > currentTier) {
       return `Upgrade to ${planName}`;
     } else {
-      return `Downgrade to ${planName}`;
+      return `Switch to ${planName}`;
     }
   };
 
