@@ -1820,6 +1820,39 @@ startxref
     }
   });
 
+  // Admin users endpoint
+  app.get("/api/admin/users", async (req, res) => {
+    try {
+      const users = await dbStorage.getAllUsers();
+      res.json(users);
+    } catch (error: any) {
+      console.error("Get admin users error:", error);
+      res.status(500).json({ message: "Failed to fetch users" });
+    }
+  });
+
+  // Admin contacts endpoint
+  app.get("/api/admin/contacts", async (req, res) => {
+    try {
+      // Mock contacts data for now
+      const contacts = [
+        {
+          id: 1,
+          name: "Construction Safety Corp",
+          email: "safety@construction.com",
+          company: "Construction Safety Corp",
+          message: "Interested in enterprise features",
+          contactType: "sales",
+          createdAt: "2024-06-01"
+        }
+      ];
+      res.json(contacts);
+    } catch (error: any) {
+      console.error("Get admin contacts error:", error);
+      res.status(500).json({ message: "Failed to fetch contacts" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
