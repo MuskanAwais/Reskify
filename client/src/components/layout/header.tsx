@@ -41,28 +41,11 @@ export default function Header() {
         <div className="flex justify-between items-center">
           {/* Logo and Title */}
           <div className="flex items-center space-x-3">
-            <div className="w-20 h-20 rounded-lg flex items-center justify-center">
-              <img 
-                src={logoImage} 
-                alt="Riskify Logo" 
-                className="w-20 h-20 object-contain"
-                onError={(e) => {
-                  console.log("Logo failed to load, showing fallback");
-                  e.currentTarget.style.display = 'none';
-                  const fallback = e.currentTarget.nextElementSibling as HTMLElement;
-                  if (fallback) {
-                    fallback.style.display = 'flex';
-                  }
-                }}
-              />
-              <HardHat className="w-6 h-6 text-primary/600 hidden" />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold tracking-tight text-foreground">Riskify</h1>
-              <div className="flex items-center space-x-2">
-                <span className="text-sm text-muted-foreground">Professional SWMS Builder</span>
-              </div>
-            </div>
+            <img 
+              src="/assets/riskify-logo.png" 
+              alt="Riskify Logo" 
+              className="h-12 w-auto object-contain"
+            />
           </div>
 
 

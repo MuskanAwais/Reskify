@@ -109,11 +109,11 @@ export default function AuthPage() {
       <div className="max-w-md w-full">
         <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-4">
-            <Shield className="h-12 w-12 text-green-600 mr-2" />
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Riskify</h1>
-              <p className="text-sm text-gray-600">SWMS Builder</p>
-            </div>
+            <img 
+              src="/assets/riskify-logo.png" 
+              alt="Riskify"
+              className="h-16 w-auto object-contain"
+            />
           </div>
           <p className="text-gray-600">Professional safety documentation for Australian construction</p>
         </div>
