@@ -46,10 +46,13 @@ export default function MySwms() {
   const { toast } = useToast();
   const user = useUser();
 
-  const { data: documents = [], isLoading } = useQuery({
+  const { data: documentsData, isLoading } = useQuery({
     queryKey: ["/api/swms/my-documents"],
     enabled: !!user,
   });
+
+  // Combine drafts and completed documents into a single array
+  const documents = documentsData ? [...(documentsData.drafts || []), ...(documentsData.completed || [])] : [];
 
   const deleteDocumentMutation = useMutation({
     mutationFn: (id: number) => apiRequest("DELETE", `/api/swms/${id}`, {}),
@@ -81,9 +84,9 @@ export default function MySwms() {
   });
 
   const filteredDocuments = documents.filter((doc: SwmsDocument) => {
-    const matchesSearch = doc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         doc.tradeType.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         doc.projectLocation.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = doc.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         doc.tradeType?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         doc.projectLocation?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === "all" || doc.status === statusFilter;
     const matchesTrade = tradeFilter === "all" || doc.tradeType === tradeFilter;
     return matchesSearch && matchesStatus && matchesTrade;
