@@ -128,22 +128,23 @@ export default function GPTTaskSelection({
 
       try {
         updateProgress("Initializing Riskify AI", 10);
-        await new Promise(resolve => setTimeout(resolve, 800));
+        await new Promise(resolve => setTimeout(resolve, 500));
         
         updateProgress("Processing trade requirements", 25);
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise(resolve => setTimeout(resolve, 500));
         
         updateProgress("Analyzing risk factors", 40);
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        updateProgress("Generating SWMS data", 60);
         const response = await apiRequest("POST", "/api/generate-swms", request);
         const data = await response.json();
         
-        updateProgress("Generating safety protocols", 65);
-        await new Promise(resolve => setTimeout(resolve, 800));
+        updateProgress("Processing safety protocols", 80);
+        await new Promise(resolve => setTimeout(resolve, 400));
         
-        updateProgress("Creating risk assessments", 85);
-        await new Promise(resolve => setTimeout(resolve, 600));
-        
-        updateProgress("Finalizing SWMS document", 100);
+        updateProgress("Finalizing document", 100);
+        await new Promise(resolve => setTimeout(resolve, 200));
         
         return data;
       } catch (error) {
