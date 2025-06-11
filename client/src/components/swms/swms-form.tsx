@@ -48,8 +48,9 @@ interface StepContentProps {
 }
 
 interface SWMSFormProps {
+  step: number;
   data?: any;
-  onStepChange?: (step: number) => void;
+  onNext?: () => void;
   onDataChange?: (data: any) => void;
 }
 
@@ -491,25 +492,8 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
   }
 };
 
-export default function SWMSForm({ data = {}, onStepChange, onDataChange }: SWMSFormProps) {
-  const [currentStep, setCurrentStep] = useState(1);
+export default function SWMSForm({ step, data = {}, onNext, onDataChange }: SWMSFormProps) {
   const [formData, setFormData] = useState(data);
-
-  const nextStep = () => {
-    if (currentStep < TOTAL_STEPS) {
-      const newStep = currentStep + 1;
-      setCurrentStep(newStep);
-      if (onStepChange) onStepChange(newStep);
-    }
-  };
-
-  const prevStep = () => {
-    if (currentStep > 1) {
-      const newStep = currentStep - 1;
-      setCurrentStep(newStep);
-      if (onStepChange) onStepChange(newStep);
-    }
-  };
 
   const updateFormData = (updates: any) => {
     const newData = { 
@@ -526,15 +510,13 @@ export default function SWMSForm({ data = {}, onStepChange, onDataChange }: SWMS
   }, [data]);
 
   return (
-    <div className="max-w-4xl mx-auto p-6 space-y-8">
+    <div className="max-w-4xl mx-auto space-y-8">
       {/* Step Content */}
       <StepContent 
-        step={currentStep} 
+        step={step} 
         formData={formData} 
         onDataChange={updateFormData} 
       />
-
-
     </div>
   );
 }

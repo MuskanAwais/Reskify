@@ -253,7 +253,7 @@ export default function MySwms() {
                   </div>
                   
                   <div className="text-sm">
-                    <span className="font-medium">Activities:</span> {document.activities.length} selected
+                    <span className="font-medium">Activities:</span> {document.activities?.length || 0} selected
                   </div>
 
                   {document.complianceScore && (
