@@ -73,19 +73,12 @@ export async function generateSWMSFromTask(request: TaskGenerationRequest): Prom
     if (request.mode === 'task' && request.taskList && request.taskList.length > 0) {
       // Task Mode: Generate SWMS for specific tasks
       const taskListText = request.taskList.join(', ');
-      prompt = `Generate SWMS for ${tradeName} tasks: ${taskListText}. State: ${state}.`;
+      prompt = `Generate SWMS rows in markdown table format for the following tasks performed by a ${tradeName}: ${taskListText}. Ensure each row is fully detailed and each field in a separate column.`;
       
     } else {
       // Job Mode: Generate SWMS tasks from job description
       const jobDescription = request.plainTextDescription || request.projectDetails.description || request.taskName || 'General construction work';
-      prompt = `Generate 5-8 SWMS tasks for ${tradeName}: ${jobDescription}. State: ${state}.`;
-    }
-    
-    if (siteEnvironment) {
-      prompt += ` Site: ${siteEnvironment}.`;
-    }
-    if (specialRiskFactors.length > 0) {
-      prompt += ` Risks: ${specialRiskFactors.join(', ')}.`;
+      prompt = `We are doing ${jobDescription} as a ${tradeName}. Generate at least 10 individual SWMS rows, one per task, with full markdown table format, each column properly delimited.`;
     }
 
     // Create promise with timeout
@@ -94,7 +87,7 @@ export async function generateSWMSFromTask(request: TaskGenerationRequest): Prom
       messages: [
         {
           role: "system",
-          content: `You are Riskify, an expert Australian construction safety consultant. Generate SWMS data in JSON format:
+          content: `You are Riskify, an expert Australian construction safety consultant. The user will provide prompts requesting SWMS data in markdown table format. Convert this into structured JSON format with the following structure:
 
 {
   "activities": [
@@ -122,7 +115,7 @@ export async function generateSWMSFromTask(request: TaskGenerationRequest): Prom
   "emergencyProcedures": []
 }
 
-Risk scores: 1-5=Low, 6-10=Medium, 11-15=High, 16-20=Extreme. Keep responses concise but comprehensive.`
+Use risk scores: 1-5=Low, 6-10=Medium, 11-15=High, 16-20=Extreme. Generate comprehensive SWMS data following Australian WHS standards. Always respond with valid JSON only.`
         },
         {
           role: "user",

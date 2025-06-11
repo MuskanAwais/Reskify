@@ -253,7 +253,8 @@ export default function SwmsBuilder() {
         riskAssessments: [],
         safetyMeasures: [],
         complianceCodes: [],
-        acceptedDisclaimer: false
+        acceptedDisclaimer: false,
+        selectedTasks: []
       });
     }
   }, []);
