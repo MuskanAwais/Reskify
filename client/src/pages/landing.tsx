@@ -307,7 +307,7 @@ export default function Landing() {
                   </Button>
                 </EnhancedTooltip>
                 <p className="text-center text-sm text-gray-600 mt-2">
-                  Sign in to get your 1 free trial SWMS
+                  Create your account to get started with professional SWMS documents
                 </p>
               </div>
 
