@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useUser } from "@/App";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { generateProtectedPDF } from "@/lib/pdf-generator";
+import AntiScreenshotProtection from "@/components/security/anti-screenshot-protection";
 import { 
   FileText, 
   Download, 
@@ -244,6 +245,16 @@ export default function DocumentPreview({ formData }: DocumentPreviewProps) {
           </DialogHeader>
           
           <ScrollArea className="max-h-[70vh] pr-4">
+            <AntiScreenshotProtection 
+              enabled={true}
+              onScreenshotAttempt={() => {
+                toast({
+                  title: "Screenshot Blocked",
+                  description: "This SWMS document is protected from screenshots for security purposes.",
+                  variant: "destructive",
+                });
+              }}
+            >
             <div className="space-y-6">
               {/* Document Header */}
               <Card className="border-2 border-gray-300">
@@ -643,7 +654,8 @@ export default function DocumentPreview({ formData }: DocumentPreviewProps) {
                   </div>
                 </CardContent>
               </Card>
-            </div>
+              </div>
+            </AntiScreenshotProtection>
           </ScrollArea>
         </DialogContent>
       </Dialog>
