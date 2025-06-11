@@ -3,7 +3,7 @@ import express from "express";
 import { createServer, type Server } from "http";
 import multer from "multer";
 import { setupAuth } from "./auth";
-import { generateSWMSFromTask, TASK_DATABASE, type TaskGenerationRequest } from "./openai-integration";
+import { generateSWMSFromTask, type TaskGenerationRequest } from "./openai-integration";
 import { storage as dbStorage } from "./storage";
 import path from "path";
 import fs from "fs";
