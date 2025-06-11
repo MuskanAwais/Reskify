@@ -452,39 +452,55 @@ export default function SafetyLibrary() {
                   
                   <div className="flex flex-col gap-2 ml-4">
                     {item.url && (
-                      <Dialog>
-                        <DialogTrigger asChild>
+                      <>
+                        {/* Mobile: Direct open in new tab */}
+                        <div className="block lg:hidden">
                           <Button 
                             variant="outline" 
                             size="sm"
-                            onClick={() => {
-                              setSelectedPdf(item.url);
-                              setPdfViewerOpen(true);
-                            }}
+                            onClick={() => window.open(`/api/safety-library/pdf/${item.url}`, '_blank')}
                           >
                             <Eye className="h-4 w-4 mr-2" />
                             View PDF
                           </Button>
-                        </DialogTrigger>
-                        <DialogContent className="max-w-6xl w-full h-[90vh] p-0">
-                          <DialogHeader className="px-6 py-4 border-b">
-                            <DialogTitle className="text-lg font-semibold">
-                              {item.title}
-                            </DialogTitle>
-                          </DialogHeader>
-                          <div className="flex-1 px-6 pb-6">
-                            {item.url && (
-                              <iframe
-                                src={`/api/safety-library/pdf/${item.url}#toolbar=1&navpanes=1&scrollbar=1&page=1&view=FitH`}
-                                className="w-full h-full border-0 rounded"
-                                title={item.title}
-                                style={{ minHeight: '600px' }}
-                                allow="fullscreen"
-                              />
-                            )}
-                          </div>
-                        </DialogContent>
-                      </Dialog>
+                        </div>
+                        
+                        {/* Desktop: Modal viewer */}
+                        <div className="hidden lg:block">
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => {
+                                  setSelectedPdf(item.url);
+                                  setPdfViewerOpen(true);
+                                }}
+                              >
+                                <Eye className="h-4 w-4 mr-2" />
+                                View PDF
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent className="max-w-6xl w-full h-[90vh] p-0">
+                              <DialogHeader className="px-6 py-4 border-b">
+                                <DialogTitle className="text-lg font-semibold">
+                                  {item.title}
+                                </DialogTitle>
+                              </DialogHeader>
+                              <div className="flex-1 px-6 pb-6">
+                                {item.url && (
+                                  <iframe
+                                    src={`/api/safety-library/pdf/${item.url}#toolbar=0&navpanes=1&scrollbar=1&view=FitH`}
+                                    className="w-full h-full border-0 rounded"
+                                    title={item.title}
+                                    style={{ minHeight: '600px' }}
+                                  />
+                                )}
+                              </div>
+                            </DialogContent>
+                          </Dialog>
+                        </div>
+                      </>
                     )}
                   </div>
                 </div>
