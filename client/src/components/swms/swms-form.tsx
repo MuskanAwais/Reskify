@@ -251,10 +251,140 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
       return (
         <div className="space-y-6">
           <div className="text-center">
-            <PenTool className="mx-auto h-12 w-12 text-primary mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Digital Signatures (Optional)</h3>
+            <Shield className="mx-auto h-12 w-12 text-primary mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Emergency & Monitoring (Optional)</h3>
             <p className="text-gray-600 text-sm">
-              Digital signatures are optional. You can skip this step and proceed directly to generate your SWMS document.
+              Emergency procedures and monitoring processes are optional. You can skip this step if not required for your project.
+            </p>
+          </div>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Emergency Procedures</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="mb-6 p-4 bg-orange-50 rounded-lg border border-orange-200">
+                <p className="text-orange-800 font-medium mb-2">Optional Step</p>
+                <p className="text-gray-600">
+                  Emergency procedures and monitoring are optional. This section will only appear in your SWMS if you add content.
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="emergencyContacts">Emergency Contacts</Label>
+                  <Textarea
+                    id="emergencyContacts"
+                    placeholder="List emergency contact numbers and procedures..."
+                    value={formData.emergencyContacts || ""}
+                    onChange={(e) => updateFormData({ emergencyContacts: e.target.value })}
+                    rows={3}
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="emergencyProcedures">Emergency Response Procedures</Label>
+                  <Textarea
+                    id="emergencyProcedures"
+                    placeholder="Describe emergency response procedures, evacuation routes, assembly points..."
+                    value={formData.emergencyProcedures || ""}
+                    onChange={(e) => updateFormData({ emergencyProcedures: e.target.value })}
+                    rows={4}
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="monitoringRequirements">Monitoring & Review Requirements</Label>
+                  <Textarea
+                    id="monitoringRequirements"
+                    placeholder="Describe monitoring requirements, review schedules, compliance checks..."
+                    value={formData.monitoringRequirements || ""}
+                    onChange={(e) => updateFormData({ monitoringRequirements: e.target.value })}
+                    rows={3}
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      );
+
+    case 5:
+      return (
+        <div className="space-y-6">
+          <div className="text-center">
+            <FileText className="mx-auto h-12 w-12 text-primary mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Legal Disclaimer</h3>
+            <p className="text-gray-600 text-sm">
+              Review and accept the terms and liability disclaimer to proceed.
+            </p>
+          </div>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Terms and Conditions</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+                <p className="text-sm text-gray-700 mb-4">
+                  By proceeding, you acknowledge that this SWMS document is generated as a template and must be reviewed by qualified safety professionals before use on site.
+                </p>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="disclaimer"
+                    checked={formData.disclaimerAccepted || false}
+                    onCheckedChange={(checked) => updateFormData({ disclaimerAccepted: checked })}
+                  />
+                  <Label htmlFor="disclaimer" className="text-sm">
+                    I accept the terms and conditions and understand this document requires professional review
+                  </Label>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      );
+
+    case 6:
+      return (
+        <div className="space-y-6">
+          <div className="text-center">
+            <CheckSquare className="mx-auto h-12 w-12 text-primary mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Final Document</h3>
+            <p className="text-gray-600 text-sm">
+              Generate your complete SWMS document ready for use.
+            </p>
+          </div>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Document Generation</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-8">
+                <p className="text-gray-600 mb-4">Your SWMS is ready to be generated with all the information you've provided.</p>
+                <Button 
+                  size="lg"
+                  onClick={() => updateFormData({ documentGenerated: true })}
+                  className="bg-green-600 hover:bg-green-700"
+                >
+                  <FileText className="mr-2 h-4 w-4" />
+                  Generate SWMS Document
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      );
+
+    case 7:
+      return (
+        <div className="space-y-6">
+          <div className="text-center">
+            <PenTool className="mx-auto h-12 w-12 text-primary mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Digital Signatures & PDF (Optional)</h3>
+            <p className="text-gray-600 text-sm">
+              Digital signatures are optional. You can skip this step and proceed directly to download your SWMS document.
             </p>
           </div>
 
