@@ -63,7 +63,7 @@ export default function Sidebar() {
   });
 
   // Check if current user is the specific admin account
-  const isAdmin = user?.username === "0421869995";
+  const isAdmin = (user as any)?.username === "0421869995";
 
   const [demoMode, setDemoMode] = useState(() => {
     try {
@@ -224,7 +224,7 @@ export default function Sidebar() {
       labelKey: "nav.safety-library", 
       href: "/safety-library",
       requiresAccess: true,
-      hasAccess: mockSubscription?.features?.safetyLibrary || adminMode,
+      hasAccess: mockSubscription?.features?.safetyLibrary || isAdmin,
       tourId: "safety-library-link"
     },
     { 
@@ -232,7 +232,7 @@ export default function Sidebar() {
       labelKey: "nav.team", 
       href: "/team-collaboration",
       requiresAccess: true,
-      hasAccess: mockSubscription?.plan === "Enterprise" || adminMode || enterpriseMode,
+      hasAccess: mockSubscription?.plan === "Enterprise" || isAdmin || enterpriseMode,
       badge: mockSubscription?.plan === "Enterprise" || enterpriseMode ? "Enterprise" : null,
       tourId: "team-tab"
     },
@@ -258,68 +258,7 @@ export default function Sidebar() {
   return (
     <aside className="w-64 bg-card shadow-md border-r">
       <div className="p-6">
-        {/* Admin Toggle - Only visible for admin users */}
-        {isAdmin && (
-          <div className="mb-6 space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">Admin Mode</span>
-              <Button
-                data-tour="admin-toggle"
-                variant={adminMode ? "default" : "outline"}
-                size="sm"
-                onClick={toggleAdminMode}
-                className={`px-3 py-1 text-xs ${
-                  adminMode 
-                    ? 'bg-primary text-primary-foreground hover:bg-primary/90' 
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                <Shield className="mr-1 h-3 w-3" />
-                {adminMode ? 'ON' : 'OFF'}
-              </Button>
-            </div>
 
-            {adminMode && (
-              <>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">Demo Mode</span>
-                  <Button
-                    data-tour="demo-toggle"
-                    variant={demoMode ? "default" : "outline"}
-                    size="sm"
-                    onClick={toggleDemoMode}
-                    className={`px-3 py-1 text-xs ${
-                      demoMode 
-                        ? 'bg-primary/600 text-white hover:bg-primary/700' 
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                  >
-                    <Bot className="mr-1 h-3 w-3" />
-                    {demoMode ? 'ON' : 'OFF'}
-                  </Button>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">Enterprise Mode</span>
-                  <Button
-                    data-tour="enterprise-toggle"
-                    variant={enterpriseMode ? "default" : "outline"}
-                    size="sm"
-                    onClick={toggleEnterpriseMode}
-                    className={`px-3 py-1 text-xs ${
-                      enterpriseMode 
-                        ? 'bg-purple-600 text-white hover:bg-purple-700' 
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                  >
-                    <Users className="mr-1 h-3 w-3" />
-                    {enterpriseMode ? 'ON' : 'OFF'}
-                  </Button>
-                </div>
-              </>
-            )}
-          </div>
-        )}
 
         {/* Start Tour Button - Hidden after first use */}
         {!tourCompleted && (
@@ -399,8 +338,8 @@ export default function Sidebar() {
           })}
         </nav>
 
-        {/* Admin Navigation */}
-        {adminMode && (
+        {/* Admin Navigation - Only for specific admin account */}
+        {isAdmin && (
           <>
             <Separator className="my-6" />
             <nav className="space-y-2">

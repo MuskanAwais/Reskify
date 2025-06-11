@@ -21,6 +21,7 @@ import Analytics from "@/pages/analytics";
 import AiAssistant from "@/pages/ai-assistant";
 import Settings from "@/pages/settings";
 import Billing from "@/pages/billing";
+import Payment from "@/pages/payment";
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
 import Demo from "@/pages/demo";
