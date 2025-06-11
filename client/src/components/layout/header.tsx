@@ -38,21 +38,18 @@ export default function Header() {
   return (
     <header className="bg-white border-b border-border shadow-sm m-4 mb-0 rounded-2xl">
       <div className="container mx-auto px-6 py-4">
-        <div className="flex items-center h-16">
-          {/* Left spacer */}
-          <div className="flex-1"></div>
-          
-          {/* Logo - Centered */}
-          <div className="flex justify-center">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo - Left aligned with sidebar center */}
+          <div className="flex items-center">
             <img 
               src="/assets/riskify-logo.png" 
               alt="Riskify Logo" 
-              className="h-16 w-auto object-contain"
+              className="h-12 w-auto object-contain"
             />
           </div>
           
           {/* Actions and User Menu */}
-          <div className="flex-1 flex items-center justify-end space-x-4">
+          <div className="flex items-center space-x-4">
             {/* Voice Assistant */}
             <VoiceAssistant />
             
