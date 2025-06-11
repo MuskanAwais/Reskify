@@ -55,24 +55,33 @@ export default function SwmsBuilder() {
 
   // Save draft mutation
   const saveDraftMutation = useMutation({
-    mutationFn: async (data) => {
+    mutationFn: async (data: any) => {
+      console.log('Saving draft with data:', data);
       const response = await apiRequest("POST", "/api/swms/draft", {
         ...data,
         status: "draft",
-        currentStep
+        currentStep,
+        title: data.title || data.jobName || "Untitled SWMS",
+        createdAt: new Date().toISOString(),
+        lastModified: new Date().toISOString()
       });
+      console.log('Draft save response:', response);
       return response;
     },
-    onSuccess: (data) => {
-      setDraftId(data.id);
-      setIsDraft(true);
+    onSuccess: (data: any) => {
+      console.log('Draft saved successfully:', data);
+      if (data?.draftId) {
+        setDraftId(data.draftId);
+        setIsDraft(true);
+      }
       toast({
         title: "Draft Saved",
         description: "Your SWMS has been saved as a draft.",
       });
-      queryClient.invalidateQueries({ queryKey: ["/api/swms"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/swms/my-documents"] });
     },
-    onError: () => {
+    onError: (error) => {
+      console.error('Draft save error:', error);
       toast({
         title: "Save Failed",
         description: "Unable to save draft. Please try again.",
@@ -84,7 +93,10 @@ export default function SwmsBuilder() {
   // Auto-save when moving between steps
   const autoSave = () => {
     if (formData.title || formData.jobName || formData.tradeType) {
+      console.log('Auto-saving draft with form data:', formData);
       saveDraftMutation.mutate(formData);
+    } else {
+      console.log('Skipping auto-save - insufficient data');
     }
   };
 
@@ -300,7 +312,7 @@ export default function SwmsBuilder() {
             />
             
             {/* Navigation */}
-            <div className="flex justify-between mt-8">
+            <div className="flex justify-between items-center mt-8">
               <Button 
                 variant="outline" 
                 onClick={handlePrevious}
@@ -308,6 +320,17 @@ export default function SwmsBuilder() {
               >
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Previous
+              </Button>
+              
+              {/* Manual Save Button */}
+              <Button 
+                variant="outline" 
+                onClick={() => autoSave()}
+                disabled={saveDraftMutation.isPending}
+                className="flex items-center"
+              >
+                <Save className="mr-2 h-4 w-4" />
+                {saveDraftMutation.isPending ? "Saving..." : "Save Draft"}
               </Button>
               
               {currentStep < STEPS.length ? (
