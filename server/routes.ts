@@ -1459,18 +1459,52 @@ startxref
     }
   });
 
-  // Download SWMS as PDF
+  // Download SWMS as PDF with credit deduction
   app.get("/api/swms/:id/download", async (req, res) => {
     try {
       const { id } = req.params;
       
-      // For now, return a simple success response
-      // PDF generation would be handled on the frontend
+      // Check if user is authenticated
+      if (!req.user) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+      
+      // Get user data
+      const user = await storage.getUser(req.user.id);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Check if user has sufficient credits
+      const currentCredits = user.swmsCredits || 0;
+      if (currentCredits <= 0) {
+        return res.status(402).json({ 
+          message: "Insufficient credits. Please purchase additional credits to download SWMS documents.",
+          creditsRequired: 1,
+          currentCredits: currentCredits
+        });
+      }
+      
+      // Deduct one credit from user account
+      const updatedCredits = currentCredits - 1;
+      await storage.updateUserCredits(user.id, updatedCredits);
+      
+      // Log the credit usage
+      await storage.logCreditUsage(user.id, {
+        type: 'swms_download',
+        documentId: id,
+        creditsUsed: 1,
+        remainingCredits: updatedCredits,
+        timestamp: new Date()
+      });
+      
       res.json({
         success: true,
         downloadReady: true,
         documentId: id,
-        message: "PDF download initiated"
+        creditsDeducted: 1,
+        remainingCredits: updatedCredits,
+        message: "PDF download initiated. 1 credit deducted from your account."
       });
     } catch (error: any) {
       console.error('SWMS download error:', error);

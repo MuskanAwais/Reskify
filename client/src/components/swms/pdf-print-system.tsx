@@ -50,6 +50,22 @@ export default function PDFPrintSystem({
     try {
       setIsGenerating(true);
       
+      // Check download endpoint first to validate credits and deduct
+      const downloadResponse = await apiRequest('GET', `/api/swms/${swmsId}/download`);
+      const downloadData = await downloadResponse.json();
+      
+      if (!downloadData.success) {
+        if (downloadResponse.status === 402) {
+          toast({
+            title: "Insufficient Credits",
+            description: downloadData.message,
+            variant: "destructive",
+          });
+          return;
+        }
+        throw new Error(downloadData.message);
+      }
+      
       // Prepare watermark data from form data
       const watermarkData = {
         projectName: formData.jobName || formData.projectName || 'SWMS Project',
@@ -86,9 +102,12 @@ export default function PDFPrintSystem({
         document.body.removeChild(a);
         
         toast({
-          title: "PDF Generated",
-          description: "Your SWMS document has been downloaded with project watermarks",
+          title: "PDF Downloaded",
+          description: `SWMS downloaded successfully. ${downloadData.creditsDeducted} credit deducted. ${downloadData.remainingCredits} credits remaining.`,
         });
+        
+        // Refresh credit count in UI
+        window.location.reload();
       }
       
       return response;
