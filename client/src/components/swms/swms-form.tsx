@@ -34,7 +34,7 @@ import {
   PenTool
 } from "lucide-react";
 import { SimplifiedTableEditor } from "./simplified-table-editor";
-import TaskSelectionClean from "./task-selection-clean";
+import GPTTaskSelection from "./gpt-task-selection";
 import { translate } from "@/lib/language-direct";
 import SmartTooltip from "@/components/ui/smart-tooltip";
 import QuickActionTooltip, { presetTooltips } from "@/components/ui/quick-action-tooltip";
@@ -199,12 +199,23 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
               <CardTitle>Task Selection Methods</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <TaskSelectionClean
-                tradeType={formData.tradeType || 'General'}
-                onTasksUpdate={(tasks) => updateFormData({ selectedTasks: tasks })}
-                selectedTasks={formData.selectedTasks || []}
-                onRiskAssessmentsUpdate={(assessments) => updateFormData({ riskAssessments: assessments })}
-                riskAssessments={formData.riskAssessments || []}
+              <GPTTaskSelection
+                projectDetails={{
+                  projectName: formData.projectName || '',
+                  location: formData.projectLocation || '',
+                  tradeType: formData.tradeType || '',
+                  description: formData.projectDescription || ''
+                }}
+                onActivitiesGenerated={(activities: any[], plantEquipment: any[]) => {
+                  updateFormData({ 
+                    selectedTasks: activities,
+                    plantEquipment: plantEquipment,
+                    generationMethod: 'gpt'
+                  });
+                }}
+                onMethodSelected={(method: string) => {
+                  updateFormData({ generationMethod: method });
+                }}
               />
             </CardContent>
           </Card>

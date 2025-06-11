@@ -74,7 +74,7 @@ export default function GPTTaskSelection({
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
 
   // Fetch available tasks for the trade type
-  const { data: taskOptions } = useQuery({
+  const { data: taskOptions } = useQuery<{ trade: string; tasks: TaskOption[] }>({
     queryKey: [`/api/gpt-tasks/${projectDetails.tradeType}`],
     enabled: !!projectDetails.tradeType && selectedMethod === "task-selection"
   });
@@ -155,9 +155,9 @@ export default function GPTTaskSelection({
     generateSWMSMutation.mutate(request);
   };
 
-  const filteredTasks = taskOptions?.tasks?.filter((task: TaskOption) =>
+  const filteredTasks = (taskOptions?.tasks || []).filter((task: TaskOption) =>
     task.name.toLowerCase().includes(searchQuery.toLowerCase())
-  ) || [];
+  );
 
   return (
     <div className="space-y-6">
