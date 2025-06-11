@@ -105,7 +105,7 @@ export async function generateSWMSFromTask(request: TaskGenerationRequest): Prom
         },
         {
           role: "user",
-          content: prompt || "Generate SWMS data"
+          content: prompt
         }
       ],
       response_format: { type: "json_object" },
@@ -115,18 +115,21 @@ export async function generateSWMSFromTask(request: TaskGenerationRequest): Prom
 
     // Add timeout to the API call
     const timeoutPromise = new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('API timeout')), 15000)
+      setTimeout(() => reject(new Error('API timeout')), 30000)
     );
 
-    const response = await Promise.race([apiCall, timeoutPromise]);
-
-    const result = JSON.parse((response as any).choices[0].message.content || '{}');
-    console.log('OpenAI API response received successfully');
-    return result as GeneratedSWMSData;
+    try {
+      const response = await Promise.race([apiCall, timeoutPromise]);
+      const result = JSON.parse((response as any).choices[0].message.content || '{}');
+      console.log('Riskify GPT response received successfully');
+      return result as GeneratedSWMSData;
+    } catch (apiError: any) {
+      console.log(`Riskify GPT unavailable (${apiError.message}), using intelligent generation system`);
+      return generateIntelligentSWMSData(request);
+    }
 
   } catch (error: any) {
-    console.error('OpenAI API error, falling back to intelligent generation:', error.message);
-    // Fallback to intelligent generation if OpenAI API fails
+    console.error('SWMS generation error:', error.message);
     return generateIntelligentSWMSData(request);
   }
 }
