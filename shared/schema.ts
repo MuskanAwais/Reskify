@@ -27,6 +27,8 @@ export const users = pgTable("users", {
   notificationsEnabled: boolean("notifications_enabled").default(true),
   twoFactorEnabled: boolean("two_factor_enabled").default(false),
   twoFactorSecret: text("two_factor_secret"),
+  isAdmin: boolean("is_admin").default(false),
+  lastActiveAt: timestamp("last_active_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

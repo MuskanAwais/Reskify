@@ -8,6 +8,9 @@ export interface IStorage {
   createUser(insertUser: InsertUser): Promise<User>;
   getAllUsers(): Promise<User[]>;
   updateUserCredits(userId: number, credits: number): Promise<void>;
+  updateUserLastActive(userId: number): Promise<void>;
+  updateUserPassword(userId: number, hashedPassword: string): Promise<void>;
+  updateUserAdminStatus(userId: number, isAdmin: boolean): Promise<void>;
   logCreditUsage(userId: number, usage: any): Promise<void>;
 }
 
@@ -39,6 +42,27 @@ export class DatabaseStorage implements IStorage {
     await db
       .update(users)
       .set({ swmsCredits: credits })
+      .where(eq(users.id, userId));
+  }
+
+  async updateUserLastActive(userId: number): Promise<void> {
+    await db
+      .update(users)
+      .set({ lastActiveAt: new Date() })
+      .where(eq(users.id, userId));
+  }
+
+  async updateUserPassword(userId: number, hashedPassword: string): Promise<void> {
+    await db
+      .update(users)
+      .set({ password: hashedPassword })
+      .where(eq(users.id, userId));
+  }
+
+  async updateUserAdminStatus(userId: number, isAdmin: boolean): Promise<void> {
+    await db
+      .update(users)
+      .set({ isAdmin })
       .where(eq(users.id, userId));
   }
 
