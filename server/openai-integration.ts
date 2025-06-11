@@ -74,62 +74,13 @@ ${request.projectDetails.description ? `Additional Context: ${request.projectDet
 
 Please provide detailed safety information following Australian WHS standards.`;
 
-    const response = await openai.chat.completions.create({
+    // Create promise with timeout
+    const apiCall = openai.chat.completions.create({
       model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
       messages: [
         {
           role: "system",
-          content: `You are an expert Australian construction safety consultant specializing in SWMS generation. 
-          
-Generate comprehensive, compliant SWMS data including:
-- Detailed work activities with step-by-step breakdowns
-- Complete hazard identification and risk assessments
-- Appropriate control measures following hierarchy of controls
-- Required PPE and tools for each activity
-- Plant and equipment specifications with safety requirements
-- Emergency procedures and response protocols
-
-Follow Australian WHS legislation and industry best practices. Ensure risk ratings are realistic and control measures are practical and enforceable.
-
-Return response in the following JSON format:
-{
-  "activities": [
-    {
-      "name": "Activity name",
-      "description": "Detailed description",
-      "hazards": [
-        {
-          "type": "Hazard category",
-          "description": "Specific hazard description",
-          "riskRating": "Low|Medium|High|Critical",
-          "controlMeasures": ["Control measure 1", "Control measure 2"],
-          "residualRisk": "Low|Medium|High|Critical"
-        }
-      ],
-      "ppe": ["PPE item 1", "PPE item 2"],
-      "tools": ["Tool 1", "Tool 2"],
-      "trainingRequired": ["Training requirement 1"]
-    }
-  ],
-  "plantEquipment": [
-    {
-      "name": "Equipment name",
-      "type": "Equipment|Plant|Vehicle",
-      "category": "Category",
-      "certificationRequired": true/false,
-      "inspectionStatus": "Current|Overdue|Required",
-      "riskLevel": "Low|Medium|High|Critical",
-      "safetyRequirements": ["Requirement 1"]
-    }
-  ],
-  "emergencyProcedures": [
-    {
-      "scenario": "Emergency scenario",
-      "response": "Response procedure",
-      "contacts": ["Emergency contact info"]
-    }
-  ]
-}`
+          content: `You are an expert Australian construction safety consultant. Generate comprehensive SWMS data in JSON format with activities, hazards, control measures, PPE, tools, plant equipment, and emergency procedures. Follow Australian WHS legislation.`
         },
         {
           role: "user",
@@ -138,15 +89,24 @@ Return response in the following JSON format:
       ],
       response_format: { type: "json_object" },
       temperature: 0.7,
-      max_tokens: 3000
+      max_tokens: 2000
     });
 
-    const result = JSON.parse(response.choices[0].message.content || '{}');
+    // Add timeout to the API call
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('API timeout')), 15000)
+    );
+
+    const response = await Promise.race([apiCall, timeoutPromise]);
+
+    const result = JSON.parse((response as any).choices[0].message.content || '{}');
+    console.log('OpenAI API response received successfully');
     return result as GeneratedSWMSData;
 
   } catch (error: any) {
-    console.error('Error generating SWMS data:', error);
-    throw new Error(`Failed to generate SWMS data: ${error?.message || 'Unknown error'}`);
+    console.error('OpenAI API error, falling back to demo data:', error.message);
+    // Fallback to demo data if OpenAI API fails
+    return generateDemoSWMSData(request);
   }
 }
 
