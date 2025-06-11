@@ -78,7 +78,7 @@ export default function BillingAnalytics() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Churn Rate</p>
-                <p className="text-2xl font-bold">{data.churnRate}%</p>
+                <p className="text-2xl font-bold">{(data as any).churnRate || 0}%</p>
               </div>
               <CreditCard className="h-8 w-8 text-red-500" />
             </div>
@@ -93,7 +93,7 @@ export default function BillingAnalytics() {
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={data.monthlyData}>
+              <LineChart data={(data as any).monthlyData || []}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="month" />
                 <YAxis />
@@ -110,7 +110,7 @@ export default function BillingAnalytics() {
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={data.planDistribution}>
+              <BarChart data={(data as any).planDistribution || []}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="plan" />
                 <YAxis />
@@ -138,20 +138,20 @@ export default function BillingAnalytics() {
                 </tr>
               </thead>
               <tbody>
-                {data.monthlyData.map((month, index) => (
+                {((data as any).monthlyData || []).map((month: any, index: number) => (
                   <tr key={month.month} className="border-b hover:bg-gray-50">
                     <td className="p-3 font-medium">{month.month}</td>
-                    <td className="p-3">${month.revenue.toLocaleString()}</td>
-                    <td className="p-3">{month.subscriptions}</td>
+                    <td className="p-3">${month.revenue?.toLocaleString() || '0'}</td>
+                    <td className="p-3">{month.subscriptions || 0}</td>
                     <td className="p-3">
-                      {index > 0 ? (
+                      {index > 0 && (data as any).monthlyData ? (
                         <span className={`${
-                          month.revenue > data.monthlyData[index-1].revenue 
+                          month.revenue > (data as any).monthlyData[index-1].revenue 
                             ? 'text-green-600' 
                             : 'text-red-600'
                         }`}>
-                          {month.revenue > data.monthlyData[index-1].revenue ? '+' : ''}
-                          {((month.revenue - data.monthlyData[index-1].revenue) / data.monthlyData[index-1].revenue * 100).toFixed(1)}%
+                          {month.revenue > (data as any).monthlyData[index-1].revenue ? '+' : ''}
+                          {((month.revenue - (data as any).monthlyData[index-1].revenue) / (data as any).monthlyData[index-1].revenue * 100).toFixed(1)}%
                         </span>
                       ) : '-'}
                     </td>
