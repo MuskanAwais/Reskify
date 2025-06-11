@@ -87,7 +87,7 @@ export default function Header() {
                   <ContactForm />
                 </div>
                 <DropdownMenuSeparator />
-                <Link href="/profile">
+                <Link href="/billing?tab=account">
                   <DropdownMenuItem>
                     <Settings className="mr-2 h-4 w-4" />
                     <span>Settings</span>
