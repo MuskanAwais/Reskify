@@ -902,10 +902,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error: any) {
       console.error('Get GPT tasks error:', error);
-      // Return empty array if GPT fails
-      res.json({
-        trade: req.params.tradeType,
-        tasks: []
+      res.status(500).json({
+        error: 'Failed to generate task list from GPT',
+        message: error.message,
+        trade: req.params.tradeType
       });
     }
   });

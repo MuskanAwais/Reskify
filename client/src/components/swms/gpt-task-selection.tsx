@@ -575,6 +575,28 @@ export default function GPTTaskSelection({
                 </div>
               </div>
 
+              {/* Generate SWMS Button with increased spacing */}
+              <div className="flex justify-end mt-8 mb-8">
+                <Button 
+                  onClick={handleGenerate}
+                  disabled={generateSWMSMutation.isPending}
+                  size="lg"
+                  className="min-w-40"
+                >
+                  {generateSWMSMutation.isPending ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                      Generating...
+                    </>
+                  ) : (
+                    <>
+                      <Bot className="h-4 w-4 mr-2" />
+                      Generate SWMS
+                    </>
+                  )}
+                </Button>
+              </div>
+
               {/* Progress Bar */}
               {generateSWMSMutation.isPending && (
                 <div className="space-y-2 mt-8">
@@ -1098,26 +1120,7 @@ export default function GPTTaskSelection({
                 </div>
               )}
 
-              <div className="flex justify-end">
-                <Button 
-                  onClick={handleGenerate}
-                  disabled={generateSWMSMutation.isPending}
-                  size="lg"
-                  className="min-w-40"
-                >
-                  {generateSWMSMutation.isPending ? (
-                    <>
-                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                      Generating...
-                    </>
-                  ) : (
-                    <>
-                      <Bot className="h-4 w-4 mr-2" />
-                      Generate SWMS
-                    </>
-                  )}
-                </Button>
-              </div>
+
             </>
           )}
         </CardContent>

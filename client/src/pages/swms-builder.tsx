@@ -39,7 +39,8 @@ export default function SwmsBuilder() {
     riskAssessments: [],
     safetyMeasures: [],
     complianceCodes: [],
-    acceptedDisclaimer: false
+    acceptedDisclaimer: false,
+    selectedTasks: []
   });
   const [isDraft, setIsDraft] = useState(false);
   const [draftId, setDraftId] = useState(null);
@@ -377,7 +378,7 @@ export default function SwmsBuilder() {
                 <Button 
                   onClick={handleNext} 
                   className="bg-primary hover:bg-primary/90"
-                  disabled={saveDraftMutation.isPending}
+                  disabled={saveDraftMutation.isPending || (currentStep === 2 && (!formData.selectedTasks || formData.selectedTasks.length === 0))}
                 >
                   {saveDraftMutation.isPending ? "Saving..." : "Continue"}
                   <ArrowRight className="ml-2 h-4 w-4" />
