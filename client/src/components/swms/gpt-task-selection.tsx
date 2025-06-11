@@ -378,6 +378,67 @@ export default function GPTTaskSelection({
                   Build your SWMS manually without AI assistance
                 </span>
               </div>
+
+              <div className="space-y-4">
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Enter task name (e.g., Install electrical outlets)"
+                    value={newTask}
+                    onChange={(e) => setNewTask(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && addTask()}
+                  />
+                  <Button onClick={addTask} disabled={!newTask.trim()}>
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
+
+                {taskList.length > 0 && (
+                  <div className="space-y-2">
+                    <Label>Manual Tasks:</Label>
+                    {taskList.map((task, index) => (
+                      <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border">
+                        <span className="flex-1">{task}</span>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeTaskFromList(task)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {taskList.length > 0 && (
+                  <div className="flex justify-end">
+                    <Button 
+                      onClick={() => {
+                        const manualActivities = taskList.map((task, index) => ({
+                          id: `manual-activity-${index + 1}`,
+                          name: task,
+                          description: "",
+                          hazards: [],
+                          ppe: [],
+                          tools: [],
+                          trainingRequired: [],
+                          selected: true
+                        }));
+                        onActivitiesGenerated(manualActivities, []);
+                        toast({
+                          title: "Manual Tasks Added",
+                          description: `${taskList.length} tasks ready for detailed SWMS completion.`,
+                        });
+                      }}
+                      size="lg"
+                      className="min-w-40"
+                    >
+                      <CheckCircle2 className="h-4 w-4 mr-2" />
+                      Create Manual SWMS
+                    </Button>
+                  </div>
+                )}
+              </div>
             </TabsContent>
           </Tabs>
 
