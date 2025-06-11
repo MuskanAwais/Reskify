@@ -38,7 +38,8 @@ export default function SwmsBuilder() {
     hazards: [],
     riskAssessments: [],
     safetyMeasures: [],
-    complianceCodes: []
+    complianceCodes: [],
+    acceptedDisclaimer: false
   });
   const [isDraft, setIsDraft] = useState(false);
   const [draftId, setDraftId] = useState(null);
@@ -174,7 +175,7 @@ export default function SwmsBuilder() {
     
     // Check for credits before proceeding to final document step (step 6)
     if (currentStep === 5) {
-      const creditsRemaining = subscription?.creditsRemaining || 0;
+      const creditsRemaining = subscription ? (subscription as any).creditsRemaining || 0 : 0;
       if (creditsRemaining === 0) {
         // Redirect to payment page if no credits
         setLocation("/payment");
@@ -214,10 +215,10 @@ export default function SwmsBuilder() {
   };
 
   // Check if user has access to AI generation (Pro+ only)
-  const hasAIAccess = subscription?.plan === "Pro" || subscription?.plan === "Enterprise";
+  const hasAIAccess = (subscription as any)?.plan === "Pro" || (subscription as any)?.plan === "Enterprise";
   
   // Check if user has access to custom branding (Pro+ only)
-  const hasCustomBranding = subscription?.plan === "Pro" || subscription?.plan === "Enterprise";
+  const hasCustomBranding = (subscription as any)?.plan === "Pro" || (subscription as any)?.plan === "Enterprise";
 
   // Handle AI-generated SWMS data on component mount
   useEffect(() => {
@@ -250,7 +251,8 @@ export default function SwmsBuilder() {
         hazards: [],
         riskAssessments: [],
         safetyMeasures: [],
-        complianceCodes: []
+        complianceCodes: [],
+        acceptedDisclaimer: false
       });
     }
   }, []);
