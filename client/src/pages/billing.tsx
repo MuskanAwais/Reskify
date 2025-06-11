@@ -57,15 +57,20 @@ export default function Billing() {
     queryFn: () => apiRequest('GET', '/api/user/settings')
   });
 
-  // Mock billing data - replace with real API calls
-  const billingData: BillingData = {
-    currentPlan: "Pro",
-    credits: 8,
-    monthlyLimit: 25,
+  // Fetch real billing data
+  const { data: billingResponse } = useQuery({
+    queryKey: ['/api/user/billing'],
+    queryFn: () => apiRequest('GET', '/api/user/billing')
+  });
+
+  const billingData: BillingData = billingResponse || {
+    currentPlan: "Free",
+    credits: 0,
+    monthlyLimit: 0,
     billingCycle: "monthly",
-    nextBillingDate: "2025-07-03",
-    totalSpent: 200,
-    creditsUsedThisMonth: 17
+    nextBillingDate: "",
+    totalSpent: 0,
+    creditsUsedThisMonth: 0
   };
 
   const userProfile: UserProfile = {
