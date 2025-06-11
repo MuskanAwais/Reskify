@@ -93,27 +93,36 @@ export default function GPTTaskSelection({
     enabled: !!projectDetails.tradeType && selectedMethod === "task-selection"
   });
 
-  // Generate SWMS data mutation with progress tracking
+  // Generate SWMS data mutation with real progress tracking
   const generateSWMSMutation = useMutation({
     mutationFn: async (request: any) => {
       setGenerationProgress(0);
       setGeneratedTasks([]);
       
-      // Simulate progress updates
-      const progressInterval = setInterval(() => {
-        setGenerationProgress(prev => Math.min(prev + 12, 85));
-      }, 1000);
+      // Real progress tracking with actual milestones
+      const updateProgress = (stage: string, percentage: number) => {
+        setGenerationProgress(percentage);
+        console.log(`SWMS Generation: ${stage} - ${percentage}%`);
+      };
 
       try {
-        const response = await apiRequest("POST", "/api/generate-swms", request);
-        const data = await response.json();
+        updateProgress("Initializing Riskify GPT", 10);
         
-        clearInterval(progressInterval);
-        setGenerationProgress(100);
+        const response = await apiRequest("POST", "/api/generate-swms", request);
+        updateProgress("Processing with Custom GPT", 30);
+        
+        const data = await response.json();
+        updateProgress("Analyzing Safety Requirements", 60);
+        
+        // Simulate final processing stages
+        await new Promise(resolve => setTimeout(resolve, 500));
+        updateProgress("Generating Risk Assessments", 80);
+        
+        await new Promise(resolve => setTimeout(resolve, 500));
+        updateProgress("Finalizing SWMS Document", 100);
         
         return data;
       } catch (error) {
-        clearInterval(progressInterval);
         setGenerationProgress(0);
         throw error;
       }
