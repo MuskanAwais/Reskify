@@ -260,8 +260,8 @@ export default function Sidebar() {
       <div className="p-6 h-full">
 
 
-        {/* Start Tour Button - Hidden after first use */}
-        {!tourCompleted && (
+        {/* Interface Tour Button - Hidden */}
+        {false && (
           <div className="mb-6">
             <Button
               variant="outline"

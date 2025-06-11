@@ -1400,6 +1400,34 @@ startxref
     }
   });
 
+  // User billing data endpoint
+  app.get("/api/user/billing", async (req, res) => {
+    try {
+      // In a real app, get current user from session/auth
+      const users = await dbStorage.getAllUsers();
+      const currentUser = users.find(user => user.id === 1) || users[0]; // Mock current user
+      
+      if (!currentUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const billingData = {
+        currentPlan: currentUser.subscriptionStatus === 'active' ? "Pro" : "Free",
+        credits: currentUser.swmsCredits || 0,
+        monthlyLimit: currentUser.subscriptionStatus === 'active' ? 100 : 0,
+        billingCycle: "monthly",
+        nextBillingDate: currentUser.subscriptionStatus === 'active' ? "2025-07-11" : "",
+        totalSpent: currentUser.subscriptionStatus === 'active' ? 49 : 0,
+        creditsUsedThisMonth: Math.max(0, (currentUser.swmsCredits || 0) - 5) // Estimate usage
+      };
+      
+      res.json(billingData);
+    } catch (error: any) {
+      console.error("Get user billing error:", error);
+      res.status(500).json({ message: "Failed to fetch billing data" });
+    }
+  });
+
   // Usage analytics endpoint
   app.get("/api/analytics/usage", async (req, res) => {
     try {

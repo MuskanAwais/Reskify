@@ -63,7 +63,7 @@ export default function Billing() {
     queryFn: () => apiRequest('GET', '/api/user/billing')
   });
 
-  const billingData: BillingData = billingResponse || {
+  const billingData: BillingData = (billingResponse as any) || {
     currentPlan: "Free",
     credits: 0,
     monthlyLimit: 0,
