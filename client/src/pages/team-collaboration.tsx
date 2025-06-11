@@ -147,21 +147,19 @@ export default function TeamCollaboration() {
 
   if (!hasTeamAccess) {
     return (
-      <div className="min-h-screen bg-gray-50 p-6">
-        <div className="max-w-4xl mx-auto">
-          <Card>
-            <CardContent className="p-8 text-center">
-              <Users className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-              <h2 className="text-2xl font-bold mb-2">Team Collaboration</h2>
-              <p className="text-gray-600 mb-6">
-                Team collaboration features are available with subscription plans only.
-              </p>
-              <Button onClick={() => setLocation('/billing')}>
-                Upgrade to Subscription
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
+      <div className="space-y-6">
+        <Card>
+          <CardContent className="p-8 text-center">
+            <Users className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold mb-2">Team Collaboration</h2>
+            <p className="text-gray-600 mb-6">
+              Team collaboration features are available with subscription plans only.
+            </p>
+            <Button onClick={() => setLocation('/billing')}>
+              Upgrade to Subscription
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     );
   }
@@ -195,16 +193,15 @@ export default function TeamCollaboration() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Team Collaboration</h1>
-          <p className="text-gray-600">Manage your team members and collaborative SWMS projects.</p>
-        </div>
+    <div className="space-y-6">
+      {/* Header */}
+      <div>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Team Collaboration</h1>
+        <p className="text-gray-600">Manage your team members and collaborative SWMS projects.</p>
+      </div>
 
-        {/* Navigation Tabs */}
-        <div className="flex space-x-1 mb-6">
+      {/* Navigation Tabs */}
+      <div className="flex space-x-1">
           <Button
             variant={selectedTab === "members" ? "default" : "ghost"}
             onClick={() => setSelectedTab("members")}
@@ -545,7 +542,6 @@ export default function TeamCollaboration() {
             </Card>
           </div>
         )}
-      </div>
     </div>
   );
 }

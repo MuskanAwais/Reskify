@@ -122,7 +122,7 @@ export default function MySwms() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto px-6 py-8">
+      <div className="space-y-6">
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
             <Clock className="h-8 w-8 animate-spin mx-auto mb-4 text-primary/600" />
@@ -134,9 +134,9 @@ export default function MySwms() {
   }
 
   return (
-    <div className="container mx-auto px-6 py-8">
+    <div className="space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">My SWMS Documents</h1>
           <p className="text-gray-600 mt-1">Manage and track your Safe Work Method Statements</p>
@@ -150,7 +150,7 @@ export default function MySwms() {
       </div>
 
       {/* Filters */}
-      <Card className="mb-6">
+      <Card>
         <CardContent className="pt-6">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1">
