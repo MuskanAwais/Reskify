@@ -14,6 +14,7 @@ import {
   DollarSign,
   ChevronDown
 } from "lucide-react";
+import Logo from "@/components/ui/logo";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
@@ -53,11 +54,8 @@ export function MobileHeader() {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 items-center justify-between px-4">
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-2">
-            <Shield className="h-6 w-6 text-primary" />
-            <span className="font-bold text-lg">Riskify</span>
-            <Badge variant="secondary" className="text-xs">AI SWMS Generator</Badge>
-          </div>
+          <Logo size="sm" />
+          <Badge variant="secondary" className="text-xs">AI SWMS Generator</Badge>
         </div>
 
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -69,10 +67,7 @@ export function MobileHeader() {
           <SheetContent side="right" className="w-80 p-0">
             <div className="flex flex-col h-full">
               <div className="flex items-center justify-between p-4 border-b">
-                <div className="flex items-center gap-2">
-                  <Shield className="h-5 w-5 text-primary" />
-                  <span className="font-bold">Riskify</span>
-                </div>
+                <Logo size="sm" />
                 <Button variant="ghost" size="sm" onClick={() => setIsOpen(false)}>
                   <X className="h-4 w-4" />
                 </Button>
