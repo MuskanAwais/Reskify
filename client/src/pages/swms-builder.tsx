@@ -120,7 +120,7 @@ export default function SwmsBuilder() {
     return errors;
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     // Validate step 1 before proceeding
     if (currentStep === 1) {
       const errors = validateStep1();
@@ -155,7 +155,13 @@ export default function SwmsBuilder() {
     }
     
     // Auto-save before moving to next step
-    autoSave();
+    if (formData.title || formData.jobName || formData.tradeType) {
+      try {
+        await saveDraftMutation.mutateAsync(formData);
+      } catch (error) {
+        console.error('Error saving draft:', error);
+      }
+    }
     
     if (currentStep < STEPS.length) {
       setCurrentStep(currentStep + 1);
@@ -312,7 +318,7 @@ export default function SwmsBuilder() {
             />
             
             {/* Navigation */}
-            <div className="flex justify-between items-center mt-8">
+            <div className="flex justify-between mt-8">
               <Button 
                 variant="outline" 
                 onClick={handlePrevious}
@@ -322,20 +328,13 @@ export default function SwmsBuilder() {
                 Previous
               </Button>
               
-              {/* Manual Save Button */}
-              <Button 
-                variant="outline" 
-                onClick={() => autoSave()}
-                disabled={saveDraftMutation.isPending}
-                className="flex items-center"
-              >
-                <Save className="mr-2 h-4 w-4" />
-                {saveDraftMutation.isPending ? "Saving..." : "Save Draft"}
-              </Button>
-              
               {currentStep < STEPS.length ? (
-                <Button onClick={handleNext} className="bg-primary hover:bg-primary/90">
-                  Continue
+                <Button 
+                  onClick={handleNext} 
+                  className="bg-primary hover:bg-primary/90"
+                  disabled={saveDraftMutation.isPending}
+                >
+                  {saveDraftMutation.isPending ? "Saving..." : "Continue"}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               ) : (
