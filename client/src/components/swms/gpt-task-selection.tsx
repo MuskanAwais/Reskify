@@ -106,10 +106,10 @@ export default function GPTTaskSelection({
       };
 
       try {
-        updateProgress("Initializing Riskify GPT", 10);
+        updateProgress("Initializing Riskify AI", 10);
         
         const response = await apiRequest("POST", "/api/generate-swms", request);
-        updateProgress("Processing with Custom GPT", 30);
+        updateProgress("Processing with Riskify AI", 30);
         
         const data = await response.json();
         updateProgress("Analyzing Safety Requirements", 60);
@@ -515,7 +515,7 @@ export default function GPTTaskSelection({
               {generateSWMSMutation.isPending && (
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">Generating SWMS with Riskify GPT...</span>
+                    <span className="text-sm font-medium">Generating SWMS with Riskify AI...</span>
                     <span className="text-sm text-gray-500">{generationProgress}%</span>
                   </div>
                   <Progress value={generationProgress} className="w-full" />

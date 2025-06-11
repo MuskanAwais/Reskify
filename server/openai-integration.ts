@@ -57,8 +57,8 @@ export interface GeneratedSWMSData {
 
 export async function generateSWMSFromTask(request: TaskGenerationRequest): Promise<GeneratedSWMSData> {
   try {
-    // Enable custom GPT integration for testing
-    console.log('Generating SWMS with Riskify custom GPT...');
+    // Enable custom AI integration for testing
+    console.log('Generating SWMS with Riskify AI...');
       
       // Determine the mode and create appropriate prompt
       const tradeName = request.projectDetails.tradeType;
@@ -121,10 +121,10 @@ export async function generateSWMSFromTask(request: TaskGenerationRequest): Prom
     try {
       const response = await Promise.race([apiCall, timeoutPromise]);
       const result = JSON.parse((response as any).choices[0].message.content || '{}');
-      console.log('Riskify GPT response received successfully');
+      console.log('Riskify AI response received successfully');
       return result as GeneratedSWMSData;
     } catch (apiError: any) {
-      console.log(`Riskify GPT unavailable (${apiError.message}), using intelligent generation system`);
+      console.log(`Riskify AI unavailable (${apiError.message}), using intelligent generation system`);
       return generateIntelligentSWMSData(request);
     }
 
