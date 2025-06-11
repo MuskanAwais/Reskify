@@ -25,43 +25,13 @@ const Logo: React.FC<LogoProps> = ({
 
   return (
     <div className={`flex items-center ${className}`}>
-      {/* Riskify Logo with Icon */}
-      <div className="flex items-center gap-3">
-        {/* Logo Icon */}
-        <div className={`${sizeClasses[size]} flex-shrink-0`}>
-          <svg viewBox="0 0 48 48" className="w-full h-full">
-            <defs>
-              <linearGradient id="riskifyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#1e3a8a" />
-                <stop offset="100%" stopColor="#0f172a" />
-              </linearGradient>
-            </defs>
-            {/* Shield background */}
-            <path
-              d="M24 4L40 10V24C40 32 32 38 24 44C16 38 8 32 8 24V10L24 4Z"
-              fill="url(#riskifyGrad)"
-              stroke="#ffffff"
-              strokeWidth="1"
-            />
-            {/* Inner shield design */}
-            <path
-              d="M24 8L34 12V22C34 28 29 32 24 36C19 32 14 28 14 22V12L24 8Z"
-              fill="#ffffff"
-              fillOpacity="0.15"
-            />
-            {/* Safety symbol */}
-            <circle cx="24" cy="20" r="4" fill="#ffffff" fillOpacity="0.8" />
-            <path
-              d="M24 16L26 18L24 20L22 18Z"
-              fill="url(#riskifyGrad)"
-            />
-            {/* Hard hat outline */}
-            <path
-              d="M18 28C18 30 20 32 24 32C28 32 30 30 30 28H18Z"
-              fill="#ffffff"
-              fillOpacity="0.6"
-            />
-          </svg>
+      {/* Clean Riskify Logo */}
+      <div className="flex items-center gap-2">
+        {/* Simple Icon */}
+        <div className={`${sizeClasses[size]} flex-shrink-0 flex items-center justify-center`}>
+          <div className="w-full h-full bg-gradient-to-br from-blue-600 to-blue-800 rounded-lg flex items-center justify-center">
+            <span className="text-white font-bold text-xs">R</span>
+          </div>
         </div>
         
         {/* Brand Text */}
