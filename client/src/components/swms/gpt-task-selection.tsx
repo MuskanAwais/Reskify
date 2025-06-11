@@ -11,7 +11,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import { Loader2, Search, Bot, Edit, CheckCircle2, AlertCircle } from "lucide-react";
+import { Loader2, Search, Bot, Edit, CheckCircle2, AlertCircle, Plus, Trash2 } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 
 interface ProjectDetails {
@@ -82,6 +83,10 @@ export default function GPTTaskSelection({
   const [siteEnvironment, setSiteEnvironment] = useState<string>("");
   const [specialRiskFactors, setSpecialRiskFactors] = useState<string[]>([]);
   const [selectedState, setSelectedState] = useState<string>("NSW");
+  const [generationProgress, setGenerationProgress] = useState(0);
+  const [generatedTasks, setGeneratedTasks] = useState<any[]>([]);
+  const [isEditing, setIsEditing] = useState(false);
+  const [liveTaskDisplay, setLiveTaskDisplay] = useState<string[]>([]);
 
   // Fetch available tasks for the trade type
   const { data: taskOptions } = useQuery<{ trade: string; tasks: TaskOption[] }>({
@@ -92,8 +97,27 @@ export default function GPTTaskSelection({
   // Generate SWMS data mutation
   const generateSWMSMutation = useMutation({
     mutationFn: async (request: any) => {
-      const response = await apiRequest("POST", "/api/generate-swms", request);
-      return response.json();
+      setGenerationProgress(0);
+      setGeneratedTasks([]);
+      
+      // Simulate progress updates
+      const progressInterval = setInterval(() => {
+        setGenerationProgress(prev => Math.min(prev + 12, 85));
+      }, 1000);
+
+      try {
+        const response = await apiRequest("POST", "/api/generate-swms", request);
+        const data = await response.json();
+        
+        clearInterval(progressInterval);
+        setGenerationProgress(100);
+        
+        return data;
+      } catch (error) {
+        clearInterval(progressInterval);
+        setGenerationProgress(0);
+        throw error;
+      }
     },
     onSuccess: (data) => {
       if (data.success) {
@@ -214,15 +238,15 @@ export default function GPTTaskSelection({
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="task-selection" className="flex items-center gap-2">
                 <Search className="h-4 w-4" />
-                Task Selection
+                Specific Tasks
               </TabsTrigger>
               <TabsTrigger value="plain-text" className="flex items-center gap-2">
                 <Edit className="h-4 w-4" />
-                Plain Text Description
+                Job Description
               </TabsTrigger>
               <TabsTrigger value="manual" className="flex items-center gap-2">
                 <Edit className="h-4 w-4" />
-                Manual Input
+                Manual
               </TabsTrigger>
             </TabsList>
 
