@@ -315,8 +315,8 @@ export default function Sidebar() {
                   variant="ghost"
                   className={`w-full justify-start ${
                     isActive 
-                      ? 'bg-primary/50 text-primary hover:bg-primary/50' 
-                      : 'text-gray-600 hover:bg-gray-50'
+                      ? 'bg-primary/50 text-primary hover:bg-primary/60 hover:text-primary' 
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-800'
                   }`}
                 >
                   <Icon className="mr-3 h-4 w-4" />
