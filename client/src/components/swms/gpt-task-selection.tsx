@@ -84,6 +84,7 @@ export default function GPTTaskSelection({
   const [specialRiskFactors, setSpecialRiskFactors] = useState<string[]>([]);
   const [selectedState, setSelectedState] = useState("NSW");
   const [generationProgress, setGenerationProgress] = useState(0);
+  const [progressStatus, setProgressStatus] = useState("");
   const [generatedTasks, setGeneratedTasks] = useState<any[]>([]);
   const [isEditing, setIsEditing] = useState(false);
 
@@ -102,6 +103,7 @@ export default function GPTTaskSelection({
       // Real progress tracking with actual milestones
       const updateProgress = (stage: string, percentage: number) => {
         setGenerationProgress(percentage);
+        setProgressStatus(stage);
         console.log(`SWMS Generation: ${stage} - ${percentage}%`);
       };
 
@@ -515,7 +517,7 @@ export default function GPTTaskSelection({
               {generateSWMSMutation.isPending && (
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">Generating SWMS with Riskify AI...</span>
+                    <span className="text-sm font-medium">{progressStatus || "Generating SWMS with Riskify AI..."}</span>
                     <span className="text-sm text-gray-500">{generationProgress}%</span>
                   </div>
                   <Progress value={generationProgress} className="w-full" />
@@ -532,22 +534,85 @@ export default function GPTTaskSelection({
                     </Button>
                   </div>
                   
-                  <div className="space-y-2">
+                  <div className="space-y-4">
                     {generatedTasks.map((task, index) => (
-                      <div key={task.id} className="flex items-center gap-2 p-3 border rounded-lg">
-                        <span className="w-8 text-sm text-gray-500">{index + 1}.</span>
-                        <Input
-                          value={task.name}
-                          onChange={(e) => updateTaskName(task.id, e.target.value)}
-                          className="flex-1"
-                        />
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => removeTask(task.id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                      <div key={task.id} className="border rounded-lg p-4 bg-gray-50">
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-2">
+                              <span className="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center text-sm font-medium">{index + 1}</span>
+                              <Input
+                                value={task.name}
+                                onChange={(e) => updateTaskName(task.id, e.target.value)}
+                                className="flex-1 font-medium"
+                                placeholder="Task name"
+                              />
+                            </div>
+                            <p className="text-sm text-gray-600 mb-3">{task.description}</p>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeTask(task.id)}
+                            className="text-red-600 hover:text-red-700"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                          {/* Hazards */}
+                          <div>
+                            <h5 className="font-medium text-gray-700 mb-2">Key Hazards</h5>
+                            <div className="space-y-1">
+                              {task.hazards?.slice(0, 2).map((hazard: any, i: number) => (
+                                <div key={i} className="flex items-center gap-2">
+                                  <span className={`w-2 h-2 rounded-full ${hazard.riskRating === 'High' ? 'bg-red-500' : hazard.riskRating === 'Medium' ? 'bg-yellow-500' : 'bg-green-500'}`}></span>
+                                  <span className="text-gray-600">{hazard.type}: {hazard.description.slice(0, 50)}...</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* PPE */}
+                          <div>
+                            <h5 className="font-medium text-gray-700 mb-2">Required PPE</h5>
+                            <div className="flex flex-wrap gap-1">
+                              {task.ppe?.slice(0, 3).map((item: string, i: number) => (
+                                <span key={i} className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">{item}</span>
+                              ))}
+                              {task.ppe?.length > 3 && (
+                                <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">+{task.ppe.length - 3} more</span>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Tools */}
+                          <div>
+                            <h5 className="font-medium text-gray-700 mb-2">Tools & Equipment</h5>
+                            <div className="flex flex-wrap gap-1">
+                              {task.tools?.slice(0, 3).map((tool: string, i: number) => (
+                                <span key={i} className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">{tool}</span>
+                              ))}
+                              {task.tools?.length > 3 && (
+                                <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">+{task.tools.length - 3} more</span>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Training */}
+                          <div>
+                            <h5 className="font-medium text-gray-700 mb-2">Training Required</h5>
+                            <div className="flex flex-wrap gap-1">
+                              {task.trainingRequired?.slice(0, 2).map((training: string, i: number) => (
+                                <span key={i} className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded">{training}</span>
+                              ))}
+                              {task.trainingRequired?.length > 2 && (
+                                <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">+{task.trainingRequired.length - 2} more</span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     ))}
                   </div>

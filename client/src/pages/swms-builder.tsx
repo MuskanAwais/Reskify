@@ -217,14 +217,29 @@ export default function SwmsBuilder() {
     }
   }, []);
 
-  const handlePrevious = () => {
+  const handlePrevious = async () => {
+    // Auto-save before moving to previous step
+    if (formData.title || formData.jobName || formData.tradeType) {
+      try {
+        await saveDraftMutation.mutateAsync(formData);
+      } catch (error) {
+        console.error('Error saving draft:', error);
+      }
+    }
+    
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
     }
   };
 
   const handleFormDataChange = (data: any) => {
-    setFormData(prev => ({ ...prev, ...data }));
+    const newFormData = { ...formData, ...data };
+    setFormData(newFormData);
+    
+    // Auto-save form data changes
+    if (newFormData.title || newFormData.jobName || newFormData.tradeType) {
+      saveDraftMutation.mutate(newFormData);
+    }
   };
 
   return (
