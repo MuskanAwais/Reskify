@@ -105,45 +105,67 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center p-4">
-      <div className="max-w-md w-full">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Background decorative elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-100 dark:bg-blue-900/20 rounded-full blur-3xl opacity-50"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-green-100 dark:bg-green-900/20 rounded-full blur-3xl opacity-50"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-blue-50 to-green-50 dark:from-blue-900/10 dark:to-green-900/10 rounded-full blur-3xl opacity-30"></div>
+      </div>
+
+      <div className="max-w-md w-full relative z-10">
         <div className="text-center mb-8">
-          <div className="flex items-center justify-center mb-4">
-            <img 
-              src="/assets/riskify-logo.png" 
-              alt="Riskify"
-              className="h-32 w-auto object-contain"
-            />
+          <div className="flex items-center justify-center mb-6">
+            <div className="relative">
+              <img 
+                src="/assets/riskify-logo.png" 
+                alt="Riskify"
+                className="h-28 w-auto object-contain drop-shadow-lg"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-green-500/20 rounded-full blur-xl -z-10"></div>
+            </div>
           </div>
-          <p className="text-gray-600">Professional safety documentation for Australian construction</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Welcome to Riskify</h1>
+          <p className="text-gray-600 dark:text-gray-300 text-sm">Professional safety documentation for Australian construction</p>
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Welcome to Riskify</CardTitle>
-            <CardDescription>
+        <Card className="backdrop-blur-sm bg-white/80 dark:bg-slate-800/80 border-0 shadow-2xl shadow-blue-500/10">
+          <CardHeader className="text-center pb-6">
+            <CardTitle className="text-xl font-semibold text-gray-900 dark:text-white">Get Started</CardTitle>
+            <CardDescription className="text-gray-600 dark:text-gray-300">
               Sign in to your account or create a new one to start building professional SWMS documents
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="login" className="w-full">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="login">Sign In</TabsTrigger>
-                <TabsTrigger value="register">Sign Up</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-2 bg-gray-100 dark:bg-slate-700 rounded-lg p-1 mb-6">
+                <TabsTrigger 
+                  value="login" 
+                  className="rounded-md text-sm font-medium transition-all data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm dark:data-[state=active]:bg-slate-800 dark:data-[state=active]:text-white"
+                >
+                  Sign In
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="register" 
+                  className="rounded-md text-sm font-medium transition-all data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm dark:data-[state=active]:bg-slate-800 dark:data-[state=active]:text-white"
+                >
+                  Sign Up
+                </TabsTrigger>
               </TabsList>
 
-              <TabsContent value="login">
+              <TabsContent value="login" className="space-y-6">
                 <Form {...loginForm}>
-                  <form onSubmit={loginForm.handleSubmit(onLogin)} className="space-y-4">
+                  <form onSubmit={loginForm.handleSubmit(onLogin)} className="space-y-5">
                     <FormField
                       control={loginForm.control}
                       name="username"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Email or Mobile Number</FormLabel>
+                          <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">Email or Mobile Number</FormLabel>
                           <FormControl>
                             <Input 
                               placeholder="email@example.com or 04xxxxxxxx" 
+                              className="h-12 px-4 bg-gray-50 dark:bg-slate-700 border-gray-200 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                               {...field} 
                             />
                           </FormControl>
@@ -156,9 +178,14 @@ export default function AuthPage() {
                       name="password"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Password</FormLabel>
+                          <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">Password</FormLabel>
                           <FormControl>
-                            <Input type="password" {...field} />
+                            <Input 
+                              type="password" 
+                              placeholder="Enter your password"
+                              className="h-12 px-4 bg-gray-50 dark:bg-slate-700 border-gray-200 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                              {...field} 
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -166,27 +193,72 @@ export default function AuthPage() {
                     />
                     <Button 
                       type="submit" 
-                      className="w-full"
+                      className="w-full h-12 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02]"
                       disabled={loginMutation.isPending}
                     >
-                      {loginMutation.isPending ? "Signing in..." : "Sign In"}
+                      {loginMutation.isPending ? (
+                        <div className="flex items-center justify-center">
+                          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                          Signing in...
+                        </div>
+                      ) : (
+                        "Sign In"
+                      )}
                     </Button>
                   </form>
                 </Form>
               </TabsContent>
 
-              <TabsContent value="register">
+              <TabsContent value="register" className="space-y-6">
                 <Form {...registerForm}>
                   <form onSubmit={registerForm.handleSubmit(onRegister)} className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <FormField
+                        control={registerForm.control}
+                        name="name"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">Full Name</FormLabel>
+                            <FormControl>
+                              <Input 
+                                placeholder="John Smith" 
+                                className="h-11 px-4 bg-gray-50 dark:bg-slate-700 border-gray-200 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                                {...field} 
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={registerForm.control}
+                        name="companyName"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">Company Name</FormLabel>
+                            <FormControl>
+                              <Input 
+                                placeholder="ABC Construction Pty Ltd" 
+                                className="h-11 px-4 bg-gray-50 dark:bg-slate-700 border-gray-200 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                                {...field} 
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    
                     <FormField
                       control={registerForm.control}
                       name="username"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Email or Mobile Number</FormLabel>
+                          <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">Email or Mobile Number</FormLabel>
                           <FormControl>
                             <Input 
                               placeholder="email@example.com or 04xxxxxxxx" 
+                              className="h-11 px-4 bg-gray-50 dark:bg-slate-700 border-gray-200 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                               {...field} 
                             />
                           </FormControl>
@@ -194,54 +266,35 @@ export default function AuthPage() {
                         </FormItem>
                       )}
                     />
+                    
                     <FormField
                       control={registerForm.control}
                       name="password"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Password</FormLabel>
+                          <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">Password</FormLabel>
                           <FormControl>
-                            <Input type="password" {...field} />
+                            <Input 
+                              type="password" 
+                              placeholder="Create a secure password"
+                              className="h-11 px-4 bg-gray-50 dark:bg-slate-700 border-gray-200 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                              {...field} 
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-                    <FormField
-                      control={registerForm.control}
-                      name="name"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Full Name</FormLabel>
-                          <FormControl>
-                            <Input placeholder="John Smith" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={registerForm.control}
-                      name="companyName"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Company Name</FormLabel>
-                          <FormControl>
-                            <Input placeholder="ABC Construction Pty Ltd" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                    
                     <FormField
                       control={registerForm.control}
                       name="primaryTrade"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Primary Trade</FormLabel>
+                          <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">Primary Trade</FormLabel>
                           <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl>
-                              <SelectTrigger>
+                              <SelectTrigger className="h-11 px-4 bg-gray-50 dark:bg-slate-700 border-gray-200 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
                                 <SelectValue placeholder="Select your primary trade" />
                               </SelectTrigger>
                             </FormControl>
@@ -259,10 +312,17 @@ export default function AuthPage() {
                     />
                     <Button 
                       type="submit" 
-                      className="w-full"
+                      className="w-full h-12 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-medium rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02]"
                       disabled={registerMutation.isPending}
                     >
-                      {registerMutation.isPending ? "Creating account..." : "Create Account"}
+                      {registerMutation.isPending ? (
+                        <div className="flex items-center justify-center">
+                          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                          Creating account...
+                        </div>
+                      ) : (
+                        "Create Account"
+                      )}
                     </Button>
                   </form>
                 </Form>
@@ -271,8 +331,21 @@ export default function AuthPage() {
           </CardContent>
         </Card>
 
-        <div className="text-center mt-6 text-sm text-gray-500">
-          <p>By signing up, you agree to our Terms of Service and Privacy Policy</p>
+        <div className="text-center mt-8 space-y-3">
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            By signing up, you agree to our{" "}
+            <span className="text-blue-600 dark:text-blue-400 hover:underline cursor-pointer">Terms of Service</span>
+            {" "}and{" "}
+            <span className="text-blue-600 dark:text-blue-400 hover:underline cursor-pointer">Privacy Policy</span>
+          </p>
+          <div className="flex items-center justify-center space-x-4 text-xs text-gray-400 dark:text-gray-500">
+            <Shield className="h-4 w-4" />
+            <span>Secure & Encrypted</span>
+            <span>•</span>
+            <span>Australian Compliance</span>
+            <span>•</span>
+            <span>Professional Grade</span>
+          </div>
         </div>
       </div>
     </div>
