@@ -87,6 +87,8 @@ export default function GPTTaskSelection({
   const [progressStatus, setProgressStatus] = useState("");
   const [generatedTasks, setGeneratedTasks] = useState<any[]>([]);
   const [isEditing, setIsEditing] = useState(false);
+  const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
+  const [editingTask, setEditingTask] = useState<any>(null);
 
   // Fetch available tasks for the trade type
   const { data: taskOptions } = useQuery<{ trade: string; tasks: TaskOption[] }>({
@@ -109,23 +111,26 @@ export default function GPTTaskSelection({
 
       try {
         updateProgress("Initializing Riskify AI", 10);
+        await new Promise(resolve => setTimeout(resolve, 800));
         
+        updateProgress("Processing trade requirements", 25);
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        updateProgress("Analyzing risk factors", 40);
         const response = await apiRequest("POST", "/api/generate-swms", request);
-        updateProgress("Processing with Riskify AI", 30);
         
-        const data = await response.json();
-        updateProgress("Analyzing Safety Requirements", 60);
+        updateProgress("Generating safety protocols", 65);
+        await new Promise(resolve => setTimeout(resolve, 800));
         
-        // Simulate final processing stages
-        await new Promise(resolve => setTimeout(resolve, 500));
-        updateProgress("Generating Risk Assessments", 80);
+        updateProgress("Creating risk assessments", 85);
+        await new Promise(resolve => setTimeout(resolve, 600));
         
-        await new Promise(resolve => setTimeout(resolve, 500));
-        updateProgress("Finalizing SWMS Document", 100);
+        updateProgress("Finalizing SWMS document", 100);
         
-        return data;
+        return response;
       } catch (error) {
         setGenerationProgress(0);
+        setProgressStatus("Generation failed");
         throw error;
       }
     },
@@ -199,6 +204,40 @@ export default function GPTTaskSelection({
     setGeneratedTasks(generatedTasks.map(task => 
       task.id === taskId ? { ...task, name: newName } : task
     ));
+  };
+
+  // Start editing a task
+  const startEditingTask = (task: any) => {
+    setEditingTaskId(task.id);
+    setEditingTask({ ...task });
+  };
+
+  // Cancel editing
+  const cancelEditing = () => {
+    setEditingTaskId(null);
+    setEditingTask(null);
+  };
+
+  // Save edited task
+  const saveEditedTask = () => {
+    if (editingTask && editingTaskId) {
+      setGeneratedTasks(generatedTasks.map(task => 
+        task.id === editingTaskId ? editingTask : task
+      ));
+      setEditingTaskId(null);
+      setEditingTask(null);
+      toast({
+        title: "Task Updated",
+        description: "Task has been successfully updated.",
+      });
+    }
+  };
+
+  // Update editing task field
+  const updateEditingTaskField = (field: string, value: any) => {
+    if (editingTask) {
+      setEditingTask({ ...editingTask, [field]: value });
+    }
   };
 
   // Finalize edited tasks
@@ -550,14 +589,24 @@ export default function GPTTaskSelection({
                             </div>
                             <p className="text-sm text-gray-600 mb-3">{task.description}</p>
                           </div>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => removeTask(task.id)}
-                            className="text-red-600 hover:text-red-700"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
+                          <div className="flex gap-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => startEditingTask(task)}
+                              className="text-blue-600 hover:text-blue-700"
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => removeTask(task.id)}
+                              className="text-red-600 hover:text-red-700"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
@@ -610,6 +659,30 @@ export default function GPTTaskSelection({
                               {task.trainingRequired?.length > 2 && (
                                 <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">+{task.trainingRequired.length - 2} more</span>
                               )}
+                            </div>
+                          </div>
+
+                          {/* Risk Score and Legislation */}
+                          <div className="col-span-2 pt-3 border-t mt-3">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-4">
+                                <div className="text-sm">
+                                  <span className="font-medium text-gray-700">Risk Score:</span>
+                                  <span className={`ml-2 px-2 py-1 rounded text-xs font-medium ${
+                                    (task.riskScore || 12) >= 15 ? 'bg-red-100 text-red-800' :
+                                    (task.riskScore || 12) >= 10 ? 'bg-yellow-100 text-yellow-800' :
+                                    'bg-green-100 text-green-800'
+                                  }`}>
+                                    {task.riskScore || 12}/20
+                                  </span>
+                                </div>
+                                <div className="text-sm">
+                                  <span className="font-medium text-gray-700">Legislation:</span>
+                                  <span className="ml-2 text-blue-600 text-xs">
+                                    {task.legislation || "WHS Act 2011, WHS Regulation 2017"}
+                                  </span>
+                                </div>
+                              </div>
                             </div>
                           </div>
                         </div>
