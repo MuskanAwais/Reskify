@@ -370,40 +370,7 @@ export default function Sidebar() {
           </>
         )}
 
-        {/* Subscription Status */}
-        <Separator className="my-6" />
-        <Card className="bg-slate-50 border-slate-200" data-tour="subscription-status">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-slate-700">Current Plan</span>
-              <CreditCard className="h-4 w-4 text-slate-500" />
-            </div>
-            <p className="text-xs text-slate-600 mb-3">
-              {mockSubscription?.plan === 'subscription' ? 'Subscription Plan' : 'One-Off SWMS'}
-            </p>
-            <div className="text-xs text-slate-600">
-              <div className="flex justify-between items-center mb-1">
-                <span>Credits Used</span>
-                <span className="font-medium">
-                  {mockSubscription?.creditsUsed || 2}/{mockSubscription?.plan === 'subscription' ? 10 : 'Per SWMS'}
-                </span>
-              </div>
-              {mockSubscription?.plan === 'subscription' && (
-                <div className="w-full bg-slate-200 rounded-full h-2">
-                  <div 
-                    className="bg-primary h-2 rounded-full transition-all duration-300" 
-                    style={{ 
-                      width: `${((mockSubscription?.creditsUsed || 2) / 10) * 100}%` 
-                    }}
-                  ></div>
-                </div>
-              )}
-              {mockSubscription?.plan !== 'subscription' && (
-                <p className="text-xs text-slate-500 mt-1">Pay per SWMS document</p>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+
       </div>
 
       {/* Tour Component */}

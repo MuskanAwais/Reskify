@@ -72,7 +72,40 @@ export default function Payment() {
           </div>
         </div>
 
-
+        {/* Current Plan Status */}
+        <Card className="mb-8 border-slate-200 bg-white/70 backdrop-blur-sm">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-lg">Current Plan</CardTitle>
+                <CardDescription>{mockSubscription.plan}</CardDescription>
+              </div>
+              <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                {mockSubscription.isActive ? "Active" : "Inactive"}
+              </Badge>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              <div className="flex justify-between text-sm">
+                <span>Credits Used</span>
+                <span className="font-medium">{mockSubscription.creditsUsed}/{mockSubscription.creditsTotal} SWMS</span>
+              </div>
+              <Progress value={creditsProgress} className="h-2" />
+              <p className="text-sm text-muted-foreground">
+                Pay per SWMS document
+              </p>
+              
+              {mockSubscription.creditsRemaining === 0 && (
+                <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                  <p className="text-sm text-amber-800">
+                    <strong>No credits remaining.</strong> Purchase a one-off SWMS, additional credits, or upgrade to a subscription to continue.
+                  </p>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Payment Options */}
         <div className="grid md:grid-cols-3 gap-6 mb-8">
