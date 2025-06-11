@@ -17,6 +17,9 @@ interface ProjectDetails {
   location: string;
   tradeType: string;
   description?: string;
+  siteEnvironment?: string;
+  specialRiskFactors?: string[];
+  state?: string;
 }
 
 interface TaskOption {
@@ -72,6 +75,11 @@ export default function GPTTaskSelection({
   const [plainTextDescription, setPlainTextDescription] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
+  const [taskList, setTaskList] = useState<string[]>([]);
+  const [newTask, setNewTask] = useState<string>("");
+  const [siteEnvironment, setSiteEnvironment] = useState<string>("");
+  const [specialRiskFactors, setSpecialRiskFactors] = useState<string[]>([]);
+  const [selectedState, setSelectedState] = useState<string>("NSW");
 
   // Fetch available tasks for the trade type
   const { data: taskOptions } = useQuery<{ trade: string; tasks: TaskOption[] }>({

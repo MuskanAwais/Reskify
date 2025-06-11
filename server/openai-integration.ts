@@ -9,14 +9,19 @@ const openai = new OpenAI({
 });
 
 export interface TaskGenerationRequest {
-  taskName: string;
+  taskName?: string;
   projectDetails: {
     projectName: string;
     location: string;
     tradeType: string;
     description?: string;
+    siteEnvironment?: string; // Residential, Commercial, Civil, Industrial, Remote, High-rise
+    specialRiskFactors?: string[]; // Confined space, live electrical, structural demolition, height >2m, airside works
+    state?: string; // NSW, VIC, QLD, etc.
   };
-  plainTextDescription?: string; // For plain text input method
+  plainTextDescription?: string; // For Job Mode
+  taskList?: string[]; // For Task Mode - array of specific tasks
+  mode?: 'job' | 'task'; // Generation mode
 }
 
 export interface GeneratedSWMSData {
@@ -54,30 +59,47 @@ export async function generateSWMSFromTask(request: TaskGenerationRequest): Prom
   try {
     // Check if we should use OpenAI API (enabled when OPENAI_ENABLED=true)
     if (process.env.OPENAI_ENABLED === 'true') {
-      console.log('Generating SWMS with OpenAI GPT-4o...');
+      console.log('Generating SWMS with custom GPT...');
+      
+      // Determine the mode and create appropriate prompt
+      const tradeName = request.projectDetails.tradeType;
+      const state = request.projectDetails.state || 'NSW';
+      const siteEnvironment = request.projectDetails.siteEnvironment || '';
+      const specialRiskFactors = request.projectDetails.specialRiskFactors || [];
+      
+      let prompt = '';
+      
+      if (request.mode === 'task' && request.taskList && request.taskList.length > 0) {
+        // Task Mode: Generate SWMS for specific tasks
+        const taskListText = request.taskList.join('", "');
+        prompt = `Generate SWMS entries for the following tasks as a ${tradeName}: ["${taskListText}"]. Include each task on a separate row with full hazard, control, and compliance details.`;
+        
+        if (siteEnvironment) {
+          prompt += ` Site Environment: ${siteEnvironment}.`;
+        }
+        if (specialRiskFactors.length > 0) {
+          prompt += ` Special Risk Factors: ${specialRiskFactors.join(', ')}.`;
+        }
+        prompt += ` State: ${state}.`;
+        
+      } else {
+        // Job Mode: Generate 10+ SWMS tasks from job description
+        const jobDescription = request.plainTextDescription || request.projectDetails.description || request.taskName || 'General construction work';
+        prompt = `Generate at least 10 SWMS tasks for this project for a ${tradeName}: ${jobDescription}. Break it down into logical, industry-accurate tasks and generate full SWMS data for each.`;
+        
+        if (siteEnvironment) {
+          prompt += ` Site Environment: ${siteEnvironment}.`;
+        }
+        if (specialRiskFactors.length > 0) {
+          prompt += ` Special Risk Factors: ${specialRiskFactors.join(', ')}.`;
+        }
+        prompt += ` State: ${state}.`;
+      }
+      
     } else {
       console.log('Using intelligent SWMS generation system...');
       return generateIntelligentSWMSData(request);
     }
-
-    const prompt = request.plainTextDescription 
-      ? `Generate a comprehensive SWMS (Safe Work Method Statement) for the following work description:
-
-Work Description: ${request.plainTextDescription}
-Project: ${request.projectDetails.projectName}
-Location: ${request.projectDetails.location}
-Trade: ${request.projectDetails.tradeType}
-
-Please provide detailed safety information following Australian WHS standards.`
-      : `Generate a comprehensive SWMS (Safe Work Method Statement) for the following task:
-
-Task: ${request.taskName}
-Project: ${request.projectDetails.projectName}
-Location: ${request.projectDetails.location}
-Trade: ${request.projectDetails.tradeType}
-${request.projectDetails.description ? `Additional Context: ${request.projectDetails.description}` : ''}
-
-Please provide detailed safety information following Australian WHS standards.`;
 
     // Create promise with timeout
     const apiCall = openai.chat.completions.create({
@@ -85,16 +107,16 @@ Please provide detailed safety information following Australian WHS standards.`;
       messages: [
         {
           role: "system",
-          content: `You are an expert Australian construction safety consultant. Generate comprehensive SWMS data in JSON format with activities, hazards, control measures, PPE, tools, plant equipment, and emergency procedures. Follow Australian WHS legislation.`
+          content: "You are Riskify, an expert Australian construction safety consultant. Generate comprehensive SWMS data in JSON format with activities, hazards, control measures, PPE, tools, plant equipment, and emergency procedures. Follow Australian WHS legislation."
         },
         {
           role: "user",
-          content: prompt
+          content: prompt || "Generate SWMS data"
         }
       ],
       response_format: { type: "json_object" },
       temperature: 0.7,
-      max_tokens: 2000
+      max_tokens: 3000
     });
 
     // Add timeout to the API call
@@ -260,9 +282,9 @@ function generateIntelligentSWMSData(request: TaskGenerationRequest): GeneratedS
     ]
   };
 
-  const hazards = tradeHazards[trade] || tradeHazards.electrical;
-  const ppe = tradePPE[trade] || tradePPE.electrical;
-  const tools = tradeTools[trade] || tradeTools.electrical;
+  const hazards = tradeHazards[trade as keyof typeof tradeHazards] || tradeHazards.electrical;
+  const ppe = tradePPE[trade as keyof typeof tradePPE] || tradePPE.electrical;
+  const tools = tradeTools[trade as keyof typeof tradeTools] || tradeTools.electrical;
 
   return {
     activities: [
