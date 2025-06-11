@@ -112,7 +112,7 @@ export default function AuthPage() {
             <img 
               src="/assets/riskify-logo.png" 
               alt="Riskify"
-              className="h-16 w-auto object-contain"
+              className="h-32 w-auto object-contain"
             />
           </div>
           <p className="text-gray-600">Professional safety documentation for Australian construction</p>
