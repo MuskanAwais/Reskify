@@ -19,6 +19,9 @@ export interface IStorage {
 }
 
 export class DatabaseStorage implements IStorage {
+  private swmsDrafts: any[] = [];
+  private swmsDocuments: any[] = [];
+
   async getUser(id: number): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, id));
     return user || undefined;
@@ -85,20 +88,6 @@ export class DatabaseStorage implements IStorage {
       return [];
     }
   }
-
-  async createSwmsDraft(draft: any): Promise<any> {
-    try {
-      // For now, store in memory - in production would use a drafts table
-      console.log('Draft saved:', draft.id);
-      return draft;
-    } catch (error) {
-      console.error('Error creating SWMS draft:', error);
-      throw error;
-    }
-  }
-
-  private swmsDrafts: any[] = [];
-  private swmsDocuments: any[] = [];
 
   async createSwmsDraft(draft: any): Promise<any> {
     try {

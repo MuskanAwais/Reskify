@@ -181,6 +181,21 @@ export default function SwmsBuilder() {
           console.error('Failed to parse AI-generated SWMS data:', error);
         }
       }
+    } else {
+      // Clear form data when starting fresh to prevent carrying over project details
+      setFormData({
+        title: "",
+        jobName: "",
+        jobNumber: "",
+        projectAddress: "",
+        projectLocation: "",
+        tradeType: "",
+        activities: [],
+        hazards: [],
+        riskAssessments: [],
+        safetyMeasures: [],
+        complianceCodes: []
+      });
     }
   }, []);
 
