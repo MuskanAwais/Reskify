@@ -231,20 +231,12 @@ export default function SwmsBuilder() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <Link href="/dashboard">
-            <Button variant="ghost" size="sm">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              {translate("swms.back.dashboard")}
-            </Button>
-          </Link>
-          <div>
-            <h2 className="text-3xl font-bold text-gray-800">{translate("swms.builder")}</h2>
-            <p className="text-gray-600">{translate("swms.create.comprehensive")}</p>
-            {isDraft && (
-              <p className="text-sm text-amber-600 font-medium">Draft saved automatically</p>
-            )}
-          </div>
+        <div>
+          <h2 className="text-3xl font-bold text-gray-800">{translate("swms.builder")}</h2>
+          <p className="text-gray-600">{translate("swms.create.comprehensive")}</p>
+          {isDraft && (
+            <p className="text-sm text-amber-600 font-medium">Draft saved automatically</p>
+          )}
         </div>
         <div className="flex items-center gap-3">
           <Button 

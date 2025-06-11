@@ -315,7 +315,7 @@ export default function Billing() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="billing" className="flex items-center gap-2">
             <CreditCard className="w-4 h-4" />
             Billing & Plans
@@ -323,10 +323,6 @@ export default function Billing() {
           <TabsTrigger value="profile" className="flex items-center gap-2">
             <User className="w-4 h-4" />
             Profile & Settings
-          </TabsTrigger>
-          <TabsTrigger value="usage" className="flex items-center gap-2">
-            <TrendingUp className="w-4 h-4" />
-            Usage & Analytics
           </TabsTrigger>
         </TabsList>
 
@@ -651,62 +647,7 @@ export default function Billing() {
           </div>
         </TabsContent>
 
-        {/* Usage & Analytics Tab */}
-        <TabsContent value="usage" className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Credits Used</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold">{billingData.creditsUsedThisMonth}</div>
-                <p className="text-sm text-muted-foreground">This month</p>
-              </CardContent>
-            </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Total SWMS Created</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold">47</div>
-                <p className="text-sm text-muted-foreground">All time</p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Average Cost</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold">$4.26</div>
-                <p className="text-sm text-muted-foreground">Per SWMS</p>
-              </CardContent>
-            </Card>
-          </div>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Usage Breakdown</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex justify-between">
-                  <span>Basic SWMS Generation</span>
-                  <span>12 credits</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>AI-Enhanced SWMS</span>
-                  <span>5 credits</span>
-                </div>
-                <div className="flex justify-between font-medium">
-                  <span>Total Used</span>
-                  <span>{billingData.creditsUsedThisMonth} credits</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
       </Tabs>
     </div>
   );
