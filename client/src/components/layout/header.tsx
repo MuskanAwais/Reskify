@@ -37,10 +37,10 @@ export default function Header() {
 
   return (
     <header className="bg-white border-b border-border shadow-sm">
-      <div className="container mx-auto px-6 py-3">
-        <div className="flex justify-between items-center">
+      <div className="container mx-auto px-6 py-6">
+        <div className="flex justify-between items-center min-h-[80px]">
           {/* Logo and Title */}
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center justify-center h-full">
             <img 
               src="/assets/riskify-logo.png" 
               alt="Riskify Logo" 
