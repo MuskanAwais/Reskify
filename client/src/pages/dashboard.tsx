@@ -56,7 +56,7 @@ export default function Dashboard() {
     recentDocuments: []
   };
 
-  const topSafetyCodes = (Array.isArray(safetyLibrary) ? safetyLibrary : safetyLibrary?.documents || []).slice(0, 3);
+  const topSafetyCodes = (Array.isArray(safetyLibrary) ? safetyLibrary : (safetyLibrary as any)?.documents || []).slice(0, 3);
 
   return (
     <div className="space-y-8">
@@ -88,7 +88,7 @@ export default function Dashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 mb-1">{translate('completedSwms')}</p>
-                <p className="text-2xl font-bold text-gray-800">{stats.completedSwms || 0}</p>
+                <p className="text-2xl font-bold text-gray-800">{(stats as any).completedSwms || 0}</p>
                 <p className="text-xs text-gray-500 mt-1">{translate('projectSpecificDocumentation')}</p>
               </div>
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
@@ -139,7 +139,7 @@ export default function Dashboard() {
             </div>
           </CardHeader>
           <CardContent>
-            {stats.recentDocuments.length === 0 ? (
+            {((stats as any).recentDocuments || []).length === 0 ? (
               <div className="text-center py-8">
                 <AlertCircle className="mx-auto h-8 w-8 text-gray-400 mb-2" />
                 <p className="text-gray-500 text-sm">No SWMS documents created yet</p>
@@ -147,7 +147,7 @@ export default function Dashboard() {
               </div>
             ) : (
               <div className="space-y-4">
-                {stats.recentDocuments.map((doc: any, index: number) => (
+                {((stats as any).recentDocuments || []).map((doc: any, index: number) => (
                   <div key={index} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
                     <div className="flex items-center space-x-4">
                       <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
