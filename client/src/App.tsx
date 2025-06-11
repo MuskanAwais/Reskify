@@ -46,7 +46,7 @@ import DigitalTwinDashboard from "@/pages/digital-twin-dashboard";
 import LiveCollaboration from "@/pages/live-collaboration";
 import AISwmsGenerator from "@/pages/ai-swms-generator";
 import TeamCollaboration from "@/pages/team-collaboration";
-import SafeworkAI from "@/pages/safework-ai";
+
 
 // User context for demo purposes
 interface User {
@@ -183,7 +183,7 @@ function Router() {
         <ProtectedRoute path="/digital-twin-dashboard" component={DigitalTwinDashboard} />
         <ProtectedRoute path="/live-collaboration" component={LiveCollaboration} />
         <ProtectedRoute path="/ai-swms-generator" component={AISwmsGenerator} />
-        <ProtectedRoute path="/safework-ai" component={SafeworkAI} />
+
         <ProtectedRoute path="/team-collaboration" component={TeamCollaboration} />
         
         {/* Admin Routes */}

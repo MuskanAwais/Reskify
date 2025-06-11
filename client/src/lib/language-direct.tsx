@@ -52,7 +52,7 @@ const translations = {
     "viewAll": "View All",
     "quickActions": "Quick Actions",
     "nav.ai-generator": "AI Generator",
-    "nav.safework-ai": "SAFEWORK AI",
+
     "nav.team": "Team",
     "nav.analytics": "Analytics",
     "nav.account": "Account",
