@@ -57,9 +57,8 @@ export interface GeneratedSWMSData {
 
 export async function generateSWMSFromTask(request: TaskGenerationRequest): Promise<GeneratedSWMSData> {
   try {
-    // Check if we should use OpenAI API (enabled when OPENAI_ENABLED=true)
-    if (process.env.OPENAI_ENABLED === 'true') {
-      console.log('Generating SWMS with custom GPT...');
+    // Enable custom GPT integration for testing
+    console.log('Generating SWMS with Riskify custom GPT...');
       
       // Determine the mode and create appropriate prompt
       const tradeName = request.projectDetails.tradeType;
@@ -95,11 +94,6 @@ export async function generateSWMSFromTask(request: TaskGenerationRequest): Prom
         }
         prompt += ` State: ${state}.`;
       }
-      
-    } else {
-      console.log('Using intelligent SWMS generation system...');
-      return generateIntelligentSWMSData(request);
-    }
 
     // Create promise with timeout
     const apiCall = openai.chat.completions.create({
@@ -131,9 +125,9 @@ export async function generateSWMSFromTask(request: TaskGenerationRequest): Prom
     return result as GeneratedSWMSData;
 
   } catch (error: any) {
-    console.error('OpenAI API error, falling back to demo data:', error.message);
-    // Fallback to demo data if OpenAI API fails
-    return generateDemoSWMSData(request);
+    console.error('OpenAI API error, falling back to intelligent generation:', error.message);
+    // Fallback to intelligent generation if OpenAI API fails
+    return generateIntelligentSWMSData(request);
   }
 }
 

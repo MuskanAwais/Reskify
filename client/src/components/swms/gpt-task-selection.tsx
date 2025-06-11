@@ -7,6 +7,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { Loader2, Search, Bot, Edit, CheckCircle2, AlertCircle } from "lucide-react";
@@ -137,29 +139,60 @@ export default function GPTTaskSelection({
     onMethodSelected(method);
   };
 
+  const addTask = () => {
+    if (newTask.trim() && !taskList.includes(newTask.trim())) {
+      setTaskList([...taskList, newTask.trim()]);
+      setNewTask("");
+    }
+  };
+
+  const removeTask = (taskToRemove: string) => {
+    setTaskList(taskList.filter(task => task !== taskToRemove));
+  };
+
+  const toggleRiskFactor = (factor: string) => {
+    if (specialRiskFactors.includes(factor)) {
+      setSpecialRiskFactors(specialRiskFactors.filter(f => f !== factor));
+    } else {
+      setSpecialRiskFactors([...specialRiskFactors, factor]);
+    }
+  };
+
   const handleTaskGeneration = async () => {
-    if (!selectedTask && !plainTextDescription) {
+    let request: any = {
+      projectDetails: {
+        projectName: projectDetails.projectName,
+        location: projectDetails.location,
+        tradeType: projectDetails.tradeType,
+        description: projectDetails.description,
+        siteEnvironment,
+        specialRiskFactors,
+        state: selectedState
+      }
+    };
+
+    if (selectedMethod === "task-selection" && selectedTask) {
+      // Single task selection - use job mode
+      request.taskName = selectedTask;
+      request.mode = 'job';
+    } else if (selectedMethod === "plain-text" && plainTextDescription) {
+      // Job description - use job mode
+      request.plainTextDescription = plainTextDescription;
+      request.mode = 'job';
+    } else if (selectedMethod === "manual" && taskList.length > 0) {
+      // Multiple tasks - use task mode
+      request.taskList = taskList;
+      request.mode = 'task';
+    } else {
       toast({
         title: "Selection Required",
-        description: "Please select a task or provide a description.",
+        description: "Please select a task, provide a description, or add tasks to the list.",
         variant: "destructive",
       });
       return;
     }
 
     setIsGenerating(true);
-
-    const request = {
-      taskName: selectedTask,
-      plainTextDescription: plainTextDescription,
-      projectDetails: {
-        projectName: projectDetails.projectName,
-        location: projectDetails.location,
-        tradeType: projectDetails.tradeType,
-        description: projectDetails.description
-      }
-    };
-
     generateSWMSMutation.mutate(request);
   };
 
@@ -254,16 +287,16 @@ export default function GPTTaskSelection({
                 <div className="flex items-center gap-2 p-4 bg-purple-50 rounded-lg border border-purple-200">
                   <Edit className="h-5 w-5 text-purple-600" />
                   <div>
-                    <p className="font-medium text-purple-900">Custom Work Description</p>
-                    <p className="text-sm text-purple-700">Describe your work activities in plain English and our AI will generate appropriate SWMS data.</p>
+                    <p className="font-medium text-purple-900">Job Mode - Describe Your Work</p>
+                    <p className="text-sm text-purple-700">Describe your job and Riskify will generate 10+ SWMS tasks based on the job scope.</p>
                   </div>
                 </div>
 
                 <div className="space-y-3">
-                  <Label htmlFor="work-description">Work Description</Label>
+                  <Label htmlFor="work-description">Job Description</Label>
                   <Textarea
                     id="work-description"
-                    placeholder="Describe the work activities, tasks, and any specific requirements. For example: 'Installing electrical outlets and switches in a commercial office fitout on Level 3. Work involves running new cables through ceiling space, mounting outlet boxes, and testing all connections.'"
+                    placeholder="Example: 'Install plumbing for residential bathroom fitout' - Riskify will break this down into logical, industry-accurate tasks."
                     value={plainTextDescription}
                     onChange={(e) => setPlainTextDescription(e.target.value)}
                     rows={6}
@@ -278,26 +311,116 @@ export default function GPTTaskSelection({
 
             <TabsContent value="manual" className="space-y-4">
               <div className="space-y-4">
-                <div className="flex items-center gap-2 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                  <Edit className="h-5 w-5 text-gray-600" />
+                <div className="flex items-center gap-2 p-4 bg-orange-50 rounded-lg border border-orange-200">
+                  <Edit className="h-5 w-5 text-orange-600" />
                   <div>
-                    <p className="font-medium text-gray-900">Manual Input</p>
-                    <p className="text-sm text-gray-700">Continue to manual activity selection and input for complete control over your SWMS content.</p>
+                    <p className="font-medium text-orange-900">Task Mode - Specific Tasks</p>
+                    <p className="text-sm text-orange-700">Add specific tasks and Riskify will generate 1 SWMS row per task provided.</p>
                   </div>
                 </div>
 
-                <Button 
-                  onClick={() => onActivitiesGenerated([], [])}
-                  className="w-full"
-                  variant="outline"
-                >
-                  Continue to Manual Input
-                </Button>
+                <div className="space-y-3">
+                  <Label htmlFor="task-input">Add Tasks</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      id="task-input"
+                      placeholder="Example: Install hot water unit"
+                      value={newTask}
+                      onChange={(e) => setNewTask(e.target.value)}
+                      onKeyPress={(e) => e.key === 'Enter' && addTask()}
+                    />
+                    <Button onClick={addTask} variant="outline">Add</Button>
+                  </div>
+                  
+                  {taskList.length > 0 && (
+                    <div className="space-y-2">
+                      <p className="text-sm font-medium">Tasks ({taskList.length}):</p>
+                      <div className="space-y-1">
+                        {taskList.map((task, index) => (
+                          <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded border">
+                            <span className="text-sm">{task}</span>
+                            <Button
+                              onClick={() => removeTask(task)}
+                              variant="ghost"
+                              size="sm"
+                              className="h-6 w-6 p-0"
+                            >
+                              ×
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             </TabsContent>
           </Tabs>
 
-          {(selectedMethod === "task-selection" || selectedMethod === "plain-text") && (
+          <Separator className="my-6" />
+          
+          {/* Optional Fields for Enhanced Accuracy */}
+          <div className="space-y-4">
+            <h3 className="font-medium">Optional Fields (Improve Accuracy)</h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="site-environment">Site Environment</Label>
+                <Select value={siteEnvironment} onValueChange={setSiteEnvironment}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select site type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="residential">Residential</SelectItem>
+                    <SelectItem value="commercial">Commercial</SelectItem>
+                    <SelectItem value="civil">Civil</SelectItem>
+                    <SelectItem value="industrial">Industrial</SelectItem>
+                    <SelectItem value="remote">Remote</SelectItem>
+                    <SelectItem value="high-rise">High-rise</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="state">State/Territory</Label>
+                <Select value={selectedState} onValueChange={setSelectedState}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="NSW">NSW</SelectItem>
+                    <SelectItem value="VIC">VIC</SelectItem>
+                    <SelectItem value="QLD">QLD</SelectItem>
+                    <SelectItem value="WA">WA</SelectItem>
+                    <SelectItem value="SA">SA</SelectItem>
+                    <SelectItem value="TAS">TAS</SelectItem>
+                    <SelectItem value="ACT">ACT</SelectItem>
+                    <SelectItem value="NT">NT</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <Label>Special Risk Factors</Label>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                {['Confined space', 'Live electrical', 'Structural demolition', 'Height >2m', 'Airside works', 'Hazardous materials'].map((factor) => (
+                  <div key={factor} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={factor}
+                      checked={specialRiskFactors.includes(factor)}
+                      onCheckedChange={() => toggleRiskFactor(factor)}
+                    />
+                    <Label htmlFor={factor} className="text-sm">{factor}</Label>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {((selectedMethod === "task-selection" && selectedTask) || 
+            (selectedMethod === "plain-text" && plainTextDescription) || 
+            (selectedMethod === "manual" && taskList.length > 0)) && (
             <>
               <Separator className="my-6" />
               
@@ -305,16 +428,15 @@ export default function GPTTaskSelection({
                 <div className="space-y-1">
                   <p className="font-medium">Ready to Generate SWMS</p>
                   <p className="text-sm text-gray-600">
-                    {selectedMethod === "task-selection" 
-                      ? `Task: ${selectedTask || 'None selected'}`
-                      : `Description: ${plainTextDescription ? 'Provided' : 'Not provided'}`
-                    }
+                    {selectedMethod === "task-selection" && `Task: ${selectedTask}`}
+                    {selectedMethod === "plain-text" && "Job description provided"}
+                    {selectedMethod === "manual" && `${taskList.length} tasks added`}
                   </p>
                 </div>
                 
                 <Button
                   onClick={handleTaskGeneration}
-                  disabled={isGenerating || (!selectedTask && !plainTextDescription)}
+                  disabled={isGenerating}
                   className="min-w-[140px]"
                 >
                   {isGenerating ? (
