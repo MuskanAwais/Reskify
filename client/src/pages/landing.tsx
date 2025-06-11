@@ -26,7 +26,7 @@ import {
 } from "lucide-react";
 import Logo from "@/components/ui/logo";
 import logoImage from "@assets/Untitled design-2.png";
-import { useFirebaseAuth } from "@/hooks/useFirebaseAuth";
+import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { EnhancedTooltip, TooltipProvider } from "@/components/ui/tooltip-enhanced";
 import { FeatureWalkthrough, useFeatureWalkthrough } from "@/components/ui/feature-walkthrough";
@@ -67,7 +67,7 @@ export default function Landing() {
   const { scrollYProgress } = useScroll();
   const y = useTransform(scrollYProgress, [0, 1], ['0%', '-50%']);
   const opacity = useTransform(scrollYProgress, [0, 0.5, 1], [1, 0.8, 0.6]);
-  const { user, isLoading, signIn } = useFirebaseAuth();
+  const { user, isLoading } = useAuth();
   const { toast } = useToast();
   const [, setLocation] = useLocation();
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
@@ -122,20 +122,8 @@ export default function Landing() {
     }
   ];
 
-  const handleGetStarted = async () => {
-    try {
-      await signIn();
-      toast({
-        title: "Welcome to Safety Sensei!",
-        description: "You've successfully signed in with Google.",
-      });
-    } catch (error) {
-      toast({
-        title: "Sign In Error",
-        description: "Failed to sign in with Google. Please try again.",
-        variant: "destructive",
-      });
-    }
+  const handleGetStarted = () => {
+    setLocation("/auth");
   };
 
   const features = [
@@ -315,7 +303,7 @@ export default function Landing() {
                     <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
                     <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
                   </svg>
-                    Continue with Google
+                    Get Started Now
                   </Button>
                 </EnhancedTooltip>
                 <p className="text-center text-sm text-gray-600 mt-2">
