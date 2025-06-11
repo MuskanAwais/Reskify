@@ -39,7 +39,7 @@ import { translate } from "@/lib/language-direct";
 import SmartTooltip from "@/components/ui/smart-tooltip";
 import QuickActionTooltip, { presetTooltips } from "@/components/ui/quick-action-tooltip";
 
-const TOTAL_STEPS = 4;
+const TOTAL_STEPS = 7;
 
 interface StepContentProps {
   step: number;
@@ -364,23 +364,7 @@ export default function SWMSForm({ data = {}, onStepChange, onDataChange }: SWMS
         onDataChange={updateFormData} 
       />
 
-      {/* Navigation */}
-      <div className="flex justify-between pt-6">
-        <Button
-          variant="outline"
-          onClick={prevStep}
-          disabled={currentStep === 1}
-        >
-          Back
-        </Button>
-        
-        <Button
-          onClick={nextStep}
-          disabled={currentStep === TOTAL_STEPS}
-        >
-          {currentStep === TOTAL_STEPS ? "Finish" : "Next"}
-        </Button>
-      </div>
+
     </div>
   );
 }
