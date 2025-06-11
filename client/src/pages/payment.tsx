@@ -243,6 +243,14 @@ export default function Payment() {
                 <Badge variant="secondary" className="ml-2 bg-purple-100 text-purple-800">
                   Most Popular
                 </Badge>
+                <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded-lg">
+                  <p className="text-xs text-green-800 font-medium">
+                    Just $4.90 per SWMS for first 10 documents
+                  </p>
+                  <p className="text-xs text-green-600">
+                    Then free for unlimited additional SWMS
+                  </p>
+                </div>
               </div>
               <ul className="space-y-2 text-sm">
                 <li className="flex items-center">
@@ -301,9 +309,10 @@ export default function Payment() {
             <Button 
               onClick={handleContinue}
               disabled={!selectedPlan && mockSubscription.creditsRemaining === 0}
-              className="min-w-[120px]"
+              className="min-w-[140px] px-6"
+              size="lg"
             >
-              {selectedPlan ? "Proceed to Payment" : "Continue"}
+              {selectedPlan ? "Pay & Continue" : "Continue"}
             </Button>
           </div>
         </div>
