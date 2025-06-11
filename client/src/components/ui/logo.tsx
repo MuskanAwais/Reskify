@@ -25,25 +25,12 @@ const Logo: React.FC<LogoProps> = ({
 
   return (
     <div className={`flex items-center ${className}`}>
-      {/* Clean Riskify Logo */}
-      <div className="flex items-center gap-2">
-        {/* Simple Icon */}
-        <div className={`${sizeClasses[size]} flex-shrink-0 flex items-center justify-center`}>
-          <div className="w-full h-full bg-gradient-to-br from-blue-600 to-blue-800 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-xs">R</span>
-          </div>
-        </div>
-        
-        {/* Brand Text */}
-        <div className="flex flex-col">
-          <div className={`font-bold ${size === 'xl' ? 'text-3xl' : size === 'lg' ? 'text-2xl' : size === 'md' ? 'text-xl' : 'text-lg'} ${colorClasses[variant]} tracking-tight`}>
-            Riskify
-          </div>
-          <div className={`text-gray-500 ${size === 'xl' ? 'text-base' : size === 'lg' ? 'text-sm' : 'text-xs'} font-medium tracking-wide`}>
-            Professional SWMS Builder
-          </div>
-        </div>
-      </div>
+      {/* Your Actual Riskify Logo */}
+      <img 
+        src="/assets/riskify-logo.png" 
+        alt="Riskify"
+        className={`${size === 'xl' ? 'h-16' : size === 'lg' ? 'h-12' : size === 'md' ? 'h-10' : 'h-8'} w-auto object-contain`}
+      />
     </div>
   );
 };
