@@ -16,49 +16,57 @@ interface PDFWatermarkSystemProps {
 }
 
 // Riskify Logo SVG Component
-const RiskifyLogo = ({ className = "w-16 h-6" }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 120 30" xmlns="http://www.w3.org/2000/svg">
+const RiskifyLogo = ({ className = "w-20 h-8" }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 140 32" xmlns="http://www.w3.org/2000/svg">
     <defs>
-      <linearGradient id="riskifyGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-        <stop offset="0%" style={{ stopColor: '#0F4037', stopOpacity: 1 }} />
-        <stop offset="100%" style={{ stopColor: '#1a5a4a', stopOpacity: 1 }} />
+      <linearGradient id="riskifyPdfGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style={{ stopColor: '#1e3a8a', stopOpacity: 1 }} />
+        <stop offset="100%" style={{ stopColor: '#0f172a', stopOpacity: 1 }} />
       </linearGradient>
     </defs>
     
     {/* Shield Icon */}
-    <path
-      d="M8 2 L16 6 L16 14 C16 18 12 22 8 24 C4 22 0 18 0 14 L0 6 Z"
-      fill="url(#riskifyGrad)"
-      transform="translate(2, 3)"
-    />
-    <path
-      d="M8 4 L8 20 C10.5 18.5 13 16 13 12 L13 8 Z"
-      fill="#ffffff"
-      fillOpacity="0.3"
-      transform="translate(2, 3)"
-    />
+    <g transform="translate(2, 2)">
+      <path
+        d="M12 2L20 5V12C20 16 16 19 12 22C8 19 4 16 4 12V5L12 2Z"
+        fill="url(#riskifyPdfGrad)"
+        stroke="#ffffff"
+        strokeWidth="0.5"
+      />
+      <path
+        d="M12 4L17 6V11C17 14 14.5 16 12 18C9.5 16 7 14 7 11V6L12 4Z"
+        fill="#ffffff"
+        fillOpacity="0.15"
+      />
+      <circle cx="12" cy="10" r="2" fill="#ffffff" fillOpacity="0.8" />
+      <path
+        d="M9 16C9 17 10 18 12 18C14 18 15 17 15 16H9Z"
+        fill="#ffffff"
+        fillOpacity="0.6"
+      />
+    </g>
     
     {/* RISKIFY Text */}
     <text
-      x="24"
+      x="28"
       y="18"
       fontFamily="Arial, sans-serif"
       fontSize="14"
       fontWeight="bold"
-      fill="url(#riskifyGrad)"
+      fill="url(#riskifyPdfGrad)"
     >
-      RISKIFY
+      Riskify
     </text>
     
     {/* Tagline */}
     <text
-      x="24"
+      x="28"
       y="26"
       fontFamily="Arial, sans-serif"
-      fontSize="6"
+      fontSize="7"
       fill="#666666"
     >
-      SAFETY MANAGEMENT SYSTEM
+      Professional SWMS Builder
     </text>
   </svg>
 );

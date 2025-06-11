@@ -61,11 +61,11 @@ function addCompanyLogo(pdf: jsPDF, user: User, subscription: any) {
     pdf.setTextColor(25, 118, 210); // Blue text
     pdf.text(user.companyName || 'Company Name', logoX + 2, logoY + 8);
     
-    // Add "Custom Branding" text for Pro/Enterprise
+    // Add "Riskify Professional" text for Pro/Enterprise
     pdf.setFontSize(8);
     pdf.setFont('helvetica', 'normal');
     pdf.setTextColor(100, 100, 100);
-    pdf.text('Professional Branding', logoX + 2, logoY + 15);
+    pdf.text('Powered by Riskify', logoX + 2, logoY + 15);
     
     // Reset text color
     pdf.setTextColor(0, 0, 0);

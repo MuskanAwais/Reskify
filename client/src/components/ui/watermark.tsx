@@ -14,7 +14,7 @@ export default function Watermark({
   projectName = "Office Renovation Project",
   projectNumber = "PRJ-2025-001", 
   projectAddress = "123 Construction Lane, Sydney NSW 2000",
-  brandName = "Safety Sensei",
+  brandName = "Riskify",
   className = ""
 }: WatermarkProps) {
   return (
