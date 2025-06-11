@@ -122,6 +122,16 @@ export default function SwmsBuilder() {
       }
     }
     
+    // Check for credits before proceeding to final document step (step 6)
+    if (currentStep === 5) {
+      const creditsRemaining = subscription?.creditsRemaining || 0;
+      if (creditsRemaining === 0) {
+        // Redirect to payment page if no credits
+        setLocation("/payment");
+        return;
+      }
+    }
+    
     // Validate legal disclaimer acceptance before proceeding from step 6 (legal disclaimer step)
     if (currentStep === 6 && !formData.acceptedDisclaimer) {
       toast({
