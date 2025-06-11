@@ -256,7 +256,7 @@ export default function Sidebar() {
   ];
 
   return (
-    <aside className="w-64 bg-card shadow-md border-r min-h-screen">
+    <aside className="w-64 bg-card shadow-md border-r min-h-screen m-4 mr-0 rounded-l-2xl">
       <div className="p-6 h-full">
 
 
