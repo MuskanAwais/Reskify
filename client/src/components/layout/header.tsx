@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { useUser } from "@/App";
+import { useAuth } from "@/hooks/use-auth";
 import { Link, useLocation } from "wouter";
 import { HardHat, Plus, Bell, Settings, LogOut } from "lucide-react";
 import CreditCounter from "@/components/ui/credit-counter";
@@ -20,6 +21,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 export default function Header() {
   const { user } = useUser();
+  const { user: authUser, logoutMutation } = useAuth();
   const [location] = useLocation();
 
   const getInitials = (name: string) => {
@@ -108,7 +110,7 @@ export default function Header() {
                     <span>Settings</span>
                   </DropdownMenuItem>
                 </Link>
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={() => logoutMutation.mutate()}>
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Log out</span>
                 </DropdownMenuItem>

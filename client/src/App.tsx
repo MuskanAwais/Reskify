@@ -131,7 +131,7 @@ export const useAdmin = () => useContext(AdminContext);
 
 function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
-  const isPublicPage = ['/', '/landing', '/demo', '/contact', '/register'].includes(location);
+  const isPublicPage = ['/', '/landing', '/demo', '/contact', '/register', '/auth'].includes(location);
   
   if (isPublicPage) {
     return (
