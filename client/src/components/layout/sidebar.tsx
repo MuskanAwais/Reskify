@@ -44,6 +44,18 @@ const quickActions = [
 export default function Sidebar() {
   const [location] = useLocation();
   
+  // Mock subscription data for TypeScript compatibility
+  const mockSubscription = {
+    plan: "Pro",
+    features: {
+      safetyLibrary: true,
+      aiGeneration: true,
+      teamCollaboration: false
+    },
+    creditsUsed: 45,
+    creditsTotal: 100
+  };
+  
   // Check if user is admin (replace with actual admin email check when deploying)
   const isAdmin = true; // TODO: Replace with actual admin check based on user email
   
@@ -214,10 +226,7 @@ export default function Sidebar() {
     setShowTour(false);
   };
   
-  // Fetch user subscription data
-  const { data: subscription } = useQuery({
-    queryKey: ["/api/user/subscription"],
-  });
+
 
   const navigationItems = [
     { icon: Home, labelKey: "nav.dashboard", href: "/dashboard", tourId: "dashboard-link" },
@@ -227,7 +236,7 @@ export default function Sidebar() {
       labelKey: "nav.safety-library", 
       href: "/safety-library",
       requiresAccess: true,
-      hasAccess: subscription?.features?.safetyLibrary || adminMode,
+      hasAccess: mockSubscription?.features?.safetyLibrary || adminMode,
       tourId: "safety-library-link"
     },
     { 

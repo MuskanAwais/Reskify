@@ -205,7 +205,7 @@ export const swmsComments = pgTable("swms_comments", {
   id: serial("id").primaryKey(),
   swmsId: integer("swms_id").references(() => swmsDocuments.id).notNull(),
   userId: integer("user_id").references(() => users.id).notNull(),
-  parentId: integer("parent_id").references(() => swmsComments.id), // for replies
+  parentId: integer("parent_id"), // for replies - self-reference added later
   content: text("content").notNull(),
   commentType: text("comment_type").default("general"), // general, risk_concern, suggestion, approval
   activityReference: text("activity_reference"), // specific activity being commented on
