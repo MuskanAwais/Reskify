@@ -52,10 +52,8 @@ export interface GeneratedSWMSData {
 
 export async function generateSWMSFromTask(request: TaskGenerationRequest): Promise<GeneratedSWMSData> {
   try {
-    // Check if demo mode is enabled for faster testing
-    if (process.env.DEMO_MODE === 'true') {
-      return generateDemoSWMSData(request);
-    }
+    // Enable demo mode for testing - remove this line for production
+    return generateDemoSWMSData(request);
 
     const prompt = request.plainTextDescription 
       ? `Generate a comprehensive SWMS (Safe Work Method Statement) for the following work description:
@@ -140,8 +138,7 @@ Return response in the following JSON format:
       ],
       response_format: { type: "json_object" },
       temperature: 0.7,
-      max_tokens: 3000,
-      timeout: 30000 // 30 second timeout
+      max_tokens: 3000
     });
 
     const result = JSON.parse(response.choices[0].message.content || '{}');
@@ -151,6 +148,91 @@ Return response in the following JSON format:
     console.error('Error generating SWMS data:', error);
     throw new Error(`Failed to generate SWMS data: ${error?.message || 'Unknown error'}`);
   }
+}
+
+// Demo mode function for testing without API calls
+function generateDemoSWMSData(request: TaskGenerationRequest): GeneratedSWMSData {
+  const taskName = request.taskName || "Custom Work Activity";
+  const trade = request.projectDetails.tradeType;
+  
+  return {
+    activities: [
+      {
+        name: taskName,
+        description: `Comprehensive ${taskName.toLowerCase()} work for ${request.projectDetails.projectName} project at ${request.projectDetails.location}`,
+        hazards: [
+          {
+            type: "Electrical",
+            description: "Risk of electric shock from live electrical components",
+            riskRating: "High" as const,
+            controlMeasures: [
+              "Isolate power supply before commencing work",
+              "Use lockout/tagout procedures",
+              "Test for dead with approved testing device",
+              "Use insulated tools"
+            ],
+            residualRisk: "Low" as const
+          },
+          {
+            type: "Physical",
+            description: "Manual handling and awkward working positions",
+            riskRating: "Medium" as const,
+            controlMeasures: [
+              "Use mechanical lifting aids where possible",
+              "Maintain good posture",
+              "Take regular breaks",
+              "Team lifting for heavy items"
+            ],
+            residualRisk: "Low" as const
+          }
+        ],
+        ppe: [
+          "Safety helmet",
+          "Safety glasses",
+          "High-visibility vest",
+          "Steel-capped boots",
+          "Electrical safety gloves"
+        ],
+        tools: [
+          "Insulated hand tools",
+          "Voltage tester",
+          "Cable strippers",
+          "Drill and bits"
+        ],
+        trainingRequired: [
+          "Electrical safety training",
+          "Working at heights (if applicable)",
+          "Manual handling training"
+        ]
+      }
+    ],
+    plantEquipment: [
+      {
+        name: "Portable Power Tools",
+        type: "Equipment" as const,
+        category: "Hand Tools",
+        certificationRequired: false,
+        inspectionStatus: "Current" as const,
+        riskLevel: "Medium" as const,
+        safetyRequirements: [
+          "Pre-use inspection",
+          "RCD protection",
+          "Regular PAT testing"
+        ]
+      }
+    ],
+    emergencyProcedures: [
+      {
+        scenario: "Electrical Emergency",
+        response: "Turn off power at main switch, call emergency services if injury occurs, provide first aid if trained",
+        contacts: [
+          "Emergency Services: 000",
+          "Site Supervisor: [Contact Number]",
+          "Safety Officer: [Contact Number]"
+        ]
+      }
+    ]
+  };
 }
 
 // Task database - simplified to just names
