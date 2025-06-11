@@ -301,10 +301,12 @@ export default function Billing() {
           <h1 className="text-3xl font-bold text-gray-800">Account & Billing</h1>
           <p className="text-gray-600 mt-2">Manage your subscription, credits, and account settings</p>
         </div>
-        <Badge variant="outline" className="bg-green-50 text-primary border-primary/20">
-          <Crown className="w-4 h-4 mr-2" />
-          {billingData.currentPlan}
-        </Badge>
+        {billingData.currentPlan !== "One-Off SWMS" && (
+          <Badge variant="outline" className="bg-green-50 text-primary border-primary/20">
+            <Crown className="w-4 h-4 mr-2" />
+            {billingData.currentPlan}
+          </Badge>
+        )}
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">

@@ -453,23 +453,28 @@ export default function Sidebar() {
               <CreditCard className="h-4 w-4 text-slate-500" />
             </div>
             <p className="text-xs text-slate-600 mb-3">
-              {mockSubscription?.plan ? mockSubscription.plan.charAt(0).toUpperCase() + mockSubscription.plan.slice(1) + " Plan" : "Basic Plan"}
+              {mockSubscription?.plan === 'subscription' ? 'Subscription Plan' : 'One-Off SWMS'}
             </p>
             <div className="text-xs text-slate-600">
               <div className="flex justify-between items-center mb-1">
                 <span>Credits Used</span>
                 <span className="font-medium">
-                  {mockSubscription?.creditsUsed || 0}/{mockSubscription?.plan === 'pro' ? 25 : mockSubscription?.plan === 'enterprise' ? 60 : mockSubscription?.creditsTotal || 10}
+                  {mockSubscription?.creditsUsed || 2}/{mockSubscription?.plan === 'subscription' ? 10 : 'Per SWMS'}
                 </span>
               </div>
-              <div className="w-full bg-slate-200 rounded-full h-2">
-                <div 
-                  className="bg-primary/500 h-2 rounded-full transition-all duration-300" 
-                  style={{ 
-                    width: `${((mockSubscription?.creditsUsed || 0) / (mockSubscription?.plan === 'pro' ? 25 : mockSubscription?.plan === 'enterprise' ? 60 : mockSubscription?.creditsTotal || 10)) * 100}%` 
-                  }}
-                ></div>
-              </div>
+              {mockSubscription?.plan === 'subscription' && (
+                <div className="w-full bg-slate-200 rounded-full h-2">
+                  <div 
+                    className="bg-primary h-2 rounded-full transition-all duration-300" 
+                    style={{ 
+                      width: `${((mockSubscription?.creditsUsed || 2) / 10) * 100}%` 
+                    }}
+                  ></div>
+                </div>
+              )}
+              {mockSubscription?.plan !== 'subscription' && (
+                <p className="text-xs text-slate-500 mt-1">Pay per SWMS document</p>
+              )}
             </div>
           </CardContent>
         </Card>
