@@ -52,8 +52,13 @@ export interface GeneratedSWMSData {
 
 export async function generateSWMSFromTask(request: TaskGenerationRequest): Promise<GeneratedSWMSData> {
   try {
-    // Use real OpenAI API for authentic SWMS generation
-    console.log('Generating SWMS with OpenAI GPT-4o...');
+    // Check if we should use OpenAI API (enabled when OPENAI_ENABLED=true)
+    if (process.env.OPENAI_ENABLED === 'true') {
+      console.log('Generating SWMS with OpenAI GPT-4o...');
+    } else {
+      console.log('Using intelligent SWMS generation system...');
+      return generateIntelligentSWMSData(request);
+    }
 
     const prompt = request.plainTextDescription 
       ? `Generate a comprehensive SWMS (Safe Work Method Statement) for the following work description:
@@ -108,6 +113,228 @@ Please provide detailed safety information following Australian WHS standards.`;
     // Fallback to demo data if OpenAI API fails
     return generateDemoSWMSData(request);
   }
+}
+
+// Intelligent SWMS generation using trade-specific templates and project context
+function generateIntelligentSWMSData(request: TaskGenerationRequest): GeneratedSWMSData {
+  const taskName = request.taskName || "Custom Work Activity";
+  const trade = request.projectDetails.tradeType;
+  const location = request.projectDetails.location;
+  const description = request.plainTextDescription || request.projectDetails.description;
+
+  // Trade-specific hazard profiles
+  const tradeHazards = {
+    electrical: [
+      {
+        type: "Electrical",
+        description: "Risk of electric shock from live electrical components",
+        riskRating: "High" as const,
+        controlMeasures: [
+          "Isolate power supply before commencing work",
+          "Use lockout/tagout procedures",
+          "Test for dead with approved testing device",
+          "Use insulated tools and equipment"
+        ],
+        residualRisk: "Low" as const
+      },
+      {
+        type: "Physical",
+        description: "Manual handling of equipment and working in confined spaces",
+        riskRating: "Medium" as const,
+        controlMeasures: [
+          "Use mechanical lifting aids for heavy equipment",
+          "Maintain proper lifting techniques",
+          "Ensure adequate ventilation in confined spaces",
+          "Take regular rest breaks"
+        ],
+        residualRisk: "Low" as const
+      }
+    ],
+    plumbing: [
+      {
+        type: "Chemical",
+        description: "Exposure to hazardous substances and pipe cutting fumes",
+        riskRating: "Medium" as const,
+        controlMeasures: [
+          "Use appropriate respiratory protection",
+          "Ensure adequate ventilation",
+          "Handle chemicals according to SDS",
+          "Wash hands thoroughly after work"
+        ],
+        residualRisk: "Low" as const
+      },
+      {
+        type: "Physical",
+        description: "Manual handling and working in awkward positions",
+        riskRating: "Medium" as const,
+        controlMeasures: [
+          "Use pipe lifting equipment for heavy pipes",
+          "Maintain good posture where possible",
+          "Use knee pads and back support",
+          "Take regular breaks"
+        ],
+        residualRisk: "Low" as const
+      }
+    ],
+    carpentry: [
+      {
+        type: "Physical",
+        description: "Cuts from sharp tools and manual handling injuries",
+        riskRating: "High" as const,
+        controlMeasures: [
+          "Use appropriate cutting guards and safety devices",
+          "Maintain tools in good condition",
+          "Use proper lifting techniques for materials",
+          "Keep work area clean and organized"
+        ],
+        residualRisk: "Low" as const
+      },
+      {
+        type: "Noise",
+        description: "Exposure to high noise levels from power tools",
+        riskRating: "Medium" as const,
+        controlMeasures: [
+          "Use hearing protection at all times",
+          "Limit exposure time to high noise",
+          "Use quieter tools where available",
+          "Conduct work during permitted hours"
+        ],
+        residualRisk: "Low" as const
+      }
+    ]
+  };
+
+  // Trade-specific PPE requirements
+  const tradePPE = {
+    electrical: [
+      "Safety helmet with electrical rating",
+      "Safety glasses with side protection", 
+      "High-visibility vest",
+      "Steel-capped boots with electrical hazard rating",
+      "Electrical safety gloves",
+      "Arc flash protection (if required)"
+    ],
+    plumbing: [
+      "Safety helmet",
+      "Safety glasses",
+      "High-visibility vest", 
+      "Steel-capped boots",
+      "Cut-resistant gloves",
+      "Respiratory protection (when required)"
+    ],
+    carpentry: [
+      "Safety helmet",
+      "Safety glasses with side protection",
+      "High-visibility vest",
+      "Steel-capped boots", 
+      "Cut-resistant gloves",
+      "Hearing protection"
+    ]
+  };
+
+  // Trade-specific tools
+  const tradeTools = {
+    electrical: [
+      "Insulated hand tools",
+      "Digital multimeter",
+      "Voltage tester",
+      "Cable strippers and crimpers",
+      "Drill with electrical bits",
+      "Cable pulling equipment"
+    ],
+    plumbing: [
+      "Pipe cutting tools",
+      "Threading equipment",
+      "Pipe wrenches",
+      "Soldering equipment",
+      "Pressure testing equipment",
+      "Pipe bending tools"
+    ],
+    carpentry: [
+      "Hand saws and power saws",
+      "Measuring tools",
+      "Drilling equipment",
+      "Fastening tools",
+      "Planing and finishing tools",
+      "Clamps and holding devices"
+    ]
+  };
+
+  const hazards = tradeHazards[trade] || tradeHazards.electrical;
+  const ppe = tradePPE[trade] || tradePPE.electrical;
+  const tools = tradeTools[trade] || tradeTools.electrical;
+
+  return {
+    activities: [
+      {
+        name: taskName,
+        description: `Professional ${taskName.toLowerCase()} work for ${request.projectDetails.projectName} at ${location}. ${description ? `Scope: ${description}` : ''}`,
+        hazards,
+        ppe,
+        tools,
+        trainingRequired: [
+          `${trade.charAt(0).toUpperCase() + trade.slice(1)} trade certification`,
+          "WHS induction training",
+          "Working at heights (if applicable)",
+          "Manual handling training",
+          "Emergency response procedures"
+        ]
+      }
+    ],
+    plantEquipment: [
+      {
+        name: "Portable Power Tools",
+        type: "Equipment" as const,
+        category: "Hand Tools",
+        certificationRequired: false,
+        inspectionStatus: "Current" as const,
+        riskLevel: "Medium" as const,
+        safetyRequirements: [
+          "Daily pre-use inspection",
+          "RCD protection mandatory",
+          "Regular PAT testing",
+          "Operator competency verified"
+        ]
+      },
+      {
+        name: "Access Equipment",
+        type: "Equipment" as const, 
+        category: "Height Access",
+        certificationRequired: true,
+        inspectionStatus: "Current" as const,
+        riskLevel: "High" as const,
+        safetyRequirements: [
+          "Current inspection certificate",
+          "Operator training completed",
+          "Fall protection systems in place",
+          "Setup according to manufacturer specifications"
+        ]
+      }
+    ],
+    emergencyProcedures: [
+      {
+        scenario: "Medical Emergency",
+        response: "Stop work immediately, assess scene safety, call 000, provide first aid if trained, notify site supervisor",
+        contacts: [
+          "Emergency Services: 000",
+          "Site Supervisor: [Contact Number]",
+          "Safety Officer: [Contact Number]",
+          "Site First Aid Officer: [Contact Number]"
+        ]
+      },
+      {
+        scenario: `${trade.charAt(0).toUpperCase() + trade.slice(1)} Emergency`,
+        response: trade === 'electrical' 
+          ? "Turn off power at main switch, call emergency services if injury occurs, do not touch affected person if still in contact with electricity"
+          : "Isolate affected area, call emergency services if required, provide first aid if trained and safe to do so",
+        contacts: [
+          "Emergency Services: 000", 
+          "Site Supervisor: [Contact Number]",
+          "Safety Officer: [Contact Number]"
+        ]
+      }
+    ]
+  };
 }
 
 // Demo mode function for testing without API calls
