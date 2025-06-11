@@ -277,9 +277,8 @@ export default function Sidebar() {
 
         <Separator className="mb-6" />
 
-        {/* Quick Actions */}
+        {/* Quick Action */}
         <div className="mb-8" data-tour="quick-actions">
-          <h3 className="text-lg font-semibold text-gray-700 mb-4">{translate('quickActions')}</h3>
           <div className="space-y-3">
             {quickActions.map((action) => {
               const Icon = action.icon;
