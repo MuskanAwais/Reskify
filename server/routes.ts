@@ -7,7 +7,17 @@ import { generateSWMSFromTask, TASK_DATABASE, type TaskGenerationRequest } from 
 import { storage as dbStorage } from "./storage";
 import path from "path";
 import fs from "fs";
+import { scrypt, randomBytes } from "crypto";
+import { promisify } from "util";
 // import pdfParse from "pdf-parse";
+
+const scryptAsync = promisify(scrypt);
+
+async function hashPassword(password: string) {
+  const salt = randomBytes(16).toString("hex");
+  const buf = (await scryptAsync(password, salt, 64)) as Buffer;
+  return `${buf.toString("hex")}.${salt}`;
+}
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -1877,11 +1887,8 @@ startxref
     try {
       const users = await dbStorage.getAllUsers();
       
-      // Calculate SWMS generation data
-      const totalSwmsGenerated = users.reduce((sum, user) => {
-        const creditsUsed = (user.initialCredits || 0) - (user.swmsCredits || 0);
-        return sum + Math.max(0, creditsUsed);
-      }, 0);
+      // Calculate SWMS generation data from swmsGenerated field
+      const totalSwmsGenerated = users.reduce((sum, user) => sum + (user.swmsGenerated || 0), 0);
       
       const generalSwmsCount = Math.floor(totalSwmsGenerated * 0.7);
       const aiSwmsCount = totalSwmsGenerated - generalSwmsCount;
@@ -1998,10 +2005,7 @@ startxref
       const dataManagement = {
         totalRecords: users.length,
         userRecords: users.length,
-        swmsRecords: users.reduce((sum, user) => {
-          const creditsUsed = (user.initialCredits || 0) - (user.swmsCredits || 0);
-          return sum + Math.max(0, creditsUsed);
-        }, 0),
+        swmsRecords: users.reduce((sum, user) => sum + (user.swmsGenerated || 0), 0),
         backupStatus: "Completed",
         lastBackup: new Date().toISOString().split('T')[0],
         dataIntegrity: "Excellent",
@@ -2016,11 +2020,56 @@ startxref
     }
   });
 
+  // Admin user management endpoints
+  app.patch("/api/admin/users/:id/password", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { password } = req.body;
+      
+      // Hash the new password
+      const hashedPassword = await hashPassword(password);
+      await dbStorage.updateUserPassword(parseInt(id), hashedPassword);
+      
+      res.json({ message: "Password updated successfully" });
+    } catch (error: any) {
+      console.error("Update password error:", error);
+      res.status(500).json({ message: "Failed to update password" });
+    }
+  });
+
+  app.patch("/api/admin/users/:id/admin", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { isAdmin } = req.body;
+      
+      await dbStorage.updateUserAdminStatus(parseInt(id), isAdmin);
+      
+      res.json({ message: "Admin status updated successfully" });
+    } catch (error: any) {
+      console.error("Update admin status error:", error);
+      res.status(500).json({ message: "Failed to update admin status" });
+    }
+  });
+
+  app.patch("/api/admin/users/:id/credits", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { credits } = req.body;
+      
+      await dbStorage.updateUserCredits(parseInt(id), credits);
+      
+      res.json({ message: "Credits updated successfully" });
+    } catch (error: any) {
+      console.error("Update credits error:", error);
+      res.status(500).json({ message: "Failed to update credits" });
+    }
+  });
+
   // Admin contacts endpoint
   app.get("/api/admin/contacts", async (req, res) => {
     try {
       // For now, return empty array since we don't have contact form submissions stored
-      const contacts = [];
+      const contacts: any[] = [];
       res.json(contacts);
     } catch (error: any) {
       console.error("Get admin contacts error:", error);

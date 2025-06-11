@@ -4,8 +4,10 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Users, UserCheck, UserX, Crown, Settings, Mail, Phone, MapPin, Building, Search, Filter } from "lucide-react";
+import { Users, UserCheck, UserX, Crown, Settings, Mail, Phone, MapPin, Building, Search, Filter, Key, Shield, CreditCard } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
@@ -14,27 +16,61 @@ export default function UserManagement() {
   const [searchTerm, setSearchTerm] = useState("");
   const [planFilter, setPlanFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [selectedUser, setSelectedUser] = useState<any>(null);
+  const [manageDialogOpen, setManageDialogOpen] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
+  const [newCredits, setNewCredits] = useState("");
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: users, isLoading: usersLoading } = useQuery({
+  const { data: users = [], isLoading: usersLoading } = useQuery({
     queryKey: ['/api/admin/users'],
   });
 
-  const { data: contacts, isLoading: contactsLoading } = useQuery({
+  const { data: contacts = [], isLoading: contactsLoading } = useQuery({
     queryKey: ['/api/admin/contacts'],
   });
 
-  const updateUserMutation = useMutation({
-    mutationFn: async ({ userId, updates }: { userId: number, updates: any }) => {
-      const response = await apiRequest("PATCH", `/api/admin/users/${userId}`, updates);
+  const resetPasswordMutation = useMutation({
+    mutationFn: async ({ userId, password }: { userId: number, password: string }) => {
+      const response = await apiRequest("PATCH", `/api/admin/users/${userId}/password`, { password });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/users'] });
+      setNewPassword("");
+      toast({
+        title: "Password Reset",
+        description: "User password has been reset successfully.",
+      });
+    },
+  });
+
+  const updateAdminMutation = useMutation({
+    mutationFn: async ({ userId, isAdmin }: { userId: number, isAdmin: boolean }) => {
+      const response = await apiRequest("PATCH", `/api/admin/users/${userId}/admin`, { isAdmin });
       return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/users'] });
       toast({
-        title: "User Updated",
-        description: "User information has been updated successfully.",
+        title: "Admin Status Updated",
+        description: "User admin permissions have been updated successfully.",
+      });
+    },
+  });
+
+  const updateCreditsMutation = useMutation({
+    mutationFn: async ({ userId, credits }: { userId: number, credits: number }) => {
+      const response = await apiRequest("PATCH", `/api/admin/users/${userId}/credits`, { credits });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/users'] });
+      setNewCredits("");
+      toast({
+        title: "Credits Updated",
+        description: "User credits have been updated successfully.",
       });
     },
   });
