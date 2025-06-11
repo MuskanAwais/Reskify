@@ -943,14 +943,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/swms/draft", async (req, res) => {
     try {
       const draftData = req.body;
+      const draftId = Date.now().toString();
+      
+      // Store in database storage
+      await dbStorage.createSwmsDraft({
+        id: draftId,
+        title: draftData.title || draftData.jobName || "Untitled SWMS",
+        data: draftData,
+        status: "draft",
+        createdAt: new Date().toISOString(),
+        lastModified: new Date().toISOString()
+      });
+      
       res.json({ 
         success: true, 
         message: "Draft saved successfully",
-        draftId: Date.now().toString()
+        draftId: draftId
       });
     } catch (error: any) {
       console.error("Save draft error:", error);
       res.status(500).json({ message: "Failed to save draft" });
+    }
+  });
+
+  // Get user's SWMS documents (drafts and completed)
+  app.get("/api/swms/my-documents", async (req, res) => {
+    try {
+      const drafts = await dbStorage.getUserSwmsDrafts();
+      const completed = await dbStorage.getUserSwmsDocuments();
+      
+      res.json({
+        drafts: drafts || [],
+        completed: completed || [],
+        total: (drafts?.length || 0) + (completed?.length || 0)
+      });
+    } catch (error: any) {
+      console.error("Get user documents error:", error);
+      res.status(500).json({ message: "Failed to fetch documents" });
     }
   });
 

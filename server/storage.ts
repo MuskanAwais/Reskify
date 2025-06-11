@@ -13,6 +13,9 @@ export interface IStorage {
   updateUserAdminStatus(userId: number, isAdmin: boolean): Promise<void>;
   logCreditUsage(userId: number, usage: any): Promise<void>;
   getUserSwms(userId: number): Promise<any[]>;
+  createSwmsDraft(draft: any): Promise<any>;
+  getUserSwmsDrafts(): Promise<any[]>;
+  getUserSwmsDocuments(): Promise<any[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -79,6 +82,60 @@ export class DatabaseStorage implements IStorage {
       return userSwms;
     } catch (error) {
       console.error('Error fetching user SWMS:', error);
+      return [];
+    }
+  }
+
+  async createSwmsDraft(draft: any): Promise<any> {
+    try {
+      // For now, store in memory - in production would use a drafts table
+      console.log('Draft saved:', draft.id);
+      return draft;
+    } catch (error) {
+      console.error('Error creating SWMS draft:', error);
+      throw error;
+    }
+  }
+
+  private swmsDrafts: any[] = [];
+  private swmsDocuments: any[] = [];
+
+  async createSwmsDraft(draft: any): Promise<any> {
+    try {
+      const existingIndex = this.swmsDrafts.findIndex(d => d.id === draft.id);
+      if (existingIndex >= 0) {
+        this.swmsDrafts[existingIndex] = draft;
+      } else {
+        this.swmsDrafts.push(draft);
+      }
+      console.log('Draft saved:', draft.id);
+      return draft;
+    } catch (error) {
+      console.error('Error creating SWMS draft:', error);
+      throw error;
+    }
+  }
+
+  async getUserSwmsDrafts(): Promise<any[]> {
+    try {
+      return this.swmsDrafts.map(draft => ({
+        ...draft,
+        type: 'draft'
+      }));
+    } catch (error) {
+      console.error('Error fetching user drafts:', error);
+      return [];
+    }
+  }
+
+  async getUserSwmsDocuments(): Promise<any[]> {
+    try {
+      return this.swmsDocuments.map(doc => ({
+        ...doc,
+        type: 'completed'
+      }));
+    } catch (error) {
+      console.error('Error fetching user documents:', error);
       return [];
     }
   }
