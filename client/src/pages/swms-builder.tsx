@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -53,10 +53,9 @@ export default function SwmsBuilder() {
 
   const progress = ((currentStep - 1) / (STEPS.length - 1)) * 100;
 
-  // Save draft mutation
-  const saveDraftMutation = useMutation({
+  // Silent auto-save mutation (no notifications)
+  const autoSaveMutation = useMutation({
     mutationFn: async (data: any) => {
-      console.log('Saving draft with data:', data);
       const response = await apiRequest("POST", "/api/swms/draft", {
         ...data,
         status: "draft",
@@ -65,11 +64,34 @@ export default function SwmsBuilder() {
         createdAt: new Date().toISOString(),
         lastModified: new Date().toISOString()
       });
-      console.log('Draft save response:', response);
       return response;
     },
     onSuccess: (data: any) => {
-      console.log('Draft saved successfully:', data);
+      if (data?.draftId) {
+        setDraftId(data.draftId);
+        setIsDraft(true);
+      }
+      queryClient.invalidateQueries({ queryKey: ["/api/swms/my-documents"] });
+    },
+    onError: (error) => {
+      console.error('Auto-save failed:', error);
+    },
+  });
+
+  // Manual save mutation (with notifications)
+  const saveDraftMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const response = await apiRequest("POST", "/api/swms/draft", {
+        ...data,
+        status: "draft",
+        currentStep,
+        title: data.title || data.jobName || "Untitled SWMS",
+        createdAt: new Date().toISOString(),
+        lastModified: new Date().toISOString()
+      });
+      return response;
+    },
+    onSuccess: (data: any) => {
       if (data?.draftId) {
         setDraftId(data.draftId);
         setIsDraft(true);
@@ -89,6 +111,22 @@ export default function SwmsBuilder() {
       });
     },
   });
+
+  // Debounced auto-save to prevent excessive API calls
+  const debouncedAutoSave = useCallback(
+    (() => {
+      let timeoutId: NodeJS.Timeout;
+      return (data: any) => {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => {
+          if (data.title || data.jobName || data.tradeType) {
+            autoSaveMutation.mutate(data);
+          }
+        }, 1000); // Save after 1 second of inactivity
+      };
+    })(),
+    [autoSaveMutation]
+  );
 
   // Auto-save when moving between steps
   const autoSave = () => {
@@ -157,7 +195,7 @@ export default function SwmsBuilder() {
     // Auto-save before moving to next step
     if (formData.title || formData.jobName || formData.tradeType) {
       try {
-        await saveDraftMutation.mutateAsync(formData);
+        await autoSaveMutation.mutateAsync(formData);
       } catch (error) {
         console.error('Error saving draft:', error);
       }
@@ -221,7 +259,7 @@ export default function SwmsBuilder() {
     // Auto-save before moving to previous step
     if (formData.title || formData.jobName || formData.tradeType) {
       try {
-        await saveDraftMutation.mutateAsync(formData);
+        await autoSaveMutation.mutateAsync(formData);
       } catch (error) {
         console.error('Error saving draft:', error);
       }
@@ -236,10 +274,8 @@ export default function SwmsBuilder() {
     const newFormData = { ...formData, ...data };
     setFormData(newFormData);
     
-    // Auto-save form data changes
-    if (newFormData.title || newFormData.jobName || newFormData.tradeType) {
-      saveDraftMutation.mutate(newFormData);
-    }
+    // Silent auto-save with debouncing
+    debouncedAutoSave(newFormData);
   };
 
   return (
