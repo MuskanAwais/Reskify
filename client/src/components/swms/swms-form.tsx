@@ -338,25 +338,6 @@ export default function SWMSForm({ data = {}, onStepChange, onDataChange }: SWMS
 
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-8">
-      {/* Progress Bar */}
-      <div className="bg-white rounded-lg shadow-sm border p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-gray-900">
-            {translate("swms.step")} {currentStep} {translate("swms.of")} {TOTAL_STEPS}
-          </h2>
-          <div className="text-sm text-gray-500">
-            {Math.round((currentStep / TOTAL_STEPS) * 100)}% {translate("swms.complete")}
-          </div>
-        </div>
-        
-        <div className="w-full bg-gray-200 rounded-full h-2">
-          <div
-            className="bg-primary h-2 rounded-full transition-all duration-300"
-            style={{ width: `${(currentStep / TOTAL_STEPS) * 100}%` }}
-          />
-        </div>
-      </div>
-
       {/* Step Content */}
       <StepContent 
         step={currentStep} 
