@@ -80,7 +80,7 @@ export default function Payment() {
             <p className="text-gray-600">
               Choose your payment option to finalize and download your professional SWMS document
             </p>
-            {user?.username === "michael.dewick01@gmail.com" && (
+            {(user as any)?.username === "michael.dewick01@gmail.com" && (
               <div className="mt-4 text-center">
                 <Button 
                   variant="outline" 
@@ -334,11 +334,11 @@ export default function Payment() {
             
             <Button 
               onClick={handleContinue}
-              disabled={!selectedPlan && mockSubscription.creditsRemaining === 0}
+              disabled={!selectedPlan && mockSubscription.creditsRemaining === 0 && !isAdminDemo}
               className="min-w-[140px] px-6"
               size="lg"
             >
-              {selectedPlan ? "Pay & Continue" : "Continue"}
+              {isAdminDemo ? "Continue (Demo)" : selectedPlan ? "Pay & Continue" : "Continue"}
             </Button>
           </div>
         </div>

@@ -39,7 +39,7 @@ import { translate } from "@/lib/language-direct";
 import SmartTooltip from "@/components/ui/smart-tooltip";
 import QuickActionTooltip, { presetTooltips } from "@/components/ui/quick-action-tooltip";
 
-const TOTAL_STEPS = 7;
+const TOTAL_STEPS = 8;
 
 interface StepContentProps {
   step: number;
@@ -372,6 +372,40 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
       );
 
     case 5:
+      return (
+        <div className="space-y-6">
+          <div className="text-center">
+            <CreditCard className="mx-auto h-12 w-12 text-primary mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Payment & Access</h3>
+            <p className="text-gray-600 text-sm">
+              Complete your payment to finalize and download your SWMS document.
+            </p>
+          </div>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Payment Required</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-8">
+                <p className="text-gray-600 mb-4">
+                  To complete your SWMS document generation, please proceed to the payment page.
+                </p>
+                <Button 
+                  size="lg"
+                  onClick={() => window.location.href = '/payment'}
+                  className="bg-blue-600 hover:bg-blue-700"
+                >
+                  <CreditCard className="mr-2 h-4 w-4" />
+                  Go to Payment
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      );
+
+    case 6:
       return (
         <div className="space-y-6">
           <div className="text-center">

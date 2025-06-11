@@ -175,12 +175,17 @@ export default function SwmsBuilder() {
       }
     }
     
-    // Check for credits before proceeding to payment step (step 5)
+    // Handle payment step (step 5)
     if (currentStep === 4) {
+      // Always go to payment step next
+      setCurrentStep(5);
+      return;
+    }
+    
+    // Handle proceeding from payment step (step 5)
+    if (currentStep === 5) {
       const creditsRemaining = subscription ? (subscription as any).creditsRemaining || 0 : 0;
       const hasProPlan = (subscription as any)?.plan === "Pro" || (subscription as any)?.plan === "Enterprise";
-      
-      // Check if admin demo mode is enabled
       const isAdminDemo = localStorage.getItem('adminDemoMode') === 'true';
       
       if (creditsRemaining === 0 && !hasProPlan && !isAdminDemo) {
