@@ -753,29 +753,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Generate SWMS with comprehensive risk assessments and safety data
-  app.post("/api/generate-swms", async (req, res) => {
-    try {
-      const { title, jobName, tradeType, activities, projectDetails } = req.body;
-      
-      // Import the comprehensive AI generator with safety data
-      const { generateComprehensiveAISwms } = await import('./comprehensive-ai-swms-generator');
-      
-      const swmsData = await generateComprehensiveAISwms({
-        jobDescription: `${title} - ${jobName}`,
-        trade: tradeType,
-        projectType: projectDetails?.projectType || 'Construction',
-        location: projectDetails?.projectLocation || 'Australia',
-        duration: projectDetails?.duration || 'TBD',
-        requirements: activities.join(', ')
-      });
 
-      res.json(swmsData);
-    } catch (error: any) {
-      console.error('Generate SWMS error:', error);
-      res.status(500).json({ message: 'Failed to generate SWMS' });
-    }
-  });
 
   // Generate detailed risk assessments for activities with comprehensive safety data
   app.post("/api/generate-risk-assessments", async (req, res) => {

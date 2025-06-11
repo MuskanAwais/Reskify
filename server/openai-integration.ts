@@ -52,6 +52,11 @@ export interface GeneratedSWMSData {
 
 export async function generateSWMSFromTask(request: TaskGenerationRequest): Promise<GeneratedSWMSData> {
   try {
+    // Check if demo mode is enabled for faster testing
+    if (process.env.DEMO_MODE === 'true') {
+      return generateDemoSWMSData(request);
+    }
+
     const prompt = request.plainTextDescription 
       ? `Generate a comprehensive SWMS (Safe Work Method Statement) for the following work description:
 
@@ -135,7 +140,8 @@ Return response in the following JSON format:
       ],
       response_format: { type: "json_object" },
       temperature: 0.7,
-      max_tokens: 4000
+      max_tokens: 3000,
+      timeout: 30000 // 30 second timeout
     });
 
     const result = JSON.parse(response.choices[0].message.content || '{}');
