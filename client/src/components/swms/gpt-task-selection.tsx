@@ -456,7 +456,7 @@ export default function GPTTaskSelection({
                   <Label htmlFor="description">Job Description</Label>
                   <Textarea
                     id="description"
-                    placeholder="Describe the job in detail..."
+                    placeholder={projectDetails.description || "Describe the job in detail..."}
                     value={plainTextDescription}
                     onChange={(e) => setPlainTextDescription(e.target.value)}
                     rows={4}
