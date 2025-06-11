@@ -2,6 +2,7 @@ import type { Express } from "express";
 import express from "express";
 import { createServer, type Server } from "http";
 import multer from "multer";
+import { setupAuth } from "./auth";
 import path from "path";
 import fs from "fs";
 // import pdfParse from "pdf-parse";
