@@ -11,6 +11,7 @@ import { useUser } from "@/App";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { generateProtectedPDF } from "@/lib/pdf-generator";
 import AntiScreenshotProtection from "@/components/security/anti-screenshot-protection";
+import PaymentModal from "@/components/payment-modal";
 import { 
   FileText, 
   Download, 
@@ -33,7 +34,9 @@ export default function DocumentPreview({ formData }: DocumentPreviewProps) {
   const { user } = useUser();
   const { toast } = useToast();
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [paymentModalOpen, setPaymentModalOpen] = useState(false);
   const [generatedDocument, setGeneratedDocument] = useState<any>(null);
+  const [userCredits, setUserCredits] = useState(8); // Demo credits
 
   const createSwmsMutation = useMutation({
     mutationFn: async (data: any) => {

@@ -227,7 +227,10 @@ export default function Billing() {
   };
 
   const shouldShowButton = (planName: string) => {
-    // Show button for all plans (current plan will be disabled)
+    // Don't show button for one-off plans - they should go through checkout flow
+    if (planName === "One-Off SWMS") {
+      return false;
+    }
     return true;
   };
 
