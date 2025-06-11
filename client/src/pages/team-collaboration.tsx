@@ -28,6 +28,7 @@ import {
   FileText,
   Settings
 } from "lucide-react";
+import { useLocation } from "wouter";
 
 interface TeamMember {
   id: string;
@@ -54,6 +55,7 @@ interface TeamProject {
 export default function TeamCollaboration() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [, setLocation] = useLocation();
   const [selectedTab, setSelectedTab] = useState("members");
   const [newMemberEmail, setNewMemberEmail] = useState("");
   const [newMemberRole, setNewMemberRole] = useState<"admin" | "editor" | "viewer">("editor");
@@ -64,24 +66,8 @@ export default function TeamCollaboration() {
     queryKey: ["/api/user/subscription"],
   });
 
-  // Check for Enterprise mode toggle and admin mode
-  const [enterpriseMode, setEnterpriseMode] = useState(() => {
-    try {
-      return localStorage.getItem('enterpriseMode') === 'true';
-    } catch {
-      return false;
-    }
-  });
-
-  const [adminMode, setAdminMode] = useState(() => {
-    try {
-      return localStorage.getItem('adminMode') === 'true';
-    } catch {
-      return false;
-    }
-  });
-
-  const hasTeamAccess = subscription?.plan === "Pro" || subscription?.plan === "Enterprise" || enterpriseMode || adminMode;
+  // Check for subscription - only subscription plan gives access to team features
+  const hasTeamAccess = subscription?.plan === "subscription";
 
   // Team members and projects queries
   const { data: teamMembers = [], isLoading: membersLoading } = useQuery<TeamMember[]>({
@@ -168,10 +154,10 @@ export default function TeamCollaboration() {
               <Users className="h-16 w-16 text-gray-400 mx-auto mb-4" />
               <h2 className="text-2xl font-bold mb-2">Team Collaboration</h2>
               <p className="text-gray-600 mb-6">
-                Team collaboration features are available with Enterprise plans only.
+                Team collaboration features are available with subscription plans only.
               </p>
-              <Button>
-                Upgrade to Enterprise
+              <Button onClick={() => setLocation('/billing')}>
+                Upgrade to Subscription
               </Button>
             </CardContent>
           </Card>
