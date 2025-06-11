@@ -43,6 +43,8 @@ const upload = multer({
 let safetyLibraryDocuments: any[] = [];
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Setup authentication
+  setupAuth(app);
   // User subscription endpoint
   app.get("/api/user/subscription", async (req, res) => {
     try {

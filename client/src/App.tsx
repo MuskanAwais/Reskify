@@ -4,6 +4,9 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useState, createContext, useContext, useEffect } from "react";
+import { AuthProvider } from "@/hooks/use-auth";
+import { ProtectedRoute } from "@/lib/protected-route";
+import AuthPage from "@/pages/auth-page";
 import Header from "@/components/layout/header";
 import Sidebar from "@/components/layout/sidebar";
 import OnboardingTour from "@/components/ui/onboarding-tour";
@@ -160,37 +163,38 @@ function Router() {
         <Route path="/demo" component={Demo} />
         <Route path="/contact" component={Contact} />
         <Route path="/register" component={Register} />
-        <Route path="/dashboard" component={Dashboard} />
-        <Route path="/swms-builder" component={SwmsBuilder} />
-        <Route path="/my-swms" component={MySwms} />
-        <Route path="/analytics" component={Analytics} />
-        <Route path="/ai-assistant" component={AiAssistant} />
-        <Route path="/profile" component={Profile} />
-        <Route path="/safety-library" component={SafetyLibrary} />
+        <Route path="/auth" component={AuthPage} />
+        <ProtectedRoute path="/dashboard" component={Dashboard} />
+        <ProtectedRoute path="/swms-builder" component={SwmsBuilder} />
+        <ProtectedRoute path="/my-swms" component={MySwms} />
+        <ProtectedRoute path="/analytics" component={Analytics} />
+        <ProtectedRoute path="/ai-assistant" component={AiAssistant} />
+        <ProtectedRoute path="/profile" component={Profile} />
+        <ProtectedRoute path="/safety-library" component={SafetyLibrary} />
 
-        <Route path="/billing" component={Billing} />
-        <Route path="/settings" component={Settings} />
+        <ProtectedRoute path="/billing" component={Billing} />
+        <ProtectedRoute path="/settings" component={Settings} />
         <Route path="/language-test" component={LanguageTest} />
         <Route path="/language-demo" component={LanguageDemo} />
         <Route path="/legal-disclaimer" component={LegalDisclaimer} />
         
         {/* Innovative Features */}
-        <Route path="/smart-risk-predictor" component={SmartRiskPredictor} />
-        <Route path="/digital-twin-dashboard" component={DigitalTwinDashboard} />
-        <Route path="/live-collaboration" component={LiveCollaboration} />
-        <Route path="/ai-swms-generator" component={AISwmsGenerator} />
-        <Route path="/safework-ai" component={SafeworkAI} />
-        <Route path="/team-collaboration" component={TeamCollaboration} />
+        <ProtectedRoute path="/smart-risk-predictor" component={SmartRiskPredictor} />
+        <ProtectedRoute path="/digital-twin-dashboard" component={DigitalTwinDashboard} />
+        <ProtectedRoute path="/live-collaboration" component={LiveCollaboration} />
+        <ProtectedRoute path="/ai-swms-generator" component={AISwmsGenerator} />
+        <ProtectedRoute path="/safework-ai" component={SafeworkAI} />
+        <ProtectedRoute path="/team-collaboration" component={TeamCollaboration} />
         
         {/* Admin Routes */}
-        <Route path="/admin/dashboard" component={AdminDashboard} />
-        <Route path="/admin/user-management" component={UserManagement} />
-        <Route path="/admin/billing-analytics" component={BillingAnalytics} />
-        <Route path="/admin/usage-analytics" component={UsageAnalytics} />
-        <Route path="/admin/all-swms" component={AllSwms} />
-        <Route path="/admin/data" component={DataManagement} />
+        <ProtectedRoute path="/admin/dashboard" component={AdminDashboard} />
+        <ProtectedRoute path="/admin/user-management" component={UserManagement} />
+        <ProtectedRoute path="/admin/billing-analytics" component={BillingAnalytics} />
+        <ProtectedRoute path="/admin/usage-analytics" component={UsageAnalytics} />
+        <ProtectedRoute path="/admin/all-swms" component={AllSwms} />
+        <ProtectedRoute path="/admin/data" component={DataManagement} />
 
-        <Route path="/admin/health" component={SystemHealth} />
+        <ProtectedRoute path="/admin/health" component={SystemHealth} />
         
         <Route component={NotFound} />
       </Switch>
@@ -233,16 +237,18 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <SimpleLanguageProvider>
-        <UserContext.Provider value={{ user, setUser }}>
-          <AdminContext.Provider value={adminState}>
-            <TooltipProvider>
-              <Toaster />
-              <Router />
-            </TooltipProvider>
-          </AdminContext.Provider>
-        </UserContext.Provider>
-      </SimpleLanguageProvider>
+      <AuthProvider>
+        <SimpleLanguageProvider>
+          <UserContext.Provider value={{ user, setUser }}>
+            <AdminContext.Provider value={adminState}>
+              <TooltipProvider>
+                <Toaster />
+                <Router />
+              </TooltipProvider>
+            </AdminContext.Provider>
+          </UserContext.Provider>
+        </SimpleLanguageProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }
