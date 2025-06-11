@@ -123,15 +123,74 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
                   <SelectTrigger>
                     <SelectValue placeholder="Select trade type" />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="General">General Construction</SelectItem>
-                    <SelectItem value="Electrical">Electrical</SelectItem>
-                    <SelectItem value="Plumbing">Plumbing</SelectItem>
-                    <SelectItem value="HVAC">HVAC</SelectItem>
-                    <SelectItem value="Carpentry">Carpentry</SelectItem>
-                    <SelectItem value="Roofing">Roofing</SelectItem>
-                    <SelectItem value="Demolition">Demolition</SelectItem>
-                    <SelectItem value="Excavation">Excavation</SelectItem>
+                  <SelectContent className="max-h-96 overflow-y-auto">
+                    {/* Core Construction Trades */}
+                    <div className="px-2 py-1 text-xs font-semibold text-gray-500 uppercase tracking-wider">Core Construction</div>
+                    <SelectItem value="General Construction">General Construction</SelectItem>
+                    <SelectItem value="Carpentry & Joinery">Carpentry & Joinery</SelectItem>
+                    <SelectItem value="Bricklaying & Masonry">Bricklaying & Masonry</SelectItem>
+                    <SelectItem value="Concreting & Cement Work">Concreting & Cement Work</SelectItem>
+                    <SelectItem value="Steel Fixing & Welding">Steel Fixing & Welding</SelectItem>
+                    <SelectItem value="Roofing & Guttering">Roofing & Guttering</SelectItem>
+                    <SelectItem value="Tiling & Waterproofing">Tiling & Waterproofing</SelectItem>
+                    <SelectItem value="Painting & Decorating">Painting & Decorating</SelectItem>
+                    <SelectItem value="Glazing & Window Installation">Glazing & Window Installation</SelectItem>
+                    <SelectItem value="Flooring & Floor Coverings">Flooring & Floor Coverings</SelectItem>
+                    <SelectItem value="Plastering & Rendering">Plastering & Rendering</SelectItem>
+                    <SelectItem value="Insulation Installation">Insulation Installation</SelectItem>
+                    <SelectItem value="Cladding & External Finishes">Cladding & External Finishes</SelectItem>
+                    
+                    {/* Mechanical & Electrical */}
+                    <div className="px-2 py-1 text-xs font-semibold text-gray-500 uppercase tracking-wider mt-2">Mechanical & Electrical</div>
+                    <SelectItem value="Electrical Installation">Electrical Installation</SelectItem>
+                    <SelectItem value="Air Conditioning & Refrigeration">Air Conditioning & Refrigeration</SelectItem>
+                    <SelectItem value="Plumbing & Gasfitting">Plumbing & Gasfitting</SelectItem>
+                    <SelectItem value="Fire Protection Systems">Fire Protection Systems</SelectItem>
+                    <SelectItem value="Security Systems Installation">Security Systems Installation</SelectItem>
+                    <SelectItem value="Communications & Data Cabling">Communications & Data Cabling</SelectItem>
+                    <SelectItem value="Solar & Renewable Energy">Solar & Renewable Energy</SelectItem>
+                    <SelectItem value="Mechanical Services">Mechanical Services</SelectItem>
+                    <SelectItem value="Lift & Escalator Installation">Lift & Escalator Installation</SelectItem>
+                    <SelectItem value="Pool & Spa Construction">Pool & Spa Construction</SelectItem>
+                    
+                    {/* Specialist Construction */}
+                    <div className="px-2 py-1 text-xs font-semibold text-gray-500 uppercase tracking-wider mt-2">Specialist Construction</div>
+                    <SelectItem value="Demolition & Asbestos Removal">Demolition & Asbestos Removal</SelectItem>
+                    <SelectItem value="Excavation & Earthworks">Excavation & Earthworks</SelectItem>
+                    <SelectItem value="Scaffolding & Access">Scaffolding & Access</SelectItem>
+                    <SelectItem value="Crane & Rigging Operations">Crane & Rigging Operations</SelectItem>
+                    <SelectItem value="Piling & Foundations">Piling & Foundations</SelectItem>
+                    <SelectItem value="Road Construction & Civil Works">Road Construction & Civil Works</SelectItem>
+                    <SelectItem value="Bridge & Infrastructure">Bridge & Infrastructure</SelectItem>
+                    <SelectItem value="Tunneling & Underground">Tunneling & Underground</SelectItem>
+                    <SelectItem value="Marine Construction">Marine Construction</SelectItem>
+                    <SelectItem value="High-Rise Construction">High-Rise Construction</SelectItem>
+                    
+                    {/* Finishing & Specialist */}
+                    <div className="px-2 py-1 text-xs font-semibold text-gray-500 uppercase tracking-wider mt-2">Finishing & Specialist</div>
+                    <SelectItem value="Landscape Construction">Landscape Construction</SelectItem>
+                    <SelectItem value="Fencing & Gates">Fencing & Gates</SelectItem>
+                    <SelectItem value="Signage Installation">Signage Installation</SelectItem>
+                    <SelectItem value="Kitchen & Bathroom Installation">Kitchen & Bathroom Installation</SelectItem>
+                    <SelectItem value="Curtain Wall Installation">Curtain Wall Installation</SelectItem>
+                    <SelectItem value="Stonework & Natural Stone">Stonework & Natural Stone</SelectItem>
+                    <SelectItem value="Shopfitting & Joinery">Shopfitting & Joinery</SelectItem>
+                    <SelectItem value="Heritage & Restoration">Heritage & Restoration</SelectItem>
+                    <SelectItem value="Green Roof & Living Walls">Green Roof & Living Walls</SelectItem>
+                    <SelectItem value="Architectural Metalwork">Architectural Metalwork</SelectItem>
+                    
+                    {/* Industrial & Specialist */}
+                    <div className="px-2 py-1 text-xs font-semibold text-gray-500 uppercase tracking-wider mt-2">Industrial & Specialist</div>
+                    <SelectItem value="Industrial Maintenance">Industrial Maintenance</SelectItem>
+                    <SelectItem value="Mining Construction">Mining Construction</SelectItem>
+                    <SelectItem value="Petrochemical Construction">Petrochemical Construction</SelectItem>
+                    <SelectItem value="Food Processing Facilities">Food Processing Facilities</SelectItem>
+                    <SelectItem value="Clean Room Construction">Clean Room Construction</SelectItem>
+                    <SelectItem value="Hospital & Medical Facilities">Hospital & Medical Facilities</SelectItem>
+                    <SelectItem value="Educational Facilities">Educational Facilities</SelectItem>
+                    <SelectItem value="Aged Care Construction">Aged Care Construction</SelectItem>
+                    <SelectItem value="Data Centre Construction">Data Centre Construction</SelectItem>
+                    <SelectItem value="Warehouse & Logistics">Warehouse & Logistics</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
