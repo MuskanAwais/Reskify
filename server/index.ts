@@ -7,6 +7,9 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 app.use(express.urlencoded({ extended: false }));
 
+// Serve static files from attached_assets
+app.use('/attached_assets', express.static('attached_assets'));
+
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;
