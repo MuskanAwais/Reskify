@@ -44,7 +44,7 @@ export default function Header() {
             <img 
               src="/assets/riskify-logo.png" 
               alt="Riskify Logo" 
-              className="h-9 w-auto object-contain"
+              className="h-18 w-auto object-contain"
             />
           </div>
 
