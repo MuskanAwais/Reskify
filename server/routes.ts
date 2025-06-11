@@ -85,7 +85,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           category: "NSW Code of Practice",
           type: "Guidance Document",
           description: "NSW Code of Practice for construction work - comprehensive guidance for managing construction risks",
-          url: "/attached_assets/Construction-work-COP.pdf",
+          url: "Construction-work-COP.pdf",
           lastUpdated: "2019-08",
           applicableIndustries: ["Construction", "Building"],
           jurisdiction: "NSW",
@@ -1618,6 +1618,30 @@ startxref
         success: false, 
         message: 'Failed to generate PDF download' 
       });
+    }
+  });
+
+  // Serve PDF files from attached_assets folder
+  app.get("/api/safety-library/pdf/:filename", (req, res) => {
+    try {
+      const filename = req.params.filename;
+      const filePath = path.join(process.cwd(), 'attached_assets', filename);
+      
+      if (!fs.existsSync(filePath)) {
+        return res.status(404).json({ message: "PDF file not found" });
+      }
+      
+      // Set headers to prevent download and enable inline viewing
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', 'inline');
+      res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+      res.setHeader('Cache-Control', 'public, max-age=3600');
+      
+      // Stream the file
+      fs.createReadStream(filePath).pipe(res);
+    } catch (error: any) {
+      console.error('PDF serving error:', error);
+      res.status(500).json({ message: 'Failed to serve PDF file' });
     }
   });
 
