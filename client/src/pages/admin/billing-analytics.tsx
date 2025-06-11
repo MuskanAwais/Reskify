@@ -21,18 +21,16 @@ export default function BillingAnalytics() {
     );
   }
 
-  // Use actual billing data from API
-  if (!billingData) {
-    return (
-      <div className="p-6">
-        <div className="text-center text-gray-500">
-          No billing data available
-        </div>
-      </div>
-    );
-  }
-
-  const data = billingData;
+  // Ensure we have proper data structure
+  const data = billingData || {
+    totalRevenue: 0,
+    monthlyRevenue: 0,
+    activeSubscriptions: 0,
+    churnRate: 0,
+    revenueGrowth: 0,
+    monthlyData: [],
+    planDistribution: []
+  };
 
   return (
     <div className="p-6 space-y-6">
@@ -47,7 +45,7 @@ export default function BillingAnalytics() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Total Revenue</p>
-                <p className="text-2xl font-bold">${data.totalRevenue.toLocaleString()}</p>
+                <p className="text-2xl font-bold">${(data as any).totalRevenue?.toLocaleString() || '0'}</p>
               </div>
               <DollarSign className="h-8 w-8 text-green-500" />
             </div>
@@ -58,7 +56,7 @@ export default function BillingAnalytics() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Monthly Revenue</p>
-                <p className="text-2xl font-bold">${data.monthlyRevenue.toLocaleString()}</p>
+                <p className="text-2xl font-bold">${(data as any).monthlyRevenue?.toLocaleString() || '0'}</p>
               </div>
               <TrendingUp className="h-8 w-8 text-primary" />
             </div>
@@ -69,7 +67,7 @@ export default function BillingAnalytics() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Active Subscriptions</p>
-                <p className="text-2xl font-bold">{data.activeSubscriptions}</p>
+                <p className="text-2xl font-bold">{(data as any).activeSubscriptions || 0}</p>
               </div>
               <Users className="h-8 w-8 text-purple-500" />
             </div>

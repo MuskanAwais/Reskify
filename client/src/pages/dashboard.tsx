@@ -50,11 +50,9 @@ export default function Dashboard() {
   }
 
   const stats = dashboardData || {
-    activeSwms: 0,
+    draftSwms: 0,
+    completedSwms: 0,
     totalSwms: 0,
-    complianceScore: 0,
-    templatesUsed: 0,
-    aiSuggestions: 0,
     recentDocuments: []
   };
 
