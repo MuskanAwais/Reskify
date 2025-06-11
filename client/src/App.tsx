@@ -147,7 +147,7 @@ function Layout({ children }: { children: React.ReactNode }) {
       <Header />
       <div className="flex">
         <Sidebar />
-        <main className="flex-1 p-6 pr-4">
+        <main className="flex-1 p-6">
           {children}
         </main>
       </div>

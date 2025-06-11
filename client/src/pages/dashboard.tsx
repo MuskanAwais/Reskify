@@ -59,7 +59,7 @@ export default function Dashboard() {
   const topSafetyCodes = (Array.isArray(safetyLibrary) ? safetyLibrary : (safetyLibrary as any)?.documents || []).slice(0, 3);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Page Header */}
       <div>
         <h2 className="text-3xl font-bold text-gray-800 mb-2">{translate('nav.dashboard')}</h2>
