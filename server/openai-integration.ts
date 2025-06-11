@@ -73,12 +73,12 @@ export async function generateSWMSFromTask(request: TaskGenerationRequest): Prom
     if (request.mode === 'task' && request.taskList && request.taskList.length > 0) {
       // Task Mode: Generate SWMS for specific tasks
       const taskListText = request.taskList.join(', ');
-      prompt = `Generate SWMS rows in markdown table format for the following tasks performed by a ${tradeName}: ${taskListText}. Ensure each row is fully detailed and each field in a separate column.`;
+      prompt = `Generate SWMS rows in markdown table format for the following tasks performed by a ${tradeName}: ${taskListText}. Ensure each row is fully detailed and each field in a separate column. Include 8+ comprehensive hazards and control measures for each task with detailed risk assessments.`;
       
     } else {
       // Job Mode: Generate SWMS tasks from job description
       const jobDescription = request.plainTextDescription || request.projectDetails.description || request.taskName || 'General construction work';
-      prompt = `We are doing ${jobDescription} as a ${tradeName}. Generate at least 10 individual SWMS rows, one per task, with full markdown table format, each column properly delimited.`;
+      prompt = `We are doing ${jobDescription} as a ${tradeName}. Generate at least 10 individual SWMS rows, one per task, with full markdown table format, each column properly delimited. Include 8+ comprehensive hazards and control measures for each task with detailed risk assessments.`;
     }
 
     // Create promise with timeout
@@ -102,7 +102,7 @@ export async function generateSWMSFromTask(request: TaskGenerationRequest): Prom
           "type": "Electrical",
           "description": "Risk description",
           "riskRating": 15,
-          "controlMeasures": ["Control 1", "Control 2"],
+          "controlMeasures": ["Control 1", "Control 2", "Control 3"],
           "residualRisk": 5
         }
       ],
@@ -115,7 +115,7 @@ export async function generateSWMSFromTask(request: TaskGenerationRequest): Prom
   "emergencyProcedures": []
 }
 
-Use risk scores: 1-5=Low, 6-10=Medium, 11-15=High, 16-20=Extreme. Generate comprehensive SWMS data following Australian WHS standards. Always respond with valid JSON only.`
+CRITICAL: Each task must include 8+ comprehensive hazards with detailed control measures. Use risk scores: 1-5=Low, 6-10=Medium, 11-15=High, 16-20=Extreme. Generate comprehensive SWMS data following Australian WHS standards. Always respond with valid JSON only.`
         },
         {
           role: "user",

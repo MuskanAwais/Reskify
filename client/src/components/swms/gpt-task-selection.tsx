@@ -601,7 +601,7 @@ export default function GPTTaskSelection({
               {generateSWMSMutation.isPending && (
                 <div className="space-y-2 mt-8">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">{progressStatus || "Generating SWMS with Riskify AI..."}</span>
+                    <span className="text-sm font-medium">{progressStatus || "Generating SWMS with Riskify AI - this may take a minute..."}</span>
                     <span className="text-sm text-gray-500">{generationProgress}%</span>
                   </div>
                   <Progress value={generationProgress} className="w-full" />

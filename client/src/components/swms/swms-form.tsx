@@ -84,12 +84,13 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label htmlFor="jobName">Job Name</Label>
+                <Label htmlFor="jobName">Job Name *</Label>
                 <Input
                   id="jobName"
                   value={formData.jobName || ""}
                   onChange={(e) => updateFormData({ jobName: e.target.value })}
                   placeholder="Enter job name"
+                  required
                 />
               </div>
 
@@ -106,17 +107,18 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
               </div>
 
               <div>
-                <Label htmlFor="projectAddress">Project Address</Label>
+                <Label htmlFor="projectAddress">Project Address *</Label>
                 <Input
                   id="projectAddress"
                   value={formData.projectAddress || ""}
                   onChange={(e) => updateFormData({ projectAddress: e.target.value })}
                   placeholder="Enter project address"
+                  required
                 />
               </div>
 
               <div>
-                <Label htmlFor="tradeType">Trade Type</Label>
+                <Label htmlFor="tradeType">Trade Type *</Label>
                 <Select
                   value={formData.tradeType || ""}
                   onValueChange={(value) => updateFormData({ tradeType: value })}
