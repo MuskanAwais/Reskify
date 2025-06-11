@@ -56,17 +56,14 @@ export default function Sidebar() {
     creditsTotal: 100
   };
   
-  // Check if user is admin (replace with actual admin email check when deploying)
-  const isAdmin = true; // TODO: Replace with actual admin check based on user email
-  
-  const [adminMode, setAdminMode] = useState(() => {
-    if (!isAdmin) return false;
-    try {
-      return localStorage.getItem('adminMode') === 'true';
-    } catch {
-      return false;
-    }
+  // Get current user data
+  const { data: user } = useQuery({
+    queryKey: ["/api/user"],
+    retry: false,
   });
+
+  // Check if current user is the specific admin account
+  const isAdmin = user?.username === "0421869995";
 
   const [demoMode, setDemoMode] = useState(() => {
     try {
@@ -84,16 +81,7 @@ export default function Sidebar() {
     }
   });
 
-  const toggleAdminMode = () => {
-    const newMode = !adminMode;
-    setAdminMode(newMode);
-    try {
-      localStorage.setItem('adminMode', newMode.toString());
-    } catch (error) {
-      console.error('Failed to save admin state:', error);
-    }
-    window.location.reload();
-  };
+
 
   const toggleDemoMode = () => {
     const newMode = !demoMode;
