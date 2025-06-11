@@ -124,8 +124,12 @@ export function setupAuth(app: Express) {
     }
   });
 
-  app.post("/api/login", passport.authenticate("local"), (req, res) => {
+  app.post("/api/login", passport.authenticate("local"), async (req, res) => {
     const user = req.user as SelectUser;
+    
+    // Update last active time
+    await storage.updateUserLastActive(user.id);
+    
     res.status(200).json({ 
       id: user.id, 
       username: user.username, 

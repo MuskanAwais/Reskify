@@ -86,17 +86,38 @@ export default function UserManagement() {
     );
   }
 
-  const userData = users || [];
-  const contactData = contacts || [];
+  // Helper function to determine user plan
+  const getUserPlan = (user: any) => {
+    if (user.subscriptionStatus === 'active') {
+      return user.subscriptionType === 'enterprise' ? 'Enterprise' : 'Pro Subscription';
+    }
+    if (user.swmsCredits && user.swmsCredits > 0) {
+      return 'Credits';
+    }
+    return 'No Plan';
+  };
 
-  const filteredUsers = userData.filter((user: any) =>
+  // Helper function to format last active
+  const formatLastActive = (lastActiveAt: string | null) => {
+    if (!lastActiveAt) return 'Never';
+    const date = new Date(lastActiveAt);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 0) return 'Today';
+    if (diffDays === 1) return 'Yesterday';
+    if (diffDays < 7) return `${diffDays} days ago`;
+    return date.toLocaleDateString();
+  };
+
+  const filteredUsers = (users as any[]).filter((user: any) =>
     (user.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
      user.email?.toLowerCase().includes(searchTerm.toLowerCase())) &&
-    (planFilter === "all" || user.plan?.includes(planFilter)) &&
-    (statusFilter === "all" || user.status === statusFilter)
+    (planFilter === "all" || getUserPlan(user).toLowerCase().includes(planFilter.toLowerCase()))
   );
 
-  const filteredContacts = contactData.filter((contact: any) =>
+  const filteredContacts = (contacts as any[]).filter((contact: any) =>
     contact.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     contact.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     contact.company?.toLowerCase().includes(searchTerm.toLowerCase())
@@ -181,7 +202,6 @@ export default function UserManagement() {
                       <th className="text-left p-3 font-medium">Company</th>
                       <th className="text-left p-3 font-medium">Plan</th>
                       <th className="text-left p-3 font-medium">SWMS Count</th>
-                      <th className="text-left p-3 font-medium">Status</th>
                       <th className="text-left p-3 font-medium">Last Active</th>
                       <th className="text-left p-3 font-medium">Actions</th>
                     </tr>
@@ -191,43 +211,109 @@ export default function UserManagement() {
                       <tr key={user.id} className="border-b hover:bg-gray-50">
                         <td className="p-3">
                           <div className="flex items-center space-x-3">
-                            <div className="w-8 h-8 bg-primary/100 rounded-full flex items-center justify-center">
-                              <span className="text-sm font-medium text-primary/600">
+                            <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                              <span className="text-sm font-medium text-primary">
                                 {user.username?.charAt(0).toUpperCase()}
                               </span>
                             </div>
                             <div>
-                              <div className="font-medium">{user.username}</div>
+                              <div className="font-medium flex items-center gap-2">
+                                {user.username}
+                                {user.isAdmin && <Crown className="w-4 h-4 text-yellow-500" />}
+                              </div>
                               <div className="text-gray-500 text-xs">{user.email}</div>
                             </div>
                           </div>
                         </td>
-                        <td className="p-3 text-gray-600">{user.company}</td>
+                        <td className="p-3 text-gray-600">{user.companyName || 'N/A'}</td>
                         <td className="p-3">
-                          <Badge variant={user.plan?.includes('Enterprise') ? 'default' : user.plan?.includes('Pro') ? 'secondary' : 'outline'}>
-                            {user.plan || 'Basic Plan'}
+                          <Badge variant={
+                            getUserPlan(user) === 'Pro Subscription' ? 'default' : 
+                            getUserPlan(user) === 'Enterprise' ? 'secondary' :
+                            getUserPlan(user) === 'Credits' ? 'outline' : 'destructive'
+                          }>
+                            {getUserPlan(user)}
                           </Badge>
                         </td>
-                        <td className="p-3 font-medium">{user.swmsCount}</td>
+                        <td className="p-3 font-medium">{user.swmsGenerated || 0}</td>
+                        <td className="p-3 text-gray-600">{formatLastActive(user.lastActiveAt)}</td>
                         <td className="p-3">
-                          <Badge variant={user.status === 'active' ? 'default' : 'destructive'}>
-                            {user.status}
-                          </Badge>
-                        </td>
-                        <td className="p-3 text-gray-600">{user.lastActive}</td>
-                        <td className="p-3">
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            onClick={() => updateUserMutation.mutate({ 
-                              userId: user.id, 
-                              updates: { status: user.status === 'active' ? 'inactive' : 'active' }
-                            })}
-                            disabled={updateUserMutation.isPending}
-                          >
-                            <Settings className="w-4 h-4 mr-1" />
-                            Manage
-                          </Button>
+                          <Dialog open={manageDialogOpen && selectedUser?.id === user.id} onOpenChange={setManageDialogOpen}>
+                            <DialogTrigger asChild>
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => setSelectedUser(user)}
+                              >
+                                <Settings className="w-4 h-4 mr-1" />
+                                Manage
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent className="max-w-md">
+                              <DialogHeader>
+                                <DialogTitle>Manage User: {user.username}</DialogTitle>
+                              </DialogHeader>
+                              <div className="space-y-4">
+                                {/* Reset Password */}
+                                <div className="space-y-2">
+                                  <Label htmlFor="password">Reset Password</Label>
+                                  <div className="flex gap-2">
+                                    <Input
+                                      id="password"
+                                      type="password"
+                                      placeholder="New password"
+                                      value={newPassword}
+                                      onChange={(e) => setNewPassword(e.target.value)}
+                                    />
+                                    <Button 
+                                      onClick={() => resetPasswordMutation.mutate({ userId: user.id, password: newPassword })}
+                                      disabled={!newPassword || resetPasswordMutation.isPending}
+                                      size="sm"
+                                    >
+                                      <Key className="w-4 h-4" />
+                                    </Button>
+                                  </div>
+                                </div>
+
+                                {/* Admin Status */}
+                                <div className="space-y-2">
+                                  <Label>Admin Permissions</Label>
+                                  <div className="flex items-center gap-2">
+                                    <Button
+                                      variant={user.isAdmin ? "default" : "outline"}
+                                      onClick={() => updateAdminMutation.mutate({ userId: user.id, isAdmin: !user.isAdmin })}
+                                      disabled={updateAdminMutation.isPending}
+                                      size="sm"
+                                    >
+                                      <Shield className="w-4 h-4 mr-1" />
+                                      {user.isAdmin ? 'Remove Admin' : 'Make Admin'}
+                                    </Button>
+                                  </div>
+                                </div>
+
+                                {/* Credits Management */}
+                                <div className="space-y-2">
+                                  <Label htmlFor="credits">SWMS Credits ({user.swmsCredits || 0} current)</Label>
+                                  <div className="flex gap-2">
+                                    <Input
+                                      id="credits"
+                                      type="number"
+                                      placeholder="New credit amount"
+                                      value={newCredits}
+                                      onChange={(e) => setNewCredits(e.target.value)}
+                                    />
+                                    <Button 
+                                      onClick={() => updateCreditsMutation.mutate({ userId: user.id, credits: parseInt(newCredits) })}
+                                      disabled={!newCredits || updateCreditsMutation.isPending}
+                                      size="sm"
+                                    >
+                                      <CreditCard className="w-4 h-4" />
+                                    </Button>
+                                  </div>
+                                </div>
+                              </div>
+                            </DialogContent>
+                          </Dialog>
                         </td>
                       </tr>
                     ))}
