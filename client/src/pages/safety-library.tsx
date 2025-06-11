@@ -181,7 +181,7 @@ export default function SafetyLibrary() {
   }
 
   // Filter data based on search and category
-  const safetyData = Array.isArray(safetyLibrary) ? safetyLibrary : [];
+  const safetyData = Array.isArray(safetyLibrary?.documents) ? safetyLibrary.documents : Array.isArray(safetyLibrary) ? safetyLibrary : [];
   const filteredLibrary = safetyData.filter((item: any) => {
     const matchesSearch = !searchTerm || 
       item.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
