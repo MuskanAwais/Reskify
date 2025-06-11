@@ -72,29 +72,20 @@ export async function generateSWMSFromTask(request: TaskGenerationRequest): Prom
     
     if (request.mode === 'task' && request.taskList && request.taskList.length > 0) {
       // Task Mode: Generate SWMS for specific tasks
-      const taskListText = request.taskList.join('", "');
-      prompt = `Generate SWMS entries for the following tasks as a ${tradeName}: ["${taskListText}"]. Include each task on a separate row with full hazard, control, and compliance details.`;
-      
-      if (siteEnvironment) {
-        prompt += ` Site Environment: ${siteEnvironment}.`;
-      }
-      if (specialRiskFactors.length > 0) {
-        prompt += ` Special Risk Factors: ${specialRiskFactors.join(', ')}.`;
-      }
-      prompt += ` State: ${state}.`;
+      const taskListText = request.taskList.join(', ');
+      prompt = `Generate SWMS for ${tradeName} tasks: ${taskListText}. State: ${state}.`;
       
     } else {
-      // Job Mode: Generate 10+ SWMS tasks from job description
+      // Job Mode: Generate SWMS tasks from job description
       const jobDescription = request.plainTextDescription || request.projectDetails.description || request.taskName || 'General construction work';
-      prompt = `Generate at least 10 SWMS tasks for this project for a ${tradeName}: ${jobDescription}. Break it down into logical, industry-accurate tasks and generate full SWMS data for each.`;
-      
-      if (siteEnvironment) {
-        prompt += ` Site Environment: ${siteEnvironment}.`;
-      }
-      if (specialRiskFactors.length > 0) {
-        prompt += ` Special Risk Factors: ${specialRiskFactors.join(', ')}.`;
-      }
-      prompt += ` State: ${state}.`;
+      prompt = `Generate 5-8 SWMS tasks for ${tradeName}: ${jobDescription}. State: ${state}.`;
+    }
+    
+    if (siteEnvironment) {
+      prompt += ` Site: ${siteEnvironment}.`;
+    }
+    if (specialRiskFactors.length > 0) {
+      prompt += ` Risks: ${specialRiskFactors.join(', ')}.`;
     }
 
     // Create promise with timeout
@@ -103,35 +94,35 @@ export async function generateSWMSFromTask(request: TaskGenerationRequest): Prom
       messages: [
         {
           role: "system",
-          content: `You are Riskify, an expert Australian construction safety consultant. Generate comprehensive SWMS data in JSON format with the following structure:
+          content: `You are Riskify, an expert Australian construction safety consultant. Generate SWMS data in JSON format:
 
 {
   "activities": [
     {
       "name": "Task name",
-      "description": "Detailed description",
+      "description": "Brief description",
       "riskScore": 12,
       "residualRisk": 6,
-      "legislation": "WHS Act 2011, WHS Regulation 2017",
+      "legislation": "WHS Act 2011",
       "hazards": [
         {
           "type": "Electrical",
-          "description": "Risk of electric shock from live electrical components",
+          "description": "Risk description",
           "riskRating": 15,
-          "controlMeasures": ["Use insulated tools", "Test equipment before use"],
+          "controlMeasures": ["Control 1", "Control 2"],
           "residualRisk": 5
         }
       ],
       "ppe": ["Safety helmet", "Safety glasses"],
-      "tools": ["Insulated hand tools", "Digital multimeter"],
-      "trainingRequired": ["Electrical safety training", "First aid"]
+      "tools": ["Hand tools"],
+      "trainingRequired": ["Safety training"]
     }
   ],
   "plantEquipment": [],
   "emergencyProcedures": []
 }
 
-Use numeric risk scores 1-20 where: 1-2=Very Low, 3-5=Low, 6-10=Medium, 11-15=High, 16-20=Extreme. Include comprehensive hazard identification, detailed control measures, specific PPE requirements, required tools/equipment, and mandatory training. Follow Australian WHS legislation and industry best practices.`
+Risk scores: 1-5=Low, 6-10=Medium, 11-15=High, 16-20=Extreme. Keep responses concise but comprehensive.`
         },
         {
           role: "user",
@@ -140,12 +131,12 @@ Use numeric risk scores 1-20 where: 1-2=Very Low, 3-5=Low, 6-10=Medium, 11-15=Hi
       ],
       response_format: { type: "json_object" },
       temperature: 0.7,
-      max_tokens: 3000
+      max_tokens: 2000
     });
 
-    // Add timeout to the API call
+    // Add timeout to the API call (increased to 60 seconds)
     const timeoutPromise = new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('API timeout')), 30000)
+      setTimeout(() => reject(new Error('API timeout')), 60000)
     );
 
     try {
