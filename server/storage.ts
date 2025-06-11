@@ -12,6 +12,7 @@ export interface IStorage {
   updateUserPassword(userId: number, hashedPassword: string): Promise<void>;
   updateUserAdminStatus(userId: number, isAdmin: boolean): Promise<void>;
   logCreditUsage(userId: number, usage: any): Promise<void>;
+  getUserSwms(userId: number): Promise<any[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -70,6 +71,16 @@ export class DatabaseStorage implements IStorage {
     // For now, just log to console
     // In production, this would be stored in a credit_usage table
     console.log(`Credit usage for user ${userId}:`, usage);
+  }
+
+  async getUserSwms(userId: number): Promise<any[]> {
+    try {
+      const userSwms = await db.select().from(swmsDocuments).where(eq(swmsDocuments.userId, userId));
+      return userSwms;
+    } catch (error) {
+      console.error('Error fetching user SWMS:', error);
+      return [];
+    }
   }
 }
 

@@ -75,7 +75,7 @@ export default function Dashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 mb-1">{translate('draftSwms')}</p>
-                <p className="text-2xl font-bold text-gray-800">3</p>
+                <p className="text-2xl font-bold text-gray-800">{stats.draftSwms || 0}</p>
                 <p className="text-xs text-gray-500 mt-1">{translate('saveCompleteLater')}</p>
               </div>
               <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
@@ -90,7 +90,7 @@ export default function Dashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 mb-1">{translate('completedSwms')}</p>
-                <p className="text-2xl font-bold text-gray-800">12</p>
+                <p className="text-2xl font-bold text-gray-800">{stats.completedSwms || 0}</p>
                 <p className="text-xs text-gray-500 mt-1">{translate('projectSpecificDocumentation')}</p>
               </div>
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">

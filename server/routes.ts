@@ -2065,6 +2065,41 @@ startxref
     }
   });
 
+  // Dashboard endpoint for user-specific data
+  app.get("/api/dashboard/:userId", async (req, res) => {
+    try {
+      const { userId } = req.params;
+      const user = await dbStorage.getUser(parseInt(userId));
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Get user's SWMS documents
+      const userSwms = await dbStorage.getUserSwms(parseInt(userId));
+      const draftSwms = userSwms.filter(doc => doc.status === 'draft').length;
+      const completedSwms = userSwms.filter(doc => doc.status === 'completed').length;
+
+      const dashboardData = {
+        draftSwms,
+        completedSwms,
+        totalSwms: user.swmsGenerated || 0,
+        recentDocuments: userSwms.slice(0, 5).map(doc => ({
+          id: doc.id,
+          title: doc.title,
+          status: doc.status,
+          createdAt: doc.createdAt,
+          updatedAt: doc.updatedAt
+        }))
+      };
+
+      res.json(dashboardData);
+    } catch (error: any) {
+      console.error("Get dashboard data error:", error);
+      res.status(500).json({ message: "Failed to fetch dashboard data" });
+    }
+  });
+
   // Admin contacts endpoint
   app.get("/api/admin/contacts", async (req, res) => {
     try {

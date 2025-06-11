@@ -21,28 +21,18 @@ export default function BillingAnalytics() {
     );
   }
 
-  const mockBillingData = {
-    totalRevenue: 127500,
-    monthlyRevenue: 12750,
-    activeSubscriptions: 255,
-    churnRate: 3.2,
-    revenueGrowth: 18.5,
-    monthlyData: [
-      { month: 'Jan', revenue: 8500, subscriptions: 170 },
-      { month: 'Feb', revenue: 9200, subscriptions: 184 },
-      { month: 'Mar', revenue: 10100, subscriptions: 202 },
-      { month: 'Apr', revenue: 11200, subscriptions: 224 },
-      { month: 'May', revenue: 12100, subscriptions: 242 },
-      { month: 'Jun', revenue: 12750, subscriptions: 255 }
-    ],
-    planDistribution: [
-      { plan: 'Basic', users: 98, revenue: 2940 },
-      { plan: 'Pro', users: 127, revenue: 6350 },
-      { plan: 'Enterprise', users: 30, revenue: 3000 }
-    ]
-  };
+  // Use actual billing data from API
+  if (!billingData) {
+    return (
+      <div className="p-6">
+        <div className="text-center text-gray-500">
+          No billing data available
+        </div>
+      </div>
+    );
+  }
 
-  const data = billingData || mockBillingData;
+  const data = billingData;
 
   return (
     <div className="p-6 space-y-6">
