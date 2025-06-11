@@ -256,8 +256,8 @@ export default function Sidebar() {
   ];
 
   return (
-    <aside className="w-64 bg-card shadow-md border-r">
-      <div className="p-6">
+    <aside className="w-64 bg-card shadow-md border-r min-h-screen">
+      <div className="p-6 h-full">
 
 
         {/* Start Tour Button - Hidden after first use */}
@@ -274,8 +274,6 @@ export default function Sidebar() {
             </Button>
           </div>
         )}
-
-        <Separator className="mb-6" />
 
         {/* Quick Action */}
         <div className="mb-8" data-tour="quick-actions">
