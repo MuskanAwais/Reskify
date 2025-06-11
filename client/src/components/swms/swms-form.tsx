@@ -31,7 +31,8 @@ import {
   Heart,
   Save,
   CheckCircle,
-  PenTool
+  PenTool,
+  CreditCard
 } from "lucide-react";
 import { SimplifiedTableEditor } from "./simplified-table-editor";
 import GPTTaskSelection from "./gpt-task-selection";
@@ -441,7 +442,7 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
         </div>
       );
 
-    case 6:
+    case 7:
       return (
         <div className="space-y-6">
           <div className="text-center">
@@ -473,7 +474,7 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
         </div>
       );
 
-    case 7:
+    case 8:
       return (
         <div className="space-y-6">
           <div className="text-center">
