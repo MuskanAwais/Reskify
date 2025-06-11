@@ -118,6 +118,7 @@ export default function GPTTaskSelection({
         
         updateProgress("Analyzing risk factors", 40);
         const response = await apiRequest("POST", "/api/generate-swms", request);
+        const data = await response.json();
         
         updateProgress("Generating safety protocols", 65);
         await new Promise(resolve => setTimeout(resolve, 800));
@@ -127,14 +128,14 @@ export default function GPTTaskSelection({
         
         updateProgress("Finalizing SWMS document", 100);
         
-        return response;
+        return data;
       } catch (error) {
         setGenerationProgress(0);
         setProgressStatus("Generation failed");
         throw error;
       }
     },
-    onSuccess: (data) => {
+    onSuccess: (data: any) => {
       if (data.success) {
         // Convert generated data to the format expected by the parent component
         const convertedActivities = data.data.activities.map((activity: any, index: number) => ({
@@ -145,13 +146,15 @@ export default function GPTTaskSelection({
           ppe: activity.ppe,
           tools: activity.tools,
           trainingRequired: activity.trainingRequired,
+          riskScore: activity.riskScore || 12,
+          legislation: activity.legislation || "WHS Act 2011, WHS Regulation 2017",
           selected: true
         }));
 
-        const convertedPlantEquipment = data.data.plantEquipment.map((equipment: any, index: number) => ({
+        const convertedPlantEquipment = response.data.plantEquipment?.map((equipment: any, index: number) => ({
           id: `equipment-${index + 1}`,
           ...equipment
-        }));
+        })) || [];
 
         // Set generated tasks for editing
         setGeneratedTasks(convertedActivities);
@@ -239,6 +242,8 @@ export default function GPTTaskSelection({
       setEditingTask({ ...editingTask, [field]: value });
     }
   };
+
+
 
   // Finalize edited tasks
   const finalizeEditedTasks = () => {
@@ -700,6 +705,200 @@ export default function GPTTaskSelection({
                     <Button onClick={addNewTask} disabled={!newTask.trim()}>
                       <Plus className="h-4 w-4" />
                     </Button>
+                  </div>
+                </div>
+              )}
+
+              {/* Task Editing Modal */}
+              {editingTaskId && editingTask && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                  <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+                    <div className="p-6">
+                      <div className="flex items-center justify-between mb-6">
+                        <h3 className="text-xl font-semibold">Edit Task</h3>
+                        <div className="flex gap-2">
+                          <Button onClick={saveEditedTask} className="bg-green-600 hover:bg-green-700">
+                            Save Changes
+                          </Button>
+                          <Button onClick={cancelEditing} variant="outline">
+                            Cancel
+                          </Button>
+                        </div>
+                      </div>
+
+                      <div className="space-y-6">
+                        {/* Task Name and Description */}
+                        <div className="space-y-4">
+                          <div>
+                            <Label htmlFor="task-name">Task Name</Label>
+                            <Input
+                              id="task-name"
+                              value={editingTask.name}
+                              onChange={(e) => updateEditingTaskField('name', e.target.value)}
+                              className="mt-1"
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="task-description">Task Description</Label>
+                            <Textarea
+                              id="task-description"
+                              value={editingTask.description}
+                              onChange={(e) => updateEditingTaskField('description', e.target.value)}
+                              rows={3}
+                              className="mt-1"
+                            />
+                          </div>
+                        </div>
+
+                        {/* Risk Score and Legislation */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <Label htmlFor="risk-score">Risk Score (1-20)</Label>
+                            <Input
+                              id="risk-score"
+                              type="number"
+                              min="1"
+                              max="20"
+                              value={editingTask.riskScore || 12}
+                              onChange={(e) => updateEditingTaskField('riskScore', parseInt(e.target.value))}
+                              className="mt-1"
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="legislation">Applicable Legislation</Label>
+                            <Input
+                              id="legislation"
+                              value={editingTask.legislation || "WHS Act 2011, WHS Regulation 2017"}
+                              onChange={(e) => updateEditingTaskField('legislation', e.target.value)}
+                              className="mt-1"
+                            />
+                          </div>
+                        </div>
+
+                        {/* PPE Section */}
+                        <div>
+                          <Label>Personal Protective Equipment (PPE)</Label>
+                          <div className="mt-2 space-y-2">
+                            {editingTask.ppe?.map((item: string, index: number) => (
+                              <div key={index} className="flex items-center gap-2">
+                                <Input
+                                  value={item}
+                                  onChange={(e) => {
+                                    const newPPE = [...(editingTask.ppe || [])];
+                                    newPPE[index] = e.target.value;
+                                    updateEditingTaskField('ppe', newPPE);
+                                  }}
+                                  className="flex-1"
+                                />
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => {
+                                    const newPPE = editingTask.ppe?.filter((_: any, i: number) => i !== index) || [];
+                                    updateEditingTaskField('ppe', newPPE);
+                                  }}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            ))}
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                const newPPE = [...(editingTask.ppe || []), ''];
+                                updateEditingTaskField('ppe', newPPE);
+                              }}
+                            >
+                              <Plus className="h-4 w-4 mr-2" />
+                              Add PPE Item
+                            </Button>
+                          </div>
+                        </div>
+
+                        {/* Tools Section */}
+                        <div>
+                          <Label>Tools & Equipment</Label>
+                          <div className="mt-2 space-y-2">
+                            {editingTask.tools?.map((tool: string, index: number) => (
+                              <div key={index} className="flex items-center gap-2">
+                                <Input
+                                  value={tool}
+                                  onChange={(e) => {
+                                    const newTools = [...(editingTask.tools || [])];
+                                    newTools[index] = e.target.value;
+                                    updateEditingTaskField('tools', newTools);
+                                  }}
+                                  className="flex-1"
+                                />
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => {
+                                    const newTools = editingTask.tools?.filter((_: any, i: number) => i !== index) || [];
+                                    updateEditingTaskField('tools', newTools);
+                                  }}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            ))}
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                const newTools = [...(editingTask.tools || []), ''];
+                                updateEditingTaskField('tools', newTools);
+                              }}
+                            >
+                              <Plus className="h-4 w-4 mr-2" />
+                              Add Tool
+                            </Button>
+                          </div>
+                        </div>
+
+                        {/* Training Section */}
+                        <div>
+                          <Label>Training Required</Label>
+                          <div className="mt-2 space-y-2">
+                            {editingTask.trainingRequired?.map((training: string, index: number) => (
+                              <div key={index} className="flex items-center gap-2">
+                                <Input
+                                  value={training}
+                                  onChange={(e) => {
+                                    const newTraining = [...(editingTask.trainingRequired || [])];
+                                    newTraining[index] = e.target.value;
+                                    updateEditingTaskField('trainingRequired', newTraining);
+                                  }}
+                                  className="flex-1"
+                                />
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => {
+                                    const newTraining = editingTask.trainingRequired?.filter((_: any, i: number) => i !== index) || [];
+                                    updateEditingTaskField('trainingRequired', newTraining);
+                                  }}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            ))}
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                const newTraining = [...(editingTask.trainingRequired || []), ''];
+                                updateEditingTaskField('trainingRequired', newTraining);
+                              }}
+                            >
+                              <Plus className="h-4 w-4 mr-2" />
+                              Add Training
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
