@@ -132,54 +132,49 @@ CRITICAL: Each task must include 8+ comprehensive hazards with detailed control 
       setTimeout(() => reject(new Error('API timeout')), 60000)
     );
 
-    try {
-      const response = await Promise.race([apiCall, timeoutPromise]);
-      const rawContent = (response as any).choices[0].message.content || '{}';
-      
-      // Clean and validate JSON response
-      let cleanContent = rawContent.trim();
-      
-      // Remove any trailing incomplete JSON fragments
-      let lastBraceIndex = cleanContent.lastIndexOf('}');
-      if (lastBraceIndex > 0 && lastBraceIndex < cleanContent.length - 1) {
-        cleanContent = cleanContent.substring(0, lastBraceIndex + 1);
-      }
-      
-      // Try to parse, with fallback handling
-      let result;
-      try {
-        result = JSON.parse(cleanContent);
-      } catch (parseError: any) {
-        console.error('JSON parse error:', parseError.message);
-        console.error('Raw content length:', rawContent.length);
-        console.error('Clean content preview:', cleanContent.substring(0, 500));
-        
-        // Try to extract valid JSON from the response
-        const jsonStart = cleanContent.indexOf('{');
-        const jsonEnd = cleanContent.lastIndexOf('}');
-        if (jsonStart >= 0 && jsonEnd > jsonStart) {
-          const extractedJson = cleanContent.substring(jsonStart, jsonEnd + 1);
-          try {
-            result = JSON.parse(extractedJson);
-          } catch (secondParseError) {
-            throw new Error('Failed to parse AI response as valid JSON');
-          }
-        } else {
-          throw new Error('No valid JSON found in AI response');
-        }
-      }
-      
-      // Validate required structure
-      if (!result.activities || !Array.isArray(result.activities)) {
-        throw new Error('Invalid response structure: missing activities array');
-      }
-      
-      console.log('Riskify AI response received successfully');
-      return result as GeneratedSWMSData;
-    } catch (apiError: any) {
-      console.error(`SWMS generation failed: ${apiError.message}`);
-      throw new Error(`Failed to generate SWMS data from GPT: ${apiError.message}`);
+    const response = await Promise.race([apiCall, timeoutPromise]);
+    const rawContent = (response as any).choices[0].message.content || '{}';
+    
+    // Clean and validate JSON response
+    let cleanContent = rawContent.trim();
+    
+    // Remove any trailing incomplete JSON fragments
+    let lastBraceIndex = cleanContent.lastIndexOf('}');
+    if (lastBraceIndex > 0 && lastBraceIndex < cleanContent.length - 1) {
+      cleanContent = cleanContent.substring(0, lastBraceIndex + 1);
     }
+    
+    // Try to parse, with fallback handling
+    let result;
+    try {
+      result = JSON.parse(cleanContent);
+    } catch (parseError: any) {
+      console.error('JSON parse error:', parseError.message);
+      console.error('Raw content length:', rawContent.length);
+      console.error('Clean content preview:', cleanContent.substring(0, 500));
+      
+      // Try to extract valid JSON from the response
+      const jsonStart = cleanContent.indexOf('{');
+      const jsonEnd = cleanContent.lastIndexOf('}');
+      if (jsonStart >= 0 && jsonEnd > jsonStart) {
+        const extractedJson = cleanContent.substring(jsonStart, jsonEnd + 1);
+        try {
+          result = JSON.parse(extractedJson);
+        } catch (secondParseError) {
+          throw new Error('Failed to parse AI response as valid JSON');
+        }
+      } else {
+        throw new Error('No valid JSON found in AI response');
+      }
+    }
+    
+    // Validate required structure
+    if (!result.activities || !Array.isArray(result.activities)) {
+      throw new Error('Invalid response structure: missing activities array');
+    }
+    
+    console.log('Riskify AI response received successfully');
+    return result as GeneratedSWMSData;
 
   } catch (error: any) {
     console.error('SWMS generation error:', error.message);
