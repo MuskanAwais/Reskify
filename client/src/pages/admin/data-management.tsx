@@ -52,17 +52,27 @@ export default function DataManagement() {
     );
   }
 
-  // Use only real database statistics
-  const data = (databaseStats as any) || {
-    totalRecords: 0,
-    userRecords: 0,
-    swmsRecords: 0,
-    backupStatus: "No backups",
-    lastBackup: new Date().toISOString().split('T')[0],
-    dataIntegrity: "Unknown",
-    storageUsed: "0MB",
-    compressionRatio: "1.0:1"
-  };
+  // Use only real database statistics - no fallback data
+  const data = databaseStats as any;
+
+  if (!data) {
+    return (
+      <div className="p-6 space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Data Management</h1>
+          <p className="text-gray-600">Database administration and backup management</p>
+        </div>
+
+        <Card>
+          <CardContent className="p-6 text-center">
+            <Database className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Database Statistics Unavailable</h3>
+            <p className="text-gray-600">Unable to retrieve database statistics at this time.</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 space-y-6">

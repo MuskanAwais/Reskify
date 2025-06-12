@@ -209,7 +209,7 @@ function Router() {
         <ProtectedRoute path="/admin/usage-analytics" component={UsageAnalytics} />
         <ProtectedRoute path="/admin/all-swms" component={AllSwms} />
         <ProtectedRoute path="/admin/data" component={DataManagement} />
-
+        <ProtectedRoute path="/admin/security" component={SecurityMonitoring} />
         <ProtectedRoute path="/admin/health" component={SystemHealth} />
         
         <Route component={NotFound} />
