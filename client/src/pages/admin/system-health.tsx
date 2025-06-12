@@ -22,42 +22,6 @@ export default function SystemHealth() {
     );
   }
 
-  const mockHealthData = {
-    uptime: "99.98%",
-    responseTime: "245ms",
-    cpuUsage: 23.5,
-    memoryUsage: 67.2,
-    diskUsage: 45.8,
-    activeConnections: 342,
-    services: [
-      { name: "Web Server", status: "healthy", uptime: "99.99%", lastCheck: "2 minutes ago" },
-      { name: "Database", status: "healthy", uptime: "99.97%", lastCheck: "1 minute ago" },
-      { name: "API Gateway", status: "healthy", uptime: "99.98%", lastCheck: "3 minutes ago" },
-      { name: "File Storage", status: "warning", uptime: "98.45%", lastCheck: "5 minutes ago" },
-      { name: "Email Service", status: "healthy", uptime: "99.89%", lastCheck: "2 minutes ago" }
-    ],
-    recentIssues: [
-      { 
-        severity: "warning", 
-        message: "High memory usage detected on server-2", 
-        time: "15 minutes ago",
-        resolved: false 
-      },
-      { 
-        severity: "info", 
-        message: "Scheduled maintenance completed successfully", 
-        time: "2 hours ago",
-        resolved: true 
-      },
-      { 
-        severity: "error", 
-        message: "Temporary database connection timeout", 
-        time: "6 hours ago",
-        resolved: true 
-      }
-    ]
-  };
-
   // Use only real data from API
   const data = healthData || {
     uptime: "Online",
@@ -72,175 +36,125 @@ export default function SystemHealth() {
     networkTraffic: "0GB"
   };
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case "healthy":
-        return <Badge className="bg-green-100 text-green-800">Healthy</Badge>;
-      case "warning":
-        return <Badge className="bg-yellow-100 text-yellow-800">Warning</Badge>;
-      case "error":
-        return <Badge className="bg-red-100 text-red-800">Error</Badge>;
-      default:
-        return <Badge variant="outline">Unknown</Badge>;
-    }
-  };
-
-  const getSeverityColor = (severity: string) => {
-    switch (severity) {
-      case "error":
-        return "bg-red-500";
-      case "warning":
-        return "bg-yellow-500";
-      case "info":
-        return "bg-blue-500";
-      default:
-        return "bg-gray-500";
-    }
-  };
-
   return (
     <div className="p-6 space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">System Health</h1>
-        <p className="text-gray-600">Real-time monitoring and system status</p>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">System Health</h1>
+        <Badge className="bg-green-100 text-green-800">All Systems Operational</Badge>
       </div>
 
-      {/* System Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      {/* Key Metrics */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Uptime</p>
-                <p className="text-2xl font-bold text-green-600">{data.uptime}</p>
-              </div>
-              <Activity className="h-8 w-8 text-green-500" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Response Time</p>
-                <p className="text-2xl font-bold">{data.responseTime}</p>
-              </div>
-              <Clock className="h-8 w-8 text-primary" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Active Connections</p>
-                <p className="text-2xl font-bold">{data.activeConnections}</p>
-              </div>
-              <Wifi className="h-8 w-8 text-purple-500" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Services</p>
-                <p className="text-2xl font-bold text-green-600">
-                  {data.services.filter(s => s.status === 'healthy').length}/{data.services.length}
-                </p>
-              </div>
-              <Server className="h-8 w-8 text-green-500" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Resource Usage */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Resource Usage</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span className="text-sm font-medium">CPU Usage</span>
-                <span className="text-sm">{data.cpuUsage}%</span>
-              </div>
-              <Progress value={data.cpuUsage} className="w-full" />
-            </div>
-
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span className="text-sm font-medium">Memory Usage</span>
-                <span className="text-sm">{data.memoryUsage}%</span>
-              </div>
-              <Progress value={data.memoryUsage} className="w-full" />
-            </div>
-
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span className="text-sm font-medium">Disk Usage</span>
-                <span className="text-sm">{data.diskUsage}%</span>
-              </div>
-              <Progress value={data.diskUsage} className="w-full" />
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Service Status */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Service Status</CardTitle>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">System Status</CardTitle>
+            <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
-              {data.services.map((service, index) => (
-                <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <Database className="w-4 h-4 text-gray-500" />
-                    <div>
-                      <p className="font-medium">{service.name}</p>
-                      <p className="text-xs text-gray-500">
-                        Uptime: {service.uptime} • Last check: {service.lastCheck}
-                      </p>
-                    </div>
-                  </div>
-                  {getStatusBadge(service.status)}
-                </div>
-              ))}
+            <div className="text-2xl font-bold">{data.uptime}</div>
+            <p className="text-xs text-muted-foreground">Current status</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Response Time</CardTitle>
+            <Activity className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{data.avgResponseTime}</div>
+            <p className="text-xs text-muted-foreground">Average response</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Active Connections</CardTitle>
+            <Wifi className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{data.activeConnections}</div>
+            <p className="text-xs text-muted-foreground">Current users</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Requests</CardTitle>
+            <Server className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{data.totalRequests}</div>
+            <p className="text-xs text-muted-foreground">Total processed</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* System Resources */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">CPU Usage</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <Progress value={data.cpuUsage} className="w-full" />
+              <p className="text-sm text-muted-foreground">{data.cpuUsage}% utilization</p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Memory Usage</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <Progress value={data.memoryUsage} className="w-full" />
+              <p className="text-sm text-muted-foreground">{data.memoryUsage}% utilized</p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Disk Usage</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <Progress value={data.diskUsage} className="w-full" />
+              <p className="text-sm text-muted-foreground">{data.diskUsage}% capacity</p>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Recent Issues */}
+      {/* Database Information */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <AlertTriangle className="w-5 h-5" />
-            Recent Issues
+          <CardTitle className="text-lg flex items-center">
+            <Database className="mr-2 h-5 w-5" />
+            Database Information
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-3">
-            {data.recentIssues.map((issue, index) => (
-              <div key={index} className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
-                <div className={`w-2 h-2 rounded-full mt-2 ${getSeverityColor(issue.severity)}`} />
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm font-medium">{issue.message}</p>
-                    {issue.resolved && (
-                      <Badge className="bg-green-100 text-green-800 text-xs">Resolved</Badge>
-                    )}
-                  </div>
-                  <p className="text-xs text-gray-500 mt-1">{issue.time}</p>
-                </div>
-              </div>
-            ))}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="bg-gray-50 p-3 rounded-lg">
+              <div className="text-sm text-gray-600">Storage Size</div>
+              <div className="text-2xl font-bold text-blue-600">{data.databaseSize}</div>
+            </div>
+            <div className="bg-gray-50 p-3 rounded-lg">
+              <div className="text-sm text-gray-600">Network Traffic</div>
+              <div className="text-2xl font-bold text-green-600">{data.networkTraffic}</div>
+            </div>
+            <div className="bg-gray-50 p-3 rounded-lg">
+              <div className="text-sm text-gray-600">Error Rate</div>
+              <div className="text-2xl font-bold text-red-600">{data.errorRate}%</div>
+            </div>
+            <div className="bg-gray-50 p-3 rounded-lg">
+              <div className="text-sm text-gray-600">Connections</div>
+              <div className="text-2xl font-bold text-purple-600">{data.activeConnections}</div>
+            </div>
           </div>
         </CardContent>
       </Card>
