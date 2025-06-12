@@ -115,7 +115,7 @@ export async function generateSWMSFromTask(request: TaskGenerationRequest): Prom
   "emergencyProcedures": []
 }
 
-CRITICAL: Each task must include 8+ comprehensive hazards with detailed control measures. Use risk scores: 1-5=Low, 6-10=Medium, 11-15=High, 16-20=Extreme. Generate comprehensive SWMS data following Australian WHS standards. Always respond with valid JSON only.`
+CRITICAL: Generate 5-8 tasks minimum. Each task needs 4-6 key hazards with control measures. Use risk scores: 1-5=Low, 6-10=Medium, 11-15=High, 16-20=Extreme. Follow Australian WHS standards. Respond with valid JSON only - no extra text.`
         },
         {
           role: "user",
@@ -124,7 +124,7 @@ CRITICAL: Each task must include 8+ comprehensive hazards with detailed control 
       ],
       response_format: { type: "json_object" },
       temperature: 0.7,
-      max_tokens: 2000
+      max_tokens: 4000
     });
 
     // Add timeout to the API call (increased to 60 seconds)

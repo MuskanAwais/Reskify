@@ -678,15 +678,15 @@ export default function GPTTaskSelection({
                           </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                        <div className="space-y-4 text-sm">
                           {/* Hazards */}
                           <div>
-                            <h5 className="font-medium text-gray-700 mb-2">Key Hazards</h5>
+                            <h5 className="font-medium text-gray-700 mb-2 text-xs sm:text-sm">Key Hazards</h5>
                             <div className="space-y-1">
                               {task.hazards?.slice(0, 2).map((hazard: any, i: number) => (
-                                <div key={i} className="flex items-center gap-2">
-                                  <span className={`w-2 h-2 rounded-full ${hazard.riskRating === 'High' ? 'bg-red-500' : hazard.riskRating === 'Medium' ? 'bg-yellow-500' : 'bg-green-500'}`}></span>
-                                  <span className="text-gray-600">{hazard.type}: {hazard.description.slice(0, 50)}...</span>
+                                <div key={i} className="flex items-start gap-2">
+                                  <span className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${hazard.riskRating === 'High' ? 'bg-red-500' : hazard.riskRating === 'Medium' ? 'bg-yellow-500' : 'bg-green-500'}`}></span>
+                                  <span className="text-gray-600 text-xs sm:text-sm leading-relaxed">{hazard.type}: {hazard.description.slice(0, 60)}...</span>
                                 </div>
                               ))}
                             </div>
@@ -694,57 +694,57 @@ export default function GPTTaskSelection({
 
                           {/* PPE */}
                           <div>
-                            <h5 className="font-medium text-gray-700 mb-2">Required PPE</h5>
+                            <h5 className="font-medium text-gray-700 mb-2 text-xs sm:text-sm">Required PPE</h5>
                             <div className="flex flex-wrap gap-1">
-                              {task.ppe?.slice(0, 3).map((item: string, i: number) => (
-                                <span key={i} className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">{item}</span>
+                              {task.ppe?.slice(0, 4).map((item: string, i: number) => (
+                                <span key={i} className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded whitespace-nowrap">{item}</span>
                               ))}
-                              {task.ppe?.length > 3 && (
-                                <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">+{task.ppe.length - 3} more</span>
+                              {task.ppe?.length > 4 && (
+                                <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">+{task.ppe.length - 4} more</span>
                               )}
                             </div>
                           </div>
 
                           {/* Tools */}
                           <div>
-                            <h5 className="font-medium text-gray-700 mb-2">Tools & Equipment</h5>
+                            <h5 className="font-medium text-gray-700 mb-2 text-xs sm:text-sm">Tools & Equipment</h5>
                             <div className="flex flex-wrap gap-1">
-                              {task.tools?.slice(0, 3).map((tool: string, i: number) => (
-                                <span key={i} className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">{tool}</span>
+                              {task.tools?.slice(0, 4).map((tool: string, i: number) => (
+                                <span key={i} className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded whitespace-nowrap">{tool}</span>
                               ))}
-                              {task.tools?.length > 3 && (
-                                <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">+{task.tools.length - 3} more</span>
+                              {task.tools?.length > 4 && (
+                                <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">+{task.tools.length - 4} more</span>
                               )}
                             </div>
                           </div>
 
                           {/* Training */}
                           <div>
-                            <h5 className="font-medium text-gray-700 mb-2">Training Required</h5>
+                            <h5 className="font-medium text-gray-700 mb-2 text-xs sm:text-sm">Training Required</h5>
                             <div className="flex flex-wrap gap-1">
-                              {task.trainingRequired?.slice(0, 2).map((training: string, i: number) => (
-                                <span key={i} className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded">{training}</span>
+                              {task.trainingRequired?.slice(0, 3).map((training: string, i: number) => (
+                                <span key={i} className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded whitespace-nowrap">{training}</span>
                               ))}
-                              {task.trainingRequired?.length > 2 && (
-                                <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">+{task.trainingRequired.length - 2} more</span>
+                              {task.trainingRequired?.length > 3 && (
+                                <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">+{task.trainingRequired.length - 3} more</span>
                               )}
                             </div>
                           </div>
 
                           {/* Risk Score and Legislation */}
-                          <div className="col-span-2 pt-3 border-t mt-3">
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-4">
-                                <div className="text-sm">
+                          <div className="pt-3 border-t mt-3">
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                                <div className="text-xs sm:text-sm">
                                   <span className="font-medium text-gray-700">Risk Score:</span>
                                   <span className={`ml-2 px-2 py-1 rounded text-xs font-medium ${getRiskColor(task.riskScore || 12)}`}>
                                     {task.riskScore || 12}/20 - {getRiskDescription(task.riskScore || 12)}
                                   </span>
                                 </div>
-                                <div className="text-sm">
+                                <div className="text-xs sm:text-sm">
                                   <span className="font-medium text-gray-700">Legislation:</span>
                                   <span className="ml-2 text-blue-600 text-xs">
-                                    {task.legislation || "WHS Act 2011, WHS Regulation 2017"}
+                                    {task.legislation || "WHS Act 2011"}
                                   </span>
                                 </div>
                               </div>
