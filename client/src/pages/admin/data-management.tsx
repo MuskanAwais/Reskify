@@ -162,26 +162,22 @@ export default function DataManagement() {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {data.backups.map((backup) => (
-                <div key={backup.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div>
-                    <p className="font-medium">
-                      {new Date(backup.date).toLocaleDateString()}
-                    </p>
-                    <p className="text-sm text-gray-600">
-                      {new Date(backup.date).toLocaleTimeString()} • {backup.size}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Badge className="bg-green-100 text-green-800">
-                      {backup.status}
-                    </Badge>
-                    <Button variant="outline" size="sm">
-                      <Download className="w-4 h-4" />
-                    </Button>
-                  </div>
+              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div>
+                  <p className="font-medium">{data.lastBackup}</p>
+                  <p className="text-sm text-gray-600">
+                    Compression: {data.compressionRatio} • Storage: {data.storageUsed}
+                  </p>
                 </div>
-              ))}
+                <div className="flex items-center gap-2">
+                  <Badge className="bg-green-100 text-green-800">
+                    {data.backupStatus}
+                  </Badge>
+                  <Button variant="outline" size="sm">
+                    <Download className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
