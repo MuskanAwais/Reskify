@@ -189,7 +189,7 @@ export default function Payment() {
             <p className="text-gray-600">
               Choose your payment option to finalize and download your professional SWMS document
             </p>
-            {(user as any)?.username === "michael.dewick01@gmail.com" && (
+            {(user as any)?.isAdmin && (
               <div className="mt-4 text-center">
                 <Button 
                   variant="outline" 
