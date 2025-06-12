@@ -6,20 +6,80 @@ import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { CreditCard, Zap, Crown, ArrowLeft, Check } from "lucide-react";
 import { useLocation } from "wouter";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
+
+// Initialize Stripe
+if (!import.meta.env.VITE_STRIPE_PUBLIC_KEY) {
+  throw new Error('Missing required Stripe key: VITE_STRIPE_PUBLIC_KEY');
+}
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
+
+const CheckoutForm = ({ amount, type }: { amount: number, type: string }) => {
+  const stripe = useStripe();
+  const elements = useElements();
+  const { toast } = useToast();
+  const [, setLocation] = useLocation();
+  
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!stripe || !elements) {
+      return;
+    }
+
+    const { error } = await stripe.confirmPayment({
+      elements,
+      confirmParams: {
+        return_url: `${window.location.origin}/swms-builder?step=6`,
+      },
+    });
+
+    if (error) {
+      toast({
+        title: "Payment Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Payment Successful",
+        description: "Redirecting to continue with your SWMS...",
+      });
+      setLocation("/swms-builder?step=6");
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <PaymentElement />
+      <Button type="submit" disabled={!stripe} className="w-full">
+        Pay ${amount} AUD
+      </Button>
+    </form>
+  );
+};
 
 export default function Payment() {
   const [, setLocation] = useLocation();
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const { toast } = useToast();
 
-  // Mock user data - replace with actual API call
   const { data: user } = useQuery({
     queryKey: ["/api/user"],
     retry: false,
   });
 
-  // Mock subscription data - replace with actual API call
-  const mockSubscription = {
+  const { data: subscription } = useQuery({
+    queryKey: ["/api/user/subscription"],
+    retry: false,
+  });
+
+  const mockSubscription = subscription || {
     plan: "One-Off SWMS",
     creditsRemaining: 0,
     creditsUsed: 45,
@@ -31,10 +91,43 @@ export default function Payment() {
     ? (mockSubscription.creditsUsed / mockSubscription.creditsTotal) * 100 
     : 0;
 
+  const createPaymentIntent = useMutation({
+    mutationFn: async ({ amount, type }: { amount: number, type: string }) => {
+      const response = await apiRequest("POST", "/api/create-payment-intent", { 
+        amount, 
+        type 
+      });
+      return response.json();
+    },
+    onSuccess: (data) => {
+      setClientSecret(data.clientSecret);
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Payment Setup Failed",
+        description: error.message || "Failed to initialize payment",
+        variant: "destructive",
+      });
+    }
+  });
+
   const handlePurchase = (planType: string) => {
     setSelectedPlan(planType);
-    // Integrate with Stripe payment here
-    console.log(`Purchasing ${planType}`);
+    
+    let amount = 0;
+    switch (planType) {
+      case 'one-off':
+        amount = 15;
+        break;
+      case 'credits':
+        amount = 65;
+        break;
+      case 'subscription':
+        amount = 49;
+        break;
+    }
+    
+    createPaymentIntent.mutate({ amount, type: planType });
   };
 
   const handleGoBack = () => {
