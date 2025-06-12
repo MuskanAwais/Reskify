@@ -119,7 +119,10 @@ export class OutputMonitor {
       'construction', 'building', 'safety', 'work', 'site', 'hazard', 'risk',
       'electrical', 'plumbing', 'carpentry', 'concrete', 'roofing', 'painting',
       'excavation', 'welding', 'scaffolding', 'machinery', 'tools', 'equipment',
-      'ppe', 'personal protective equipment', 'hard hat', 'safety boots'
+      'ppe', 'personal protective equipment', 'hard hat', 'safety boots',
+      'joinery', 'trade', 'trades', 'install', 'installation', 'maintenance',
+      'repair', 'demolition', 'timber', 'steel', 'metal', 'wood', 'floor',
+      'wall', 'ceiling', 'foundation', 'structure', 'frame', 'beam', 'column'
     ];
 
     const lowerContent = content.toLowerCase();
@@ -127,11 +130,15 @@ export class OutputMonitor {
       lowerContent.includes(keyword)
     );
 
-    const confidence = keywordMatches.length / Math.max(content.split(' ').length * 0.1, 1);
-    const isRelevant = confidence > 0.1 && keywordMatches.length >= 2;
+    // More lenient scoring for construction relevance
+    const wordCount = content.split(' ').length;
+    const confidence = keywordMatches.length / Math.max(wordCount * 0.05, 1);
+    
+    // Lower threshold for construction content - if it has any construction keywords, likely relevant
+    const isRelevant = keywordMatches.length >= 1 || confidence > 0.05;
 
     if (!isRelevant) {
-      console.log(`Non-construction content detected. Confidence: ${confidence}`);
+      console.log(`Non-construction content detected. Keywords found: ${keywordMatches.join(', ')}, Confidence: ${confidence.toFixed(2)}`);
     }
 
     return { isRelevant, confidence };

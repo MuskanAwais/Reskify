@@ -385,18 +385,21 @@ export default function GPTTaskSelection({
         </CardHeader>
         <CardContent>
           <Tabs value={selectedMethod} onValueChange={handleMethodSelection}>
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="task-selection" className="flex items-center gap-2">
+            <TabsList className="grid w-full grid-cols-1 sm:grid-cols-3 gap-2 h-auto p-2">
+              <TabsTrigger value="task-selection" className="flex items-center gap-2 text-xs sm:text-sm px-2 py-3">
                 <Search className="h-4 w-4" />
-                Specific Tasks
+                <span className="hidden sm:inline">Specific Tasks</span>
+                <span className="sm:hidden">Tasks</span>
               </TabsTrigger>
-              <TabsTrigger value="plain-text" className="flex items-center gap-2">
+              <TabsTrigger value="plain-text" className="flex items-center gap-2 text-xs sm:text-sm px-2 py-3">
                 <Edit className="h-4 w-4" />
-                Job Description
+                <span className="hidden sm:inline">Job Description</span>
+                <span className="sm:hidden">Description</span>
               </TabsTrigger>
-              <TabsTrigger value="manual" className="flex items-center gap-2">
+              <TabsTrigger value="manual" className="flex items-center gap-2 text-xs sm:text-sm px-2 py-3">
                 <Edit className="h-4 w-4" />
-                Manual
+                <span className="hidden sm:inline">Manual</span>
+                <span className="sm:hidden">Manual</span>
               </TabsTrigger>
             </TabsList>
 
