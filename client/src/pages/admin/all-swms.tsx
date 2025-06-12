@@ -29,7 +29,7 @@ export default function AllSwms() {
   }
 
   // Use only real SWMS data from database
-  const swmsData = allSwms || [];
+  const swmsData = Array.isArray(allSwms) ? allSwms : [];
 
   const filteredData = swmsData.filter((swms: any) => {
     if (!swms) return false;
