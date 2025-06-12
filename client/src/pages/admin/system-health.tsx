@@ -22,8 +22,8 @@ export default function SystemHealth() {
     );
   }
 
-  // Use only real data from API
-  const data = healthData || {
+  // Use real data from API with proper fallback structure
+  const data = (healthData as any) || {
     uptime: "Online",
     avgResponseTime: "Real-time",
     cpuUsage: 0,
