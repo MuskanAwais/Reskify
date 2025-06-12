@@ -97,7 +97,7 @@ export default function Payment() {
         // Handle subscription creation differently
         const response = await apiRequest("POST", "/api/create-subscription", { 
           plan: "Pro",
-          email: user?.username || "user@example.com"
+          email: (user as any)?.username || "user@example.com"
         });
         return response.json();
       } else {

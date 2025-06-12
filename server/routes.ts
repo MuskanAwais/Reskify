@@ -2368,22 +2368,26 @@ startxref
         }
       });
 
+      // First create a product for the subscription
+      const product = await stripe.products.create({
+        name: `SWMS Builder - ${plan} Plan`,
+        description: 'Monthly subscription for unlimited SWMS generation'
+      });
+
+      // Create a price for the product
+      const price = await stripe.prices.create({
+        currency: 'aud',
+        unit_amount: 4900, // $49 AUD
+        recurring: {
+          interval: 'month'
+        },
+        product: product.id,
+      });
+
       // Create subscription with automatic recurring billing
       const subscription = await stripe.subscriptions.create({
         customer: customer.id,
-        items: [{ 
-          price_data: {
-            currency: 'aud',
-            product_data: {
-              name: `SWMS Builder - ${plan} Plan`,
-              description: 'Monthly subscription for unlimited SWMS generation'
-            },
-            unit_amount: 4900, // $49 AUD
-            recurring: {
-              interval: 'month'
-            }
-          }
-        }],
+        items: [{ price: price.id }],
         payment_behavior: 'default_incomplete',
         payment_settings: { 
           save_default_payment_method: 'on_subscription',
