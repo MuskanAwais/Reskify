@@ -2215,11 +2215,11 @@ startxref
     try {
       const users = await dbStorage.getAllUsers();
       
-      const swmsDocuments = await dbStorage.getAllSwmsDocuments();
+      const allSwmsDocuments = await dbStorage.getAllSwmsDocuments();
       const dataManagement = {
-        totalRecords: users.length + swmsDocuments.length,
+        totalRecords: users.length + allSwmsDocuments.length,
         userRecords: users.length,
-        swmsRecords: swmsDocuments.length,
+        swmsRecords: allSwmsDocuments.length,
         backupStatus: "Active",
         lastBackup: new Date().toISOString().split('T')[0],
         dataIntegrity: "Verified",

@@ -16,6 +16,7 @@ export interface IStorage {
   createSwmsDraft(draft: any): Promise<any>;
   getUserSwmsDrafts(): Promise<any[]>;
   getUserSwmsDocuments(): Promise<any[]>;
+  getAllSwmsDocuments(): Promise<any[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -125,6 +126,16 @@ export class DatabaseStorage implements IStorage {
       }));
     } catch (error) {
       console.error('Error fetching user documents:', error);
+      return [];
+    }
+  }
+
+  async getAllSwmsDocuments(): Promise<any[]> {
+    try {
+      const allDocuments = await db.select().from(swmsDocuments);
+      return allDocuments;
+    } catch (error) {
+      console.error('Error fetching all SWMS documents:', error);
       return [];
     }
   }

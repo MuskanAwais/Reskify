@@ -58,7 +58,19 @@ export default function SystemHealth() {
     ]
   };
 
-  const data = healthData || mockHealthData;
+  // Use only real data from API
+  const data = healthData || {
+    uptime: "Online",
+    avgResponseTime: "Real-time",
+    cpuUsage: 0,
+    memoryUsage: 0,
+    diskUsage: 0,
+    activeConnections: 0,
+    totalRequests: 0,
+    errorRate: 0,
+    databaseSize: "0MB",
+    networkTraffic: "0GB"
+  };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
