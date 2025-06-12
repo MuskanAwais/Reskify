@@ -93,14 +93,30 @@ export default function Payment() {
 
   const createPaymentIntent = useMutation({
     mutationFn: async ({ amount, type }: { amount: number, type: string }) => {
-      const response = await apiRequest("POST", "/api/create-payment-intent", { 
-        amount, 
-        type 
-      });
-      return response.json();
+      if (type === 'subscription') {
+        // Handle subscription creation differently
+        const response = await apiRequest("POST", "/api/create-subscription", { 
+          plan: "Pro",
+          email: user?.username || "user@example.com"
+        });
+        return response.json();
+      } else {
+        // Handle one-off payments
+        const response = await apiRequest("POST", "/api/create-payment-intent", { 
+          amount, 
+          type 
+        });
+        return response.json();
+      }
     },
     onSuccess: (data) => {
       setClientSecret(data.clientSecret);
+      if (data.recurring) {
+        toast({
+          title: "Subscription Setup",
+          description: "Setting up your monthly auto-recurring subscription",
+        });
+      }
     },
     onError: (error: any) => {
       toast({

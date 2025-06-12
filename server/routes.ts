@@ -2317,7 +2317,7 @@ startxref
     try {
       const { amount, currency = "aud" } = req.body;
       
-      if (!amount || amount < 50) { // Minimum 50 cents in AUD
+      if (!amount || amount < 0.50) { // Minimum 50 cents in AUD
         return res.status(400).json({ 
           error: "Invalid amount. Minimum payment is $0.50 AUD" 
         });
@@ -2345,7 +2345,7 @@ startxref
     }
   });
 
-  // Create subscription for recurring payments
+  // Create subscription for auto-recurring direct debit payments
   app.post("/api/create-subscription", async (req, res) => {
     try {
       if (!req.isAuthenticated()) {
@@ -2353,39 +2353,54 @@ startxref
       }
 
       const user = req.user as any;
-      const { priceId } = req.body;
+      const { email, plan } = req.body;
 
-      if (!priceId) {
-        return res.status(400).json({ error: "Price ID is required" });
+      if (!plan) {
+        return res.status(400).json({ error: "Subscription plan is required" });
       }
 
-      // Create or retrieve Stripe customer
-      let customerId = user.stripeCustomerId;
-      if (!customerId) {
-        const customer = await stripe.customers.create({
-          email: user.username,
-          metadata: {
-            userId: user.id.toString()
-          }
-        });
-        customerId = customer.id;
-        
-        // Store customer ID for future use (would update in real database)
-        console.log(`Created Stripe customer ${customerId} for user ${user.id}`);
-      }
+      // Create Stripe customer for direct debit
+      const customer = await stripe.customers.create({
+        email: email || user.username,
+        metadata: {
+          userId: user.id.toString(),
+          plan: plan
+        }
+      });
 
-      // Create subscription
+      // Create subscription with automatic recurring billing
       const subscription = await stripe.subscriptions.create({
-        customer: customerId,
-        items: [{ price: priceId }],
+        customer: customer.id,
+        items: [{ 
+          price_data: {
+            currency: 'aud',
+            product_data: {
+              name: `SWMS Builder - ${plan} Plan`,
+              description: 'Monthly subscription for unlimited SWMS generation'
+            },
+            unit_amount: 4900, // $49 AUD
+            recurring: {
+              interval: 'month'
+            }
+          }
+        }],
         payment_behavior: 'default_incomplete',
-        payment_settings: { save_default_payment_method: 'on_subscription' },
+        payment_settings: { 
+          save_default_payment_method: 'on_subscription',
+          payment_method_types: ['card', 'au_becs_debit'] // Support direct debit
+        },
+        collection_method: 'charge_automatically', // Auto-recurring
         expand: ['latest_invoice.payment_intent'],
       });
 
+      console.log(`Created auto-recurring subscription ${subscription.id} for user ${user.id}`);
+
       res.json({
         subscriptionId: subscription.id,
+        customerId: customer.id,
         clientSecret: (subscription.latest_invoice as any)?.payment_intent?.client_secret,
+        status: subscription.status,
+        recurring: true
       });
     } catch (error: any) {
       console.error("Create subscription error:", error);
