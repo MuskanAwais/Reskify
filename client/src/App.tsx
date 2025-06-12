@@ -41,6 +41,7 @@ import AllSwms from "@/pages/admin/all-swms";
 import DataManagement from "@/pages/admin/data-management";
 import ContactLists from "@/pages/admin/contact-lists";
 import SystemHealth from "@/pages/admin/system-health";
+import SecurityMonitoring from "@/pages/admin/security-monitoring";
 
 // Innovative features
 import SmartRiskPredictor from "@/pages/smart-risk-predictor";

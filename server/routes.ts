@@ -10,6 +10,8 @@ import fs from "fs";
 import { scrypt, randomBytes } from "crypto";
 import { promisify } from "util";
 import Stripe from "stripe";
+import InputSanitizer from "./security/input-sanitizer";
+import OutputMonitor from "./security/output-monitor";
 // import pdfParse from "pdf-parse";
 
 const scryptAsync = promisify(scrypt);
@@ -917,17 +919,109 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Generate SWMS data from task selection
+  // Generate SWMS data from task selection with comprehensive security
   app.post("/api/generate-swms", async (req, res) => {
     try {
+      const user = req.user as any;
+      if (!req.isAuthenticated() || !user) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
       const request: TaskGenerationRequest = req.body;
       
       if (!request.taskName && !request.plainTextDescription) {
         return res.status(400).json({ message: 'Either taskName or plainTextDescription is required' });
       }
 
+      // Input sanitization and validation
+      let sanitizedInput = '';
+      let inputViolations: string[] = [];
+      let riskLevel: 'low' | 'medium' | 'high' = 'low';
+
+      if (request.taskName) {
+        const sanitized = InputSanitizer.sanitizeInput(request.taskName, 'title');
+        sanitizedInput = sanitized.sanitizedText;
+        inputViolations = sanitized.violations;
+        riskLevel = sanitized.riskLevel;
+        request.taskName = sanitized.sanitizedText;
+      }
+
+      if (request.plainTextDescription) {
+        const sanitized = InputSanitizer.sanitizeInput(request.plainTextDescription, 'description');
+        sanitizedInput = sanitized.sanitizedText;
+        inputViolations = [...inputViolations, ...sanitized.violations];
+        riskLevel = sanitized.riskLevel === 'high' ? 'high' : riskLevel;
+        request.plainTextDescription = sanitized.sanitizedText;
+      }
+
+      if (request.taskList) {
+        const sanitizedTasks = request.taskList.map(task => {
+          const sanitized = InputSanitizer.sanitizeInput(task, 'tasks');
+          inputViolations = [...inputViolations, ...sanitized.violations];
+          if (sanitized.riskLevel === 'high') riskLevel = 'high';
+          return sanitized.sanitizedText;
+        });
+        request.taskList = sanitizedTasks;
+        sanitizedInput += ' ' + sanitizedTasks.join(' ');
+      }
+
+      // Check for high-risk content
+      if (riskLevel === 'high') {
+        await OutputMonitor.createSecurityAlert({
+          userId: user.id,
+          alertType: 'suspicious_content',
+          description: `High-risk content in SWMS generation: ${inputViolations.join(', ')}`,
+          severity: 'high',
+          timestamp: new Date(),
+          resolved: false
+        });
+
+        return res.status(400).json({ 
+          message: "Content validation failed", 
+          violations: inputViolations
+        });
+      }
+
+      // Check for construction relevance
+      const constructionRelevance = await OutputMonitor.checkConstructionRelevance(sanitizedInput);
+      if (!constructionRelevance.isRelevant) {
+        await OutputMonitor.createSecurityAlert({
+          userId: user.id,
+          alertType: 'non_construction_content',
+          description: `Non-construction content detected. Confidence: ${constructionRelevance.confidence.toFixed(2)}`,
+          severity: 'medium',
+          timestamp: new Date(),
+          resolved: false
+        });
+
+        return res.status(400).json({ 
+          message: "Content must be construction-related",
+          confidence: constructionRelevance.confidence
+        });
+      }
+
+      // Check for unusual patterns
+      const isUnusual = await OutputMonitor.detectUnusualPatterns(user.id);
+      if (isUnusual) {
+        return res.status(429).json({ message: "Rate limit exceeded. Please try again later." });
+      }
+
+      // Generate SWMS data
       const generatedData = await generateSWMSFromTask(request);
       
+      // Log the content generation
+      await OutputMonitor.logContent({
+        userId: user.id,
+        contentType: 'swms_generation',
+        inputContent: sanitizedInput,
+        outputContent: JSON.stringify(generatedData).substring(0, 1000), // Truncate for storage
+        riskLevel,
+        violations: inputViolations,
+        timestamp: new Date(),
+        ipAddress: req.ip,
+        userAgent: req.get('User-Agent')
+      });
+
       res.json({
         success: true,
         data: generatedData,
@@ -2426,6 +2520,71 @@ startxref
     } catch (error: any) {
       console.error("Delete SWMS document error:", error);
       res.status(500).json({ message: "Failed to delete SWMS document" });
+    }
+  });
+
+  // Security monitoring endpoints
+  app.get("/api/admin/security-monitoring", async (req, res) => {
+    try {
+      if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
+        return res.status(403).json({ error: "Admin access required" });
+      }
+
+      const stats = OutputMonitor.getStatistics();
+      const alerts = OutputMonitor.getSecurityAlerts(20);
+      
+      res.json({
+        ...stats,
+        alerts: alerts.filter(alert => !alert.resolved),
+        recentActivity: OutputMonitor.getContentLogs(10)
+      });
+    } catch (error: any) {
+      console.error("Get security monitoring error:", error);
+      res.status(500).json({ message: "Failed to fetch security data" });
+    }
+  });
+
+  app.get("/api/admin/content-logs", async (req, res) => {
+    try {
+      if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
+        return res.status(403).json({ error: "Admin access required" });
+      }
+
+      const { limit = 100, userId, riskLevel } = req.query;
+      let logs = OutputMonitor.getContentLogs(Number(limit));
+      
+      if (userId) {
+        logs = logs.filter(log => log.userId === Number(userId));
+      }
+      
+      if (riskLevel && riskLevel !== 'all') {
+        logs = logs.filter(log => log.riskLevel === riskLevel);
+      }
+      
+      res.json(logs);
+    } catch (error: any) {
+      console.error("Get content logs error:", error);
+      res.status(500).json({ message: "Failed to fetch content logs" });
+    }
+  });
+
+  app.post("/api/admin/security-alerts/:id/resolve", async (req, res) => {
+    try {
+      if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
+        return res.status(403).json({ error: "Admin access required" });
+      }
+
+      const { id } = req.params;
+      const resolved = OutputMonitor.resolveAlert(Number(id));
+      
+      if (resolved) {
+        res.json({ success: true, message: "Alert resolved successfully" });
+      } else {
+        res.status(404).json({ error: "Alert not found" });
+      }
+    } catch (error: any) {
+      console.error("Resolve alert error:", error);
+      res.status(500).json({ message: "Failed to resolve alert" });
     }
   });
 

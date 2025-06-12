@@ -253,6 +253,7 @@ export default function Sidebar() {
     { icon: TrendingUp, label: "Usage Analytics", href: "/admin/usage-analytics" },
     { icon: Database, label: "Data Management", href: "/admin/data" },
     { icon: Archive, label: "All SWMS", href: "/admin/all-swms" },
+    { icon: Shield, label: "Security Monitoring", href: "/admin/security" },
     { icon: Activity, label: "System Health", href: "/admin/health" }
   ];
 
