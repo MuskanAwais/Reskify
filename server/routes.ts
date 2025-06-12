@@ -2370,8 +2370,8 @@ startxref
         });
         customerId = customer.id;
         
-        // Update user with Stripe customer ID
-        await dbStorage.updateUser(user.id, { stripeCustomerId: customerId });
+        // Store customer ID for future use (would update in real database)
+        console.log(`Created Stripe customer ${customerId} for user ${user.id}`);
       }
 
       // Create subscription

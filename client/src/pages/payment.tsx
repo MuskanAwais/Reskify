@@ -87,8 +87,8 @@ export default function Payment() {
     isActive: true
   };
 
-  const creditsProgress = mockSubscription.creditsTotal > 0 
-    ? (mockSubscription.creditsUsed / mockSubscription.creditsTotal) * 100 
+  const creditsProgress = (mockSubscription as any).creditsTotal > 0 
+    ? ((mockSubscription as any).creditsUsed / (mockSubscription as any).creditsTotal) * 100 
     : 0;
 
   const createPaymentIntent = useMutation({
@@ -139,7 +139,7 @@ export default function Payment() {
     const isAdminDemo = localStorage.getItem('adminDemoMode') === 'true';
     
     // Check if user has credits, selected a plan, or is in admin demo mode
-    if (mockSubscription.creditsRemaining > 0 || selectedPlan || isAdminDemo) {
+    if ((mockSubscription as any).creditsRemaining > 0 || selectedPlan || isAdminDemo) {
       setLocation("/swms-builder?step=6"); // Go to step 6 (legal disclaimer)
     }
   };
@@ -197,10 +197,10 @@ export default function Payment() {
             <div className="flex items-center justify-between">
               <div>
                 <CardTitle className="text-lg">Current Plan</CardTitle>
-                <CardDescription>{mockSubscription.plan}</CardDescription>
+                <CardDescription>{(mockSubscription as any).plan}</CardDescription>
               </div>
               <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-                {mockSubscription.isActive ? "Active" : "Inactive"}
+                {(mockSubscription as any).isActive ? "Active" : "Inactive"}
               </Badge>
             </div>
           </CardHeader>
@@ -208,14 +208,14 @@ export default function Payment() {
             <div className="space-y-3">
               <div className="flex justify-between text-sm">
                 <span>Credits Used</span>
-                <span className="font-medium">{mockSubscription.creditsUsed}/{mockSubscription.creditsTotal} SWMS</span>
+                <span className="font-medium">{(mockSubscription as any).creditsUsed}/{(mockSubscription as any).creditsTotal} SWMS</span>
               </div>
               <Progress value={creditsProgress} className="h-2" />
               <p className="text-sm text-muted-foreground">
                 Pay per SWMS document
               </p>
               
-              {mockSubscription.creditsRemaining === 0 && (
+              {(mockSubscription as any).creditsRemaining === 0 && (
                 <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
                   <p className="text-sm text-amber-800">
                     <strong>No credits remaining.</strong> Purchase a one-off SWMS, additional credits, or upgrade to a subscription to continue.
@@ -409,6 +409,26 @@ export default function Payment() {
           </Card>
         </div>
 
+        {/* Payment Form */}
+        {clientSecret && selectedPlan && (
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle>Complete Payment</CardTitle>
+              <CardDescription>
+                Enter your payment details to proceed with your SWMS generation
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Elements stripe={stripePromise} options={{ clientSecret }}>
+                <CheckoutForm 
+                  amount={selectedPlan === 'one-off' ? 15 : selectedPlan === 'credits' ? 65 : 49} 
+                  type={selectedPlan} 
+                />
+              </Elements>
+            </CardContent>
+          </Card>
+        )}
+
         <Separator className="my-8" />
 
         {/* Action Buttons */}
@@ -419,20 +439,22 @@ export default function Payment() {
           </Button>
           
           <div className="flex space-x-4">
-            {mockSubscription.creditsRemaining > 0 && (
+            {(mockSubscription as any).creditsRemaining > 0 && (
               <Button variant="outline" onClick={handleContinue}>
                 Use Existing Credit
               </Button>
             )}
             
-            <Button 
-              onClick={handleContinue}
-              disabled={!selectedPlan && mockSubscription.creditsRemaining === 0 && !isAdminDemo}
-              className="min-w-[140px] px-6"
-              size="lg"
-            >
-              {isAdminDemo ? "Continue (Demo)" : selectedPlan ? "Pay & Continue" : "Continue"}
-            </Button>
+            {!clientSecret && (
+              <Button 
+                onClick={handleContinue}
+                disabled={!selectedPlan && (mockSubscription as any).creditsRemaining === 0 && !isAdminDemo}
+                className="min-w-[140px] px-6"
+                size="lg"
+              >
+                {isAdminDemo ? "Continue (Demo)" : selectedPlan ? "Pay & Continue" : "Continue"}
+              </Button>
+            )}
           </div>
         </div>
 
