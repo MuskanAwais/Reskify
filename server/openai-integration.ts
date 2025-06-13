@@ -115,7 +115,7 @@ export async function generateSWMSFromTask(request: TaskGenerationRequest): Prom
   "emergencyProcedures": []
 }
 
-CRITICAL: Generate 5-8 tasks minimum. Each task needs 4-6 key hazards with control measures. Use risk scores: 1-5=Low, 6-10=Medium, 11-15=High, 16-20=Extreme. Follow Australian WHS standards. Respond with valid JSON only - no extra text.`
+MANDATORY: Generate exactly 8 tasks covering: 1)Site setup 2)Main work (4-5 tasks) 3)Safety procedures 4)Cleanup. Each task needs 4-5 hazards with controls. Risk scores: 1-5=Low, 6-10=Medium, 11-15=High, 16-20=Extreme. Australian WHS compliance. JSON only.`
         },
         {
           role: "user",
@@ -173,7 +173,93 @@ CRITICAL: Generate 5-8 tasks minimum. Each task needs 4-6 key hazards with contr
       throw new Error('Invalid response structure: missing activities array');
     }
     
-    console.log('Riskify AI response received successfully');
+    // CRITICAL: Enforce minimum 8 tasks for compliance
+    if (result.activities.length < 8) {
+      console.log(`Generated ${result.activities.length} tasks, enforcing 8 minimum for compliance`);
+      
+      // Add standard compliance tasks to reach minimum 8
+      const standardTasks = [
+        {
+          id: `compliance-task-${result.activities.length + 1}`,
+          name: "Site Setup and Access Control",
+          description: "Establish secure site perimeter and control access points",
+          hazards: [
+            {
+              type: "Unauthorized access",
+              description: "Risk of unauthorized personnel entering work area",
+              riskRating: "Medium",
+              controlMeasures: ["Install barriers and signage", "Implement access log system"]
+            },
+            {
+              type: "Traffic management",
+              description: "Vehicle and pedestrian conflicts at site entry",
+              riskRating: "High", 
+              controlMeasures: ["Deploy traffic controllers", "Install warning signs"]
+            }
+          ],
+          ppe: ["Hi-vis vest", "Safety helmet", "Steel-capped boots"],
+          tools: ["Barriers", "Signage", "Radio communication"],
+          trainingRequired: ["Traffic control", "Site security procedures"],
+          riskScore: 12,
+          legislation: "WHS Act 2011"
+        },
+        {
+          id: `compliance-task-${result.activities.length + 2}`,
+          name: "Emergency Response Procedures",
+          description: "Establish and communicate emergency evacuation and response protocols",
+          hazards: [
+            {
+              type: "Medical emergency",
+              description: "Risk of workplace injury requiring immediate response",
+              riskRating: "High",
+              controlMeasures: ["Trained first aid officers on site", "Emergency contact procedures"]
+            },
+            {
+              type: "Fire/evacuation",
+              description: "Risk requiring immediate site evacuation",
+              riskRating: "Medium",
+              controlMeasures: ["Clear evacuation routes", "Assembly point identification"]
+            }
+          ],
+          ppe: ["First aid kit", "Emergency communication device"],
+          tools: ["Fire extinguisher", "Emergency contact list", "Evacuation map"],
+          trainingRequired: ["First aid certification", "Emergency response procedures"],
+          riskScore: 14,
+          legislation: "WHS Act 2011"
+        },
+        {
+          id: `compliance-task-${result.activities.length + 3}`,
+          name: "Waste Management and Environmental Compliance",
+          description: "Proper handling, segregation and disposal of construction waste",
+          hazards: [
+            {
+              type: "Hazardous material exposure",
+              description: "Risk from improper handling of construction waste",
+              riskRating: "Medium",
+              controlMeasures: ["Proper waste segregation", "Use appropriate containers"]
+            },
+            {
+              type: "Environmental contamination",
+              description: "Risk of soil or water contamination from waste",
+              riskRating: "Medium",
+              controlMeasures: ["Containment measures", "Approved disposal methods"]
+            }
+          ],
+          ppe: ["Work gloves", "Safety glasses", "Respirator if required"],
+          tools: ["Waste containers", "Spill kits", "Labeling materials"],
+          trainingRequired: ["Waste handling procedures", "Environmental compliance"],
+          riskScore: 10,
+          legislation: "WHS Act 2011, EPA regulations"
+        }
+      ];
+      
+      // Add tasks until we reach 8 minimum
+      while (result.activities.length < 8 && standardTasks.length > 0) {
+        result.activities.push(standardTasks.shift());
+      }
+    }
+    
+    console.log(`Riskify AI response received successfully with ${result.activities.length} tasks`);
     return result as GeneratedSWMSData;
 
   } catch (error: any) {
