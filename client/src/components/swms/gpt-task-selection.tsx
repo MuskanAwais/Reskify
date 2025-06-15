@@ -795,14 +795,27 @@ export default function GPTTaskSelection({
                 </Button>
               </div>
 
-              {/* Progress Bar */}
+              {/* Enhanced Progress Bar with Detailed Descriptions */}
               {generateSWMSMutation.isPending && (
-                <div className="space-y-2 mt-8">
+                <div className="space-y-3 mt-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">{progressStatus || "Generating SWMS with Riskify AI - this may take a minute..."}</span>
-                    <span className="text-sm text-gray-500">{generationProgress}%</span>
+                    <span className="text-sm font-medium text-blue-800">{progressStatus || "Generating SWMS with Riskify AI..."}</span>
+                    <span className="text-sm text-blue-600 font-medium">{generationProgress}%</span>
                   </div>
-                  <Progress value={generationProgress} className="w-full" />
+                  <Progress value={generationProgress} className="w-full h-2" />
+                  <div className="text-xs text-blue-600 font-medium">
+                    {generationProgress === 60 ? (
+                      "🔄 Creating comprehensive safety procedures - this is the most complex step and takes longest (30-45 seconds)"
+                    ) : generationProgress === 70 ? (
+                      "✅ Validating against Australian WHS regulations and compliance requirements"
+                    ) : generationProgress === 80 ? (
+                      "🛡️ Processing control measures, PPE requirements, and emergency procedures"
+                    ) : generationProgress >= 90 ? (
+                      "🔧 Auto-populating plant and equipment with accurate risk assessments"
+                    ) : (
+                      "⚡ Analyzing your trade requirements and safety factors..."
+                    )}
+                  </div>
                 </div>
               )}
 

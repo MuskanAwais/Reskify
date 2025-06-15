@@ -290,11 +290,16 @@ export default function SwmsBuilder() {
         projectAddress: "",
         projectLocation: "",
         tradeType: "",
+        workDescription: "",
         activities: [],
         hazards: [],
         riskAssessments: [],
         safetyMeasures: [],
         complianceCodes: [],
+        plantEquipment: [],
+        signatures: [],
+        emergencyProcedures: [],
+        generalRequirements: [],
         acceptedDisclaimer: false,
         selectedTasks: []
       });
@@ -312,7 +317,26 @@ export default function SwmsBuilder() {
     }
     
     if (currentStep > 1) {
-      setCurrentStep(currentStep - 1);
+      const newStep = currentStep - 1;
+      setCurrentStep(newStep);
+      setLocation(`/swms-builder?step=${newStep}`);
+    }
+  };
+
+  const handleStepClick = async (stepId: number) => {
+    // Can navigate backward freely, or one step forward if form is valid
+    if (stepId <= currentStep || stepId === currentStep + 1) {
+      // Auto-save before step change
+      if (formData.title || formData.jobName || formData.tradeType) {
+        try {
+          await autoSaveMutation.mutateAsync(formData);
+        } catch (error) {
+          console.error('Error saving draft:', error);
+        }
+      }
+      
+      setCurrentStep(stepId);
+      setLocation(`/swms-builder?step=${stepId}`);
     }
   };
 
