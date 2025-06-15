@@ -27,7 +27,13 @@ const getSteps = () => [
 
 export default function SwmsBuilder() {
   const STEPS = getSteps();
+  const [location, setLocation] = useLocation();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  
   const [currentStep, setCurrentStep] = useState(1);
+  const [isDraft, setIsDraft] = useState(false);
+  const [draftId, setDraftId] = useState(null);
   const [formData, setFormData] = useState({
     title: "",
     jobName: "",
@@ -41,13 +47,38 @@ export default function SwmsBuilder() {
     safetyMeasures: [],
     complianceCodes: [],
     acceptedDisclaimer: false,
-    selectedTasks: []
+    selectedTasks: [],
+    workDescription: "",
+    plantEquipment: [],
+    signatures: [],
+    emergencyProcedures: [],
+    generalRequirements: []
   });
-  const [isDraft, setIsDraft] = useState(false);
-  const [draftId, setDraftId] = useState(null);
-  const [location, setLocation] = useLocation();
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
+
+  // Load saved data from localStorage on mount
+  useEffect(() => {
+    const savedData = localStorage.getItem('swms-form-data');
+    if (savedData) {
+      try {
+        const parsedData = JSON.parse(savedData);
+        setFormData(prev => ({ ...prev, ...parsedData }));
+      } catch (error) {
+        console.error('Error loading saved data:', error);
+      }
+    }
+    
+    // Parse step from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const step = parseInt(urlParams.get('step') || '1');
+    if (step >= 1 && step <= STEPS.length) {
+      setCurrentStep(step);
+    }
+  }, []);
+
+  // Save data to localStorage whenever formData changes
+  useEffect(() => {
+    localStorage.setItem('swms-form-data', JSON.stringify(formData));
+  }, [formData]);
 
   // Check user subscription for feature access
   const { data: subscription } = useQuery({
@@ -330,23 +361,27 @@ export default function SwmsBuilder() {
             </div>
             <Progress value={progress} className="w-full" />
             
-            {/* Step indicators */}
+            {/* Clickable Step indicators */}
             <div className="flex justify-between">
               {STEPS.map((step) => (
                 <div key={step.id} className="flex flex-col items-center space-y-2 flex-1">
-                  <div 
-                    className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                      step.id <= currentStep 
-                        ? 'bg-primary text-white' 
-                        : 'bg-gray-200 text-gray-600'
+                  <button
+                    onClick={() => handleStepClick(step.id)}
+                    className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-all hover:scale-110 ${
+                      step.id === currentStep 
+                        ? 'bg-primary text-white ring-2 ring-primary ring-offset-2' 
+                        : step.id < currentStep
+                        ? 'bg-green-500 text-white hover:bg-green-600'
+                        : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
                     }`}
+                    disabled={step.id > currentStep + 1} // Can only go one step ahead
                   >
                     {step.id < currentStep ? (
                       <CheckCircle className="h-4 w-4" />
                     ) : (
                       step.id
                     )}
-                  </div>
+                  </button>
                   <div className="text-center hidden md:block px-2">
                     <p className="text-xs font-medium text-gray-800 text-center">{step.title}</p>
                     <p className="text-xs text-gray-500 text-center leading-tight">{step.description}</p>

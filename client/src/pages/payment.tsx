@@ -147,7 +147,7 @@ export default function Payment() {
   };
 
   const handleGoBack = () => {
-    setLocation("/swms-builder");
+    setLocation("/swms-builder?step=4");
   };
 
   const handleContinue = () => {
