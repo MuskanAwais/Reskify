@@ -10,9 +10,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import { Loader2, Search, Bot, Edit, CheckCircle2, AlertCircle, Plus, Trash2 } from "lucide-react";
+import { Loader2, Search, Bot, Edit, CheckCircle2, AlertCircle, Plus, Trash2, LogIn } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
+import { useLocation } from "wouter";
 
 interface ProjectDetails {
   projectName: string;
@@ -72,6 +74,8 @@ export default function GPTTaskSelection({
   onMethodSelected 
 }: GPTTaskSelectionProps) {
   const { toast } = useToast();
+  const { user } = useAuth();
+  const [, setLocation] = useLocation();
   
   const [selectedMethod, setSelectedMethod] = useState("task-selection");
   const [selectedTasks, setSelectedTasks] = useState<string[]>([]);
@@ -210,6 +214,18 @@ export default function GPTTaskSelection({
     },
     onError: (error: any) => {
       setGenerationProgress(0);
+      
+      // Check for authentication error
+      if (error.message?.includes('Authentication required') || error.message?.includes('401')) {
+        toast({
+          title: "Login Required",
+          description: "Please log in to generate SWMS documents.",
+          variant: "destructive",
+        });
+        setLocation('/auth');
+        return;
+      }
+      
       toast({
         title: "Generation Failed",
         description: error.message || "Failed to generate SWMS data. Please try again.",
@@ -599,11 +615,35 @@ export default function GPTTaskSelection({
                 </div>
               </div>
 
+              {/* Authentication Check */}
+              {!user && (
+                <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-6">
+                  <div className="flex items-center gap-3">
+                    <AlertCircle className="h-5 w-5 text-orange-600" />
+                    <div className="flex-1">
+                      <h4 className="font-medium text-orange-800">Login Required</h4>
+                      <p className="text-sm text-orange-700 mt-1">
+                        You need to log in to generate SWMS documents with guaranteed 8+ tasks.
+                      </p>
+                    </div>
+                    <Button 
+                      onClick={() => setLocation('/auth')}
+                      variant="outline"
+                      size="sm"
+                      className="border-orange-300 text-orange-700 hover:bg-orange-100"
+                    >
+                      <LogIn className="h-4 w-4 mr-2" />
+                      Login
+                    </Button>
+                  </div>
+                </div>
+              )}
+
               {/* Generate SWMS Button with increased spacing */}
               <div className="flex justify-end mt-8 mb-8">
                 <Button 
                   onClick={handleGenerate}
-                  disabled={generateSWMSMutation.isPending}
+                  disabled={generateSWMSMutation.isPending || !user}
                   size="lg"
                   className="min-w-40"
                 >
@@ -615,7 +655,7 @@ export default function GPTTaskSelection({
                   ) : (
                     <>
                       <Bot className="h-4 w-4 mr-2" />
-                      Generate SWMS
+                      Generate SWMS (8+ Tasks)
                     </>
                   )}
                 </Button>
