@@ -182,20 +182,58 @@ export default function GPTTaskSelection({
         setGeneratedTasks(convertedActivities);
         setIsEditing(true);
         
-        // Auto-extract plant and equipment from generated tasks
+        // Auto-extract plant and equipment from generated tasks with proper risk levels
         const autoPlantEquipment: any[] = [];
         convertedActivities.forEach((activity: any, index: number) => {
           if (activity.tools && activity.tools.length > 0) {
             activity.tools.forEach((tool: string, toolIndex: number) => {
+              // Determine risk level based on equipment type
+              let riskLevel = 'Low';
+              let category = 'Hand Tools';
+              let certificationRequired = false;
+              let safetyRequirements = ['Pre-use inspection', 'Proper handling'];
+              
+              const toolLower = tool.toLowerCase();
+              
+              // High-risk equipment classification
+              if (toolLower.includes('welding') || toolLower.includes('welder') || 
+                  toolLower.includes('cutting torch') || toolLower.includes('plasma')) {
+                riskLevel = 'High';
+                category = 'Welding Equipment';
+                certificationRequired = true;
+                safetyRequirements = ['Licensed operator required', 'Pre-use inspection', 'Hot work permit', 'Fire watch'];
+              } else if (toolLower.includes('grinder') || toolLower.includes('angle grinder') ||
+                        toolLower.includes('circular saw') || toolLower.includes('chainsaw')) {
+                riskLevel = 'High';
+                category = 'Power Tools';
+                safetyRequirements = ['Pre-use inspection', 'Guard checks', 'RPE if required', 'Secure workpiece'];
+              } else if (toolLower.includes('crane') || toolLower.includes('hoist') || 
+                        toolLower.includes('lifting') || toolLower.includes('excavator')) {
+                riskLevel = 'High';
+                category = 'Heavy Plant';
+                certificationRequired = true;
+                safetyRequirements = ['Licensed operator', 'Daily inspection', 'Lift plan required', 'Exclusion zones'];
+              } else if (toolLower.includes('compressor') || toolLower.includes('generator') ||
+                        toolLower.includes('pneumatic') || toolLower.includes('hydraulic')) {
+                riskLevel = 'Medium';
+                category = 'Plant Equipment';
+                safetyRequirements = ['Pre-start checks', 'Pressure testing', 'Noise protection'];
+              } else if (toolLower.includes('ladder') || toolLower.includes('scaffold') ||
+                        toolLower.includes('platform') || toolLower.includes('harness')) {
+                riskLevel = 'Medium';
+                category = 'Access Equipment';
+                safetyRequirements = ['Pre-use inspection', 'Fall protection', 'Load limits'];
+              }
+              
               autoPlantEquipment.push({
                 id: `auto-equipment-${index}-${toolIndex}`,
                 name: tool,
                 type: 'Equipment',
-                category: 'Hand Tools',
-                certificationRequired: false,
+                category: category,
+                certificationRequired: certificationRequired,
                 inspectionStatus: 'Current',
-                riskLevel: 'Low',
-                safetyRequirements: ['Pre-use inspection', 'Proper handling']
+                riskLevel: riskLevel,
+                safetyRequirements: safetyRequirements
               });
             });
           }

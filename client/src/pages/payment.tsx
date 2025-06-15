@@ -468,7 +468,7 @@ export default function Payment() {
                 className="min-w-[140px] px-6"
                 size="lg"
               >
-                {isAdminDemo ? "Continue (Demo)" : selectedPlan ? "Pay & Continue" : "Continue"}
+                {isAdminDemo ? "Continue (Demo)" : selectedPlan ? "Take to Payment" : "Continue"}
               </Button>
             )}
           </div>
