@@ -395,7 +395,7 @@ export default function SwmsBuilder() {
                       step.id === currentStep 
                         ? 'bg-primary text-white ring-2 ring-primary ring-offset-2' 
                         : step.id < currentStep
-                        ? 'bg-green-500 text-white hover:bg-green-600'
+                        ? 'bg-green-500 text-white hover:bg-green-600 shadow-md'
                         : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
                     }`}
                     disabled={step.id > currentStep + 1} // Can only go one step ahead
