@@ -922,8 +922,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Generate SWMS data from task selection with comprehensive security
   app.post("/api/generate-swms", async (req, res) => {
     try {
+      console.log('Session ID:', req.sessionID);
+      console.log('Session data:', req.session);
+      console.log('Is authenticated:', req.isAuthenticated());
+      console.log('User object:', req.user);
+      
       const user = req.user as any;
       if (!req.isAuthenticated() || !user) {
+        console.log('Authentication failed - redirecting to login');
         return res.status(401).json({ message: "Authentication required" });
       }
 

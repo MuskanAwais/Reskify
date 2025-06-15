@@ -59,7 +59,7 @@ export function setupAuth(app: Express) {
     },
   };
 
-  app.set("trust proxy", 1);
+  // Configure session before passport
   app.use(session(sessionSettings));
   app.use(passport.initialize());
   app.use(passport.session());
