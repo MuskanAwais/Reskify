@@ -48,11 +48,11 @@ export function setupAuth(app: Express) {
     store: new MemStore({
       checkPeriod: 86400000 // prune expired entries every 24h
     }),
-    resave: true,
-    saveUninitialized: true,
-    rolling: true,
+    resave: false,
+    saveUninitialized: false,
+    rolling: false,
     cookie: {
-      httpOnly: false, // Allow client-side access for debugging
+      httpOnly: true,
       secure: false, // Set to true in production with HTTPS
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
       sameSite: 'lax'
@@ -142,6 +142,11 @@ export function setupAuth(app: Express) {
 
   app.post("/api/login", passport.authenticate("local"), async (req, res) => {
     const user = req.user as SelectUser;
+    
+    // Force session save
+    req.session.save((err) => {
+      if (err) console.error('Session save error:', err);
+    });
     
     // Update last active time
     await storage.updateUserLastActive(user.id);
