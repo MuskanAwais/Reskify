@@ -151,22 +151,13 @@ export default function Payment() {
   };
 
   const handleContinue = () => {
-    // Check if admin demo mode is enabled
-    const isAdminDemo = localStorage.getItem('adminDemoMode') === 'true';
-    
-    // Check if user has credits, selected a plan, or is in admin demo mode
-    if ((mockSubscription as any).creditsRemaining > 0 || selectedPlan || isAdminDemo) {
+    // Only allow continue if user has actual credits (no bypass allowed)
+    if ((mockSubscription as any).creditsRemaining > 0) {
       setLocation("/swms-builder?step=6"); // Go to step 6 (legal disclaimer)
     }
   };
 
-  const handleDemoToggle = () => {
-    const currentDemoMode = localStorage.getItem('adminDemoMode') === 'true';
-    localStorage.setItem('adminDemoMode', (!currentDemoMode).toString());
-    window.location.reload();
-  };
 
-  const isAdminDemo = localStorage.getItem('adminDemoMode') === 'true';
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
@@ -189,21 +180,7 @@ export default function Payment() {
             <p className="text-gray-600">
               Choose your payment option to finalize and download your professional SWMS document
             </p>
-            {(user as any)?.isAdmin && (
-              <div className="mt-4 text-center">
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={handleDemoToggle}
-                  className={isAdminDemo ? "bg-green-50 border-green-300" : ""}
-                >
-                  {isAdminDemo ? "Demo Mode: ON" : "Enable Demo Mode"}
-                </Button>
-                {isAdminDemo && (
-                  <p className="text-xs text-green-600 mt-1">Admin demo mode enabled - payment bypassed</p>
-                )}
-              </div>
-            )}
+
           </div>
         </div>
 
@@ -461,14 +438,13 @@ export default function Payment() {
               </Button>
             )}
             
-            {!clientSecret && (
+            {!clientSecret && selectedPlan && (
               <Button 
-                onClick={handleContinue}
-                disabled={!selectedPlan && (mockSubscription as any).creditsRemaining === 0 && !isAdminDemo}
+                onClick={() => handlePurchase(selectedPlan)}
                 className="min-w-[140px] px-6"
                 size="lg"
               >
-                {isAdminDemo ? "Continue (Demo)" : selectedPlan ? "Take to Payment" : "Continue"}
+                Take to Payment
               </Button>
             )}
           </div>

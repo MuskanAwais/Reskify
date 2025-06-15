@@ -16,6 +16,137 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import { useLocation } from "wouter";
 
+// Comprehensive equipment risk assessment function
+function assessEquipmentRisk(equipmentName: string) {
+  const toolLower = equipmentName.toLowerCase();
+  
+  // Critical Risk (Extreme) - Life-threatening equipment
+  if (toolLower.includes('explosive') || toolLower.includes('demolition') || 
+      toolLower.includes('high voltage') || toolLower.includes('x-ray') ||
+      toolLower.includes('radioactive') || toolLower.includes('asbestos removal')) {
+    return {
+      riskLevel: 'Critical',
+      category: 'Hazardous Materials',
+      certificationRequired: true,
+      safetyRequirements: ['Specialist license required', 'Permit to work', 'Emergency response plan', 'Exclusion zones', 'Medical surveillance']
+    };
+  }
+  
+  // High Risk - Serious injury potential
+  if (toolLower.includes('welding') || toolLower.includes('welder') || 
+      toolLower.includes('cutting torch') || toolLower.includes('plasma') ||
+      toolLower.includes('oxy') || toolLower.includes('acetylene')) {
+    return {
+      riskLevel: 'High',
+      category: 'Welding Equipment',
+      certificationRequired: true,
+      safetyRequirements: ['Licensed welder required', 'Hot work permit', 'Fire watch', 'Gas bottle safety', 'Ventilation required']
+    };
+  }
+  
+  if (toolLower.includes('grinder') || toolLower.includes('angle grinder') ||
+      toolLower.includes('disc cutter') || toolLower.includes('diamond saw') ||
+      toolLower.includes('circular saw') || toolLower.includes('chainsaw') ||
+      toolLower.includes('nail gun') || toolLower.includes('powder actuated')) {
+    return {
+      riskLevel: 'High',
+      category: 'Power Tools',
+      certificationRequired: false,
+      safetyRequirements: ['Pre-use inspection', 'Guard checks', 'Eye protection', 'Hearing protection', 'Dust control']
+    };
+  }
+  
+  if (toolLower.includes('crane') || toolLower.includes('hoist') || 
+      toolLower.includes('excavator') || toolLower.includes('loader') ||
+      toolLower.includes('dozer') || toolLower.includes('telehandler') ||
+      toolLower.includes('forklift') || toolLower.includes('boom lift') ||
+      toolLower.includes('scissor lift') || toolLower.includes('cherry picker')) {
+    return {
+      riskLevel: 'High',
+      category: 'Heavy Plant',
+      certificationRequired: true,
+      safetyRequirements: ['Licensed operator', 'Daily pre-start inspection', 'Lift plan required', 'Exclusion zones', 'Spotter required']
+    };
+  }
+  
+  if (toolLower.includes('jackhammer') || toolLower.includes('pneumatic breaker') ||
+      toolLower.includes('concrete saw') || toolLower.includes('demo hammer') ||
+      toolLower.includes('rotary hammer') || toolLower.includes('core drill')) {
+    return {
+      riskLevel: 'High',
+      category: 'Demolition Tools',
+      certificationRequired: false,
+      safetyRequirements: ['Hearing protection', 'Dust control', 'Vibration limits', 'Structural assessment', 'Utility clearance']
+    };
+  }
+  
+  // Medium Risk - Moderate injury potential
+  if (toolLower.includes('compressor') || toolLower.includes('generator') ||
+      toolLower.includes('pressure washer') || toolLower.includes('pump') ||
+      toolLower.includes('concrete mixer') || toolLower.includes('plate compactor')) {
+    return {
+      riskLevel: 'Medium',
+      category: 'Plant Equipment',
+      certificationRequired: false,
+      safetyRequirements: ['Pre-start checks', 'Pressure testing', 'Noise protection', 'Fuel handling', 'Maintenance schedule']
+    };
+  }
+  
+  if (toolLower.includes('ladder') || toolLower.includes('step ladder') ||
+      toolLower.includes('extension ladder') || toolLower.includes('platform') ||
+      toolLower.includes('trestle') || toolLower.includes('a-frame')) {
+    return {
+      riskLevel: 'Medium',
+      category: 'Access Equipment',
+      certificationRequired: false,
+      safetyRequirements: ['Pre-use inspection', '3:1 angle rule', 'Three points contact', 'Weight limits', 'Secure base']
+    };
+  }
+  
+  if (toolLower.includes('drill') || toolLower.includes('impact driver') ||
+      toolLower.includes('router') || toolLower.includes('jigsaw') ||
+      toolLower.includes('reciprocating saw') || toolLower.includes('belt sander')) {
+    return {
+      riskLevel: 'Medium',
+      category: 'Power Tools',
+      certificationRequired: false,
+      safetyRequirements: ['Pre-use inspection', 'Appropriate bits/blades', 'Secure workpiece', 'Eye protection', 'Dust extraction']
+    };
+  }
+  
+  if (toolLower.includes('scaffold') || toolLower.includes('scaffolding') ||
+      toolLower.includes('mobile scaffold') || toolLower.includes('kwikstage')) {
+    return {
+      riskLevel: 'Medium',
+      category: 'Scaffolding',
+      certificationRequired: true,
+      safetyRequirements: ['Licensed scaffolder', 'Handover certificate', 'Daily inspection', 'Fall protection', 'Load limits']
+    };
+  }
+  
+  // Low Risk - Minor injury potential
+  if (toolLower.includes('hammer') || toolLower.includes('screwdriver') ||
+      toolLower.includes('wrench') || toolLower.includes('pliers') ||
+      toolLower.includes('chisel') || toolLower.includes('file') ||
+      toolLower.includes('hand saw') || toolLower.includes('spirit level') ||
+      toolLower.includes('measuring tape') || toolLower.includes('square')) {
+    return {
+      riskLevel: 'Low',
+      category: 'Hand Tools',
+      certificationRequired: false,
+      safetyRequirements: ['Pre-use inspection', 'Proper handling', 'Sharp edge protection', 'Appropriate tool for task']
+    };
+  }
+  
+  // Default assessment for unknown equipment
+  return {
+    riskLevel: 'Medium',
+    category: 'General Equipment',
+    certificationRequired: false,
+    safetyRequirements: ['Pre-use inspection', 'Follow manufacturer instructions', 'Appropriate PPE', 'Training required']
+  };
+}
+
 interface ProjectDetails {
   projectName: string;
   location: string;
@@ -187,53 +318,18 @@ export default function GPTTaskSelection({
         convertedActivities.forEach((activity: any, index: number) => {
           if (activity.tools && activity.tools.length > 0) {
             activity.tools.forEach((tool: string, toolIndex: number) => {
-              // Determine risk level based on equipment type
-              let riskLevel = 'Low';
-              let category = 'Hand Tools';
-              let certificationRequired = false;
-              let safetyRequirements = ['Pre-use inspection', 'Proper handling'];
-              
-              const toolLower = tool.toLowerCase();
-              
-              // High-risk equipment classification
-              if (toolLower.includes('welding') || toolLower.includes('welder') || 
-                  toolLower.includes('cutting torch') || toolLower.includes('plasma')) {
-                riskLevel = 'High';
-                category = 'Welding Equipment';
-                certificationRequired = true;
-                safetyRequirements = ['Licensed operator required', 'Pre-use inspection', 'Hot work permit', 'Fire watch'];
-              } else if (toolLower.includes('grinder') || toolLower.includes('angle grinder') ||
-                        toolLower.includes('circular saw') || toolLower.includes('chainsaw')) {
-                riskLevel = 'High';
-                category = 'Power Tools';
-                safetyRequirements = ['Pre-use inspection', 'Guard checks', 'RPE if required', 'Secure workpiece'];
-              } else if (toolLower.includes('crane') || toolLower.includes('hoist') || 
-                        toolLower.includes('lifting') || toolLower.includes('excavator')) {
-                riskLevel = 'High';
-                category = 'Heavy Plant';
-                certificationRequired = true;
-                safetyRequirements = ['Licensed operator', 'Daily inspection', 'Lift plan required', 'Exclusion zones'];
-              } else if (toolLower.includes('compressor') || toolLower.includes('generator') ||
-                        toolLower.includes('pneumatic') || toolLower.includes('hydraulic')) {
-                riskLevel = 'Medium';
-                category = 'Plant Equipment';
-                safetyRequirements = ['Pre-start checks', 'Pressure testing', 'Noise protection'];
-              } else if (toolLower.includes('ladder') || toolLower.includes('scaffold') ||
-                        toolLower.includes('platform') || toolLower.includes('harness')) {
-                riskLevel = 'Medium';
-                category = 'Access Equipment';
-                safetyRequirements = ['Pre-use inspection', 'Fall protection', 'Load limits'];
-              }
+              // Comprehensive equipment risk assessment using dedicated function
+              const equipmentAssessment = assessEquipmentRisk(tool);
               
               autoPlantEquipment.push({
                 id: `auto-equipment-${index}-${toolIndex}`,
                 name: tool,
                 type: 'Equipment',
-                category: category,
-                certificationRequired: certificationRequired,
+                category: equipmentAssessment.category,
+                certificationRequired: equipmentAssessment.certificationRequired,
                 inspectionStatus: 'Current',
-                riskLevel: riskLevel,
-                safetyRequirements: safetyRequirements
+                riskLevel: equipmentAssessment.riskLevel,
+                safetyRequirements: equipmentAssessment.safetyRequirements
               });
             });
           }
