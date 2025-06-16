@@ -190,22 +190,32 @@ export default function AustralianAddressAutocomplete({
         }
       </p>
       
-      {/* Manual Address Entry Option */}
-      {!isValidated && value.length > 0 && suggestions.length === 0 && !isLoading && (
-        <div className="mt-2">
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              setIsValidated(true);
-              setShowSuggestions(false);
-            }}
-            className="text-xs"
-          >
-            Use "{value}" as manual address
-          </Button>
-        </div>
+      {/* Manual Address Entry Option - only for valid address format */}
+      {!isValidated && value.length > 10 && suggestions.length === 0 && !isLoading && (
+        (() => {
+          // Basic Australian address validation
+          const hasStreetNumber = /^\d+/.test(value.trim());
+          const hasStreetName = /\d+\s+[a-zA-Z\s]+/.test(value.trim());
+          const hasComma = value.includes(',');
+          const isValidFormat = hasStreetNumber && hasStreetName && (hasComma || value.toLowerCase().includes('australia') || /\b(nsw|vic|qld|wa|sa|tas|nt|act)\b/i.test(value));
+          
+          return isValidFormat ? (
+            <div className="mt-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setIsValidated(true);
+                  setShowSuggestions(false);
+                }}
+                className="text-xs"
+              >
+                Use "{value}" as manual address
+              </Button>
+            </div>
+          ) : null;
+        })()
       )}
     </div>
   );
