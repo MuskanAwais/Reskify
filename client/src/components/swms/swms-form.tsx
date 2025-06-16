@@ -42,6 +42,7 @@ import { translate } from "@/lib/language-direct";
 import SmartTooltip from "@/components/ui/smart-tooltip";
 import QuickActionTooltip, { presetTooltips } from "@/components/ui/quick-action-tooltip";
 import AustralianAddressAutocomplete from "@/components/ui/australian-address-autocomplete";
+import LiveSWMSPreviewer from "./live-swms-previewer";
 
 const TOTAL_STEPS = 8;
 
@@ -657,6 +658,12 @@ export default function SWMSForm({ step, data = {}, onNext, onDataChange }: SWMS
         step={step} 
         formData={formData} 
         onDataChange={updateFormData} 
+      />
+      
+      {/* Live Preview positioned at bottom of each step */}
+      <LiveSWMSPreviewer 
+        formData={formData} 
+        currentStep={step} 
       />
     </div>
   );

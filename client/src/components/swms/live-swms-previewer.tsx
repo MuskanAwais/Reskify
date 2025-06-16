@@ -27,7 +27,7 @@ export default function LiveSWMSPreviewer({ formData, currentStep }: LiveSWMSPre
   const [isExpanded, setIsExpanded] = useState(true);
 
   // Only show previewer after step 1 (when we have project information for watermark)
-  if (currentStep < 2 || !formData.jobName) {
+  if (currentStep < 1 || !formData.jobName) {
     return null;
   }
 
