@@ -43,6 +43,7 @@ import SmartTooltip from "@/components/ui/smart-tooltip";
 import QuickActionTooltip, { presetTooltips } from "@/components/ui/quick-action-tooltip";
 import AustralianAddressAutocomplete from "@/components/ui/australian-address-autocomplete";
 import LiveSWMSPreviewer from "./live-swms-previewer";
+import { RiskAssessmentMatrix } from "./risk-assessment-matrix";
 
 const TOTAL_STEPS = 8;
 
@@ -333,6 +334,51 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
       return (
         <div className="space-y-6">
           <div className="text-center">
+            <Shield className="mx-auto h-12 w-12 text-primary mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Risk Assessment Matrix</h3>
+            <p className="text-gray-600 text-sm">
+              Review the risk assessment matrix to understand how risks are evaluated and scored in this SWMS document.
+            </p>
+          </div>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Australian Risk Assessment Standards</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <RiskAssessmentMatrix showTitle={false} />
+            </CardContent>
+          </Card>
+
+          {/* Risk Assessment Table */}
+          {formData.selectedTasks && formData.selectedTasks.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Risk Assessment Review</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <p className="text-blue-800 font-medium mb-2">Risk Assessment Validation</p>
+                  <p className="text-gray-600 text-sm">
+                    Review your generated tasks and their risk assessments against the matrix above. 
+                    All risk scores are calculated using the Australian risk assessment standards.
+                  </p>
+                </div>
+                
+                <RiskValidationSystem
+                  tasks={formData.selectedTasks}
+                  onTasksUpdate={(tasks) => updateFormData({ selectedTasks: tasks })}
+                />
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      );
+
+    case 4:
+      return (
+        <div className="space-y-6">
+          <div className="text-center">
             <Wrench className="mx-auto h-12 w-12 text-primary mb-4" />
             <h3 className="text-lg font-semibold mb-2">Plant & Equipment (Optional)</h3>
             <p className="text-gray-600 text-sm">
@@ -354,7 +400,7 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
         </div>
       );
 
-    case 4:
+    case 5:
       return (
         <div className="space-y-6">
           <div className="text-center">
@@ -471,7 +517,7 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
         </div>
       );
 
-    case 5:
+    case 6:
       return (
         <div className="space-y-6">
           <div className="text-center">
