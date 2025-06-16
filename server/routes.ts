@@ -316,7 +316,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     doc.end();
   });
 
-  // PDF Download endpoint - LANDSCAPE Modern Card Style with Colored Rating Tags
+  // PDF Download endpoint - LANDSCAPE Modern Card Style with Colored Rating Tags from watermark discussions
   app.post("/api/swms/pdf-download", async (req, res) => {
     try {
       console.log("PDF generation request received:", req.body?.projectName || req.body?.title || 'Unknown project');
@@ -441,7 +441,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       tableHeaders.forEach((header, i) => {
         doc.rect(xPos, yPos, colWidths[i], 25).fillAndStroke('#1e40af', '#1e40af');
         doc.fontSize(10).fillColor('white').font('Helvetica-Bold');
-        doc.text(header, xPos + 5, yPos + 5, { width: colWidths[i] - 10, align: 'center' });
+        doc.text(header, xPos + 5, yPos + 5, { width: colWidths[i] - 10 });
         xPos += colWidths[i];
       });
       yPos += 25;
