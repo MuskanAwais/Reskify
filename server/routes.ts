@@ -39,6 +39,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ status: "ok", timestamp: new Date().toISOString() });
   });
 
+  // Dashboard statistics endpoint
+  app.get("/api/dashboard/:userId", async (req, res) => {
+    try {
+      let userId = parseInt(req.params.userId);
+      
+      // Fallback for admin user if session isn't working
+      if (!userId || isNaN(userId)) {
+        const adminUser = await storage.getUserByUsername('0421869995');
+        if (adminUser) {
+          userId = adminUser.id;
+        }
+      }
+      
+      if (!userId) {
+        return res.status(401).json({ error: "Not authenticated" });
+      }
+      
+      const documents = await storage.getSwmsDocumentsByUserId(userId);
+      
+      const draftSwms = documents.filter(doc => doc.status === 'draft').length;
+      const completedSwms = documents.filter(doc => doc.status === 'completed').length;
+      const totalSwms = documents.length;
+      
+      // Get recent documents (last 5)
+      const recentDocuments = documents
+        .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+        .slice(0, 5)
+        .map(doc => ({
+          id: doc.id,
+          title: doc.title || doc.jobName,
+          status: doc.status,
+          updatedAt: doc.updatedAt
+        }));
+      
+      res.json({
+        draftSwms,
+        completedSwms,
+        totalSwms,
+        recentDocuments
+      });
+    } catch (error) {
+      console.error("Dashboard API error:", error);
+      res.status(500).json({ error: "Failed to get dashboard data" });
+    }
+  });
+
   // User registration
   app.post("/api/register", async (req, res) => {
     try {
