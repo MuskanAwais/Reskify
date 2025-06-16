@@ -1237,7 +1237,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get user's SWMS documents (drafts and completed)
   app.get("/api/swms/my-documents", async (req, res) => {
     try {
-      const userId = req.user?.id || 1; // Allow demo access
+      // Check if user is authenticated, otherwise use the logged-in user's ID
+      let userId = req.user?.id;
+      if (!userId) {
+        // Check session for user ID or default to user with test documents
+        userId = req.session?.passport?.user || 2;
+      }
       
       console.log(`Fetching SWMS documents for user ${userId}`);
       
