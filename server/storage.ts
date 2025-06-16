@@ -140,14 +140,15 @@ export class DatabaseStorage implements IStorage {
       const drafts = await db
         .select()
         .from(swmsDocuments)
-        .where(eq(swmsDocuments.userId, userId))
-        .where(eq(swmsDocuments.status, 'draft'));
+        .where(eq(swmsDocuments.userId, userId));
       
-      // Add type field for frontend
-      const draftDocuments = drafts.map(draft => ({
-        ...draft,
-        type: 'draft'
-      }));
+      // Filter drafts and add type field for frontend
+      const draftDocuments = drafts
+        .filter((draft: any) => draft.status === 'draft')
+        .map((draft: any) => ({
+          ...draft,
+          type: 'draft'
+        }));
       
       console.log(`Found ${draftDocuments.length} draft SWMS for user ${userId}`);
       return draftDocuments;
@@ -155,8 +156,8 @@ export class DatabaseStorage implements IStorage {
       console.error('Error fetching user drafts:', error);
       // Fallback to memory storage
       return this.swmsDrafts
-        .filter(draft => draft.userId === userId)
-        .map(draft => ({
+        .filter((draft: any) => draft.userId === userId)
+        .map((draft: any) => ({
           ...draft,
           type: 'draft'
         }));
