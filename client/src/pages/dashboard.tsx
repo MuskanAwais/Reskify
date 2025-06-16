@@ -66,8 +66,8 @@ export default function Dashboard() {
         <p className="text-gray-600">{translate('manageSafetyCompliance')}</p>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {/* Stats Cards - 4 cards in a row */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
@@ -94,6 +94,38 @@ export default function Dashboard() {
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
                 <FileText className="text-green-600 text-xl" />
               </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600 mb-1">Account Credits</p>
+                <p className="text-2xl font-bold text-gray-800">{(stats as any).credits || 0}</p>
+                <p className="text-xs text-gray-500 mt-1">Available SWMS generations</p>
+              </div>
+              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                <Bot className="text-blue-600 text-xl" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600 mb-1">Create New SWMS</p>
+                <p className="text-2xl font-bold text-gray-800">+</p>
+                <p className="text-xs text-gray-500 mt-1">Start building documentation</p>
+              </div>
+              <Link href="/swms-builder">
+                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center cursor-pointer hover:bg-primary/20 transition-colors">
+                  <FileText className="text-primary text-xl" />
+                </div>
+              </Link>
             </div>
           </CardContent>
         </Card>
