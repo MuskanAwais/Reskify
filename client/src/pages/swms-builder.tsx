@@ -217,8 +217,13 @@ export default function SwmsBuilder() {
       const creditsRemaining = subscription ? (subscription as any).creditsRemaining || 0 : 0;
       const hasProPlan = (subscription as any)?.plan === "Pro" || (subscription as any)?.plan === "Enterprise";
       const isAdminDemo = localStorage.getItem('adminDemoMode') === 'true';
+      const isAppAdmin = localStorage.getItem('isAppAdmin') === 'true';
       
-      if (creditsRemaining === 0 && !hasProPlan && !isAdminDemo) {
+      // Allow admin to bypass payment in demo mode
+      if (isAppAdmin && isAdminDemo) {
+        // Admin demo mode - skip payment validation
+        console.log('Admin demo mode - bypassing payment validation');
+      } else if (creditsRemaining === 0 && !hasProPlan) {
         // Redirect to payment page if no credits and not in admin demo mode
         setLocation("/payment");
         return;
