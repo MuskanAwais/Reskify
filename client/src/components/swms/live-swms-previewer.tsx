@@ -41,7 +41,7 @@ export default function LiveSWMSPreviewer({ formData, currentStep }: LiveSWMSPre
       { name: "Project Details", completed: !!(formData.jobName && formData.jobNumber && formData.projectAddress && formData.principalContractor && formData.projectManager && formData.siteSupervisor) },
       { name: "Activities & Risk Assessment", completed: !!(formData.selectedTasks && formData.selectedTasks.length > 0) },
       { name: "Plant & Equipment", completed: !!(formData.plantEquipment && formData.plantEquipment.length > 0) },
-      { name: "Emergency Procedures", completed: !!(formData.emergencyProcedures || (formData.emergencyContactsList && formData.emergencyContactsList.length > 0)) },
+      { name: "Emergency Procedures", completed: !!(formData.emergencyProcedures && formData.emergencyContactsList && formData.emergencyContactsList.length > 0) },
       { name: "Legal Disclaimer", completed: !!formData.acceptedDisclaimer },
     ];
     
@@ -169,7 +169,7 @@ export default function LiveSWMSPreviewer({ formData, currentStep }: LiveSWMSPre
                 <div className="flex items-center gap-2 mb-3">
                   <Shield className="h-4 w-4 text-blue-600" />
                   <h4 className="font-medium">Risk Assessment</h4>
-                  {formData.riskAssessments && formData.riskAssessments.length > 0 ? (
+                  {formData.selectedTasks && formData.selectedTasks.length > 0 ? (
                     <CheckCircle className="h-4 w-4 text-green-600" />
                   ) : (
                     <AlertTriangle className="h-4 w-4 text-amber-600" />
@@ -205,28 +205,36 @@ export default function LiveSWMSPreviewer({ formData, currentStep }: LiveSWMSPre
               </div>
             </div>
 
-            {/* Emergency Procedures */}
-            {(formData.emergencyProcedures || formData.emergencyContactsList?.length > 0) && (
-              <div className="p-4 bg-white border rounded-lg">
-                <div className="flex items-center gap-2 mb-3">
-                  <AlertTriangle className="h-4 w-4 text-red-600" />
-                  <h4 className="font-medium">Emergency Procedures</h4>
+            {/* Emergency Procedures - Always show */}
+            <div className="p-4 bg-white border rounded-lg">
+              <div className="flex items-center gap-2 mb-3">
+                <AlertTriangle className="h-4 w-4 text-red-600" />
+                <h4 className="font-medium">Emergency Procedures</h4>
+                {(formData.emergencyProcedures && formData.emergencyContactsList?.length > 0) ? (
                   <CheckCircle className="h-4 w-4 text-green-600" />
-                </div>
-                <div className="text-sm space-y-2">
-                  {formData.emergencyContactsList && formData.emergencyContactsList.length > 0 && (
-                    <div>
-                      <span className="font-medium">Emergency Contacts:</span> {formData.emergencyContactsList.length} contacts
-                    </div>
-                  )}
-                  {formData.emergencyProcedures && (
-                    <div>
-                      <span className="font-medium">Procedures:</span> Documented
-                    </div>
-                  )}
-                </div>
+                ) : (
+                  <AlertTriangle className="h-4 w-4 text-amber-600" />
+                )}
               </div>
-            )}
+              <div className="text-sm space-y-2">
+                {(formData.emergencyProcedures && formData.emergencyContactsList?.length > 0) ? (
+                  <>
+                    {formData.emergencyContactsList && formData.emergencyContactsList.length > 0 && (
+                      <div>
+                        <span className="font-medium">Emergency Contacts:</span> {formData.emergencyContactsList.length} contacts
+                      </div>
+                    )}
+                    {formData.emergencyProcedures && (
+                      <div>
+                        <span className="font-medium">Procedures:</span> Documented
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div className="text-gray-500">Procedures: Pending</div>
+                )}
+              </div>
+            </div>
 
             {/* Completion Progress */}
             <div className="p-4 bg-gradient-to-r from-blue-50 to-green-50 border rounded-lg">

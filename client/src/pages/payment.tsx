@@ -79,8 +79,8 @@ export default function Payment() {
     retry: false,
   });
 
-  // Admin demo bypass for specific phone number
-  const isAdminDemo = (user as any)?.phone === "0421869995";
+  // Admin demo bypass for specific phone number - check username field
+  const isAdminDemo = (user as any)?.username === "0421869995" || (user as any)?.phone === "0421869995";
   
   const handleDemoBypass = () => {
     toast({
