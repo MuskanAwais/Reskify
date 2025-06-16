@@ -432,19 +432,7 @@ export default function MySwms() {
                     <span className="font-medium">Activities:</span> {document.activities?.length || 0} selected
                   </div>
 
-                  {document.complianceScore && (
-                    <div className="flex items-center text-sm">
-                      <span className="font-medium mr-2">Compliance:</span>
-                      <div className="flex items-center">
-                        {document.complianceScore >= 80 ? (
-                          <CheckCircle className="h-4 w-4 text-green-600 mr-1" />
-                        ) : (
-                          <AlertTriangle className="h-4 w-4 text-yellow-600 mr-1" />
-                        )}
-                        <span>{document.complianceScore}%</span>
-                      </div>
-                    </div>
-                  )}
+
                 </div>
 
                 <div className="flex gap-2 mt-4 pt-4 border-t">
