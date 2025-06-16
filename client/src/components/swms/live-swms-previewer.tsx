@@ -38,10 +38,10 @@ export default function LiveSWMSPreviewer({ formData, currentStep }: LiveSWMSPre
 
   const getCompletionStatus = () => {
     const sections = [
-      { name: "Project Details", completed: !!(formData.jobName && formData.jobNumber && formData.projectAddress && formData.startDate) },
+      { name: "Project Details", completed: !!(formData.jobName && formData.jobNumber && formData.projectAddress && formData.principalContractor && formData.projectManager && formData.siteSupervisor) },
       { name: "Activities & Risk Assessment", completed: !!(formData.selectedTasks && formData.selectedTasks.length > 0) },
       { name: "Plant & Equipment", completed: !!(formData.plantEquipment && formData.plantEquipment.length > 0) },
-      { name: "Emergency Procedures", completed: !!(formData.emergencyProcedures || formData.emergencyContactsList?.length > 0) },
+      { name: "Emergency Procedures", completed: !!(formData.emergencyProcedures || (formData.emergencyContactsList && formData.emergencyContactsList.length > 0)) },
       { name: "Legal Disclaimer", completed: !!formData.acceptedDisclaimer },
     ];
     
@@ -176,8 +176,8 @@ export default function LiveSWMSPreviewer({ formData, currentStep }: LiveSWMSPre
                   )}
                 </div>
                 <div className="text-sm">
-                  {formData.riskAssessments && formData.riskAssessments.length > 0 ? (
-                    <div>{formData.riskAssessments.length} risk assessments documented</div>
+                  {formData.selectedTasks && formData.selectedTasks.length > 0 ? (
+                    <div>Risk assessments completed</div>
                   ) : (
                     <div className="text-gray-500">Risk assessments pending</div>
                   )}

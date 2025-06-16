@@ -227,15 +227,6 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="startDate">Start Date</Label>
-                  <Input
-                    id="startDate"
-                    type="date"
-                    value={formData.startDate || ""}
-                    onChange={(e) => updateFormData({ startDate: e.target.value })}
-                  />
-                </div>
-                <div>
                   <Label htmlFor="duration">Duration (days)</Label>
                   <Input
                     id="duration"
@@ -244,6 +235,43 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
                     onChange={(e) => updateFormData({ duration: e.target.value })}
                     placeholder="Enter duration"
                   />
+                </div>
+              </div>
+
+              {/* Project Personnel Details */}
+              <div className="border-t pt-6">
+                <h3 className="text-lg font-semibold mb-4">Project Personnel</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <Label htmlFor="principalContractor">Principal Contractor *</Label>
+                    <Input
+                      id="principalContractor"
+                      value={formData.principalContractor || ""}
+                      onChange={(e) => updateFormData({ principalContractor: e.target.value })}
+                      placeholder="Company name"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="projectManager">Project Manager *</Label>
+                    <Input
+                      id="projectManager"
+                      value={formData.projectManager || ""}
+                      onChange={(e) => updateFormData({ projectManager: e.target.value })}
+                      placeholder="Full name"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="siteSupervisor">Site Supervisor *</Label>
+                    <Input
+                      id="siteSupervisor"
+                      value={formData.siteSupervisor || ""}
+                      onChange={(e) => updateFormData({ siteSupervisor: e.target.value })}
+                      placeholder="Full name"
+                      required
+                    />
+                  </div>
                 </div>
               </div>
 

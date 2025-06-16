@@ -79,6 +79,17 @@ export default function Payment() {
     retry: false,
   });
 
+  // Admin demo bypass for specific phone number
+  const isAdminDemo = (user as any)?.phone === "0421869995";
+  
+  const handleDemoBypass = () => {
+    toast({
+      title: "Demo Access Granted",
+      description: "Proceeding with full access...",
+    });
+    setLocation("/swms-builder?step=6");
+  };
+
   const mockSubscription = subscription || {
     plan: "One-Off SWMS",
     creditsRemaining: 0,
@@ -218,6 +229,24 @@ export default function Payment() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Admin Demo Toggle */}
+        {isAdminDemo && (
+          <Card className="mb-6 border-2 border-green-200 bg-green-50">
+            <CardHeader>
+              <CardTitle className="text-green-800">Admin Demo Access</CardTitle>
+              <CardDescription>Demo account detected (0421869995) - bypass payment for testing</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button 
+                onClick={handleDemoBypass}
+                className="w-full bg-green-600 hover:bg-green-700"
+              >
+                Continue with Demo Access
+              </Button>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Payment Options */}
         <div className="grid md:grid-cols-3 gap-6 mb-8">
