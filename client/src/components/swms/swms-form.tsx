@@ -464,12 +464,14 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
                               <div>
                                 <Label className="text-sm font-medium">Control Measures</Label>
                                 <div className="space-y-2 mt-2">
-                                  {controls.map((control: any, cIdx: number) => (
+                                  {controls.map((control: any, cIdx: number) => {
+                                    const controlText = typeof control === 'string' ? control : 
+                                                       typeof control === 'object' && control ? 
+                                                         String(control.description || control.measure || control.name || control.controlMeasure || '') : '';
+                                    return (
                                     <div key={cIdx} className="flex items-center space-x-2">
                                       <Input
-                                        value={typeof control === 'string' ? control : 
-                                               typeof control === 'object' && control ? 
-                                                 String(control.description || control.measure || control.name || '') : ''}
+                                        value={controlText}
                                         onChange={(e) => {
                                           const updatedTasks = [...formData.selectedTasks];
                                           const updatedControls = [...controls];
@@ -493,7 +495,8 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
                                         <X className="h-4 w-4" />
                                       </Button>
                                     </div>
-                                  ))}
+                                    );
+                                  })}
                                   <Button
                                     variant="outline"
                                     size="sm"
