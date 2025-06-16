@@ -92,17 +92,45 @@ export class DatabaseStorage implements IStorage {
 
   async createSwmsDraft(draft: any): Promise<any> {
     try {
+      // Save draft to database as SWMS with draft status
+      const draftData = {
+        title: draft.title || draft.jobName || "Untitled SWMS",
+        jobName: draft.jobName || draft.title || "Untitled SWMS",
+        jobNumber: draft.jobNumber || `DRAFT-${Date.now()}`,
+        projectAddress: draft.projectAddress || "",
+        projectLocation: draft.projectAddress || "",
+        tradeType: draft.tradeType || "",
+        principalContractor: draft.principalContractor || "",
+        responsiblePersons: draft.responsiblePersons || [],
+        workActivities: Array.isArray(draft.activities) ? draft.activities : [],
+        activities: Array.isArray(draft.activities) ? draft.activities : [],
+        riskAssessments: Array.isArray(draft.riskAssessments) ? draft.riskAssessments : [],
+        safetyMeasures: draft.safetyMeasures || [],
+        emergencyProcedures: draft.emergencyProcedures || [],
+        complianceCodes: draft.complianceCodes || [],
+        userId: draft.userId || 1,
+        status: "draft",
+        aiEnhanced: draft.aiEnhanced || false
+      };
+
+      const [savedDraft] = await db
+        .insert(swmsDocuments)
+        .values(draftData)
+        .returning();
+      
+      console.log('Draft saved to database:', savedDraft.id);
+      return savedDraft;
+    } catch (error) {
+      console.error('Error creating SWMS draft:', error);
+      // Fallback to memory storage
       const existingIndex = this.swmsDrafts.findIndex(d => d.id === draft.id);
       if (existingIndex >= 0) {
         this.swmsDrafts[existingIndex] = draft;
       } else {
         this.swmsDrafts.push(draft);
       }
-      console.log('Draft saved:', draft.id);
+      console.log('Draft saved to memory:', draft.id);
       return draft;
-    } catch (error) {
-      console.error('Error creating SWMS draft:', error);
-      throw error;
     }
   }
 

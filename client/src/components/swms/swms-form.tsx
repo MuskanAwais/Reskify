@@ -538,33 +538,36 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
                               </div>
 
                               <div>
-                                <Label className="text-sm font-medium">Residual Risk Score</Label>
+                                <Label className="text-sm font-medium">Residual Risk Score (After Controls)</Label>
                                 <div className="flex items-center space-x-3 mt-2">
                                   <Input
                                     type="number"
                                     min="1"
                                     max="16"
-                                    value={residualRiskScore}
+                                    value={residualRiskScore || initialRiskScore}
                                     onChange={(e) => {
-                                      const score = parseInt(e.target.value);
+                                      const score = parseInt(e.target.value) || initialRiskScore;
                                       const updatedTasks = [...formData.selectedTasks];
                                       updatedTasks[index] = { ...updatedTasks[index], residualRiskScore: score };
                                       updateFormData({ selectedTasks: updatedTasks });
                                     }}
                                     className="w-20"
                                   />
-                                  <Badge className={`${residualRiskScore >= 14 ? 'bg-red-600 text-white' : 
-                                    residualRiskScore >= 11 ? 'bg-red-500 text-white' :
-                                    residualRiskScore >= 7 ? 'bg-yellow-500 text-black' :
-                                    residualRiskScore >= 4 ? 'bg-green-500 text-white' :
+                                  <Badge className={`${(residualRiskScore || initialRiskScore) >= 14 ? 'bg-red-600 text-white' : 
+                                    (residualRiskScore || initialRiskScore) >= 11 ? 'bg-red-500 text-white' :
+                                    (residualRiskScore || initialRiskScore) >= 7 ? 'bg-yellow-500 text-black' :
+                                    (residualRiskScore || initialRiskScore) >= 4 ? 'bg-green-500 text-white' :
                                     'bg-green-600 text-white'}`}>
-                                    {residualRiskScore >= 14 ? 'Severe' :
-                                     residualRiskScore >= 11 ? 'High' :
-                                     residualRiskScore >= 7 ? 'Medium' :
-                                     residualRiskScore >= 4 ? 'Low' : 'Very Low'}
+                                    {(residualRiskScore || initialRiskScore) >= 14 ? 'Severe' :
+                                     (residualRiskScore || initialRiskScore) >= 11 ? 'High' :
+                                     (residualRiskScore || initialRiskScore) >= 7 ? 'Medium' :
+                                     (residualRiskScore || initialRiskScore) >= 4 ? 'Low' : 'Very Low'}
                                   </Badge>
-                                  {residualRiskScore < initialRiskScore && (
-                                    <span className="text-green-600 text-sm font-medium">↓ Reduced</span>
+                                  {(residualRiskScore || initialRiskScore) < initialRiskScore && (
+                                    <span className="text-green-600 text-sm font-medium">↓ Risk Reduced by {initialRiskScore - (residualRiskScore || initialRiskScore)}</span>
+                                  )}
+                                  {!residualRiskScore && controls.length > 0 && (
+                                    <span className="text-amber-600 text-sm">Update based on controls</span>
                                   )}
                                 </div>
                               </div>

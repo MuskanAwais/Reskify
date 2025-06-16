@@ -1117,22 +1117,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/swms/draft", async (req, res) => {
     try {
       const draftData = req.body;
-      const draftId = Date.now().toString();
+      const draftId = draftData.draftId || Date.now().toString();
+      const userId = req.user?.id || 1; // Default user for demo
       
-      // Store in database storage
-      await dbStorage.createSwmsDraft({
-        id: draftId,
+      // Create draft entry in database
+      const draftEntry = {
         title: draftData.title || draftData.jobName || "Untitled SWMS",
-        data: draftData,
+        jobName: draftData.jobName || "Untitled SWMS",
+        jobNumber: draftData.jobNumber || `DRAFT-${draftId}`,
+        projectAddress: draftData.projectAddress || "",
+        tradeType: draftData.tradeType || draftData.customTradeType || "",
+        activities: draftData.selectedTasks || [],
+        riskAssessments: draftData.selectedTasks || [],
+        safetyMeasures: [],
+        complianceCodes: [],
+        userId: userId,
         status: "draft",
-        createdAt: new Date().toISOString(),
-        lastModified: new Date().toISOString()
-      });
+        aiEnhanced: false,
+        formData: draftData // Store complete form data for editing
+      };
+      
+      // Save to database
+      const savedDraft = await dbStorage.createSwmsDraft(draftEntry);
       
       res.json({ 
         success: true, 
         message: "Draft saved successfully",
-        draftId: draftId
+        draftId: savedDraft.id || draftId
       });
     } catch (error: any) {
       console.error("Save draft error:", error);
@@ -1143,13 +1154,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get user's SWMS documents (drafts and completed)
   app.get("/api/swms/my-documents", async (req, res) => {
     try {
-      const drafts = await dbStorage.getUserSwmsDrafts();
-      const completed = await dbStorage.getUserSwmsDocuments();
+      const userId = req.user?.id || 1; // Default user for demo
+      
+      // Get all SWMS documents for the user
+      const allDocuments = await dbStorage.getUserSwms(userId);
+      
+      // Separate drafts and completed documents
+      const drafts = allDocuments.filter(doc => doc.status === 'draft');
+      const completed = allDocuments.filter(doc => doc.status === 'completed' || doc.status === 'active');
       
       res.json({
-        drafts: drafts || [],
-        completed: completed || [],
-        total: (drafts?.length || 0) + (completed?.length || 0)
+        drafts: drafts.map(draft => ({
+          ...draft,
+          type: 'draft',
+          lastModified: draft.updatedAt || draft.createdAt,
+          title: draft.title || draft.jobName || 'Untitled SWMS'
+        })),
+        completed: completed.map(doc => ({
+          ...doc,
+          type: 'completed',
+          lastModified: doc.updatedAt || doc.createdAt,
+          title: doc.title || doc.jobName || 'Untitled SWMS'
+        })),
+        total: allDocuments.length
       });
     } catch (error: any) {
       console.error("Get user documents error:", error);
