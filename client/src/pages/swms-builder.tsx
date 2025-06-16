@@ -7,6 +7,7 @@ import SwmsForm from "@/components/swms/swms-form";
 import DocumentPreview from "@/components/swms/document-preview";
 import { SimplifiedTableEditor } from "@/components/swms/simplified-table-editor";
 import CreditCounter from "@/components/ui/credit-counter";
+import LiveSWMSPreviewer from "@/components/swms/live-swms-previewer";
 import { ArrowLeft, ArrowRight, FileText, Shield, CheckCircle, Save, X } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -39,6 +40,7 @@ export default function SwmsBuilder() {
     jobNumber: "",
     projectAddress: "",
     projectLocation: "",
+    startDate: "",
     tradeType: "",
     activities: [],
     hazards: [],
@@ -184,6 +186,9 @@ export default function SwmsBuilder() {
     if (!formData.projectAddress?.trim()) {
       errors.push("Project Address is required");
     }
+    if (!formData.startDate?.trim()) {
+      errors.push("Start Date is required");
+    }
     if (!formData.tradeType?.trim()) {
       errors.push("Trade Type is required");
     }
@@ -294,6 +299,7 @@ export default function SwmsBuilder() {
         projectAddress: "",
         projectLocation: "",
         tradeType: "",
+        startDate: "",
         workDescription: "",
         activities: [],
         hazards: [],
@@ -423,6 +429,12 @@ export default function SwmsBuilder() {
 
       {/* Main Content */}
       <div className="max-w-5xl mx-auto">
+        {/* Live SWMS Previewer */}
+        <LiveSWMSPreviewer 
+          formData={formData}
+          currentStep={currentStep}
+        />
+        
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center">

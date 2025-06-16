@@ -99,25 +99,43 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="jobNumber">Job Number</Label>
+                  <Label htmlFor="jobNumber">Job Number *</Label>
                   <Input
                     id="jobNumber"
                     value={formData.jobNumber || ""}
                     onChange={(e) => updateFormData({ jobNumber: e.target.value })}
                     placeholder="Enter job number"
+                    required
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="startDate">Start Date *</Label>
+                  <Input
+                    id="startDate"
+                    type="date"
+                    value={formData.startDate || ""}
+                    onChange={(e) => updateFormData({ startDate: e.target.value })}
+                    required
                   />
                 </div>
               </div>
 
               <div>
                 <Label htmlFor="projectAddress">Project Address *</Label>
-                <Input
-                  id="projectAddress"
-                  value={formData.projectAddress || ""}
-                  onChange={(e) => updateFormData({ projectAddress: e.target.value })}
-                  placeholder="Enter project address"
-                  required
-                />
+                <div className="relative">
+                  <Input
+                    id="projectAddress"
+                    value={formData.projectAddress || ""}
+                    onChange={(e) => updateFormData({ projectAddress: e.target.value })}
+                    placeholder="Start typing address... (Google Places autocomplete)"
+                    required
+                    className="pr-10"
+                  />
+                  <MapPin className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  Enter a valid Australian address. Autocomplete will suggest registered addresses.
+                </p>
               </div>
 
               <div>
