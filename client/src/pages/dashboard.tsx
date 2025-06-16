@@ -131,43 +131,17 @@ export default function Dashboard() {
         </Card>
       </div>
 
-      {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* SWMS Builder Card */}
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle>{translate('createNewSwms')}</CardTitle>
-              <Badge variant="outline" className="bg-primary/50 text-primary border-primary/20">
-                {translate('quickStart')}
-              </Badge>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="text-center py-8">
-              <FileText className="mx-auto h-12 w-12 text-primary mb-4" />
-              <h3 className="text-lg font-semibold mb-2">{translate('startBuildingSwms')}</h3>
-              <p className="text-gray-600 mb-6">
-                {translate('createComprehensiveDocumentation')}
-              </p>
-              <Link href="/swms-builder">
-                <Button className="bg-primary hover:bg-primary/90 text-white">
-                  <FileText className="mr-2 h-4 w-4" />
-                  {translate('btn.generate')}
-                </Button>
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Recent SWMS Documents */}
+      {/* Recent SWMS Documents - Full Width */}
+      <div className="grid grid-cols-1 gap-6">
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle>{translate('recentSwmsDocuments')}</CardTitle>
-              <Button variant="ghost" size="sm" className="text-primary hover:text-primary/80">
-                {translate('viewAll')}
-              </Button>
+              <Link href="/my-swms">
+                <Button variant="ghost" size="sm" className="text-primary hover:text-primary/80">
+                  {translate('viewAll')}
+                </Button>
+              </Link>
             </div>
           </CardHeader>
           <CardContent>

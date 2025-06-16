@@ -63,8 +63,8 @@ export default function Sidebar() {
     retry: false,
   });
 
-  // Check if current user is the specific admin account
-  const isAdmin = (user as any)?.username === "0421869995";
+  // Check if current user has admin access from database
+  const isAdmin = (user as any)?.isAdmin === true || localStorage.getItem('isAdmin') === 'true';
 
   const [demoMode, setDemoMode] = useState(() => {
     try {

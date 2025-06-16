@@ -143,7 +143,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ error: "User not found" });
       }
       
-      res.json({ user: { id: user.id, username: user.username, email: user.email } });
+      res.json({ 
+        user: { 
+          id: user.id, 
+          username: user.username, 
+          email: user.email,
+          isAdmin: user.isAdmin || false,
+          subscriptionType: user.subscriptionType || 'trial',
+          swmsCredits: user.swmsCredits || 0
+        } 
+      });
     } catch (error) {
       console.error("Get user error:", error);
       res.status(500).json({ error: "Failed to get user" });

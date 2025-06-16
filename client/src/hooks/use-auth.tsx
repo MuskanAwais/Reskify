@@ -50,8 +50,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const res = await apiRequest("POST", "/api/login", credentials);
       return await res.json();
     },
-    onSuccess: (user: SelectUser) => {
-      queryClient.setQueryData(["/api/user"], user);
+    onSuccess: (response: any) => {
+      const userData = response.user;
+      queryClient.setQueryData(["/api/user"], userData);
+      
+      // Set admin status in localStorage for sidebar access
+      if (userData.isAdmin) {
+        localStorage.setItem('isAdmin', 'true');
+      } else {
+        localStorage.removeItem('isAdmin');
+      }
     },
     onError: (error: Error) => {
       toast({
