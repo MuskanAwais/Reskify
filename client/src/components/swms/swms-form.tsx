@@ -48,6 +48,34 @@ import { RiskAssessmentMatrix } from "./risk-assessment-matrix";
 
 const TOTAL_STEPS = 8;
 
+// Simple Disclaimer Component
+const DisclaimerAcceptance = ({ acceptedDisclaimer, onAcceptanceChange }: { acceptedDisclaimer: boolean; onAcceptanceChange: (accepted: boolean) => void }) => (
+  <Card>
+    <CardHeader>
+      <CardTitle>Legal Disclaimer and Terms</CardTitle>
+    </CardHeader>
+    <CardContent>
+      <div className="space-y-4">
+        <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <p className="text-sm text-gray-700">
+            By proceeding, you acknowledge that this SWMS is generated for informational purposes and must be reviewed by qualified safety professionals before use on any worksite.
+          </p>
+        </div>
+        <div className="flex items-center space-x-2">
+          <Checkbox
+            id="disclaimer"
+            checked={acceptedDisclaimer}
+            onCheckedChange={onAcceptanceChange}
+          />
+          <Label htmlFor="disclaimer" className="text-sm">
+            I accept the terms and conditions and understand the limitations of this tool
+          </Label>
+        </div>
+      </div>
+    </CardContent>
+  </Card>
+);
+
 interface StepContentProps {
   step: number;
   formData: any;
