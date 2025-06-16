@@ -1,5 +1,35 @@
 import type { Express } from "express";
-import { testSWMSData, testSignatures } from "../test-swms-data";
+// Test data inline to avoid module issues
+const testSWMSData = {
+  jobName: "ACE Terminal Expansion - Test",
+  jobNumber: "TEST-2025-001",
+  projectAddress: "123 Test St, Brisbane, QLD 4008",
+  principalContractor: "Test Contractor",
+  selectedTasks: Array(8).fill(null).map((_, i) => ({
+    id: `task-${i}`,
+    task: `Test Task ${i + 1}`,
+    hazards: ["Test hazard"],
+    riskRating: "Medium",
+    controls: ["Test control"],
+    ppe: ["Hard hat"]
+  })),
+  plantEquipment: Array(3).fill(null).map((_, i) => ({
+    id: `eq-${i}`,
+    equipment: `Test Equipment ${i + 1}`,
+    type: "Test Type",
+    operator: "Test Operator"
+  }))
+};
+
+const testSignatures = [
+  {
+    id: "test-sig-1",
+    signatory: "Test User",
+    role: "Test Role",
+    email: "test@example.com",
+    status: "signed"
+  }
+];
 
 export function registerTestRoutes(app: Express) {
   // Test endpoint to create a complete SWMS with real data

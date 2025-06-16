@@ -12,6 +12,7 @@ import { promisify } from "util";
 import Stripe from "stripe";
 import InputSanitizer from "./security/input-sanitizer";
 import OutputMonitor from "./security/output-monitor";
+import { registerTestRoutes } from "./test-routes";
 // import pdfParse from "pdf-parse";
 
 const scryptAsync = promisify(scrypt);
@@ -2794,6 +2795,9 @@ startxref
 
     res.json({ received: true });
   });
+
+  // Register comprehensive test routes for PDF and preview validation
+  registerTestRoutes(app);
 
   const httpServer = createServer(app);
   return httpServer;

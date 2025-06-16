@@ -297,7 +297,13 @@ const testSignatures = [
   }
 ];
 
-module.exports = {
-  testSWMSData,
-  testSignatures
-};
+// Export for both CommonJS and ES modules
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    testSWMSData,
+    testSignatures
+  };
+} else {
+  window.testSWMSData = testSWMSData;
+  window.testSignatures = testSignatures;
+}
