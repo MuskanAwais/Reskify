@@ -17,13 +17,12 @@ import { translate } from "@/lib/language-direct";
 
 const getSteps = () => [
   { id: 1, title: "Project & Contractor Details", description: "Project information, contractor details, and high-risk work identification" },
-  { id: 2, title: "Work Activities & Generation", description: "Detailed work breakdown and AI-powered task generation" },
-  { id: 3, title: "Risk Assessment & Controls", description: "Comprehensive risk assessments and control measures" },
-  { id: 4, title: "Plant, Equipment & Training", description: "Equipment specifications, training requirements, and permits" },
-  { id: 5, title: "Emergency & Monitoring", description: "Emergency procedures and review/monitoring processes" },
-  { id: 6, title: "Payment & Access", description: "Select payment option to complete SWMS generation" },
-  { id: 7, title: "Legal Disclaimer", description: "Accept terms and liability disclaimer" },
-  { id: 8, title: "Digital Signatures & PDF", description: "Generate complete SWMS document with optional signatures" }
+  { id: 2, title: "Work Activities & Risk Assessment", description: "Generate tasks and manage comprehensive risk assessments with controls" },
+  { id: 3, title: "Plant, Equipment & Training", description: "Equipment specifications, training requirements, and permits" },
+  { id: 4, title: "Emergency & Monitoring", description: "Emergency procedures and review/monitoring processes" },
+  { id: 5, title: "Payment & Access", description: "Select payment option to complete SWMS generation" },
+  { id: 6, title: "Legal Disclaimer", description: "Accept terms and liability disclaimer" },
+  { id: 7, title: "Digital Signatures & PDF", description: "Generate complete SWMS document with optional signatures" }
 ];
 
 export default function SwmsBuilder() {
@@ -211,33 +210,33 @@ export default function SwmsBuilder() {
       }
     }
     
-    // Handle payment step (step 6)
-    if (currentStep === 5) {
+    // Handle payment step (step 5)
+    if (currentStep === 4) {
       // Always go to payment step next
-      setCurrentStep(6);
+      setCurrentStep(5);
       return;
     }
     
-    // Handle proceeding from payment step (step 6)
-    if (currentStep === 6) {
+    // Handle proceeding from payment step (step 5)
+    if (currentStep === 5) {
       const creditsRemaining = subscription ? (subscription as any).creditsRemaining || 0 : 0;
       const hasProPlan = (subscription as any)?.plan === "Pro" || (subscription as any)?.plan === "Enterprise";
       const isAdminDemo = localStorage.getItem('adminDemoMode') === 'true';
       const isAppAdmin = localStorage.getItem('isAppAdmin') === 'true';
       
-      // Allow admin to bypass payment in demo mode
-      if (isAppAdmin && isAdminDemo) {
-        // Admin demo mode - skip payment validation
-        console.log('Admin demo mode - bypassing payment validation');
-      } else if (creditsRemaining === 0 && !hasProPlan) {
+      // Allow admin to bypass payment in demo mode OR if user has credits
+      if ((isAppAdmin && isAdminDemo) || creditsRemaining > 0 || hasProPlan) {
+        // Admin demo mode or user has credits - skip payment validation
+        console.log('Payment validation bypassed - demo mode or credits available');
+      } else {
         // Redirect to payment page if no credits and not in admin demo mode
         setLocation("/payment");
         return;
       }
     }
     
-    // Validate legal disclaimer acceptance before proceeding from step 7 (legal disclaimer step)
-    if (currentStep === 7 && !formData.acceptedDisclaimer) {
+    // Validate legal disclaimer acceptance before proceeding from step 6 (legal disclaimer step)
+    if (currentStep === 6 && !formData.acceptedDisclaimer) {
       toast({
         title: "Legal Disclaimer Required",
         description: "You must accept the legal disclaimer to continue.",

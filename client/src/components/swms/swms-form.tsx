@@ -46,7 +46,7 @@ import AustralianAddressAutocomplete from "@/components/ui/australian-address-au
 import LiveSWMSPreviewer from "./live-swms-previewer";
 import { RiskAssessmentMatrix } from "./risk-assessment-matrix";
 
-const TOTAL_STEPS = 8;
+const TOTAL_STEPS = 7;
 
 // Function to generate default control measures based on common hazards
 const getDefaultControlMeasures = (hazards: string[], taskName: string = '') => {
@@ -696,7 +696,7 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
         </div>
       );
 
-    case 4:
+    case 3:
       return (
         <div className="space-y-6">
           <div className="text-center">
@@ -721,7 +721,7 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
         </div>
       );
 
-    case 5:
+    case 4:
       return (
         <div className="space-y-6">
           <div className="text-center">
