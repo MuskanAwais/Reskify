@@ -1118,7 +1118,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const draftData = req.body;
       const draftId = draftData.draftId || Date.now().toString();
-      const userId = req.user?.id || 1; // Default user for demo
+      const userId = req.user?.id;
+      
+      if (!userId) {
+        return res.status(401).json({ message: 'User not authenticated' });
+      }
+      
+      console.log(`Saving SWMS draft for user ${userId}`);
       
       // Create draft entry in database
       const draftEntry = {
@@ -1131,7 +1137,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         riskAssessments: draftData.selectedTasks || [],
         safetyMeasures: [],
         complianceCodes: [],
-        userId: userId,
+        userId: userId as number,
         status: "draft",
         aiEnhanced: false,
         formData: draftData // Store complete form data for editing
@@ -1139,6 +1145,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Save to database
       const savedDraft = await dbStorage.createSwmsDraft(draftEntry);
+      console.log(`Draft saved successfully with ID: ${savedDraft.id}`);
       
       res.json({ 
         success: true, 
@@ -1154,10 +1161,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get user's SWMS documents (drafts and completed)
   app.get("/api/swms/my-documents", async (req, res) => {
     try {
-      const userId = req.user?.id || 1; // Default user for demo
+      const userId = req.user?.id;
+      
+      if (!userId) {
+        return res.status(401).json({ message: 'User not authenticated' });
+      }
+      
+      console.log(`Fetching SWMS documents for user ${userId}`);
       
       // Get all SWMS documents for the user
-      const allDocuments = await dbStorage.getUserSwms(userId);
+      const allDocuments = await dbStorage.getUserSwms(userId as number);
       
       // Separate drafts and completed documents
       const drafts = allDocuments.filter(doc => doc.status === 'draft');
