@@ -120,7 +120,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           id: user.id, 
           username: user.username, 
           email: user.email, 
-          isAdmin: user.isAdmin 
+          isAdmin: user.isAdmin || false,
+          subscriptionType: user.subscriptionType || 'trial',
+          swmsCredits: user.swmsCredits || 0
         } 
       });
     } catch (error) {
