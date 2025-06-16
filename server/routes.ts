@@ -249,10 +249,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       doc.fontSize(12).text('Professional SWMS Builder', 430, 75);
       
       // Add watermark throughout document
-      const addWatermark = (page) => {
+      const addWatermark = () => {
         doc.opacity(0.1);
         doc.fontSize(40);
-        doc.text('RISKIFY', 150, 400, { rotate: 45 });
+        doc.text('RISKIFY', 150, 400);
         doc.opacity(1);
       };
       
@@ -304,7 +304,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       ];
       
-      riskData.forEach((item, index) => {
+      riskData.forEach((item: any, index: number) => {
         if (yPos > 700) {
           doc.addPage();
           addWatermark();
