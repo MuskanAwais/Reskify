@@ -25,6 +25,10 @@ export interface IStorage {
   getSwmsDocumentsByUserId(userId: number): Promise<any[]>;
   updateSwmsDocument(id: number, data: any): Promise<any>;
   deleteSwmsDocument(id: number): Promise<void>;
+  saveSWMSDraft(data: any): Promise<any>;
+  getDraftCount(userId: number): Promise<number>;
+  getCompletedCount(userId: number): Promise<number>;
+  getUserSWMS(userId: number): Promise<any[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -342,6 +346,82 @@ export class DatabaseStorage implements IStorage {
     } catch (error) {
       console.error('Error deleting SWMS document:', error);
       throw error;
+    }
+  }
+
+  async saveSWMSDraft(data: any): Promise<any> {
+    try {
+      const swmsData = {
+        projectName: data.projectName || '',
+        projectAddress: data.projectAddress || '',
+        principalContractor: data.principalContractor || '',
+        jobNumber: data.jobNumber || '',
+        tradeType: data.tradeType || '',
+        projectDescription: data.projectDescription || '',
+        workActivities: JSON.stringify(data.workActivities || []),
+        userId: data.userId || 999,
+        status: data.status || 'draft',
+        createdAt: data.createdAt || new Date(),
+        updatedAt: data.updatedAt || new Date()
+      };
+
+      const [savedDoc] = await db.insert(swmsDocuments).values(swmsData).returning();
+      console.log('SWMS saved:', savedDoc.id);
+      return savedDoc;
+    } catch (error) {
+      console.error('Error saving SWMS:', error);
+      // Fallback to memory storage
+      const newDoc = { ...data, id: Date.now() };
+      this.swmsDrafts.push(newDoc);
+      return newDoc;
+    }
+  }
+
+  async getDraftCount(userId: number): Promise<number> {
+    try {
+      const drafts = await db
+        .select()
+        .from(swmsDocuments)
+        .where(eq(swmsDocuments.userId, userId));
+      
+      return drafts.filter(doc => doc.status === 'draft').length;
+    } catch (error) {
+      console.error('Error getting draft count:', error);
+      return this.swmsDrafts.filter(d => d.userId === userId).length;
+    }
+  }
+
+  async getCompletedCount(userId: number): Promise<number> {
+    try {
+      const docs = await db
+        .select()
+        .from(swmsDocuments)
+        .where(eq(swmsDocuments.userId, userId));
+      
+      return docs.filter(doc => doc.status === 'completed').length;
+    } catch (error) {
+      console.error('Error getting completed count:', error);
+      return this.swmsDocuments.filter(d => d.userId === userId).length;
+    }
+  }
+
+  async getUserSWMS(userId: number): Promise<any[]> {
+    try {
+      const allDocs = await db
+        .select()
+        .from(swmsDocuments)
+        .where(eq(swmsDocuments.userId, userId))
+        .orderBy(desc(swmsDocuments.updatedAt));
+      
+      return allDocs.map(doc => ({
+        ...doc,
+        workActivities: doc.workActivities ? JSON.parse(doc.workActivities) : []
+      }));
+    } catch (error) {
+      console.error('Error getting user SWMS:', error);
+      return [...this.swmsDrafts, ...this.swmsDocuments]
+        .filter(doc => doc.userId === userId)
+        .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
     }
   }
 }

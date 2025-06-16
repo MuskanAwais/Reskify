@@ -141,8 +141,16 @@ export async function registerRoutes(app: Express) {
   // Save SWMS draft
   app.post("/api/swms/save-draft", async (req, res) => {
     try {
-      const userId = req.session.userId || 999;
+      // Handle both session-based and direct userId
+      const userId = req.session?.userId || req.body.userId || 999;
       const swmsData = req.body;
+      
+      // Ensure required fields
+      if (!swmsData.projectName) {
+        return res.status(400).json({ error: "Project name is required" });
+      }
+      
+      console.log('Saving SWMS draft:', swmsData.projectName, 'for user:', userId);
       
       const savedDraft = await storage.saveSWMSDraft({
         ...swmsData,
