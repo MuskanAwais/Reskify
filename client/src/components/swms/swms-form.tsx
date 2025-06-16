@@ -35,7 +35,8 @@ import {
   CreditCard,
   Plus,
   X,
-  Scale
+  Scale,
+  Zap
 } from "lucide-react";
 import { SimplifiedTableEditor } from "./simplified-table-editor";
 import GPTTaskSelection from "./gpt-task-selection";
@@ -675,11 +676,11 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
         </div>
       );
 
-    case 7:
+    case 6:
       return (
         <div className="space-y-6">
           <div className="text-center">
-            <FileText className="mx-auto h-12 w-12 text-primary mb-4" />
+            <Scale className="mx-auto h-12 w-12 text-primary mb-4" />
             <h3 className="text-lg font-semibold mb-2">Legal Disclaimer</h3>
             <p className="text-gray-600 text-sm">
               Review and accept the terms and liability disclaimer to proceed.
@@ -688,7 +689,7 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
 
           <Card>
             <CardHeader>
-              <CardTitle>Terms and Conditions</CardTitle>
+              <CardTitle>Legal Disclaimer and Terms</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
@@ -727,29 +728,6 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
               </div>
             </CardContent>
           </Card>
-        </div>
-      );
-
-    case 6:
-      return (
-        <div className="space-y-6">
-          <div className="text-center">
-            <PenTool className="mx-auto h-12 w-12 text-primary mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Digital Signatures & Completion</h3>
-            <p className="text-gray-600 text-sm">
-              Add digital signatures and complete your SWMS document
-            </p>
-          </div>
-
-          <DigitalSignatureSystem
-            formData={formData}
-            onDataChange={updateFormData}
-          />
-
-          <PDFPrintSystem
-            formData={formData}
-            onDataChange={updateFormData}
-          />
         </div>
       );
 
