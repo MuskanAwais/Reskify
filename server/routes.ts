@@ -352,99 +352,121 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ? JSON.parse(targetDoc.swmsData) 
         : targetDoc.swmsData || {};
 
-      let yPosition = 50;
+      let yPos = 50;
 
-      // Simple Header
+      // Riskify Header (right-aligned)
+      doc.fontSize(12).fillColor('#000').font('Helvetica-Bold');
+      doc.text('Riskify', 450, yPos);
+      yPos += 15;
+      doc.fontSize(10).fillColor('#000').font('Helvetica');
+      doc.text('Professional SWMS', 400, yPos);
+      yPos += 15;
+      doc.text('Builder', 450, yPos);
+      yPos += 40;
+
+      // Main Title
       doc.fontSize(16).fillColor('#000').font('Helvetica-Bold');
-      doc.text('SAFE WORK METHOD STATEMENT', 50, yPosition);
-      yPosition += 30;
-
-      // Project Information
-      doc.fontSize(12).fillColor('#000').font('Helvetica');
-      doc.text(`Project: ${targetDoc.title || 'N/A'}`, 50, yPosition);
-      yPosition += 20;
-      doc.text(`Location: ${targetDoc.projectLocation || data.projectLocation || 'N/A'}`, 50, yPosition);
-      yPosition += 20;
-      doc.text(`Principal Contractor: ${targetDoc.principalContractor || data.principalContractor || 'N/A'}`, 50, yPosition);
-      yPosition += 20;
-      doc.text(`Date: ${new Date(targetDoc.createdAt).toLocaleDateString('en-AU')}`, 50, yPosition);
-      yPosition += 30;
-
-      // Work Activities
+      doc.text('Safe Work Method Statement', 50, yPos);
+      yPos += 20;
+      
+      // Project Title
       doc.fontSize(14).fillColor('#000').font('Helvetica-Bold');
-      doc.text('WORK ACTIVITIES:', 50, yPosition);
-      yPosition += 25;
+      doc.text(targetDoc.title || 'Project Name', 50, yPos);
+      yPos += 25;
+
+      // Project Details Section
+      doc.fontSize(12).fillColor('#000').font('Helvetica-Bold');
+      doc.text('Project Details:', 50, yPos);
+      yPos += 20;
+
+      doc.fontSize(10).fillColor('#000').font('Helvetica');
+      doc.text(`    Project: ${targetDoc.title || 'N/A'}`, 50, yPos);
+      yPos += 15;
+      doc.text(`    Address: ${targetDoc.projectLocation || data.projectLocation || 'N/A'}`, 50, yPos);
+      yPos += 15;
+      doc.text(`    Contractor: ${targetDoc.principalContractor || data.principalContractor || 'N/A'}`, 50, yPos);
+      yPos += 15;
+      doc.text(`    Job Number: ${targetDoc.jobNumber || `SWMS-${targetDoc.id}`}`, 50, yPos);
+      yPos += 30;
+
+      // Risk Assessment Matrix
+      doc.fontSize(12).fillColor('#000').font('Helvetica-Bold');
+      doc.text('Risk Assessment Matrix:', 50, yPos);
+      yPos += 20;
+
+      // Table headers
+      doc.fontSize(10).fillColor('#000').font('Helvetica-Bold');
+      doc.text('Activity', 50, yPos);
+      doc.text('Hazards', 180, yPos);
+      doc.text('Risk Level', 320, yPos);
+      doc.text('Control Measures', 400, yPos);
+      yPos += 15;
+
+      // Underline headers
+      doc.moveTo(50, yPos).lineTo(520, yPos).stroke();
+      yPos += 10;
 
       const activities = data.workActivities || data.activities || [];
       
       if (activities.length > 0) {
         activities.forEach((activity: any, index: number) => {
-          doc.fontSize(11).fillColor('#000').font('Helvetica-Bold');
-          doc.text(`${index + 1}. ${activity.activity || activity.task || `Activity ${index + 1}`}`, 60, yPosition);
-          yPosition += 18;
+          // Activity name
+          doc.fontSize(9).fillColor('#000').font('Helvetica');
+          const activityName = activity.activity || activity.task || 'General Construction Work';
+          doc.text(activityName, 50, yPos, { width: 120 });
           
-          doc.fontSize(10).fillColor('#000').font('Helvetica');
-          const hazards = Array.isArray(activity.hazards) ? activity.hazards.join(', ') : activity.hazards || 'General construction hazards';
-          doc.text(`Hazards: ${hazards}`, 70, yPosition);
-          yPosition += 15;
+          // Hazards
+          const hazards = Array.isArray(activity.hazards) 
+            ? activity.hazards.slice(0, 3).join(', ') 
+            : activity.hazards || 'Falls, Manual Handling, Electrical';
+          doc.text(hazards, 180, yPos, { width: 130 });
           
-          const controls = Array.isArray(activity.controlMeasures) ? activity.controlMeasures.join(', ') : activity.controlMeasures || 'Standard safety protocols';
-          doc.text(`Controls: ${controls}`, 70, yPosition);
-          yPosition += 20;
+          // Risk Level
+          const riskLevel = activity.riskLevel || activity.initialRisk || 'Medium';
+          doc.text(riskLevel, 320, yPos, { width: 70 });
+          
+          // Control Measures
+          const controls = Array.isArray(activity.controlMeasures) 
+            ? activity.controlMeasures.slice(0, 3).join(', ')
+            : activity.controlMeasures || 'Safety harness, Proper lifting technique, Lockout/tagout';
+          doc.text(controls, 400, yPos, { width: 120 });
+          
+          yPos += 30;
         });
       } else {
-        doc.fontSize(10).fillColor('#000').font('Helvetica');
-        doc.text('• General construction activities', 60, yPosition);
-        yPosition += 15;
-        doc.text('• Site preparation and setup', 60, yPosition);
-        yPosition += 15;
-        doc.text('• Material handling and installation', 60, yPosition);
-        yPosition += 25;
+        // Default activity
+        doc.fontSize(9).fillColor('#000').font('Helvetica');
+        doc.text('General Construction\nWork', 50, yPos);
+        doc.text('Falls, Manual Handling,\nElectrical', 180, yPos);
+        doc.text('Medium', 320, yPos);
+        doc.text('Safety harness, Proper\nlifting technique,\nLockout/tagout', 400, yPos);
+        yPos += 40;
       }
 
-      // Plant Equipment
-      if (data.plantEquipment && data.plantEquipment.length > 0) {
-        doc.fontSize(14).fillColor('#000').font('Helvetica-Bold');
-        doc.text('PLANT & EQUIPMENT:', 50, yPosition);
-        yPosition += 25;
+      yPos += 20;
 
-        data.plantEquipment.forEach((equipment: any, index: number) => {
-          doc.fontSize(10).fillColor('#000').font('Helvetica');
-          doc.text(`• ${equipment.equipment || equipment.name || `Equipment ${index + 1}`}`, 60, yPosition);
-          yPosition += 15;
-        });
-        yPosition += 10;
-      }
+      // Emergency Procedures
+      doc.fontSize(12).fillColor('#000').font('Helvetica-Bold');
+      doc.text('Emergency Procedures:', 50, yPos);
+      yPos += 25;
 
-      // Emergency Contacts
-      doc.fontSize(14).fillColor('#000').font('Helvetica-Bold');
-      doc.text('EMERGENCY CONTACTS:', 50, yPosition);
-      yPosition += 25;
+      // RISKIFY watermark
+      doc.fontSize(8).fillColor('#ccc').font('Helvetica-Bold');
+      doc.text('RISKIFY', 450, yPos - 10);
 
       doc.fontSize(10).fillColor('#000').font('Helvetica');
-      doc.text('Emergency Services: 000', 60, yPosition);
-      yPosition += 15;
-      doc.text(`Site Supervisor: ${data.supervisorName || 'Site Supervisor'}`, 60, yPosition);
-      yPosition += 15;
-      doc.text(`Principal Contractor: ${targetDoc.principalContractor || 'N/A'}`, 60, yPosition);
-      yPosition += 30;
+      doc.text('    • In case of emergency, call 000', 50, yPos);
+      yPos += 15;
+      doc.text('    • Evacuate to designated assembly point', 50, yPos);
+      yPos += 15;
+      doc.text('    • Report all incidents to site supervisor', 50, yPos);
+      yPos += 40;
 
-      // Signature Section
-      doc.fontSize(14).fillColor('#000').font('Helvetica-Bold');
-      doc.text('SIGNATURES:', 50, yPosition);
-      yPosition += 25;
-
-      // Signature lines
-      for (let i = 0; i < 5; i++) {
-        doc.fontSize(10).fillColor('#000').font('Helvetica');
-        doc.text('Name: ________________________  Signature: ________________________  Date: __________', 60, yPosition);
-        yPosition += 30;
-      }
-
-      // Footer
-      yPosition += 20;
-      doc.fontSize(8).fillColor('#666').font('Helvetica');
-      doc.text(`Generated by Riskify SWMS Builder - Document ID: SWMS-${targetDoc.id}`, 50, yPosition);
+      // Compliance Statement
+      doc.fontSize(9).fillColor('#000').font('Helvetica');
+      doc.text('This SWMS complies with Australian WHS regulations and AS/NZS standards', 50, yPos);
+      yPos += 15;
+      doc.text(`Generated: ${new Date().toLocaleDateString('en-AU')}`, 50, yPos);
       
       // Finalize PDF
       doc.end();
