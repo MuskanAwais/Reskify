@@ -17,12 +17,13 @@ import { translate } from "@/lib/language-direct";
 
 const getSteps = () => [
   { id: 1, title: "Project & Contractor Details", description: "Project information, contractor details, and high-risk work identification" },
-  { id: 2, title: "Work Activities & Risk Assessment", description: "Detailed work breakdown and comprehensive risk assessments" },
-  { id: 3, title: "Plant, Equipment & Training", description: "Equipment specifications, training requirements, and permits" },
-  { id: 4, title: "Emergency & Monitoring", description: "Emergency procedures and review/monitoring processes" },
-  { id: 5, title: "Payment & Access", description: "Select payment option to complete SWMS generation" },
-  { id: 6, title: "Legal Disclaimer", description: "Accept terms and liability disclaimer" },
-  { id: 7, title: "Digital Signatures & PDF", description: "Generate complete SWMS document with optional signatures" }
+  { id: 2, title: "Work Activities & Generation", description: "Detailed work breakdown and AI-powered task generation" },
+  { id: 3, title: "Risk Assessment & Controls", description: "Comprehensive risk assessments and control measures" },
+  { id: 4, title: "Plant, Equipment & Training", description: "Equipment specifications, training requirements, and permits" },
+  { id: 5, title: "Emergency & Monitoring", description: "Emergency procedures and review/monitoring processes" },
+  { id: 6, title: "Payment & Access", description: "Select payment option to complete SWMS generation" },
+  { id: 7, title: "Legal Disclaimer", description: "Accept terms and liability disclaimer" },
+  { id: 8, title: "Digital Signatures & PDF", description: "Generate complete SWMS document with optional signatures" }
 ];
 
 export default function SwmsBuilder() {
