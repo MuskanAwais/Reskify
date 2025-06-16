@@ -16,7 +16,7 @@ interface AddressSuggestion {
   placeId: string;
 }
 
-export default function AddressAutocomplete({
+export default function AustralianAddressAutocomplete({
   value,
   onChange,
   placeholder = "Start typing Australian address...",
@@ -28,62 +28,48 @@ export default function AddressAutocomplete({
   const [isLoading, setIsLoading] = useState(false);
   const [suggestions, setSuggestions] = useState<AddressSuggestion[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
   const debounceRef = useRef<NodeJS.Timeout>();
 
-  // Free Australian address lookup using multiple sources (no API keys required)
+  // Free Australian address lookup using OpenStreetMap Nominatim (no API keys required)
   const searchAddresses = async (query: string): Promise<AddressSuggestion[]> => {
     if (query.length < 3) return [];
 
     try {
-      // Primary: OpenStreetMap Nominatim (completely free, no registration)
-      const nominatimResponse = await fetch(
+      const response = await fetch(
         `https://nominatim.openstreetmap.org/search?` +
         `q=${encodeURIComponent(query + ' Australia')}&` +
         `format=json&` +
         `addressdetails=1&` +
         `limit=8&` +
-        `countrycodes=au`
+        `countrycodes=au&` +
+        `bounded=1`
       );
 
-      if (nominatimResponse.ok) {
-        const data = await nominatimResponse.json();
+      if (response.ok) {
+        const data = await response.json();
         
-        const suggestions = data
+        return data
           .filter((item: any) => 
             item.display_name && 
             item.display_name.includes('Australia') &&
-            // Filter for actual addresses (not just cities/regions)
             (item.type === 'house' || 
              item.type === 'building' || 
              item.type === 'residential' ||
              item.class === 'place' ||
-             (item.address && (item.address.house_number || item.address.building)))
+             (item.address && (item.address.house_number || item.address.road)))
           )
           .map((item: any, index: number) => ({
-            text: formatAustralianAddress(item.display_name),
+            text: item.display_name.replace(', Australia', '').trim(),
             placeId: `osm-${item.place_id || index}`
           }))
           .slice(0, 5);
-
-        return suggestions;
       }
 
-      // Fallback: Return empty for now (could add more free services here)
       return [];
-
     } catch (error) {
       console.warn('Address search error:', error);
       return [];
     }
-  };
-
-  // Format address to be more readable
-  const formatAustralianAddress = (fullAddress: string): string => {
-    return fullAddress
-      .replace(', Australia', '')
-      .replace(/,\s*Australia$/, '')
-      .trim();
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -91,12 +77,10 @@ export default function AddressAutocomplete({
     onChange(newValue);
     setIsValidated(false);
 
-    // Clear previous debounce
     if (debounceRef.current) {
       clearTimeout(debounceRef.current);
     }
 
-    // Debounce address search
     debounceRef.current = setTimeout(async () => {
       if (newValue.length >= 3) {
         setIsLoading(true);
@@ -119,10 +103,7 @@ export default function AddressAutocomplete({
   };
 
   const handleBlur = () => {
-    // Delay hiding suggestions to allow for clicks
-    setTimeout(() => {
-      setShowSuggestions(false);
-    }, 200);
+    setTimeout(() => setShowSuggestions(false), 200);
   };
 
   const handleFocus = () => {
@@ -131,37 +112,14 @@ export default function AddressAutocomplete({
     }
   };
 
-  // For demo purposes when Google API is not available
-  const isGoogleAPIAvailable = !!import.meta.env.VITE_GOOGLE_PLACES_API_KEY;
-
-  if (!isGoogleAPIAvailable) {
-    return (
-      <div className="relative">
-        <Input
-          ref={inputRef}
-          id={id}
-          value={value}
-          onChange={handleInputChange}
-          placeholder="Enter Australian address (Google API integration pending)"
-          required={required}
-          className={`pr-10 ${className}`}
-        />
-        <MapPin className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-        <p className="text-xs text-amber-600 mt-1">
-          Demo mode: Enter any Australian address. Google Places autocomplete will be enabled in production.
-        </p>
-      </div>
-    );
-  }
-
   return (
     <div className="relative">
       <Input
-        ref={inputRef}
         id={id}
         value={value}
         onChange={handleInputChange}
-        onBlur={validateAddressManually}
+        onBlur={handleBlur}
+        onFocus={handleFocus}
         placeholder={placeholder}
         required={required}
         className={`pr-10 ${className} ${isValidated ? 'border-green-500' : ''}`}
@@ -169,18 +127,39 @@ export default function AddressAutocomplete({
       
       <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
         {isLoading ? (
-          <div className="animate-spin h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full" />
+          <Loader2 className="h-4 w-4 animate-spin text-blue-500" />
         ) : isValidated ? (
           <CheckCircle className="h-4 w-4 text-green-500" />
         ) : (
           <MapPin className="h-4 w-4 text-gray-400" />
         )}
       </div>
+
+      {/* Address Suggestions Dropdown */}
+      {showSuggestions && suggestions.length > 0 && (
+        <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto">
+          {suggestions.map((suggestion) => (
+            <div
+              key={suggestion.placeId}
+              className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-sm border-b border-gray-100 last:border-b-0"
+              onClick={() => handleSuggestionClick(suggestion)}
+            >
+              <div className="flex items-center">
+                <MapPin className="h-4 w-4 text-gray-400 mr-2 flex-shrink-0" />
+                <span className="truncate">{suggestion.text}</span>
+              </div>
+            </div>
+          ))}
+          <div className="px-4 py-2 text-xs text-gray-500 bg-gray-50">
+            Powered by OpenStreetMap (Free Service)
+          </div>
+        </div>
+      )}
       
       <p className="text-xs text-gray-500 mt-1">
         {isValidated 
-          ? "✓ Valid Australian address confirmed" 
-          : "Start typing to see address suggestions or enter complete address"
+          ? "✓ Australian address confirmed" 
+          : "Type 3+ characters to see address suggestions"
         }
       </p>
     </div>
