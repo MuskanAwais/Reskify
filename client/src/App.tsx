@@ -222,19 +222,13 @@ function Router() {
 }
 
 function App() {
-  // Demo user - in a real app this would come from authentication
-  const [user, setUser] = useState<User | null>({
-    id: 1,
-    username: "John Doe",
-    email: "john.doe@example.com",
-    companyName: "ABC Construction",
-    primaryTrade: "Electrical"
-  });
+  // Real user authentication - updated from login
+  const [user, setUser] = useState<User | null>(null);
 
   // Use the persistent admin state
   const adminState = useAdminState();
 
-  // Admin state for temporary admin features - persist in localStorage
+  // Admin state for authenticated users - persist in localStorage
   const [isAdmin, setIsAdmin] = useState<boolean>(() => {
     try {
       const saved = localStorage.getItem('isAdmin');
@@ -243,6 +237,27 @@ function App() {
       return false;
     }
   });
+
+  // Check user authentication on app load
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/api/user', {
+          credentials: 'include'
+        });
+        if (response.ok) {
+          const userData = await response.json();
+          setUser(userData.user);
+          if (userData.user.isAdmin) {
+            setIsAdmin(true);
+          }
+        }
+      } catch (error) {
+        console.log('No active session');
+      }
+    };
+    checkAuth();
+  }, []);
 
   // Save admin state to localStorage when it changes
   useEffect(() => {

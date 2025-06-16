@@ -368,126 +368,201 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       });
       
-      // Add Riskify branding
-      doc.fontSize(20).fillColor('#1a365d').text('Riskify', 450, 50);
-      doc.fontSize(12).fillColor('#666').text('Professional SWMS Builder', 430, 75);
+      // COMPREHENSIVE SWMS DOCUMENT GENERATION
+      // Header with Riskify branding and watermark
+      const addWatermark = (yPosition = 400) => {
+        doc.save();
+        doc.rotate(-45, { origin: [300, yPosition] });
+        doc.opacity(0.08);
+        doc.fontSize(80).fillColor('#cccccc').text('RISKIFY', 100, yPosition - 40);
+        doc.restore();
+      };
       
-      // Add subtle watermark
-      doc.save();
-      doc.opacity(0.05);
-      doc.fontSize(60).fillColor('#cccccc').text('RISKIFY', 100, 350);
-      doc.restore();
+      // Page header function
+      const addPageHeader = () => {
+        doc.fontSize(16).fillColor('#1a365d').text('Riskify', 450, 30);
+        doc.fontSize(10).fillColor('#666').text('Professional SWMS Builder', 430, 50);
+        addWatermark();
+      };
       
-      // Document header
-      doc.fontSize(24).fillColor('#000').text('Safe Work Method Statement', 50, 120);
-      doc.fontSize(16).fillColor('#333').text(data.projectName || 'SWMS Document', 50, 150);
+      addPageHeader();
       
-      // Add border line
-      doc.moveTo(50, 175).lineTo(550, 175).stroke();
+      // Main document title
+      doc.fontSize(28).fillColor('#000').text('Safe Work Method Statement', 50, 100);
+      doc.fontSize(18).fillColor('#1a365d').text(data.projectName || 'SWMS Document', 50, 135);
       
-      let yPos = 200;
+      // Horizontal line separator
+      doc.moveTo(50, 165).lineTo(550, 165).strokeColor('#1a365d').lineWidth(2).stroke();
       
-      // Project Details Section
-      doc.fontSize(16).fillColor('#1a365d').text('PROJECT DETAILS', 50, yPos);
-      yPos += 30;
+      let yPos = 185;
       
-      doc.fontSize(12).fillColor('#000');
-      const projectDetails = [
+      // PROJECT DETAILS SECTION - Comprehensive format
+      doc.fontSize(14).fillColor('#1a365d').text('PROJECT DETAILS', 50, yPos);
+      yPos += 25;
+      
+      // Create detailed project information table
+      const projectDetailsTable = [
         { label: 'Project Name:', value: data.projectName || 'N/A' },
         { label: 'Project Address:', value: data.projectAddress || 'N/A' },
         { label: 'Principal Contractor:', value: data.principalContractor || 'N/A' },
-        { label: 'Job Number:', value: data.projectNumber || 'N/A' },
+        { label: 'Job Number:', value: data.projectNumber || `DRAFT-${Date.now()}` },
         { label: 'Trade Type:', value: data.tradeType || 'General Construction' },
-        { label: 'Document Date:', value: new Date().toLocaleDateString('en-AU') }
+        { label: 'Document Date:', value: new Date().toLocaleDateString('en-AU') },
+        { label: 'SWMS Version:', value: '1.0' },
+        { label: 'Review Date:', value: new Date(Date.now() + 30*24*60*60*1000).toLocaleDateString('en-AU') }
       ];
       
-      projectDetails.forEach(detail => {
-        doc.text(detail.label, 70, yPos);
-        doc.text(detail.value, 200, yPos);
-        yPos += 20;
+      // Draw project details in professional format
+      doc.fontSize(11).fillColor('#000');
+      projectDetailsTable.forEach((item, index) => {
+        if (index % 2 === 0) {
+          doc.rect(50, yPos, 500, 18).fillAndStroke('#f8f9fa', '#e9ecef');
+        } else {
+          doc.rect(50, yPos, 500, 18).stroke('#e9ecef');
+        }
+        doc.fillColor('#000');
+        doc.text(item.label, 60, yPos + 5);
+        doc.text(item.value, 220, yPos + 5);
+        yPos += 18;
       });
       
-      yPos += 20;
-      
-      // Risk Assessment Section
-      doc.fontSize(16).fillColor('#1a365d').text('RISK ASSESSMENT MATRIX', 50, yPos);
       yPos += 30;
       
-      // Table setup
-      const tableTop = yPos;
-      const tableHeaders = ['Activity', 'Hazards', 'Risk Level', 'Control Measures'];
-      const colWidths = [120, 140, 80, 140];
-      const rowHeight = 25;
+      // COMPREHENSIVE RISK ASSESSMENT MATRIX
+      if (yPos > 600) {
+        doc.addPage();
+        addPageHeader();
+        yPos = 80;
+      }
+      
+      doc.fontSize(14).fillColor('#1a365d').text('RISK ASSESSMENT MATRIX', 50, yPos);
+      yPos += 25;
+      
+      // Risk Matrix Legend
+      doc.fontSize(10).fillColor('#666');
+      doc.text('Risk Levels: ', 50, yPos);
+      doc.fillColor('#16a34a').text('LOW', 120, yPos);
+      doc.fillColor('#ea580c').text('MEDIUM', 150, yPos);
+      doc.fillColor('#dc2626').text('HIGH', 200, yPos);
+      doc.fillColor('#7c2d12').text('EXTREME', 235, yPos);
+      yPos += 20;
+      
+      // Comprehensive risk assessment table
+      const riskHeaders = ['Activity/Task', 'Potential Hazards', 'Initial Risk', 'Control Measures', 'Residual Risk', 'Responsible Person'];
+      const riskColWidths = [80, 100, 50, 120, 50, 80];
+      const headerHeight = 30;
+      
+      // Draw comprehensive table headers
       let xPos = 50;
-      
-      // Draw table headers
-      doc.fontSize(10).fillColor('#fff');
-      tableHeaders.forEach((header, i) => {
-        doc.rect(xPos, tableTop, colWidths[i], rowHeight).fillAndStroke('#1a365d', '#000');
-        doc.text(header, xPos + 5, tableTop + 8, { width: colWidths[i] - 10 });
-        xPos += colWidths[i];
+      doc.fontSize(9).fillColor('#fff');
+      riskHeaders.forEach((header, i) => {
+        doc.rect(xPos, yPos, riskColWidths[i], headerHeight).fillAndStroke('#1a365d', '#000');
+        doc.text(header, xPos + 3, yPos + 8, { 
+          width: riskColWidths[i] - 6,
+          align: 'center'
+        });
+        xPos += riskColWidths[i];
       });
+      yPos += headerHeight;
       
-      yPos = tableTop + rowHeight;
-      
-      // Risk assessment data
-      const riskData = data.swmsData?.activities || data.activities || [
+      // Comprehensive risk data from SWMS builder
+      const comprehensiveRiskData = data.swmsData?.activities || data.activities || [
         {
-          activity: 'General Construction Work',
-          hazards: ['Falls from height', 'Manual handling injuries', 'Electrical hazards'],
-          riskLevel: 'Medium',
-          controlMeasures: ['Safety harness and fall protection', 'Proper lifting techniques', 'Electrical safety procedures']
+          activity: 'Site Preparation & Setup',
+          hazards: ['Trip hazards from uneven surfaces', 'Manual handling injuries', 'Vehicle movement risks'],
+          initialRisk: 'Medium',
+          controlMeasures: ['Site inspection and hazard marking', 'Mechanical aids for heavy lifting', 'Designated traffic management zones'],
+          residualRisk: 'Low',
+          responsible: 'Site Supervisor'
+        },
+        {
+          activity: 'Construction Work',
+          hazards: ['Falls from height', 'Electrical shock', 'Struck by objects'],
+          initialRisk: 'High',
+          controlMeasures: ['Safety harness and fall protection systems', 'Lockout/Tagout procedures', 'Hard hat and safety barriers'],
+          residualRisk: 'Medium',
+          responsible: 'Trade Supervisor'
+        },
+        {
+          activity: 'Equipment Operation',
+          hazards: ['Machinery entanglement', 'Noise exposure', 'Vibration injuries'],
+          initialRisk: 'Medium',
+          controlMeasures: ['Machine guarding and safety training', 'Hearing protection required', 'Regular breaks and job rotation'],
+          residualRisk: 'Low',
+          responsible: 'Equipment Operator'
         }
       ];
       
       doc.fillColor('#000');
-      riskData.forEach((item: any, index: number) => {
-        if (yPos > 700) {
+      comprehensiveRiskData.forEach((item: any, index: number) => {
+        if (yPos > 720) {
           doc.addPage();
-          doc.save();
-          doc.opacity(0.05);
-          doc.fontSize(60).fillColor('#cccccc').text('RISKIFY', 100, 350);
-          doc.restore();
-          yPos = 50;
+          addPageHeader();
+          yPos = 80;
         }
         
+        const rowHeight = 45;
         xPos = 50;
-        const currentRowHeight = Math.max(rowHeight, 40);
         
-        // Activity
-        doc.rect(xPos, yPos, colWidths[0], currentRowHeight).stroke();
-        doc.fontSize(9).text(item.activity || `Activity ${index + 1}`, xPos + 5, yPos + 5, { 
-          width: colWidths[0] - 10,
-          height: currentRowHeight - 10 
+        // Alternating row colors for readability
+        if (index % 2 === 0) {
+          doc.rect(50, yPos, 480, rowHeight).fillAndStroke('#f8f9fa', '#e9ecef');
+        } else {
+          doc.rect(50, yPos, 480, rowHeight).stroke('#e9ecef');
+        }
+        
+        doc.fontSize(8).fillColor('#000');
+        
+        // Activity/Task
+        doc.text(item.activity || `Activity ${index + 1}`, xPos + 3, yPos + 5, { 
+          width: riskColWidths[0] - 6,
+          height: rowHeight - 10
         });
-        xPos += colWidths[0];
+        xPos += riskColWidths[0];
         
-        // Hazards
-        doc.rect(xPos, yPos, colWidths[1], currentRowHeight).stroke();
-        const hazards = Array.isArray(item.hazards) ? item.hazards.join(', ') : 'Various construction hazards';
-        doc.text(hazards, xPos + 5, yPos + 5, { 
-          width: colWidths[1] - 10,
-          height: currentRowHeight - 10 
+        // Potential Hazards
+        const hazards = Array.isArray(item.hazards) ? item.hazards.join(', ') : item.hazards || 'Various construction hazards';
+        doc.text(hazards, xPos + 3, yPos + 5, { 
+          width: riskColWidths[1] - 6,
+          height: rowHeight - 10
         });
-        xPos += colWidths[1];
+        xPos += riskColWidths[1];
         
-        // Risk Level
-        doc.rect(xPos, yPos, colWidths[2], currentRowHeight).stroke();
-        const riskLevel = item.riskLevel || 'Medium';
-        const riskColor = riskLevel === 'High' ? '#dc2626' : riskLevel === 'Low' ? '#16a34a' : '#ea580c';
-        doc.fillColor(riskColor).text(riskLevel, xPos + 5, yPos + 12);
+        // Initial Risk
+        const initialRisk = item.initialRisk || item.riskLevel || 'Medium';
+        const initialRiskColor = initialRisk === 'High' ? '#dc2626' : initialRisk === 'Low' ? '#16a34a' : '#ea580c';
+        doc.fillColor(initialRiskColor).text(initialRisk, xPos + 3, yPos + 18, {
+          width: riskColWidths[2] - 6,
+          align: 'center'
+        });
         doc.fillColor('#000');
-        xPos += colWidths[2];
+        xPos += riskColWidths[2];
         
         // Control Measures
-        doc.rect(xPos, yPos, colWidths[3], currentRowHeight).stroke();
-        const controls = Array.isArray(item.controlMeasures) ? item.controlMeasures.join(', ') : 'Standard safety controls as per Australian standards';
-        doc.text(controls, xPos + 5, yPos + 5, { 
-          width: colWidths[3] - 10,
-          height: currentRowHeight - 10 
+        const controls = Array.isArray(item.controlMeasures) ? item.controlMeasures.join(', ') : item.controlMeasures || 'Standard safety controls per Australian WHS standards';
+        doc.text(controls, xPos + 3, yPos + 5, { 
+          width: riskColWidths[3] - 6,
+          height: rowHeight - 10
+        });
+        xPos += riskColWidths[3];
+        
+        // Residual Risk
+        const residualRisk = item.residualRisk || 'Low';
+        const residualRiskColor = residualRisk === 'High' ? '#dc2626' : residualRisk === 'Medium' ? '#ea580c' : '#16a34a';
+        doc.fillColor(residualRiskColor).text(residualRisk, xPos + 3, yPos + 18, {
+          width: riskColWidths[4] - 6,
+          align: 'center'
+        });
+        doc.fillColor('#000');
+        xPos += riskColWidths[4];
+        
+        // Responsible Person
+        doc.text(item.responsible || 'Site Supervisor', xPos + 3, yPos + 18, {
+          width: riskColWidths[5] - 6,
+          align: 'center'
         });
         
-        yPos += currentRowHeight;
+        yPos += rowHeight;
       });
       
       // Emergency Procedures Section
