@@ -316,13 +316,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     doc.end();
   });
 
-  // PDF Download endpoint - Modern landscape format
+  // PDF Download endpoint - LANDSCAPE Modern Card Style with Colored Rating Tags
   app.post("/api/swms/pdf-download", async (req, res) => {
     try {
       console.log("PDF generation request received:", req.body?.projectName || req.body?.title || 'Unknown project');
       
       const data = req.body;
-      const doc = new PDFDocument({ margin: 50 });
+      
+      // LANDSCAPE FORMAT - A4 rotated
+      const doc = new PDFDocument({ 
+        size: 'A4',
+        layout: 'landscape',
+        margins: { top: 30, left: 30, right: 30, bottom: 30 }
+      });
       
       // Collect PDF data into buffer
       const chunks: Buffer[] = [];
@@ -349,124 +355,193 @@ export async function registerRoutes(app: Express): Promise<Server> {
           res.status(500).json({ error: "Failed to generate PDF" });
         }
       });
+
+      // MODERN CARD STYLE DESIGN
+      const pageWidth = 842; // A4 landscape width
+      const pageHeight = 595; // A4 landscape height
       
-      // Add Riskify branding
-      doc.fontSize(20).fillColor('#1a365d').text('Riskify', 450, 50);
-      doc.fontSize(12).fillColor('#666').text('Professional SWMS Builder', 430, 75);
+      // Header Card with Riskify Branding
+      doc.rect(30, 30, pageWidth - 60, 60).fillAndStroke('#1e40af', '#1e40af'); // Blue header
+      doc.fontSize(24).fillColor('white').font('Helvetica-Bold');
+      doc.text('SAFE WORK METHOD STATEMENT', 50, 50);
+      doc.fontSize(14).fillColor('#e2e8f0');
+      doc.text('Riskify Professional Builder', pageWidth - 200, 55);
       
-      // Add subtle watermark
+      // Watermark content from discussions - project information
       doc.save();
-      doc.opacity(0.05);
-      doc.fontSize(60).fillColor('#cccccc').text('RISKIFY', 100, 350);
+      doc.opacity(0.08);
+      doc.fontSize(48).fillColor('#94a3b8').font('Helvetica-Bold');
+      const watermarkText = `${data.projectName || data.title || 'SWMS PROJECT'} - ${data.principalContractor || 'CONTRACTOR'}`;
+      doc.text(watermarkText, 100, 300, { width: 600, align: 'center' });
       doc.restore();
+
+      let yPos = 110;
+
+      // PROJECT DETAILS CARD (Clean Card Format)
+      doc.rect(30, yPos, (pageWidth - 90) / 2, 120).fillAndStroke('#f8fafc', '#e2e8f0');
+      doc.fontSize(16).fillColor('#1e40af').font('Helvetica-Bold');
+      doc.text('PROJECT DETAILS', 40, yPos + 10);
       
-      // Document header
-      doc.fontSize(24).fillColor('#000').text('Safe Work Method Statement', 50, 120);
-      doc.fontSize(16).fillColor('#333').text(data.projectName || data.title || 'SWMS Document', 50, 150);
-      
-      // Add border line
-      doc.moveTo(50, 175).lineTo(550, 175).stroke();
-      
-      let yPos = 200;
-      
-      // Project Details Section
-      doc.fontSize(16).fillColor('#1a365d').text('PROJECT DETAILS', 50, yPos);
-      yPos += 30;
-      
-      doc.fontSize(12).fillColor('#000');
+      doc.fontSize(11).fillColor('#475569').font('Helvetica');
       const projectDetails = [
-        { label: 'Project Name:', value: data.projectName || data.title || 'N/A' },
-        { label: 'Project Address:', value: data.projectAddress || data.projectLocation || 'N/A' },
-        { label: 'Principal Contractor:', value: data.principalContractor || 'N/A' },
-        { label: 'Job Number:', value: data.projectNumber || 'N/A' },
-        { label: 'Trade Type:', value: data.tradeType || 'General Construction' },
-        { label: 'Document Date:', value: new Date().toLocaleDateString('en-AU') }
+        ['Project:', data.projectName || data.title || 'N/A'],
+        ['Location:', data.projectAddress || data.projectLocation || 'N/A'],
+        ['Contractor:', data.principalContractor || 'N/A'],
+        ['Job Number:', data.projectNumber || 'N/A'],
+        ['Trade:', data.tradeType || 'General Construction'],
+        ['Date:', new Date().toLocaleDateString('en-AU')]
       ];
       
-      projectDetails.forEach(detail => {
-        doc.text(detail.label, 70, yPos);
-        doc.text(detail.value, 200, yPos);
-        yPos += 20;
+      let detailY = yPos + 35;
+      projectDetails.forEach(([label, value]) => {
+        doc.font('Helvetica-Bold').text(label, 45, detailY, { width: 100 });
+        doc.font('Helvetica').text(value, 150, detailY, { width: 200 });
+        detailY += 12;
       });
-      
-      yPos += 20;
-      
-      // Risk Assessment Section
-      doc.fontSize(16).fillColor('#1a365d').text('RISK ASSESSMENT MATRIX', 50, yPos);
+
+      // RISK LEGEND CARD 
+      const rightCardX = 40 + (pageWidth - 90) / 2 + 20;
+      doc.rect(rightCardX, yPos, (pageWidth - 90) / 2, 120).fillAndStroke('#f8fafc', '#e2e8f0');
+      doc.fontSize(16).fillColor('#1e40af').font('Helvetica-Bold');
+      doc.text('RISK RATING LEGEND', rightCardX + 10, yPos + 10);
+
+      // COLORED RATING TAGS
+      const riskLevels = [
+        ['LOW', '#10b981', 'Continue with current controls'],
+        ['MEDIUM', '#f59e0b', 'Additional controls may be required'],
+        ['HIGH', '#ef4444', 'Additional controls required'],
+        ['EXTREME', '#7c2d12', 'Stop work - eliminate/substitute']
+      ];
+
+      let legendY = yPos + 35;
+      riskLevels.forEach(([level, color, description]) => {
+        // Colored rating tag
+        doc.rect(rightCardX + 15, legendY, 60, 16).fillAndStroke(color, color);
+        doc.fontSize(9).fillColor('white').font('Helvetica-Bold');
+        doc.text(level, rightCardX + 20, legendY + 3);
+        
+        // Description
+        doc.fontSize(9).fillColor('#475569').font('Helvetica');
+        doc.text(description, rightCardX + 85, legendY + 3, { width: 200 });
+        legendY += 20;
+      });
+
+      yPos += 140;
+
+      // FULL RISK ASSESSMENT TABLE with Colored Tags
+      doc.fontSize(18).fillColor('#1e40af').font('Helvetica-Bold');
+      doc.text('WORK ACTIVITIES & RISK ASSESSMENT', 40, yPos);
       yPos += 30;
+
+      // Table headers - full width in landscape
+      const tableHeaders = ['Activity/Task', 'Hazards Identified', 'Risk Level', 'Control Measures', 'Legislation/Standards', 'Responsible Person'];
+      const colWidths = [120, 140, 80, 160, 120, 100];
       
-      // Table setup
-      const tableTop = yPos;
-      const tableHeaders = ['Activity', 'Hazards', 'Risk Level', 'Control Measures'];
-      const colWidths = [120, 140, 80, 140];
-      const rowHeight = 25;
-      let xPos = 50;
-      
-      // Draw table headers
-      doc.fontSize(10).fillColor('#fff');
+      let xPos = 40;
       tableHeaders.forEach((header, i) => {
-        doc.rect(xPos, tableTop, colWidths[i], rowHeight).fillAndStroke('#1a365d', '#000');
-        doc.text(header, xPos + 5, tableTop + 8, { width: colWidths[i] - 10 });
+        doc.rect(xPos, yPos, colWidths[i], 25).fillAndStroke('#1e40af', '#1e40af');
+        doc.fontSize(10).fillColor('white').font('Helvetica-Bold');
+        doc.text(header, xPos + 5, yPos + 5, { width: colWidths[i] - 10, align: 'center' });
         xPos += colWidths[i];
       });
-      
-      yPos = tableTop + rowHeight;
-      
-      // Risk assessment data
-      const riskData = data.swmsData?.activities || data.activities || data.workActivities || [
+      yPos += 25;
+
+      // Activity data with full risk assessment
+      const activities = data.swmsData?.activities || data.activities || data.workActivities || [
         {
-          activity: 'General Construction Work',
-          hazards: ['Falls from height', 'Manual handling injuries', 'Electrical hazards'],
-          riskLevel: 'Medium',
-          controlMeasures: ['Use fall protection equipment', 'Proper lifting techniques', 'Lockout/tagout procedures']
+          activity: 'Site Setup & Material Handling',
+          hazards: ['Manual handling injuries', 'Vehicle/plant movement', 'Trip hazards'],
+          riskLevel: 'MEDIUM',
+          controlMeasures: ['Mechanical lifting aids', 'Traffic management plan', 'Clear walkways', 'Safety signage'],
+          legislation: ['WHS Act 2011', 'AS/NZS 4801:2001', 'Manual Handling COP'],
+          responsible: 'Site Supervisor'
+        },
+        {
+          activity: 'Construction Works',
+          hazards: ['Falls from height', 'Falling objects', 'Electrical hazards', 'Noise exposure'],
+          riskLevel: 'HIGH',
+          controlMeasures: ['Working at heights permit', 'Safety harnesses', 'Hard hats', 'LOTO procedures', 'Hearing protection'],
+          legislation: ['WHS Regulation 2017', 'AS/NZS 1891.1', 'AS/NZS 3000:2018'],
+          responsible: 'Trade Supervisor'
         }
       ];
-      
-      // Draw activity rows
-      riskData.forEach((item, index) => {
-        const bgColor = index % 2 === 0 ? '#f8f9fa' : '#ffffff';
-        xPos = 50;
+
+      activities.forEach((activity, index) => {
+        const rowHeight = 35;
+        const bgColor = index % 2 === 0 ? '#ffffff' : '#f9fafb';
         
-        doc.fontSize(9).fillColor('#000');
+        xPos = 40;
         
         // Activity
-        doc.rect(xPos, yPos, colWidths[0], rowHeight).fillAndStroke(bgColor, '#000');
-        doc.text(item.activity || `Activity ${index + 1}`, xPos + 5, yPos + 8, { width: colWidths[0] - 10 });
+        doc.rect(xPos, yPos, colWidths[0], rowHeight).fillAndStroke(bgColor, '#e2e8f0');
+        doc.fontSize(9).fillColor('#1f2937').font('Helvetica-Bold');
+        doc.text(activity.activity || `Activity ${index + 1}`, xPos + 5, yPos + 5, { width: colWidths[0] - 10 });
         xPos += colWidths[0];
-        
+
         // Hazards
-        doc.rect(xPos, yPos, colWidths[1], rowHeight).fillAndStroke(bgColor, '#000');
-        const hazards = Array.isArray(item.hazards) ? item.hazards.join(', ') : item.hazards || 'General hazards';
-        doc.text(hazards, xPos + 5, yPos + 8, { width: colWidths[1] - 10 });
+        doc.rect(xPos, yPos, colWidths[1], rowHeight).fillAndStroke(bgColor, '#e2e8f0');
+        doc.fontSize(8).fillColor('#374151').font('Helvetica');
+        const hazards = Array.isArray(activity.hazards) ? activity.hazards.join(', ') : activity.hazards || 'General hazards';
+        doc.text(hazards, xPos + 5, yPos + 5, { width: colWidths[1] - 10 });
         xPos += colWidths[1];
+
+        // Risk Level with COLORED TAG
+        doc.rect(xPos, yPos, colWidths[2], rowHeight).fillAndStroke(bgColor, '#e2e8f0');
+        const riskLevel = activity.riskLevel || 'MEDIUM';
+        const riskColor = riskLevels.find(([level]) => level === riskLevel)?.[1] || '#f59e0b';
         
-        // Risk Level
-        doc.rect(xPos, yPos, colWidths[2], rowHeight).fillAndStroke(bgColor, '#000');
-        doc.text(item.riskLevel || 'Medium', xPos + 5, yPos + 8, { width: colWidths[2] - 10 });
+        // Colored risk tag in cell
+        doc.rect(xPos + 10, yPos + 8, 60, 18).fillAndStroke(riskColor, riskColor);
+        doc.fontSize(8).fillColor('white').font('Helvetica-Bold');
+        doc.text(riskLevel, xPos + 15, yPos + 12);
         xPos += colWidths[2];
-        
+
         // Control Measures
-        doc.rect(xPos, yPos, colWidths[3], rowHeight).fillAndStroke(bgColor, '#000');
-        const controls = Array.isArray(item.controlMeasures) ? item.controlMeasures.join(', ') : item.controlMeasures || 'Standard safety measures';
-        doc.text(controls, xPos + 5, yPos + 8, { width: colWidths[3] - 10 });
+        doc.rect(xPos, yPos, colWidths[3], rowHeight).fillAndStroke(bgColor, '#e2e8f0');
+        doc.fontSize(8).fillColor('#374151').font('Helvetica');
+        const controls = Array.isArray(activity.controlMeasures) ? activity.controlMeasures.join(', ') : activity.controlMeasures || 'Standard safety measures';
+        doc.text(controls, xPos + 5, yPos + 5, { width: colWidths[3] - 10 });
+        xPos += colWidths[3];
+
+        // Legislation/Standards
+        doc.rect(xPos, yPos, colWidths[4], rowHeight).fillAndStroke(bgColor, '#e2e8f0');
+        doc.fontSize(8).fillColor('#374151').font('Helvetica');
+        const legislation = Array.isArray(activity.legislation) ? activity.legislation.join(', ') : activity.legislation || 'WHS Act 2011, AS/NZS Standards';
+        doc.text(legislation, xPos + 5, yPos + 5, { width: colWidths[4] - 10 });
+        xPos += colWidths[4];
+
+        // Responsible Person
+        doc.rect(xPos, yPos, colWidths[5], rowHeight).fillAndStroke(bgColor, '#e2e8f0');
+        doc.fontSize(9).fillColor('#374151').font('Helvetica-Bold');
+        doc.text(activity.responsible || 'Site Supervisor', xPos + 5, yPos + 15, { width: colWidths[5] - 10, align: 'center' });
         
         yPos += rowHeight;
       });
-      
-      yPos += 30;
-      
-      // Emergency Procedures
-      doc.fontSize(16).fillColor('#1a365d').text('EMERGENCY PROCEDURES', 50, yPos);
-      yPos += 25;
-      
-      doc.fontSize(12).fillColor('#000');
-      doc.text('• Emergency Services: 000', 70, yPos);
+
       yPos += 20;
-      doc.text('• Site Supervisor Contact: As per project details', 70, yPos);
-      yPos += 20;
-      doc.text('• Evacuation Assembly Point: As designated on site plan', 70, yPos);
-      yPos += 20;
-      doc.text('• First Aid Officer: Available during all work hours', 70, yPos);
+
+      // Emergency Procedures Card
+      doc.rect(30, yPos, pageWidth - 60, 60).fillAndStroke('#fef3c7', '#f59e0b');
+      doc.fontSize(16).fillColor('#92400e').font('Helvetica-Bold');
+      doc.text('EMERGENCY PROCEDURES', 40, yPos + 10);
+
+      doc.fontSize(11).fillColor('#92400e').font('Helvetica');
+      const emergencyItems = [
+        '• Emergency Services: 000  • Site Supervisor: Available during work hours',
+        '• Evacuate to designated assembly point  • First Aid Officer on site',
+        '• Report all incidents immediately  • Emergency contact details posted on site'
+      ];
+
+      let emergencyY = yPos + 30;
+      emergencyItems.forEach(item => {
+        doc.text(item, 50, emergencyY);
+        emergencyY += 10;
+      });
+
+      // Footer
+      doc.fontSize(8).fillColor('#6b7280').font('Helvetica');
+      doc.text(`Generated by Riskify Professional SWMS Builder - Document ID: SWMS-${Date.now()}`, 40, pageHeight - 25);
+      doc.text(`Generated: ${new Date().toLocaleDateString('en-AU')} ${new Date().toLocaleTimeString('en-AU')}`, pageWidth - 200, pageHeight - 25);
       
       // Finalize the PDF
       doc.end();
