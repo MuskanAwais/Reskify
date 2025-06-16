@@ -108,15 +108,30 @@ export default function MySwms() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to generate PDF');
+        const errorText = await response.text();
+        console.error('PDF generation failed:', errorText);
+        throw new Error(`Failed to generate PDF: ${response.status}`);
+      }
+
+      // Check if response is actually a PDF
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/pdf')) {
+        console.error('Response is not a PDF:', contentType);
+        throw new Error('Server returned invalid response format');
       }
 
       const blob = await response.blob();
+      if (blob.size === 0) {
+        throw new Error('Empty PDF received from server');
+      }
+
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
       a.download = `${(document.title || document.jobName).replace(/[^a-z0-9]/gi, '_').toLowerCase()}_swms.pdf`;
+      document.body.appendChild(a);
       a.click();
+      document.body.removeChild(a);
       URL.revokeObjectURL(url);
     },
     onSuccess: () => {
@@ -165,10 +180,23 @@ export default function MySwms() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to generate PDF');
+        const errorText = await response.text();
+        console.error('PDF generation failed:', errorText);
+        throw new Error(`Failed to generate PDF: ${response.status}`);
+      }
+
+      // Check if response is actually a PDF
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/pdf')) {
+        console.error('Response is not a PDF:', contentType);
+        throw new Error('Server returned invalid response format');
       }
 
       const blob = await response.blob();
+      if (blob.size === 0) {
+        throw new Error('Empty PDF received from server');
+      }
+
       const url = URL.createObjectURL(blob);
       window.open(url, '_blank');
       
