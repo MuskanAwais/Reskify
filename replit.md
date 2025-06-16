@@ -105,6 +105,7 @@ Riskify is a comprehensive SWMS (Safe Work Method Statement) builder application
 
 ## Changelog
 
+- June 16, 2025. Added comprehensive risk assessment matrix to SWMS builder and final documents with Australian standards compliance
 - June 15, 2025. Initial setup
 
 ## User Preferences

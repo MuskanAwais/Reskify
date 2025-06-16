@@ -350,8 +350,8 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
             </CardContent>
           </Card>
 
-          {/* Risk Assessment Table */}
-          {formData.selectedTasks && formData.selectedTasks.length > 0 && (
+          {/* Risk Assessment Table - Only show if tasks exist and have proper structure */}
+          {formData.selectedTasks && formData.selectedTasks.length > 0 && Array.isArray(formData.selectedTasks) && (
             <Card>
               <CardHeader>
                 <CardTitle>Risk Assessment Review</CardTitle>
@@ -377,51 +377,79 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
                       </tr>
                     </thead>
                     <tbody>
-                      {formData.selectedTasks.map((task: any, index: number) => (
-                        <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                          <td className="border border-gray-300 dark:border-gray-600 p-3 font-medium">
-                            {task.name || task.task}
-                          </td>
-                          <td className="border border-gray-300 dark:border-gray-600 p-3">
-                            <ul className="list-disc list-inside text-sm">
-                              {(task.hazards || []).slice(0, 3).map((hazard: string, idx: number) => (
-                                <li key={idx}>{hazard}</li>
-                              ))}
-                            </ul>
-                          </td>
-                          <td className="border border-gray-300 dark:border-gray-600 p-3 text-center">
-                            <Badge className={`${task.riskScore >= 14 ? 'bg-red-600 text-white' : 
-                              task.riskScore >= 11 ? 'bg-red-500 text-white' :
-                              task.riskScore >= 7 ? 'bg-yellow-500 text-black' :
-                              task.riskScore >= 4 ? 'bg-green-500 text-white' :
-                              'bg-green-600 text-white'}`}>
-                              {task.riskScore || 'TBD'}
-                            </Badge>
-                          </td>
-                          <td className="border border-gray-300 dark:border-gray-600 p-3 text-center">
-                            <span className={`font-medium ${
-                              task.riskScore >= 14 ? 'text-red-600' :
-                              task.riskScore >= 11 ? 'text-red-500' :
-                              task.riskScore >= 7 ? 'text-yellow-600' :
-                              task.riskScore >= 4 ? 'text-green-600' :
-                              'text-green-700'
-                            }`}>
-                              {task.riskScore >= 14 ? 'Severe' :
-                               task.riskScore >= 11 ? 'High' :
-                               task.riskScore >= 7 ? 'Medium' :
-                               task.riskScore >= 4 ? 'Low' :
-                               'Very Low'}
-                            </span>
-                          </td>
-                          <td className="border border-gray-300 dark:border-gray-600 p-3">
-                            <ul className="list-disc list-inside text-sm">
-                              {(task.controlMeasures || []).slice(0, 2).map((control: string, idx: number) => (
-                                <li key={idx}>{control}</li>
-                              ))}
-                            </ul>
-                          </td>
-                        </tr>
-                      ))}
+                      {formData.selectedTasks.filter((task: any) => task && typeof task === 'object').map((task: any, index: number) => {
+                        // Safe extraction of task properties with fallbacks
+                        const taskName = String(task.name || task.task || task.activity || `Task ${index + 1}`);
+                        const riskScore = typeof task.riskScore === 'number' ? task.riskScore : 
+                                         typeof task.initialRiskScore === 'number' ? task.initialRiskScore : 0;
+                        const hazards = Array.isArray(task.hazards) ? task.hazards : [];
+                        const controls = Array.isArray(task.controlMeasures) ? task.controlMeasures :
+                                        Array.isArray(task.controls) ? task.controls : [];
+
+                        return (
+                          <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                            <td className="border border-gray-300 dark:border-gray-600 p-3 font-medium">
+                              {taskName}
+                            </td>
+                            <td className="border border-gray-300 dark:border-gray-600 p-3">
+                              {hazards.length > 0 ? (
+                                <ul className="list-disc list-inside text-sm">
+                                  {hazards.slice(0, 3).map((hazard: any, idx: number) => (
+                                    <li key={idx}>
+                                      {typeof hazard === 'string' ? hazard : 
+                                       typeof hazard === 'object' && hazard ? 
+                                         String(hazard.description || hazard.type || hazard.name || 'Hazard identified') :
+                                         String(hazard || 'Hazard identified')}
+                                    </li>
+                                  ))}
+                                </ul>
+                              ) : (
+                                <span className="text-gray-500 text-sm">No hazards listed</span>
+                              )}
+                            </td>
+                            <td className="border border-gray-300 dark:border-gray-600 p-3 text-center">
+                              <Badge className={`${riskScore >= 14 ? 'bg-red-600 text-white' : 
+                                riskScore >= 11 ? 'bg-red-500 text-white' :
+                                riskScore >= 7 ? 'bg-yellow-500 text-black' :
+                                riskScore >= 4 ? 'bg-green-500 text-white' :
+                                'bg-green-600 text-white'}`}>
+                                {riskScore > 0 ? riskScore : 'TBD'}
+                              </Badge>
+                            </td>
+                            <td className="border border-gray-300 dark:border-gray-600 p-3 text-center">
+                              <span className={`font-medium ${
+                                riskScore >= 14 ? 'text-red-600' :
+                                riskScore >= 11 ? 'text-red-500' :
+                                riskScore >= 7 ? 'text-yellow-600' :
+                                riskScore >= 4 ? 'text-green-600' :
+                                'text-green-700'
+                              }`}>
+                                {riskScore >= 14 ? 'Severe' :
+                                 riskScore >= 11 ? 'High' :
+                                 riskScore >= 7 ? 'Medium' :
+                                 riskScore >= 4 ? 'Low' :
+                                 riskScore > 0 ? 'Very Low' : 'Not Assessed'}
+                              </span>
+                            </td>
+                            <td className="border border-gray-300 dark:border-gray-600 p-3">
+                              {controls.length > 0 ? (
+                                <ul className="list-disc list-inside text-sm">
+                                  {controls.slice(0, 2).map((control: any, idx: number) => (
+                                    <li key={idx}>
+                                      {typeof control === 'string' ? control : 
+                                       typeof control === 'object' && control ? 
+                                         String(control.description || control.measure || control.name || 'Control measure applied') :
+                                         String(control || 'Control measure applied')}
+                                    </li>
+                                  ))}
+                                </ul>
+                              ) : (
+                                <span className="text-gray-500 text-sm">No controls listed</span>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>
