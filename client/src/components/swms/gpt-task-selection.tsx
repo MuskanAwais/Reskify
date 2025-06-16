@@ -216,7 +216,7 @@ export default function GPTTaskSelection({
   const { user } = useAuth();
   const [, setLocation] = useLocation();
   
-  const [selectedMethod, setSelectedMethod] = useState("task-selection");
+  const [selectedMethod, setSelectedMethod] = useState("plain-text");
   const [selectedTasks, setSelectedTasks] = useState<string[]>([]);
   const [plainTextDescription, setPlainTextDescription] = useState("");
   const [taskList, setTaskList] = useState<string[]>([]);
@@ -583,20 +583,15 @@ export default function GPTTaskSelection({
         </CardHeader>
         <CardContent>
           <Tabs value={selectedMethod} onValueChange={handleMethodSelection}>
-            <TabsList className="grid w-full grid-cols-1 sm:grid-cols-3 gap-2 h-auto p-2">
-              <TabsTrigger value="task-selection" className="flex items-center gap-2 text-xs sm:text-sm px-2 py-3">
-                <Search className="h-4 w-4" />
-                <span className="hidden sm:inline">Specific Tasks</span>
-                <span className="sm:hidden">Tasks</span>
-              </TabsTrigger>
+            <TabsList className="grid w-full grid-cols-1 sm:grid-cols-2 gap-2 h-auto p-2">
               <TabsTrigger value="plain-text" className="flex items-center gap-2 text-xs sm:text-sm px-2 py-3">
-                <Edit className="h-4 w-4" />
-                <span className="hidden sm:inline">Job Description</span>
-                <span className="sm:hidden">Description</span>
+                <Bot className="h-4 w-4" />
+                <span className="hidden sm:inline">Describe Job (AI-Powered)</span>
+                <span className="sm:hidden">AI Generate</span>
               </TabsTrigger>
               <TabsTrigger value="manual" className="flex items-center gap-2 text-xs sm:text-sm px-2 py-3">
                 <Edit className="h-4 w-4" />
-                <span className="hidden sm:inline">Manual</span>
+                <span className="hidden sm:inline">Manual Entry</span>
                 <span className="sm:hidden">Manual</span>
               </TabsTrigger>
             </TabsList>

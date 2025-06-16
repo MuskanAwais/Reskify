@@ -838,7 +838,7 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
         </div>
       );
 
-    case 6:
+    case 5:
       return (
         <div className="space-y-6">
           <div className="text-center">
@@ -851,40 +851,66 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
 
           <Card>
             <CardHeader>
-              <CardTitle>Payment Required</CardTitle>
+              <CardTitle>Payment Options</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-center py-8">
-                <p className="text-gray-600 mb-4">
-                  To complete your SWMS document generation, please proceed to the payment page.
-                </p>
-                
-                {/* Admin Demo Toggle - Only visible to admin */}
-                {localStorage.getItem('isAppAdmin') === 'true' && (
-                  <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-                    <p className="text-red-800 text-sm font-medium mb-2">Admin Demo Mode</p>
-                    <Button
-                      size="sm"
-                      variant="outline"
+              <div className="space-y-4">
+                {/* Check if user has credits */}
+                {formData.userCredits > 0 && (
+                  <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                    <div className="flex items-center justify-between mb-3">
+                      <div>
+                        <p className="font-medium text-green-800">Available Credits</p>
+                        <p className="text-green-700 text-sm">You have {formData.userCredits} SWMS credits remaining</p>
+                      </div>
+                      <Badge className="bg-green-100 text-green-800">
+                        {formData.userCredits} Credits
+                      </Badge>
+                    </div>
+                    <Button 
+                      size="lg"
+                      className="w-full bg-green-600 hover:bg-green-700"
                       onClick={() => {
-                        localStorage.setItem('adminDemoMode', 'true');
-                        updateFormData({ adminDemoBypass: true });
+                        updateFormData({ paymentMethod: 'credits' });
                       }}
-                      className="border-red-300 text-red-700 hover:bg-red-100"
                     >
-                      Enable Demo Mode (Skip Payment)
+                      Use Current Credits (1 credit)
                     </Button>
                   </div>
                 )}
                 
-                <Button 
-                  size="lg"
-                  onClick={() => window.location.href = '/payment'}
-                  className="bg-blue-600 hover:bg-blue-700"
-                >
-                  <CreditCard className="mr-2 h-4 w-4" />
-                  Take to Payment
-                </Button>
+                <div className="text-center">
+                  <p className="text-gray-600 mb-4">
+                    {formData.userCredits > 0 ? 'Or proceed to payment for additional credits:' : 'To complete your SWMS document generation, please proceed to the payment page.'}
+                  </p>
+                  
+                  {/* Admin Demo Toggle - Only visible to admin */}
+                  {localStorage.getItem('isAppAdmin') === 'true' && (
+                    <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                      <p className="text-red-800 text-sm font-medium mb-2">Admin Demo Mode</p>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          localStorage.setItem('adminDemoMode', 'true');
+                          updateFormData({ adminDemoBypass: true });
+                        }}
+                        className="border-red-300 text-red-700 hover:bg-red-100"
+                      >
+                        Proceed with Demo Access
+                      </Button>
+                    </div>
+                  )}
+                  
+                  <Button 
+                    size="lg"
+                    onClick={() => window.location.href = '/payment'}
+                    className="bg-blue-600 hover:bg-blue-700"
+                  >
+                    <CreditCard className="mr-2 h-4 w-4" />
+                    Go to Payment
+                  </Button>
+                </div>
               </div>
             </CardContent>
           </Card>

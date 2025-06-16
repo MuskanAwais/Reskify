@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { MapPin, CheckCircle, Loader2 } from "lucide-react";
 
 interface AddressAutocompleteProps {
@@ -185,9 +186,27 @@ export default function AustralianAddressAutocomplete({
       <p className="text-xs text-gray-500 mt-1">
         {isValidated 
           ? "✓ Australian address confirmed" 
-          : "Type 3+ characters to see address suggestions"
+          : "Type 3+ characters to see address suggestions or enter manually"
         }
       </p>
+      
+      {/* Manual Address Entry Option */}
+      {!isValidated && value.length > 0 && suggestions.length === 0 && !isLoading && (
+        <div className="mt-2">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              setIsValidated(true);
+              setShowSuggestions(false);
+            }}
+            className="text-xs"
+          >
+            Use "{value}" as manual address
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
