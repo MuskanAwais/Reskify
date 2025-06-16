@@ -1408,8 +1408,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // New PDFKit-based PDF generation endpoint
-  app.post("/api/swms/pdf-download", async (req, res) => {
+  // New PDFKit-based PDF generation endpoint with demo access
+  app.post("/api/swms/pdf-download", bypassAuth, async (req, res) => {
     try {
       const PDFDocument = require('pdfkit');
       const { projectName, projectNumber, projectAddress, swmsData, formData } = req.body;
