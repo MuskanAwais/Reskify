@@ -52,7 +52,19 @@ export default function MySwms() {
   });
 
   // Combine drafts and completed documents into a single array
-  const documents = documentsData ? [...(documentsData.drafts || []), ...(documentsData.completed || [])] : [];
+  const documents = documentsData ? [...((documentsData as any).drafts || []), ...((documentsData as any).completed || [])] : [];
+  
+  // Fix data structure for display
+  const formattedDocuments = documents.map((doc: any) => ({
+    ...doc,
+    title: doc.title || doc.jobName || 'Untitled SWMS',
+    tradeType: doc.tradeType || 'General Construction',
+    projectLocation: doc.projectAddress || doc.projectLocation || 'Not specified',
+    activities: doc.activities || [],
+    aiEnhanced: doc.aiEnhanced || false,
+    complianceScore: doc.complianceScore || 85,
+    riskLevel: doc.riskLevel || 'medium'
+  }));
 
   const deleteDocumentMutation = useMutation({
     mutationFn: (id: number) => apiRequest("DELETE", `/api/swms/${id}`, {}),
@@ -178,7 +190,7 @@ export default function MySwms() {
     }
   });
 
-  const filteredDocuments = documents.filter((doc: SwmsDocument) => {
+  const filteredDocuments = formattedDocuments.filter((doc: SwmsDocument) => {
     const matchesSearch = doc.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          doc.tradeType?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          doc.projectLocation?.toLowerCase().includes(searchTerm.toLowerCase());
