@@ -129,7 +129,15 @@ function assessEquipmentRisk(equipmentName: string) {
       toolLower.includes('wrench') || toolLower.includes('pliers') ||
       toolLower.includes('chisel') || toolLower.includes('file') ||
       toolLower.includes('hand saw') || toolLower.includes('spirit level') ||
-      toolLower.includes('measuring tape') || toolLower.includes('square')) {
+      toolLower.includes('measuring tape') || toolLower.includes('square') ||
+      toolLower.includes('measuring') || toolLower.includes('ruler') ||
+      toolLower.includes('caliper') || toolLower.includes('gauge') ||
+      toolLower.includes('broom') || toolLower.includes('brush') ||
+      toolLower.includes('cleaning') || toolLower.includes('cloth') ||
+      toolLower.includes('bucket') || toolLower.includes('mop') ||
+      toolLower.includes('dustpan') || toolLower.includes('marker') ||
+      toolLower.includes('pencil') || toolLower.includes('chalk') ||
+      toolLower.includes('string line') || toolLower.includes('level')) {
     return {
       riskLevel: 'Low',
       category: 'Hand Tools',

@@ -211,15 +211,15 @@ export default function SwmsBuilder() {
       }
     }
     
-    // Handle payment step (step 5)
-    if (currentStep === 4) {
+    // Handle payment step (step 6)
+    if (currentStep === 5) {
       // Always go to payment step next
-      setCurrentStep(5);
+      setCurrentStep(6);
       return;
     }
     
-    // Handle proceeding from payment step (step 5)
-    if (currentStep === 5) {
+    // Handle proceeding from payment step (step 6)
+    if (currentStep === 6) {
       const creditsRemaining = subscription ? (subscription as any).creditsRemaining || 0 : 0;
       const hasProPlan = (subscription as any)?.plan === "Pro" || (subscription as any)?.plan === "Enterprise";
       const isAdminDemo = localStorage.getItem('adminDemoMode') === 'true';
@@ -236,8 +236,8 @@ export default function SwmsBuilder() {
       }
     }
     
-    // Validate legal disclaimer acceptance before proceeding from step 6 (legal disclaimer step)
-    if (currentStep === 6 && !formData.acceptedDisclaimer) {
+    // Validate legal disclaimer acceptance before proceeding from step 7 (legal disclaimer step)
+    if (currentStep === 7 && !formData.acceptedDisclaimer) {
       toast({
         title: "Legal Disclaimer Required",
         description: "You must accept the legal disclaimer to continue.",

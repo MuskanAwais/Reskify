@@ -48,6 +48,71 @@ import { RiskAssessmentMatrix } from "./risk-assessment-matrix";
 
 const TOTAL_STEPS = 8;
 
+// Function to generate default control measures based on common hazards
+const getDefaultControlMeasures = (hazards: string[], taskName: string = '') => {
+  const controls = [];
+  const hazardText = hazards.join(' ').toLowerCase();
+  const taskText = taskName.toLowerCase();
+  
+  // Height/Falls controls
+  if (hazardText.includes('fall') || hazardText.includes('height') || hazardText.includes('ladder') || taskText.includes('roof')) {
+    controls.push('Use appropriate fall protection equipment (harness, safety lines)');
+    controls.push('Ensure all ladders are secured and inspected before use');
+    controls.push('Maintain three points of contact when climbing');
+  }
+  
+  // Manual handling controls
+  if (hazardText.includes('lifting') || hazardText.includes('heavy') || hazardText.includes('manual')) {
+    controls.push('Use proper lifting techniques - bend knees, keep back straight');
+    controls.push('Use mechanical aids where possible (trolleys, hoists)');
+    controls.push('Get assistance for heavy items over 23kg');
+  }
+  
+  // Electrical controls
+  if (hazardText.includes('electrical') || hazardText.includes('power') || taskText.includes('electrical')) {
+    controls.push('Ensure all electrical equipment is tested and tagged');
+    controls.push('Use RCD protection for all portable electrical tools');
+    controls.push('Keep electrical equipment away from wet areas');
+  }
+  
+  // Tool safety controls
+  if (hazardText.includes('tool') || hazardText.includes('cutting') || hazardText.includes('sharp')) {
+    controls.push('Inspect all tools before use and ensure guards are in place');
+    controls.push('Wear appropriate PPE (safety glasses, gloves)');
+    controls.push('Keep tools sharp and well maintained');
+  }
+  
+  // Dust and respiratory controls
+  if (hazardText.includes('dust') || hazardText.includes('fume') || taskText.includes('cutting') || taskText.includes('grinding')) {
+    controls.push('Use dust extraction or water suppression methods');
+    controls.push('Wear appropriate respiratory protection (P2 masks minimum)');
+    controls.push('Ensure adequate ventilation in work area');
+  }
+  
+  // Weather and environment controls
+  if (hazardText.includes('weather') || hazardText.includes('sun') || hazardText.includes('heat')) {
+    controls.push('Monitor weather conditions and cease work in unsafe conditions');
+    controls.push('Provide shade and regular breaks in hot weather');
+    controls.push('Ensure adequate hydration and sun protection');
+  }
+  
+  // Communication and coordination controls
+  if (hazardText.includes('communication') || hazardText.includes('noise') || hazardText.includes('coordination')) {
+    controls.push('Use hand signals or radio communication in noisy environments');
+    controls.push('Conduct pre-start meetings to coordinate activities');
+    controls.push('Ensure clear communication protocols are established');
+  }
+  
+  // If no specific controls found, add general ones
+  if (controls.length === 0) {
+    controls.push('Conduct toolbox talk before commencing work');
+    controls.push('Ensure all workers are trained and competent');
+    controls.push('Wear appropriate PPE as per site requirements');
+  }
+  
+  return controls;
+};
+
 // Simple Disclaimer Component
 const DisclaimerAcceptance = ({ acceptedDisclaimer, onAcceptanceChange }: { acceptedDisclaimer: boolean; onAcceptanceChange: (accepted: boolean) => void }) => (
   <Card>
