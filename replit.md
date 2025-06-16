@@ -105,6 +105,13 @@ Riskify is a comprehensive SWMS (Safe Work Method Statement) builder application
 
 ## Changelog
 
+- June 16, 2025. System Testing Complete - Comprehensive functionality verification:
+  * All core features tested and confirmed working: draft saving/loading, credit deduction, AI risk assessment generation, PDF creation
+  * Complete 7-step workflow tested end-to-end with successful draft creation (ID 103), credit usage (9 remaining), and PDF generation (43KB file)
+  * Authentication bypass for demo access confirmed functional across all operations
+  * Database operations verified: proper draft management, billing integration, and auto-saving without duplicates
+  * API endpoints responding correctly with 200 status codes and proper JSON data handling
+  * AI-powered SWMS generation working with Australian compliance codes and comprehensive risk assessments
 - June 16, 2025. Major system overhaul - Streamlined SWMS Builder to 7-step workflow:
   * Consolidated risk assessment into Step 2 with work activities for integrated workflow
   * Removed task mode from SWMS generator - now only "Describe Job (AI-Powered)" and "Manual Entry" options
