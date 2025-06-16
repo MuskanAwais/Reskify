@@ -294,13 +294,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       doc.on('end', () => {
         const pdfBuffer = Buffer.concat(chunks);
         
-        // Set proper headers
+        // Set proper headers for binary transfer
         res.setHeader('Content-Type', 'application/pdf');
         res.setHeader('Content-Disposition', 'attachment; filename="swms_document.pdf"');
         res.setHeader('Content-Length', pdfBuffer.length.toString());
+        res.setHeader('Cache-Control', 'no-cache');
+        res.setHeader('Content-Transfer-Encoding', 'binary');
         
-        // Send the PDF buffer
-        res.send(pdfBuffer);
+        // Send the PDF buffer as binary
+        res.end(pdfBuffer, 'binary');
       });
       
       doc.on('error', (error) => {

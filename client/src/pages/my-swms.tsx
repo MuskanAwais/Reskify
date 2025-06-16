@@ -88,6 +88,7 @@ export default function MySwms() {
           credentials: 'include',
           headers: {
             'Content-Type': 'application/json',
+            'Accept': 'application/pdf',
           },
           body: JSON.stringify({
             projectName: swmsDocument.title || swmsDocument.jobName,
@@ -131,13 +132,16 @@ export default function MySwms() {
           throw new Error('Server returned invalid response format');
         }
 
-        const blob = await response.blob();
-        console.log('Blob size:', blob.size, 'bytes');
+        // Get response as ArrayBuffer for proper binary handling
+        const arrayBuffer = await response.arrayBuffer();
+        console.log('ArrayBuffer size:', arrayBuffer.byteLength, 'bytes');
         
-        if (blob.size === 0) {
+        if (arrayBuffer.byteLength === 0) {
           throw new Error('Empty PDF received from server');
         }
 
+        // Create blob with explicit PDF MIME type
+        const blob = new Blob([arrayBuffer], { type: 'application/pdf' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
@@ -178,6 +182,7 @@ export default function MySwms() {
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/pdf',
         },
         body: JSON.stringify({
           projectName: swmsDocument.title || swmsDocument.jobName,
@@ -214,16 +219,30 @@ export default function MySwms() {
         throw new Error('Server returned invalid response format');
       }
 
-      const blob = await response.blob();
-      if (blob.size === 0) {
+      // Get the response as an ArrayBuffer for proper binary handling
+      const arrayBuffer = await response.arrayBuffer();
+      if (arrayBuffer.byteLength === 0) {
         throw new Error('Empty PDF received from server');
       }
 
+      // Create blob with explicit PDF MIME type
+      const blob = new Blob([arrayBuffer], { type: 'application/pdf' });
       const url = URL.createObjectURL(blob);
-      window.open(url, '_blank');
+      
+      // Open in new tab
+      const newWindow = window.open(url, '_blank');
+      if (!newWindow) {
+        // Fallback: download if popup blocked
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${(swmsDocument.title || swmsDocument.jobName).replace(/[^a-z0-9]/gi, '_').toLowerCase()}_swms.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      }
       
       // Clean up the URL after a delay
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      setTimeout(() => URL.revokeObjectURL(url), 5000);
     },
     onSuccess: () => {
       toast({
