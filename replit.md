@@ -105,6 +105,7 @@ Riskify is a comprehensive SWMS (Safe Work Method Statement) builder application
 
 ## Changelog
 
+- June 16, 2025. Mobile Dashboard Layout Fix - Updated card order for mobile responsiveness with Create New SWMS and Account Credits appearing first on mobile devices
 - June 16, 2025. Complete PDF & Admin System Fix - All issues resolved:
   * FIXED: PDF corruption by switching from streaming to proper buffer handling with binary transfer
   * FIXED: Admin permissions for user 0421869995 - now has full admin access to all tools

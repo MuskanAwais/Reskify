@@ -66,39 +66,26 @@ export default function Dashboard() {
         <p className="text-gray-600">{translate('manageSafetyCompliance')}</p>
       </div>
 
-      {/* Stats Cards - 4 cards in a row */}
+      {/* Stats Cards - Responsive order: Create New SWMS & Credits first on mobile */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card>
+        <Card className="order-4 md:order-3 lg:order-4">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 mb-1">{translate('draftSwms')}</p>
-                <p className="text-2xl font-bold text-gray-800">{(stats as any).draftSwms || 0}</p>
-                <p className="text-xs text-gray-500 mt-1">{translate('saveCompleteLater')}</p>
+                <p className="text-sm text-gray-600 mb-1">Create New SWMS</p>
+                <p className="text-2xl font-bold text-gray-800">+</p>
+                <p className="text-xs text-gray-500 mt-1">Start building documentation</p>
               </div>
-              <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
-                <FileText className="text-orange-600 text-xl" />
-              </div>
+              <Link href="/swms-builder">
+                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center cursor-pointer hover:bg-primary/20 transition-colors">
+                  <FileText className="text-primary text-xl" />
+                </div>
+              </Link>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">{translate('completedSwms')}</p>
-                <p className="text-2xl font-bold text-gray-800">{(stats as any).completedSwms || 0}</p>
-                <p className="text-xs text-gray-500 mt-1">{translate('projectSpecificDocumentation')}</p>
-              </div>
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                <FileText className="text-green-600 text-xl" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
+        <Card className="order-3 md:order-4 lg:order-3">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
@@ -113,19 +100,32 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="order-1 md:order-1 lg:order-1">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 mb-1">Create New SWMS</p>
-                <p className="text-2xl font-bold text-gray-800">+</p>
-                <p className="text-xs text-gray-500 mt-1">Start building documentation</p>
+                <p className="text-sm text-gray-600 mb-1">{translate('draftSwms')}</p>
+                <p className="text-2xl font-bold text-gray-800">{(stats as any).draftSwms || 0}</p>
+                <p className="text-xs text-gray-500 mt-1">{translate('saveCompleteLater')}</p>
               </div>
-              <Link href="/swms-builder">
-                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center cursor-pointer hover:bg-primary/20 transition-colors">
-                  <FileText className="text-primary text-xl" />
-                </div>
-              </Link>
+              <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                <FileText className="text-orange-600 text-xl" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="order-2 md:order-2 lg:order-2">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600 mb-1">{translate('completedSwms')}</p>
+                <p className="text-2xl font-bold text-gray-800">{(stats as any).completedSwms || 0}</p>
+                <p className="text-xs text-gray-500 mt-1">{translate('projectSpecificDocumentation')}</p>
+              </div>
+              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                <FileText className="text-green-600 text-xl" />
+              </div>
             </div>
           </CardContent>
         </Card>
