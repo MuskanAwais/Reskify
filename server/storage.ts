@@ -1,6 +1,6 @@
 import { users, swmsDocuments, type User, type InsertUser } from "@shared/schema";
 import { db } from "./db";
-import { eq } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 
 export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
@@ -14,7 +14,7 @@ export interface IStorage {
   logCreditUsage(userId: number, usage: any): Promise<void>;
   getUserSwms(userId: number): Promise<any[]>;
   createSwmsDraft(draft: any): Promise<any>;
-  getUserSwmsDrafts(): Promise<any[]>;
+  getUserSwmsDrafts(userId: number): Promise<any[]>;
   getUserSwmsDocuments(): Promise<any[]>;
   getAllSwmsDocuments(): Promise<any[]>;
 }
@@ -134,15 +134,32 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async getUserSwmsDrafts(): Promise<any[]> {
+  async getUserSwmsDrafts(userId: number): Promise<any[]> {
     try {
-      return this.swmsDrafts.map(draft => ({
+      // Fetch from database first
+      const drafts = await db
+        .select()
+        .from(swmsDocuments)
+        .where(eq(swmsDocuments.userId, userId))
+        .where(eq(swmsDocuments.status, 'draft'));
+      
+      // Add type field for frontend
+      const draftDocuments = drafts.map(draft => ({
         ...draft,
         type: 'draft'
       }));
+      
+      console.log(`Found ${draftDocuments.length} draft SWMS for user ${userId}`);
+      return draftDocuments;
     } catch (error) {
       console.error('Error fetching user drafts:', error);
-      return [];
+      // Fallback to memory storage
+      return this.swmsDrafts
+        .filter(draft => draft.userId === userId)
+        .map(draft => ({
+          ...draft,
+          type: 'draft'
+        }));
     }
   }
 
@@ -155,6 +172,28 @@ export class DatabaseStorage implements IStorage {
     } catch (error) {
       console.error('Error fetching user documents:', error);
       return [];
+    }
+  }
+
+  async getUserSwms(userId: number): Promise<any[]> {
+    try {
+      // Fetch all SWMS documents for the user (both drafts and completed)
+      const documents = await db
+        .select()
+        .from(swmsDocuments)
+        .where(eq(swmsDocuments.userId, userId))
+        .orderBy(desc(swmsDocuments.createdAt));
+      
+      console.log(`Found ${documents.length} SWMS documents for user ${userId}`);
+      return documents;
+    } catch (error) {
+      console.error('Error fetching user SWMS documents:', error);
+      // Fallback to memory storage
+      const allDocs = [
+        ...this.swmsDrafts.filter(draft => draft.userId === userId),
+        ...this.swmsDocuments.filter(doc => doc.userId === userId)
+      ];
+      return allDocs;
     }
   }
 
