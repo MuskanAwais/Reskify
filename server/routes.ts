@@ -408,7 +408,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ['L', 'L', 'M', 'H', 'H']
       ];
       
-      const colors = { L: '#22c55e', M: '#f59e0b', H: '#ef4444', E: '#7c2d12' };
+      const riskColors = { L: '#22c55e', M: '#f59e0b', H: '#ef4444', E: '#7c2d12' };
       const cellWidth = 80;
       const cellHeight = 30;
 
@@ -433,7 +433,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
         // Risk level cells
         riskLevels[row].forEach((level, col) => {
-          const color = colors[level as keyof typeof colors];
+          const color = riskColors[level as keyof typeof riskColors];
           doc.rect(40 + (col + 1) * cellWidth, yPos, cellWidth, cellHeight).fillAndStroke(color, '#000');
           doc.fontSize(16).fillColor('white').font('Helvetica-Bold');
           doc.text(level, 40 + (col + 1) * cellWidth + 5, yPos + 8, { width: cellWidth - 10, align: 'center' });
@@ -474,19 +474,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Activities table header
       const activityHeaders = ['Activity/Task', 'Hazards Identified', 'Initial Risk', 'Control Measures', 'Residual Risk', 'Responsible Person'];
-      const colWidths = [80, 90, 50, 120, 50, 90];
+      const activityColWidths = [80, 90, 50, 120, 50, 90];
       
       let xPos = 40;
       activityHeaders.forEach((header, i) => {
-        doc.rect(xPos, yPos, colWidths[i], 40).fillAndStroke('#1e3a8a', '#000');
+        doc.rect(xPos, yPos, activityColWidths[i], 40).fillAndStroke('#1e3a8a', '#000');
         doc.fontSize(8).fillColor('white').font('Helvetica-Bold');
-        doc.text(header, xPos + 2, yPos + 5, { width: colWidths[i] - 4, align: 'center' });
-        xPos += colWidths[i];
+        doc.text(header, xPos + 2, yPos + 5, { width: activityColWidths[i] - 4, align: 'center' });
+        xPos += activityColWidths[i];
       });
       yPos += 40;
 
       // Work activities data
-      const activities = data.workActivities || data.activities || [
+      const workActivities = data.workActivities || data.activities || [
         {
           activity: 'Site Setup & Access',
           hazards: ['Manual handling', 'Trip hazards', 'Vehicle movement'],
@@ -513,7 +513,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       ];
 
-      activities.forEach((activity: any, index: number) => {
+      workActivities.forEach((activity: any, index: number) => {
         const rowHeight = 50;
         
         if (yPos + rowHeight > 750) {
@@ -529,121 +529,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
         // Activity
         doc.fontSize(8).fillColor('#000').font('Helvetica');
-        doc.text(activity.activity || `Activity ${index + 1}`, xPos + 2, yPos + 5, { width: colWidths[0] - 4 });
-        xPos += colWidths[0];
+        doc.text(activity.activity || `Activity ${index + 1}`, xPos + 2, yPos + 5, { width: activityColWidths[0] - 4 });
+        xPos += activityColWidths[0];
 
         // Hazards
         const hazards = Array.isArray(activity.hazards) ? activity.hazards.join(', ') : activity.hazards || 'General construction hazards';
-        doc.text(hazards, xPos + 2, yPos + 5, { width: colWidths[1] - 4 });
-        xPos += colWidths[1];
+        doc.text(hazards, xPos + 2, yPos + 5, { width: activityColWidths[1] - 4 });
+        xPos += activityColWidths[1];
 
         // Initial Risk
         const initialRisk = activity.initialRisk || activity.riskLevel || 'M';
-        const initialColor = colors[initialRisk as keyof typeof colors] || '#f59e0b';
+        const initialColor = riskColors[initialRisk as keyof typeof riskColors] || '#f59e0b';
         doc.rect(xPos + 10, yPos + 15, 30, 20).fillAndStroke(initialColor, '#000');
         doc.fontSize(12).fillColor('white').font('Helvetica-Bold');
         doc.text(initialRisk, xPos + 15, yPos + 20, { width: 20, align: 'center' });
-        xPos += colWidths[2];
+        xPos += activityColWidths[2];
 
         // Control Measures
         doc.fontSize(8).fillColor('#000').font('Helvetica');
         const controls = Array.isArray(activity.controlMeasures) ? activity.controlMeasures.join(', ') : activity.controlMeasures || 'Standard safety protocols';
-        doc.text(controls, xPos + 2, yPos + 5, { width: colWidths[3] - 4 });
-        xPos += colWidths[3];
+        doc.text(controls, xPos + 2, yPos + 5, { width: activityColWidths[3] - 4 });
+        xPos += activityColWidths[3];
 
         // Residual Risk
         const residualRisk = activity.residualRisk || 'L';
-        const residualColor = colors[residualRisk as keyof typeof colors] || '#22c55e';
+        const residualColor = riskColors[residualRisk as keyof typeof riskColors] || '#22c55e';
         doc.rect(xPos + 10, yPos + 15, 30, 20).fillAndStroke(residualColor, '#000');
         doc.fontSize(12).fillColor('white').font('Helvetica-Bold');
         doc.text(residualRisk, xPos + 15, yPos + 20, { width: 20, align: 'center' });
-        xPos += colWidths[4];
+        xPos += activityColWidths[4];
 
         // Responsible Person
         doc.fontSize(8).fillColor('#000').font('Helvetica');
-        doc.text(activity.responsible || 'Site Supervisor', xPos + 2, yPos + 20, { width: colWidths[5] - 4, align: 'center' });
+        doc.text(activity.responsible || 'Site Supervisor', xPos + 2, yPos + 20, { width: activityColWidths[5] - 4, align: 'center' });
 
         yPos += rowHeight;
-      });
-
-      // Add new page for equipment and emergency info
-      doc.addPage();
-      yPos = 40;
-
-      // Plant & Equipment Section
-      doc.fontSize(14).fillColor('#000').font('Helvetica-Bold');
-      doc.text('PLANT & EQUIPMENT REGISTER', 40, yPos);
-      yPos += 30;
-
-      const equipmentData = data.plantEquipment || [
-        { equipment: 'Excavator', riskLevel: 'H', licence: 'High Risk Work Licence', inspection: 'Daily pre-start, Annual certification' },
-        { equipment: 'Power Tools', riskLevel: 'M', licence: 'Tool box talk', inspection: 'Pre-use inspection, RCD testing' },
-        { equipment: 'Hand Tools', riskLevel: 'L', licence: 'Basic training', inspection: 'Visual inspection before use' }
-      ];
-
-      // Equipment table
-      const equipHeaders = ['Equipment/Plant', 'Risk Level', 'Licence/Training Required', 'Inspection Requirements'];
-      const equipColWidths = [120, 80, 140, 140];
-      
-      xPos = 40;
-      equipHeaders.forEach((header, i) => {
-        doc.rect(xPos, yPos, equipColWidths[i], 30).fillAndStroke('#1e3a8a', '#000');
-        doc.fontSize(10).fillColor('white').font('Helvetica-Bold');
-        doc.text(header, xPos + 5, yPos + 10, { width: equipColWidths[i] - 10, align: 'center' });
-        xPos += equipColWidths[i];
-      });
-      yPos += 30;
-
-      equipmentData.forEach((item: any, index: number) => {
-        const rowHeight = 40;
-        const bgColor = index % 2 === 0 ? '#ffffff' : '#f9fafb';
-        
-        doc.rect(40, yPos, 480, rowHeight).fillAndStroke(bgColor, '#000');
-        
-        xPos = 40;
-        doc.fontSize(9).fillColor('#000').font('Helvetica');
-        
-        doc.text(item.equipment, xPos + 5, yPos + 15, { width: equipColWidths[0] - 10 });
-        xPos += equipColWidths[0];
-        
-        const riskColor = colors[item.riskLevel as keyof typeof colors] || '#f59e0b';
-        doc.rect(xPos + 20, yPos + 10, 40, 20).fillAndStroke(riskColor, '#000');
-        doc.fontSize(12).fillColor('white').font('Helvetica-Bold');
-        doc.text(item.riskLevel, xPos + 25, yPos + 16, { width: 30, align: 'center' });
-        xPos += equipColWidths[1];
-        
-        doc.fontSize(9).fillColor('#000').font('Helvetica');
-        doc.text(item.licence, xPos + 5, yPos + 15, { width: equipColWidths[2] - 10 });
-        xPos += equipColWidths[2];
-        doc.text(item.inspection, xPos + 5, yPos + 15, { width: equipColWidths[3] - 10 });
-        
-        yPos += rowHeight;
-      });
-
-      yPos += 30;
-
-      // Emergency Contacts
-      doc.fontSize(14).fillColor('#000').font('Helvetica-Bold');
-      doc.text('EMERGENCY CONTACT INFORMATION', 40, yPos);
-      yPos += 25;
-
-      const emergencyContacts = [
-        ['Emergency Services', '000', 'Police, Fire, Ambulance'],
-        ['Site Supervisor', data.emergencyContacts?.supervisor || '(02) 9XXX XXXX', 'Primary site contact'],
-        ['Safety Officer', data.emergencyContacts?.safety || '(02) 9XXX XXXX', 'WHS incidents'],
-        ['Principal Contractor', data.emergencyContacts?.principal || '(02) 9XXX XXXX', 'Project management']
-      ];
-
-      emergencyContacts.forEach(([role, contact, description], index) => {
-        const bgColor = index % 2 === 0 ? '#ffffff' : '#f9fafb';
-        doc.rect(40, yPos, 480, 25).fillAndStroke(bgColor, '#000');
-        
-        doc.fontSize(11).fillColor('#000').font('Helvetica-Bold');
-        doc.text(role, 45, yPos + 8);
-        doc.font('Helvetica');
-        doc.text(contact, 180, yPos + 8);
-        doc.text(description, 320, yPos + 8);
-        yPos += 25;
       });
 
       // Add signature page
@@ -724,384 +644,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       doc.fontSize(8).fillColor('#666').font('Helvetica');
       doc.text(`Generated by Riskify Professional SWMS Builder | ${new Date().toLocaleDateString('en-AU')} | Document ID: SWMS-${targetDoc.id}`, 40, yPos + 5);
       
-      doc.fontSize(26).fillColor(colors.text).font('Helvetica-Bold').text(targetDoc.title || 'Untitled SWMS', 50, titleCardY + 10);
-      doc.fontSize(14).fillColor(colors.secondary).font('Helvetica').text(`Generated: ${new Date().toLocaleString('en-AU')}`, 50, titleCardY + 45);
-      doc.fontSize(12).fillColor(colors.secondary).text(`Document ID: SWMS-${targetDoc.id}`, 50, titleCardY + 70);
-
-      yPos += 150;
-
-      // PROJECT DETAILS Card with two-column layout
-      const projectCardY = drawCard(30, yPos, 780, 180, 'PROJECT DETAILS');
-      
-      const projectDetails = [
-        { label: 'Project Name:', value: targetDoc.title || 'N/A' },
-        { label: 'Project Address:', value: data.projectAddress || data.address || 'N/A' },
-        { label: 'Principal Contractor:', value: data.principalContractor || 'N/A' },
-        { label: 'Job Number:', value: data.jobNumber || `SWMS-${targetDoc.id}` },
-        { label: 'Trade Type:', value: data.tradeType || 'General Construction' },
-        { label: 'Document Date:', value: new Date().toLocaleDateString('en-AU') },
-        { label: 'SWMS Version:', value: '1.0' },
-        { label: 'Review Date:', value: new Date(Date.now() + 30*24*60*60*1000).toLocaleDateString('en-AU') }
-      ];
-
-      // Create modern two-column table layout
-      const colWidth = 380;
-      const rowHeight = 25;
-      
-      projectDetails.forEach((detail, index) => {
-        const col = index % 2;
-        const row = Math.floor(index / 2);
-        const x = 60 + (col * 390);
-        const y = projectCardY + (row * rowHeight);
-        
-        // Alternating row colors
-        if (row % 2 === 0) {
-          doc.rect(x - 10, y - 5, colWidth, rowHeight).fill(colors.accent);
-        }
-        
-        doc.fontSize(12).fillColor(colors.text).font('Helvetica-Bold').text(detail.label, x, y, { width: 140 });
-        doc.fontSize(12).fillColor(colors.secondary).font('Helvetica').text(detail.value, x + 140, y, { width: 230 });
-      });
-
-      yPos += 200;
-
-      // Add new page for risk assessment
-      doc.addPage();
-      addPageHeader();
-      yPos = 90;
-
-      // RISK ASSESSMENT MATRIX Card
-      const riskCardY = drawCard(30, yPos, 780, 280, 'RISK ASSESSMENT MATRIX', colors.warning);
-      
-      // Risk levels legend with modern badges
-      doc.fontSize(14).fillColor(colors.text).font('Helvetica-Bold').text('Risk Levels:', 60, riskCardY);
-      const riskLevels = [
-        { text: 'LOW', color: colors.success },
-        { text: 'MEDIUM', color: colors.warning },
-        { text: 'HIGH', color: colors.danger },
-        { text: 'EXTREME', color: '#7c2d12' }
-      ];
-      
-      let legendX = 160;
-      riskLevels.forEach(level => {
-        // Modern badge with rounded corners effect
-        doc.rect(legendX, riskCardY - 5, 80, 25).fill(level.color);
-        doc.rect(legendX + 2, riskCardY - 3, 76, 21).fill(level.color);
-        doc.fontSize(11).fillColor(colors.white).font('Helvetica-Bold').text(level.text, legendX + 25, riskCardY + 2);
-        legendX += 90;
-      });
-
-      // Enhanced risk matrix with labels
-      const matrixStartX = 120;
-      const matrixStartY = riskCardY + 50;
-      const cellSize = 50;
-      
-      const matrixColors = [colors.success, colors.warning, colors.danger, '#7c2d12'];
-      const matrixData = [
-        [0, 1, 2, 3], // Almost Certain
-        [0, 1, 2, 3], // Likely  
-        [0, 1, 2, 3], // Possible
-        [0, 1, 2, 3], // Unlikely
-        [0, 1, 2, 3]  // Rare
-      ];
-
-      // Probability labels (vertical)
-      const probLabels = ['Almost\nCertain', 'Likely', 'Possible', 'Unlikely', 'Rare'];
-      probLabels.forEach((label, i) => {
-        doc.fontSize(10).fillColor(colors.text).font('Helvetica-Bold');
-        const lines = label.split('\n');
-        lines.forEach((line, lineIndex) => {
-          doc.text(line, matrixStartX - 90, matrixStartY + (i * cellSize) + 15 + (lineIndex * 12), { width: 85, align: 'right' });
-        });
-      });
-
-      // Consequence labels (horizontal)
-      const consLabels = ['Minor', 'Moderate', 'Major', 'Catastrophic'];
-      consLabels.forEach((label, i) => {
-        doc.fontSize(10).fillColor(colors.text).font('Helvetica-Bold');
-        doc.text(label, matrixStartX + (i * cellSize) + 10, matrixStartY - 30, { width: 40, align: 'center' });
-      });
-
-      // Draw enhanced matrix with modern styling
-      for (let row = 0; row < 5; row++) {
-        for (let col = 0; col < 4; col++) {
-          const x = matrixStartX + col * cellSize;
-          const y = matrixStartY + row * cellSize;
-          const colorIndex = matrixData[row][col];
-          
-          // Card-like cells with shadow and border
-          doc.rect(x + 2, y + 2, cellSize - 4, cellSize - 4).fill('#00000020');
-          doc.rect(x, y, cellSize - 4, cellSize - 4).fillAndStroke(matrixColors[colorIndex], colors.border);
-          
-          // Add level number in center
-          doc.fontSize(16).fillColor(colors.white).font('Helvetica-Bold');
-          doc.text((colorIndex + 1).toString(), x + 20, y + 15, { width: 10, align: 'center' });
-        }
-      }
-
-      yPos += 300;
-
-      // WORK ACTIVITIES Card
-      if (yPos > 400) {
-        doc.addPage();
-        addPageHeader();
-        yPos = 90;
-      }
-
-      const activitiesCardY = drawCard(30, yPos, 780, 350, 'WORK ACTIVITIES & RISK ASSESSMENT', colors.danger);
-      
-      // Modern table header with enhanced styling
-      const headers = ['Activity Description', 'Identified Hazards', 'Risk Level', 'Control Measures'];
-      const colWidths = [200, 200, 120, 260];
-      let tableX = 60;
-      
-      // Header row with modern gradient
-      doc.rect(tableX, activitiesCardY, 780, 35).fill(colors.primary);
-      doc.rect(tableX, activitiesCardY + 30, 780, 5).fill(colors.accent);
-      
-      headers.forEach((header, i) => {
-        doc.fontSize(12).fillColor(colors.white).font('Helvetica-Bold').text(header, tableX + 10, activitiesCardY + 10, { 
-          width: colWidths[i] - 20, 
-          align: 'center' 
-        });
-        if (i < headers.length - 1) {
-          doc.moveTo(tableX + colWidths[i], activitiesCardY).lineTo(tableX + colWidths[i], activitiesCardY + 35).stroke(colors.white);
-        }
-        tableX += colWidths[i];
-      });
-
-      // Activities data with enhanced styling
-      const activities = data.activities || data.riskAssessments || [
-        {
-          activity: 'Site setup and preparation',
-          hazards: ['Uneven surfaces', 'Overhead hazards', 'Moving equipment'],
-          riskLevel: 'Medium',
-          controlMeasures: ['Site inspection', 'Exclusion zones', 'PPE requirements']
-        }
-      ];
-
-      let activityY = activitiesCardY + 35;
-      activities.slice(0, 8).forEach((activity: any, index: number) => {
-        const rowHeight = 40;
-        const bgColor = index % 2 === 0 ? colors.white : colors.accent;
-        
-        // Row background with modern styling
-        doc.rect(60, activityY, 780, rowHeight).fill(bgColor);
-        if (index % 2 === 0) {
-          doc.rect(60, activityY, 780, rowHeight).stroke(colors.border);
-        }
-        
-        let cellX = 60;
-        doc.font('Helvetica');
-        
-        // Activity
-        doc.fontSize(10).fillColor(colors.text);
-        doc.text(activity.activity || activity.description || 'Activity', cellX + 10, activityY + 12, { 
-          width: colWidths[0] - 20, 
-          height: rowHeight - 15 
-        });
-        cellX += colWidths[0];
-        
-        // Hazards
-        const hazardText = Array.isArray(activity.hazards) ? activity.hazards.join(', ') : (activity.hazards || 'General hazards');
-        doc.text(hazardText, cellX + 10, activityY + 12, { 
-          width: colWidths[1] - 20, 
-          height: rowHeight - 15 
-        });
-        cellX += colWidths[1];
-        
-        // Risk Level with modern badge
-        const risk = activity.riskLevel || activity.overallRisk || 'Medium';
-        const riskColor = risk === 'High' ? colors.danger : risk === 'Low' ? colors.success : colors.warning;
-        doc.rect(cellX + 20, activityY + 10, 80, 20).fill(riskColor);
-        doc.fontSize(10).fillColor(colors.white).font('Helvetica-Bold').text(risk, cellX + 25, activityY + 16, { 
-          width: 70, 
-          align: 'center' 
-        });
-        cellX += colWidths[2];
-        
-        // Control Measures
-        doc.fontSize(10).fillColor(colors.text).font('Helvetica');
-        const controlText = Array.isArray(activity.controlMeasures) ? activity.controlMeasures.join(', ') : (activity.controlMeasures || 'Standard safety measures');
-        doc.text(controlText, cellX + 10, activityY + 12, { 
-          width: colWidths[3] - 20, 
-          height: rowHeight - 15 
-        });
-        
-        // Cell borders
-        let borderX = 60;
-        colWidths.forEach((width, i) => {
-          if (i < colWidths.length - 1) {
-            doc.moveTo(borderX + width, activityY).lineTo(borderX + width, activityY + rowHeight).stroke(colors.border);
-          }
-          borderX += width;
-        });
-        
-        activityY += rowHeight;
-      });
-
-      // Add new page for equipment and emergency
-      doc.addPage();
-      addPageHeader();
-      yPos = 90;
-
-      // PLANT & EQUIPMENT Card
-      const equipCardY = drawCard(30, yPos, 780, 200, 'PLANT & EQUIPMENT', colors.secondary);
-      
-      const equipmentData = data.equipment || [
-        { equipment: 'Power Tools (Drills, Saws)', riskLevel: 'Medium', certifications: 'Tool Box Talk, RCD Testing', safety: 'PPE required, Guard inspection, RCD protection' },
-        { equipment: 'Ladders & Platforms', riskLevel: 'High', certifications: 'Height Safety Training', safety: 'Pre-use inspection, 3:1 ratio, harness required >2m' },
-        { equipment: 'Hand Tools', riskLevel: 'Low', certifications: 'Basic Tool Safety', safety: 'Condition check, proper storage, cut-resistant gloves' }
-      ];
-
-      // Equipment table with modern design
-      const equipHeaders = ['Equipment/Plant', 'Risk Level', 'Required Certifications', 'Safety Requirements'];
-      const equipColWidths = [180, 120, 220, 260];
-      let equipTableX = 60;
-      
-      doc.rect(equipTableX, equipCardY, 780, 30).fill(colors.secondary);
-      equipHeaders.forEach((header, i) => {
-        doc.fontSize(11).fillColor(colors.white).font('Helvetica-Bold').text(header, equipTableX + 10, equipCardY + 8, { 
-          width: equipColWidths[i] - 20, 
-          align: 'center' 
-        });
-        if (i < equipHeaders.length - 1) {
-          doc.moveTo(equipTableX + equipColWidths[i], equipCardY).lineTo(equipTableX + equipColWidths[i], equipCardY + 30).stroke(colors.white);
-        }
-        equipTableX += equipColWidths[i];
-      });
-
-      let equipY = equipCardY + 30;
-      equipmentData.forEach((item: any, index: number) => {
-        const rowHeight = 35;
-        const bgColor = index % 2 === 0 ? colors.white : colors.accent;
-        
-        doc.rect(60, equipY, 780, rowHeight).fill(bgColor);
-        
-        let cellX = 60;
-        doc.fontSize(9).fillColor(colors.text).font('Helvetica');
-        
-        doc.text(item.equipment, cellX + 10, equipY + 10, { width: equipColWidths[0] - 20 });
-        cellX += equipColWidths[0];
-        
-        const equipRisk = item.riskLevel || 'Medium';
-        const equipRiskColor = equipRisk === 'High' ? colors.danger : equipRisk === 'Low' ? colors.success : colors.warning;
-        doc.rect(cellX + 20, equipY + 8, 80, 18).fill(equipRiskColor);
-        doc.fontSize(9).fillColor(colors.white).font('Helvetica-Bold').text(equipRisk, cellX + 25, equipY + 13, { width: 70, align: 'center' });
-        cellX += equipColWidths[1];
-        
-        doc.fontSize(9).fillColor(colors.text).font('Helvetica');
-        doc.text(item.certifications, cellX + 10, equipY + 10, { width: equipColWidths[2] - 20 });
-        cellX += equipColWidths[2];
-        doc.text(item.safety, cellX + 10, equipY + 10, { width: equipColWidths[3] - 20 });
-        
-        equipY += rowHeight;
-      });
-
-      yPos += 220;
-
-      // EMERGENCY INFORMATION Card
-      const emergencyCardY = drawCard(30, yPos, 780, 180, 'EMERGENCY CONTACT INFORMATION', colors.danger);
-      
-      const emergencyContacts = [
-        { role: 'Emergency Services', contact: '000', description: 'Police, Fire, Ambulance' },
-        { role: 'Site Supervisor', contact: data.emergencyContacts?.supervisor || '(02) 9XXX XXXX', description: 'Primary site contact' },
-        { role: 'Safety Officer', contact: data.emergencyContacts?.safety || '(02) 9XXX XXXX', description: 'WHS incidents and safety concerns' },
-        { role: 'Principal Contractor', contact: data.emergencyContacts?.principal || '(02) 9XXX XXXX', description: 'Project management contact' },
-        { role: 'Poison Information', contact: '13 11 26', description: 'Chemical exposure emergencies' }
-      ];
-      
-      let emergencyY = emergencyCardY;
-      emergencyContacts.forEach((contact, index) => {
-        const rowHeight = 28;
-        const bgColor = index % 2 === 0 ? colors.white : colors.accent;
-        
-        doc.rect(60, emergencyY, 780, rowHeight).fill(bgColor);
-        
-        doc.fontSize(11).fillColor(colors.text).font('Helvetica-Bold');
-        doc.text(contact.role, 80, emergencyY + 8, { width: 180 });
-        doc.fontSize(14).fillColor(colors.primary).font('Helvetica-Bold');
-        doc.text(contact.contact, 270, emergencyY + 6, { width: 150 });
-        doc.fontSize(10).fillColor(colors.secondary).font('Helvetica');
-        doc.text(contact.description, 430, emergencyY + 9, { width: 380 });
-        
-        emergencyY += rowHeight;
-      });
-
-      // Add final page for signatures
-      doc.addPage();
-      addPageHeader();
-      yPos = 90;
-
-      // SIGNATORY SECTION Card
-      const sigCardY = drawCard(30, yPos, 780, 420, 'SIGNATORY SECTION - MANDATORY', colors.danger);
-      
-      doc.fontSize(14).fillColor(colors.danger).font('Helvetica-Bold').text(
-        'This document must be signed by all personnel before commencing work activities.', 
-        60, sigCardY
-      );
-
-      // Modern signature table
-      const sigHeaders = ['Name', 'Position/Role', 'Company', 'Signature', 'Date'];
-      const sigColWidths = [150, 140, 150, 200, 140];
-      let sigTableX = 60;
-      
-      doc.rect(sigTableX, sigCardY + 35, 780, 35).fill(colors.primary);
-      sigHeaders.forEach((header, i) => {
-        doc.fontSize(12).fillColor(colors.white).font('Helvetica-Bold').text(header, sigTableX + 10, sigCardY + 47, { 
-          width: sigColWidths[i] - 20, 
-          align: 'center' 
-        });
-        if (i < sigHeaders.length - 1) {
-          doc.moveTo(sigTableX + sigColWidths[i], sigCardY + 35).lineTo(sigTableX + sigColWidths[i], sigCardY + 70).stroke(colors.white);
-        }
-        sigTableX += sigColWidths[i];
-      });
-
-      // Signature rows with enhanced styling
-      let sigY = sigCardY + 70;
-      for (let i = 0; i < 10; i++) {
-        const rowHeight = 30;
-        const bgColor = i % 2 === 0 ? colors.white : colors.accent;
-        
-        doc.rect(60, sigY, 780, rowHeight).fill(bgColor);
-        
-        // Draw cell borders
-        let cellX = 60;
-        sigColWidths.forEach((width, index) => {
-          doc.rect(cellX, sigY, width, rowHeight).stroke(colors.border);
-          cellX += width;
-        });
-        
-        sigY += rowHeight;
-      }
-
-      // Enhanced compliance footer
-      yPos = sigY + 30;
-      const complianceCardY = drawCard(30, yPos, 780, 100, 'COMPLIANCE STANDARDS', colors.success);
-      
-      const complianceStandards = [
-        '✓ Work Health and Safety Act 2011                    ✓ Work Health and Safety Regulation 2017',
-        '✓ Australian Standards AS/NZS 4804:2001           ✓ Safe Work Australia Guidelines'
-      ];
-      
-      let complianceY = complianceCardY + 10;
-      complianceStandards.forEach(standard => {
-        doc.fontSize(12).fillColor(colors.text).font('Helvetica').text(standard, 80, complianceY);
-        complianceY += 25;
-      });
-
-      // Professional footer with modern styling
-      doc.rect(0, 525, 842, 70).fill(colors.primary);
-      doc.fontSize(16).fillColor(colors.white).font('Helvetica-Bold').text(
-        'Generated by Riskify Professional SWMS Builder', 
-        60, 545
-      );
-      doc.fontSize(12).fillColor('#e2e8f0').font('Helvetica').text(
-        `${new Date().toLocaleDateString('en-AU')} - Document ID: SWMS-${targetDoc.id}`, 
-        60, 570
-      );
-      
       // Finalize PDF
       doc.end();
       
@@ -1125,8 +667,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-
   const httpServer = createServer(app);
   return httpServer;
 }
-
