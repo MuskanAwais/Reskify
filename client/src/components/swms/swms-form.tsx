@@ -41,6 +41,7 @@ import GPTTaskSelection from "./gpt-task-selection";
 import { translate } from "@/lib/language-direct";
 import SmartTooltip from "@/components/ui/smart-tooltip";
 import QuickActionTooltip, { presetTooltips } from "@/components/ui/quick-action-tooltip";
+import GoogleAddressAutocomplete from "@/components/ui/google-address-autocomplete";
 
 const TOTAL_STEPS = 8;
 
@@ -127,14 +128,14 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
                     id="projectAddress"
                     value={formData.projectAddress || ""}
                     onChange={(e) => updateFormData({ projectAddress: e.target.value })}
-                    placeholder="Start typing address... (Google Places autocomplete)"
+                    placeholder="Enter Australian address (Google Places integration ready)"
                     required
                     className="pr-10"
                   />
                   <MapPin className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
-                  Enter a valid Australian address. Autocomplete will suggest registered addresses.
+                  Enter a valid Australian address. Google Places autocomplete will be enabled with API key.
                 </p>
               </div>
 
