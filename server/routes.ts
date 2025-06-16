@@ -1416,17 +1416,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // New PDFKit-based PDF generation endpoint with demo access
+  // Comprehensive PDF generation endpoint with all required elements
   app.post("/api/swms/pdf-download", bypassAuth, async (req, res) => {
     try {
       const PDFDocument = require('pdfkit');
-      const { projectName, projectNumber, projectAddress, swmsData, formData } = req.body;
+      const { projectName, projectNumber, projectAddress, swmsData, formData, companyName, principalContractor } = req.body;
       const currentDate = new Date().toLocaleDateString('en-AU');
       
       // Create a new PDF document
       const doc = new PDFDocument({
         size: 'A4',
-        margins: { top: 50, bottom: 50, left: 50, right: 50 }
+        margins: { top: 60, bottom: 60, left: 50, right: 50 }
       });
       
       // Set response headers for proper PDF download
@@ -1436,66 +1436,264 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Pipe the PDF directly to response
       doc.pipe(res);
       
-      // Add watermark
-      doc.fontSize(48)
-         .fillColor('#f0f0f0')
-         .rotate(-45, { origin: [300, 400] })
-         .text(projectNumber || 'RISKIFY SWMS', 200, 350, { align: 'center', opacity: 0.3 })
-         .rotate(45, { origin: [300, 400] });
+      // Function to add watermark and header to each page
+      const addPageElements = (isFirstPage = false) => {
+        // Project info watermark (light gray background)
+        doc.save()
+           .fontSize(10)
+           .fillColor('#e5e5e5')
+           .text(`${projectName} | Job: ${projectNumber || 'N/A'} | ${projectAddress}`, 50, 30, { 
+             width: 400, 
+             align: 'left' 
+           });
+        
+        // Riskify logo (top right corner)
+        doc.fontSize(14)
+           .fillColor('#1e40af')
+           .text('RISKIFY', 480, 25, { align: 'right' });
+        doc.fontSize(8)
+           .fillColor('#666666')
+           .text('SAFETY MANAGEMENT', 460, 40, { align: 'right' });
+        
+        // Page watermark (diagonal)
+        if (projectNumber) {
+          doc.save()
+             .fontSize(40)
+             .fillColor('#f8f8f8')
+             .rotate(-45, { origin: [300, 400] })
+             .text(projectNumber, 150, 350, { align: 'center', width: 300 })
+             .restore();
+        }
+        
+        // Footer with project info
+        doc.fontSize(8)
+           .fillColor('#666666')
+           .text(`Generated: ${currentDate}`, 50, 780)
+           .text(`Job: ${projectNumber || projectName}`, 250, 780)
+           .text('Riskify SWMS', 480, 780, { align: 'right' });
+        
+        doc.restore();
+      }
       
-      // Header
-      doc.fillColor('#1e40af').fontSize(20)
-         .text('RISKIFY SAFETY MANAGEMENT SYSTEM', 50, 50, { align: 'center' });
+      // First page setup
+      addPageElements(true);
       
-      doc.fillColor('#000000').fontSize(24)
+      // Main title
+      doc.fontSize(24)
+         .fillColor('#1e40af')
          .text('SAFE WORK METHOD STATEMENT', 50, 80, { align: 'center' });
       
-      // Project Information
-      let yPos = 140;
-      doc.fontSize(16).fillColor('#1e40af').text('Project Information:', 50, yPos);
+      // Company logo placeholder (if company name provided)
+      if (companyName || principalContractor) {
+        doc.fontSize(12)
+           .fillColor('#333333')
+           .text(`Principal Contractor: ${companyName || principalContractor}`, 50, 120, { align: 'center' });
+      }
       
+      // Project Information Section
+      let yPos = 160;
+      doc.fontSize(16).fillColor('#1e40af').text('PROJECT INFORMATION', 50, yPos);
+      
+      // Project details table
       yPos += 30;
-      doc.fontSize(12).fillColor('#000000')
-         .text(`Project Name: ${projectName}`, 50, yPos)
-         .text(`Job Number: ${projectNumber || 'N/A'}`, 50, yPos + 20)
-         .text(`Project Address: ${projectAddress}`, 50, yPos + 40)
-         .text(`Document Date: ${currentDate}`, 50, yPos + 60);
+      const projectDetails = [
+        ['Project Name:', projectName],
+        ['Job Number:', projectNumber || 'N/A'],
+        ['Project Address:', projectAddress],
+        ['Principal Contractor:', companyName || principalContractor || 'N/A'],
+        ['Document Date:', currentDate],
+        ['Supervisor:', formData?.supervisorName || 'N/A'],
+        ['Contact:', formData?.supervisorPhone || 'N/A']
+      ];
       
-      // Activities Section
+      projectDetails.forEach(([label, value]) => {
+        doc.fontSize(11)
+           .fillColor('#333333')
+           .text(label, 50, yPos, { width: 150 })
+           .text(value, 200, yPos, { width: 300 });
+        yPos += 18;
+      });
+      
+      // Risk Assessment Tables
       if (swmsData?.activities && swmsData.activities.length > 0) {
-        yPos += 120;
-        doc.fontSize(16).fillColor('#1e40af').text('Work Activities:', 50, yPos);
+        yPos += 30;
         
-        swmsData.activities.forEach((activity, index) => {
-          yPos += 30;
-          if (yPos > 700) {
+        // Check if we need a new page
+        if (yPos > 650) {
+          doc.addPage();
+          addPageElements();
+          yPos = 100;
+        }
+        
+        doc.fontSize(16).fillColor('#1e40af').text('RISK ASSESSMENT MATRIX', 50, yPos);
+        yPos += 30;
+        
+        swmsData.activities.forEach((activity: any, index: number) => {
+          // Check if we need a new page for this activity
+          if (yPos > 600) {
             doc.addPage();
-            yPos = 50;
+            addPageElements();
+            yPos = 100;
           }
           
-          doc.fontSize(14).fillColor('#000000')
-             .text(`${index + 1}. ${activity.activity || 'Activity'}`, 50, yPos);
+          // Activity header
+          doc.fontSize(14)
+             .fillColor('#1e40af')
+             .text(`${index + 1}. ${activity.activity || 'Work Activity'}`, 50, yPos);
+          yPos += 25;
           
-          if (activity.hazards && activity.hazards.length > 0) {
-            yPos += 20;
-            doc.fontSize(11).text(`Hazards: ${activity.hazards.join(', ')}`, 70, yPos);
-          }
+          // Risk assessment table
+          const tableData = [
+            ['Hazards', 'Initial Risk', 'Control Measures', 'Residual Risk', 'PPE Required'],
+            [
+              activity.hazards?.join(', ') || 'N/A',
+              `L:${activity.likelihood || 'N/A'} C:${activity.consequence || 'N/A'} R:${activity.initialRiskScore || 'N/A'}`,
+              activity.controlMeasures?.join(', ') || 'N/A',
+              `L:${activity.residualLikelihood || 'N/A'} C:${activity.residualConsequence || 'N/A'} R:${activity.residualRiskScore || 'N/A'}`,
+              activity.ppe?.join(', ') || 'N/A'
+            ]
+          ];
           
-          if (activity.controlMeasures && activity.controlMeasures.length > 0) {
+          // Draw table
+          const tableX = 50;
+          const colWidths = [100, 80, 150, 80, 80];
+          let tableY = yPos;
+          
+          tableData.forEach((row, rowIndex) => {
+            let cellX = tableX;
+            row.forEach((cell, colIndex) => {
+              // Cell background for header
+              if (rowIndex === 0) {
+                doc.rect(cellX, tableY, colWidths[colIndex], 20)
+                   .fillAndStroke('#f0f0f0', '#cccccc');
+              } else {
+                doc.rect(cellX, tableY, colWidths[colIndex], 40)
+                   .stroke('#cccccc');
+              }
+              
+              // Cell text
+              doc.fontSize(8)
+                 .fillColor('#000000')
+                 .text(cell, cellX + 2, tableY + 2, { 
+                   width: colWidths[colIndex] - 4, 
+                   height: rowIndex === 0 ? 16 : 36,
+                   align: 'left'
+                 });
+              
+              cellX += colWidths[colIndex];
+            });
+            tableY += rowIndex === 0 ? 20 : 40;
+          });
+          
+          yPos = tableY + 20;
+          
+          // Risk level indicator
+          if (activity.riskLevel) {
+            const riskColor = activity.riskLevel.toLowerCase() === 'high' ? '#ff0000' : 
+                            activity.riskLevel.toLowerCase() === 'medium' ? '#ffa500' : '#00aa00';
+            doc.fontSize(10)
+               .fillColor(riskColor)
+               .text(`Risk Level: ${activity.riskLevel}`, 50, yPos);
             yPos += 15;
-            doc.text(`Control Measures: ${activity.controlMeasures.join(', ')}`, 70, yPos);
+          }
+          
+          // Responsible person
+          if (activity.responsible) {
+            doc.fontSize(9)
+               .fillColor('#666666')
+               .text(`Responsible: ${activity.responsible}`, 50, yPos);
+            yPos += 20;
           }
         });
       }
       
-      // Footer
-      doc.fontSize(8).fillColor('#666666')
-         .text(`Generated: ${currentDate}`, 50, 750)
-         .text(`Job: ${projectNumber || projectName}`, 250, 750)
-         .text('Riskify SWMS', 450, 750);
+      // Plant and Equipment Section
+      if (swmsData?.plantEquipment && swmsData.plantEquipment.length > 0) {
+        // Check if we need a new page
+        if (yPos > 650) {
+          doc.addPage();
+          addPageElements();
+          yPos = 100;
+        }
+        
+        doc.fontSize(16).fillColor('#1e40af').text('PLANT & EQUIPMENT', 50, yPos);
+        yPos += 30;
+        
+        swmsData.plantEquipment.forEach((equipment) => {
+          if (yPos > 700) {
+            doc.addPage();
+            addPageElements();
+            yPos = 100;
+          }
+          
+          doc.fontSize(12)
+             .fillColor('#333333')
+             .text(`• ${equipment.item}`, 50, yPos);
+          doc.fontSize(10)
+             .fillColor('#666666')
+             .text(`Risk Level: ${equipment.riskLevel}`, 70, yPos + 15)
+             .text(`Controls: ${equipment.controlMeasures?.join(', ') || 'N/A'}`, 70, yPos + 30);
+          yPos += 50;
+        });
+      }
+      
+      // Emergency Procedures Section
+      if (swmsData?.emergencyProcedures) {
+        // Check if we need a new page
+        if (yPos > 650) {
+          doc.addPage();
+          addPageElements();
+          yPos = 100;
+        }
+        
+        doc.fontSize(16).fillColor('#1e40af').text('EMERGENCY PROCEDURES', 50, yPos);
+        yPos += 30;
+        
+        const emergencyData = swmsData.emergencyProcedures;
+        if (emergencyData.evacuation) {
+          doc.fontSize(12).fillColor('#333333').text('Evacuation:', 50, yPos);
+          doc.fontSize(10).fillColor('#666666').text(emergencyData.evacuation, 70, yPos + 15);
+          yPos += 35;
+        }
+        
+        if (emergencyData.firstAid) {
+          doc.fontSize(12).fillColor('#333333').text('First Aid:', 50, yPos);
+          doc.fontSize(10).fillColor('#666666').text(emergencyData.firstAid, 70, yPos + 15);
+          yPos += 35;
+        }
+        
+        if (emergencyData.emergencyContacts) {
+          doc.fontSize(12).fillColor('#333333').text('Emergency Contacts:', 50, yPos);
+          doc.fontSize(10).fillColor('#666666').text(emergencyData.emergencyContacts, 70, yPos + 15);
+          yPos += 35;
+        }
+      }
+      
+      // Final page - Signatures section
+      doc.addPage();
+      addPageElements();
+      
+      doc.fontSize(16).fillColor('#1e40af').text('APPROVALS & SIGNATURES', 50, 100);
+      
+      // Signature boxes
+      const signatureBoxes = [
+        'Site Supervisor',
+        'Safety Officer', 
+        'Principal Contractor Representative'
+      ];
+      
+      let sigY = 150;
+      signatureBoxes.forEach((role) => {
+        doc.rect(50, sigY, 200, 80).stroke('#cccccc');
+        doc.fontSize(10).fillColor('#666666').text(role, 55, sigY + 5);
+        doc.text('Signature:', 55, sigY + 25);
+        doc.text('Print Name:', 55, sigY + 45);
+        doc.text('Date:', 55, sigY + 65);
+        sigY += 100;
+      });
       
       doc.end();
-      console.log(`PDF generated successfully: ${projectName}`);
+      console.log(`Comprehensive PDF generated successfully: ${projectName}`);
     } catch (error) {
       console.error("PDF generation failed:", error);
       res.status(500).json({ error: "Failed to generate PDF" });
