@@ -21,8 +21,7 @@ const getSteps = () => [
   { id: 4, title: "Emergency & Monitoring", description: "Emergency procedures and review/monitoring processes" },
   { id: 5, title: "Payment & Access", description: "Select payment option to complete SWMS generation" },
   { id: 6, title: "Legal Disclaimer", description: "Accept terms and liability disclaimer" },
-  { id: 7, title: "Final Document", description: "Generate complete SWMS document" },
-  { id: 8, title: "Digital Signatures & PDF", description: "Optional signatures and final PDF generation" }
+  { id: 7, title: "Digital Signatures & PDF", description: "Generate complete SWMS document with optional signatures" }
 ];
 
 export default function SwmsBuilder() {
@@ -383,7 +382,7 @@ export default function SwmsBuilder() {
               <span>{translate("swms.progress")}</span>
               <span>{Math.round(progress)}% {translate("swms.complete")}</span>
             </div>
-            <Progress value={progress} className="w-full" />
+            <Progress value={progress} className="w-full h-3" />
             
             {/* Clickable Step indicators */}
             <div className="flex justify-between">

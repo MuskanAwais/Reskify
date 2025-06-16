@@ -448,8 +448,8 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
                 <div className="flex items-start space-x-2">
                   <Checkbox
                     id="disclaimer"
-                    checked={formData.disclaimerAccepted || false}
-                    onCheckedChange={(checked) => updateFormData({ disclaimerAccepted: checked })}
+                    checked={formData.acceptedDisclaimer || false}
+                    onCheckedChange={(checked) => updateFormData({ acceptedDisclaimer: checked })}
                     className="mt-1"
                   />
                   <Label htmlFor="disclaimer" className="text-sm leading-relaxed">
