@@ -1438,39 +1438,55 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Function to add watermark and header to each page
       const addPageElements = (isFirstPage = false) => {
-        // Project info watermark (light gray background)
-        doc.save()
-           .fontSize(10)
-           .fillColor('#e5e5e5')
-           .text(`${projectName} | Job: ${projectNumber || 'N/A'} | ${projectAddress}`, 50, 30, { 
-             width: 400, 
-             align: 'left' 
-           });
+        // Professional header background
+        doc.rect(0, 0, 595, 60)
+           .fillAndStroke('#f8fafc', '#e2e8f0');
         
-        // Riskify logo (top right corner)
-        doc.fontSize(14)
-           .fillColor('#1e40af')
-           .text('RISKIFY', 480, 25, { align: 'right' });
+        // Project info header (professional styling)
+        doc.fontSize(9)
+           .fillColor('#64748b')
+           .text(`${projectName} | Job: ${projectNumber || 'N/A'}`, 55, 20);
         doc.fontSize(8)
-           .fillColor('#666666')
-           .text('SAFETY MANAGEMENT', 460, 40, { align: 'right' });
+           .fillColor('#94a3b8')
+           .text(`${projectAddress}`, 55, 35);
         
-        // Page watermark (diagonal)
+        // Riskify logo (top right corner - enhanced branding)
+        doc.rect(450, 10, 130, 35)
+           .fillAndStroke('#1e40af', '#1e40af');
+        doc.fontSize(16)
+           .fillColor('#ffffff')
+           .text('RISKIFY', 465, 20);
+        doc.fontSize(7)
+           .fillColor('#e2e8f0')
+           .text('SAFETY MANAGEMENT SYSTEM', 465, 35);
+        
+        // Company logo area
+        if (companyName || principalContractor) {
+          doc.rect(55, 70, 200, 25)
+             .stroke('#e2e8f0');
+          doc.fontSize(10)
+             .fillColor('#334155')
+             .text(`${companyName || principalContractor}`, 60, 78);
+        }
+        
+        // Page watermark (diagonal - professional)
         if (projectNumber) {
           doc.save()
-             .fontSize(40)
-             .fillColor('#f8f8f8')
+             .fontSize(60)
+             .fillColor('#f1f5f9')
              .rotate(-45, { origin: [300, 400] })
-             .text(projectNumber, 150, 350, { align: 'center', width: 300 })
+             .text(projectNumber, 100, 320, { align: 'center', width: 400 })
              .restore();
         }
         
-        // Footer with project info
+        // Professional footer
+        doc.rect(0, 770, 595, 30)
+           .fillAndStroke('#f8fafc', '#e2e8f0');
         doc.fontSize(8)
-           .fillColor('#666666')
-           .text(`Generated: ${currentDate}`, 50, 780)
-           .text(`Job: ${projectNumber || projectName}`, 250, 780)
-           .text('Riskify SWMS', 480, 780, { align: 'right' });
+           .fillColor('#64748b')
+           .text(`Generated: ${currentDate}`, 55, 785)
+           .text(`Document: ${projectNumber || 'SWMS'}`, 250, 785)
+           .text('© Riskify Safety Systems', 450, 785);
         
         doc.restore();
       }
@@ -1481,17 +1497,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Main title
       doc.fontSize(24)
          .fillColor('#1e40af')
-         .text('SAFE WORK METHOD STATEMENT', 50, 80, { align: 'center' });
-      
-      // Company logo placeholder (if company name provided)
-      if (companyName || principalContractor) {
-        doc.fontSize(12)
-           .fillColor('#333333')
-           .text(`Principal Contractor: ${companyName || principalContractor}`, 50, 120, { align: 'center' });
-      }
+         .text('SAFE WORK METHOD STATEMENT', 50, 120, { align: 'center' });
       
       // Project Information Section
-      let yPos = 160;
+      let yPos = 170;
       doc.fontSize(16).fillColor('#1e40af').text('PROJECT INFORMATION', 50, yPos);
       
       // Project details table
