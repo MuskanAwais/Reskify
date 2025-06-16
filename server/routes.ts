@@ -100,6 +100,129 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
     next();
   });
+
+  // PDF generation endpoint - placed before authentication middleware
+  app.post("/api/swms/pdf-download", async (req, res) => {
+    try {
+      const PDFDocument = require('pdfkit');
+      const { projectName, projectNumber, projectAddress, swmsData, formData, companyName, principalContractor } = req.body;
+      
+      console.log('PDF generation request:', { projectName, projectNumber, projectAddress });
+      
+      if (!projectName) {
+        return res.status(400).json({ error: "Project name is required" });
+      }
+      
+      const currentDate = new Date().toLocaleDateString('en-AU');
+      const safeProjectName = projectName.replace(/[^\w\s-]/g, '') || 'SWMS Document';
+      
+      // Create a new PDF document
+      const doc = new PDFDocument({
+        size: 'A4',
+        margins: { top: 50, bottom: 50, left: 50, right: 50 }
+      });
+      
+      // Set response headers for PDF download
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `attachment; filename="${safeProjectName}_SWMS.pdf"`);
+      
+      // Pipe the PDF to the response
+      doc.pipe(res);
+      
+      // Add Riskify logo/branding in top right corner
+      doc.fontSize(12).fillColor('#0066cc').text('RISKIFY', 450, 50, { align: 'right' });
+      doc.fontSize(10).fillColor('#333333').text('Professional SWMS Builder', 450, 70, { align: 'right' });
+      
+      // Title
+      doc.fontSize(20).fillColor('#000000').text('SAFE WORK METHOD STATEMENT', 50, 100, { align: 'center' });
+      
+      // Project watermark
+      doc.fontSize(8).fillColor('#cccccc').text('RISKIFY SWMS', 50, 750, { align: 'left' });
+      
+      // Project Details Section
+      doc.fontSize(14).fillColor('#000000').text('PROJECT DETAILS', 50, 150);
+      doc.fontSize(10);
+      doc.text(`Project Name: ${projectName}`, 50, 180);
+      doc.text(`Project Number: ${projectNumber || 'N/A'}`, 50, 200);
+      doc.text(`Project Address: ${projectAddress || 'N/A'}`, 50, 220);
+      doc.text(`Company: ${companyName || 'N/A'}`, 50, 240);
+      doc.text(`Principal Contractor: ${principalContractor || 'N/A'}`, 50, 260);
+      doc.text(`Date Created: ${currentDate}`, 50, 280);
+      
+      // Risk Assessment Table (if swmsData provided)
+      if (swmsData && swmsData.activities && swmsData.activities.length > 0) {
+        doc.addPage();
+        
+        // Page watermark
+        doc.fontSize(8).fillColor('#cccccc').text('RISKIFY SWMS', 50, 750, { align: 'left' });
+        
+        doc.fontSize(14).fillColor('#000000').text('RISK ASSESSMENT', 50, 50);
+        
+        let yPosition = 100;
+        
+        swmsData.activities.forEach((activity: any, index: number) => {
+          if (yPosition > 650) {
+            doc.addPage();
+            doc.fontSize(8).fillColor('#cccccc').text('RISKIFY SWMS', 50, 750, { align: 'left' });
+            yPosition = 50;
+          }
+          
+          doc.fontSize(12).fillColor('#000000').text(`Activity ${index + 1}: ${activity.activity}`, 50, yPosition);
+          yPosition += 25;
+          
+          doc.fontSize(10);
+          doc.text(`Hazards: ${activity.hazards?.join(', ') || 'None identified'}`, 50, yPosition);
+          yPosition += 20;
+          
+          doc.text(`Risk Level: ${activity.riskLevel || 'Medium'}`, 50, yPosition);
+          yPosition += 20;
+          
+          doc.text(`Control Measures: ${activity.controlMeasures?.join(', ') || 'Standard controls'}`, 50, yPosition);
+          yPosition += 30;
+        });
+      }
+      
+      // Add equipment section if provided
+      if (swmsData && swmsData.equipment && swmsData.equipment.length > 0) {
+        doc.addPage();
+        doc.fontSize(8).fillColor('#cccccc').text('RISKIFY SWMS', 50, 750, { align: 'left' });
+        
+        doc.fontSize(14).fillColor('#000000').text('PLANT & EQUIPMENT', 50, 50);
+        
+        let yPosition = 100;
+        swmsData.equipment.forEach((item: any) => {
+          doc.fontSize(10).text(`• ${item.item} - Risk Level: ${item.riskLevel}`, 50, yPosition);
+          yPosition += 20;
+        });
+      }
+      
+      // Emergency procedures page
+      doc.addPage();
+      doc.fontSize(8).fillColor('#cccccc').text('RISKIFY SWMS', 50, 750, { align: 'left' });
+      
+      doc.fontSize(14).fillColor('#000000').text('EMERGENCY PROCEDURES', 50, 50);
+      doc.fontSize(10);
+      doc.text('In case of emergency:', 50, 100);
+      doc.text('1. Stop work immediately', 50, 120);
+      doc.text('2. Ensure area is safe', 50, 140);
+      doc.text('3. Contact emergency services if required (000)', 50, 160);
+      doc.text('4. Report incident to supervisor', 50, 180);
+      
+      // Footer with compliance note
+      doc.fontSize(8).fillColor('#666666');
+      doc.text('This SWMS has been generated in accordance with Australian WHS regulations.', 50, 700);
+      doc.text('Document must be reviewed and signed by all personnel before work commences.', 50, 715);
+      
+      // Finalize the PDF
+      doc.end();
+      
+      console.log('PDF generated successfully');
+      
+    } catch (error: any) {
+      console.error("PDF generation error:", error);
+      res.status(500).json({ error: "Failed to generate PDF" });
+    }
+  });
   // User subscription endpoint
   app.get("/api/user/subscription", async (req, res) => {
     try {
@@ -1460,127 +1583,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Comprehensive PDF generation endpoint with all required elements - no auth required
-  app.post("/api/swms/pdf-download", express.json(), (req, res, next) => {
-    // Skip authentication for PDF generation
-    next();
-  }, async (req, res) => {
-    try {
-      const PDFDocument = require('pdfkit');
-      const { projectName, projectNumber, projectAddress, swmsData, formData, companyName, principalContractor } = req.body;
-      
-      console.log('PDF generation request:', { projectName, projectNumber, projectAddress });
-      
-      if (!projectName) {
-        return res.status(400).json({ error: "Project name is required" });
-      }
-      
-      const currentDate = new Date().toLocaleDateString('en-AU');
-      const safeProjectName = projectName.replace(/[^\w\s-]/g, '') || 'SWMS Document';
-      
-      // Create a new PDF document
-      const doc = new PDFDocument({
-        size: 'A4',
-        margins: { top: 60, bottom: 60, left: 50, right: 50 }
-      });
-      
-      // Set response headers for proper PDF download
-      res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', `attachment; filename="${projectNumber ? projectNumber + '_' : ''}${projectName.replace(/[^a-z0-9]/gi, '_')}_SWMS.pdf"`);
-      
-      // Pipe the PDF directly to response
-      doc.pipe(res);
-      
-      // Function to add watermark and header to each page
-      const addPageElements = (isFirstPage = false) => {
-        // Professional header background
-        doc.rect(0, 0, 595, 60)
-           .fillAndStroke('#f8fafc', '#e2e8f0');
-        
-        // Project info header (professional styling)
-        doc.fontSize(9)
-           .fillColor('#64748b')
-           .text(`${projectName} | Job: ${projectNumber || 'N/A'}`, 55, 20);
-        doc.fontSize(8)
-           .fillColor('#94a3b8')
-           .text(`${projectAddress}`, 55, 35);
-        
-        // Riskify logo (top right corner - enhanced branding)
-        doc.rect(450, 10, 130, 35)
-           .fillAndStroke('#1e40af', '#1e40af');
-        doc.fontSize(16)
-           .fillColor('#ffffff')
-           .text('RISKIFY', 465, 20);
-        doc.fontSize(7)
-           .fillColor('#e2e8f0')
-           .text('SAFETY MANAGEMENT SYSTEM', 465, 35);
-        
-        // Company logo area
-        if (companyName || principalContractor) {
-          doc.rect(55, 70, 200, 25)
-             .stroke('#e2e8f0');
-          doc.fontSize(10)
-             .fillColor('#334155')
-             .text(`${companyName || principalContractor}`, 60, 78);
-        }
-        
-        // Page watermark (diagonal - professional)
-        if (projectNumber) {
-          doc.save()
-             .fontSize(60)
-             .fillColor('#f1f5f9')
-             .rotate(-45, { origin: [300, 400] })
-             .text(projectNumber, 100, 320, { align: 'center', width: 400 })
-             .restore();
-        }
-        
-        // Professional footer
-        doc.rect(0, 770, 595, 30)
-           .fillAndStroke('#f8fafc', '#e2e8f0');
-        doc.fontSize(8)
-           .fillColor('#64748b')
-           .text(`Generated: ${currentDate}`, 55, 785)
-           .text(`Document: ${projectNumber || 'SWMS'}`, 250, 785)
-           .text('© Riskify Safety Systems', 450, 785);
-        
-        doc.restore();
-      }
-      
-      // First page setup
-      addPageElements(true);
-      
-      // Main title
-      doc.fontSize(24)
-         .fillColor('#1e40af')
-         .text('SAFE WORK METHOD STATEMENT', 50, 120, { align: 'center' });
-      
-      // Project Information Section
-      let yPos = 170;
-      doc.fontSize(16).fillColor('#1e40af').text('PROJECT INFORMATION', 50, yPos);
-      
-      // Project details table
-      yPos += 30;
-      const projectDetails = [
-        ['Project Name:', projectName],
-        ['Job Number:', projectNumber || 'N/A'],
-        ['Project Address:', projectAddress],
-        ['Principal Contractor:', companyName || principalContractor || 'N/A'],
-        ['Document Date:', currentDate],
-        ['Supervisor:', formData?.supervisorName || 'N/A'],
-        ['Contact:', formData?.supervisorPhone || 'N/A']
-      ];
-      
-      projectDetails.forEach(([label, value]) => {
-        doc.fontSize(11)
-           .fillColor('#333333')
-           .text(label, 50, yPos, { width: 150 })
-           .text(value, 200, yPos, { width: 300 });
-        yPos += 18;
-      });
-      
-      // Risk Assessment Tables
-      if (swmsData?.activities && swmsData.activities.length > 0) {
-        yPos += 30;
+  return httpServer;
+}
         
         // Check if we need a new page
         if (yPos > 650) {
