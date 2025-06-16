@@ -114,7 +114,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       req.session.userId = user.id;
-      res.json({ success: true, user: { id: user.id, username: user.username, email: user.email } });
+      res.json({ 
+        success: true, 
+        user: { 
+          id: user.id, 
+          username: user.username, 
+          email: user.email, 
+          isAdmin: user.isAdmin 
+        } 
+      });
     } catch (error) {
       console.error("Login error:", error);
       res.status(500).json({ error: "Login failed" });
@@ -276,33 +284,79 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Simple test PDF endpoint
+  app.post("/api/test-pdf", (req, res) => {
+    const doc = new PDFDocument();
+    const chunks: Buffer[] = [];
+    
+    doc.on('data', (chunk: Buffer) => chunks.push(chunk));
+    doc.on('end', () => {
+      const buffer = Buffer.concat(chunks);
+      res.writeHead(200, {
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': 'attachment; filename="test.pdf"',
+        'Content-Length': buffer.length.toString()
+      });
+      res.end(buffer);
+    });
+    
+    doc.text('Test PDF Document', 100, 100);
+    doc.text('This is a simple test to verify PDF generation works correctly.', 100, 120);
+    doc.end();
+  });
+
   // PDF generation endpoint
   app.post("/api/swms/pdf-download", async (req, res) => {
     try {
       console.log("PDF generation request received:", req.body?.projectName || 'Unknown project');
       
       const data = req.body;
-      const doc = new PDFDocument({ margin: 50 });
       
-      // Collect PDF data into buffer
+      // Create PDF document with specific options
+      const doc = new PDFDocument({ 
+        margin: 50,
+        bufferPages: true,
+        autoFirstPage: true
+      });
+      
+      // Collect PDF data into buffer array
       const chunks: Buffer[] = [];
       
-      doc.on('data', (chunk) => {
+      doc.on('data', (chunk: Buffer) => {
         chunks.push(chunk);
       });
       
       doc.on('end', () => {
-        const pdfBuffer = Buffer.concat(chunks);
-        
-        // Set proper headers for binary transfer
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', 'attachment; filename="swms_document.pdf"');
-        res.setHeader('Content-Length', pdfBuffer.length.toString());
-        res.setHeader('Cache-Control', 'no-cache');
-        res.setHeader('Content-Transfer-Encoding', 'binary');
-        
-        // Send the PDF buffer as binary
-        res.end(pdfBuffer, 'binary');
+        try {
+          const pdfBuffer = Buffer.concat(chunks);
+          console.log(`Generated PDF buffer: ${pdfBuffer.length} bytes`);
+          
+          // Verify it's a valid PDF by checking header
+          const pdfHeader = pdfBuffer.slice(0, 4).toString();
+          if (pdfHeader !== '%PDF') {
+            console.error('Invalid PDF header:', pdfHeader);
+            return res.status(500).json({ error: 'Invalid PDF generated' });
+          }
+          
+          // Set proper headers for PDF download
+          res.writeHead(200, {
+            'Content-Type': 'application/pdf',
+            'Content-Disposition': 'attachment; filename="swms_document.pdf"',
+            'Content-Length': pdfBuffer.length.toString(),
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+          });
+          
+          // Send the buffer directly
+          res.end(pdfBuffer);
+          
+        } catch (bufferError) {
+          console.error('Buffer processing error:', bufferError);
+          if (!res.headersSent) {
+            res.status(500).json({ error: 'PDF buffer processing failed' });
+          }
+        }
       });
       
       doc.on('error', (error) => {
