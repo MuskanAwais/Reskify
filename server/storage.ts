@@ -352,17 +352,16 @@ export class DatabaseStorage implements IStorage {
   async saveSWMSDraft(data: any): Promise<any> {
     try {
       const swmsData = {
-        projectName: data.projectName || '',
-        projectAddress: data.projectAddress || '',
+        userId: data.userId || 999,
+        title: data.projectName || '',
+        jobName: data.projectName || '',
+        projectLocation: data.projectAddress || '',
         principalContractor: data.principalContractor || '',
-        jobNumber: data.jobNumber || '',
+        projectNumber: data.jobNumber || '',
         tradeType: data.tradeType || '',
         projectDescription: data.projectDescription || '',
         workActivities: JSON.stringify(data.workActivities || []),
-        userId: data.userId || 999,
-        status: data.status || 'draft',
-        createdAt: data.createdAt || new Date(),
-        updatedAt: data.updatedAt || new Date()
+        status: data.status || 'draft'
       };
 
       const [savedDoc] = await db.insert(swmsDocuments).values(swmsData).returning();
