@@ -466,20 +466,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       doc.fontSize(9).fillColor('#000').font('Helvetica');
       doc.text('This SWMS complies with Australian WHS regulations and AS/NZS standards', 50, yPos);
       yPos += 15;
-      doc.text(`Generated: ${new Date().toLocaleDateString('en-AU')}`, 50, yPos);
+      doc.text(`Generated: ${new Date().toLocaleDateString('en-AU')} - Updated Format v2.0`, 50, yPos);
       
       // Finalize PDF
+      console.log("PDF Generation: Using new Riskify format with branding");
       doc.end();
       
       const pdfBuffer = await pdfPromise;
       console.log("Generated PDF buffer:", pdfBuffer.length, "bytes");
 
       res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', 'attachment; filename="swms_document.pdf"');
+      res.setHeader('Content-Disposition', `attachment; filename="swms_${Date.now()}.pdf"`);
       res.setHeader('Content-Length', pdfBuffer.length);
-      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, private');
       res.setHeader('Pragma', 'no-cache');
       res.setHeader('Expires', '0');
+      res.setHeader('Last-Modified', new Date().toUTCString());
       
       res.send(pdfBuffer);
       
