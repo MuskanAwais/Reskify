@@ -302,31 +302,24 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
             </p>
           </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Task Selection Methods</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <GPTTaskSelection
-                projectDetails={{
-                  projectName: formData.projectName || '',
-                  location: formData.projectLocation || '',
-                  tradeType: formData.tradeType || '',
-                  description: formData.projectDescription || ''
-                }}
-                onActivitiesGenerated={(activities: any[], plantEquipment: any[]) => {
-                  updateFormData({ 
-                    selectedTasks: activities,
-                    plantEquipment: plantEquipment,
-                    generationMethod: 'gpt'
-                  });
-                }}
-                onMethodSelected={(method: string) => {
-                  updateFormData({ generationMethod: method });
-                }}
-              />
-            </CardContent>
-          </Card>
+          <GPTTaskSelection
+            projectDetails={{
+              projectName: formData.projectName || '',
+              location: formData.projectLocation || '',
+              tradeType: formData.tradeType || '',
+              description: formData.projectDescription || ''
+            }}
+            onActivitiesGenerated={(activities: any[], plantEquipment: any[]) => {
+              updateFormData({ 
+                selectedTasks: activities,
+                plantEquipment: plantEquipment,
+                generationMethod: 'gpt'
+              });
+            }}
+            onMethodSelected={(method: string) => {
+              updateFormData({ generationMethod: method });
+            }}
+          />
         </div>
       );
 
@@ -335,9 +328,9 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
         <div className="space-y-6">
           <div className="text-center">
             <Shield className="mx-auto h-12 w-12 text-primary mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Risk Assessment Matrix</h3>
+            <h3 className="text-lg font-semibold mb-2">Risk Assessment & Controls</h3>
             <p className="text-gray-600 text-sm">
-              Review the risk assessment matrix to understand how risks are evaluated and scored in this SWMS document.
+              Review and edit the risk assessments for each task. Add control measures and calculate residual risk scores.
             </p>
           </div>
 
@@ -350,108 +343,208 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
             </CardContent>
           </Card>
 
-          {/* Risk Assessment Table - Only show if tasks exist and have proper structure */}
+          {/* Editable Risk Assessment Table */}
           {formData.selectedTasks && formData.selectedTasks.length > 0 && Array.isArray(formData.selectedTasks) && (
             <Card>
               <CardHeader>
-                <CardTitle>Risk Assessment Review</CardTitle>
+                <CardTitle>Task Risk Assessments</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                  <p className="text-blue-800 font-medium mb-2">Risk Assessment Validation</p>
+                  <p className="text-blue-800 font-medium mb-2">Interactive Risk Assessment</p>
                   <p className="text-gray-600 text-sm">
-                    Review your generated tasks and their risk assessments against the matrix above. 
-                    All risk scores are calculated using the Australian risk assessment standards.
+                    Review each task's risk assessment. Edit hazards, add control measures, and update risk scores based on the matrix above.
                   </p>
                 </div>
                 
-                <div className="overflow-x-auto">
-                  <table className="w-full border-collapse border border-gray-300 dark:border-gray-600">
-                    <thead>
-                      <tr className="bg-gray-100 dark:bg-gray-800">
-                        <th className="border border-gray-300 dark:border-gray-600 p-3 text-left">Task</th>
-                        <th className="border border-gray-300 dark:border-gray-600 p-3 text-left">Key Hazards</th>
-                        <th className="border border-gray-300 dark:border-gray-600 p-3 text-center">Risk Score</th>
-                        <th className="border border-gray-300 dark:border-gray-600 p-3 text-center">Risk Level</th>
-                        <th className="border border-gray-300 dark:border-gray-600 p-3 text-left">Control Measures</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {formData.selectedTasks.filter((task: any) => task && typeof task === 'object').map((task: any, index: number) => {
-                        // Safe extraction of task properties with fallbacks
-                        const taskName = String(task.name || task.task || task.activity || `Task ${index + 1}`);
-                        const riskScore = typeof task.riskScore === 'number' ? task.riskScore : 
-                                         typeof task.initialRiskScore === 'number' ? task.initialRiskScore : 0;
-                        const hazards = Array.isArray(task.hazards) ? task.hazards : [];
-                        const controls = Array.isArray(task.controlMeasures) ? task.controlMeasures :
-                                        Array.isArray(task.controls) ? task.controls : [];
+                <div className="space-y-6">
+                  {formData.selectedTasks.filter((task: any) => task && typeof task === 'object').map((task: any, index: number) => {
+                    const taskName = String(task.name || task.task || task.activity || `Task ${index + 1}`);
+                    const initialRiskScore = typeof task.riskScore === 'number' ? task.riskScore : 
+                                           typeof task.initialRiskScore === 'number' ? task.initialRiskScore : 8;
+                    const residualRiskScore = typeof task.residualRiskScore === 'number' ? task.residualRiskScore : initialRiskScore;
+                    const hazards = Array.isArray(task.hazards) ? task.hazards : [];
+                    const controls = Array.isArray(task.controlMeasures) ? task.controlMeasures :
+                                    Array.isArray(task.controls) ? task.controls : [];
 
-                        return (
-                          <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                            <td className="border border-gray-300 dark:border-gray-600 p-3 font-medium">
-                              {taskName}
-                            </td>
-                            <td className="border border-gray-300 dark:border-gray-600 p-3">
-                              {hazards.length > 0 ? (
-                                <ul className="list-disc list-inside text-sm">
-                                  {hazards.slice(0, 3).map((hazard: any, idx: number) => (
-                                    <li key={idx}>
-                                      {typeof hazard === 'string' ? hazard : 
-                                       typeof hazard === 'object' && hazard ? 
-                                         String(hazard.description || hazard.type || hazard.name || 'Hazard identified') :
-                                         String(hazard || 'Hazard identified')}
-                                    </li>
+                    return (
+                      <Card key={index} className="border-l-4 border-l-blue-500">
+                        <CardHeader>
+                          <CardTitle className="text-lg">{taskName}</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            {/* Left Column - Hazards & Initial Risk */}
+                            <div className="space-y-4">
+                              <div>
+                                <Label className="text-sm font-medium">Identified Hazards</Label>
+                                <div className="space-y-2 mt-2">
+                                  {hazards.map((hazard: any, hIdx: number) => (
+                                    <div key={hIdx} className="flex items-center space-x-2">
+                                      <Input
+                                        value={typeof hazard === 'string' ? hazard : 
+                                               typeof hazard === 'object' && hazard ? 
+                                                 String(hazard.description || hazard.type || hazard.name || '') : ''}
+                                        onChange={(e) => {
+                                          const updatedTasks = [...formData.selectedTasks];
+                                          const updatedHazards = [...hazards];
+                                          updatedHazards[hIdx] = e.target.value;
+                                          updatedTasks[index] = { ...updatedTasks[index], hazards: updatedHazards };
+                                          updateFormData({ selectedTasks: updatedTasks });
+                                        }}
+                                        placeholder="Describe hazard"
+                                        className="flex-1"
+                                      />
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => {
+                                          const updatedTasks = [...formData.selectedTasks];
+                                          const updatedHazards = hazards.filter((_: any, i: number) => i !== hIdx);
+                                          updatedTasks[index] = { ...updatedTasks[index], hazards: updatedHazards };
+                                          updateFormData({ selectedTasks: updatedTasks });
+                                        }}
+                                      >
+                                        <X className="h-4 w-4" />
+                                      </Button>
+                                    </div>
                                   ))}
-                                </ul>
-                              ) : (
-                                <span className="text-gray-500 text-sm">No hazards listed</span>
-                              )}
-                            </td>
-                            <td className="border border-gray-300 dark:border-gray-600 p-3 text-center">
-                              <Badge className={`${riskScore >= 14 ? 'bg-red-600 text-white' : 
-                                riskScore >= 11 ? 'bg-red-500 text-white' :
-                                riskScore >= 7 ? 'bg-yellow-500 text-black' :
-                                riskScore >= 4 ? 'bg-green-500 text-white' :
-                                'bg-green-600 text-white'}`}>
-                                {riskScore > 0 ? riskScore : 'TBD'}
-                              </Badge>
-                            </td>
-                            <td className="border border-gray-300 dark:border-gray-600 p-3 text-center">
-                              <span className={`font-medium ${
-                                riskScore >= 14 ? 'text-red-600' :
-                                riskScore >= 11 ? 'text-red-500' :
-                                riskScore >= 7 ? 'text-yellow-600' :
-                                riskScore >= 4 ? 'text-green-600' :
-                                'text-green-700'
-                              }`}>
-                                {riskScore >= 14 ? 'Severe' :
-                                 riskScore >= 11 ? 'High' :
-                                 riskScore >= 7 ? 'Medium' :
-                                 riskScore >= 4 ? 'Low' :
-                                 riskScore > 0 ? 'Very Low' : 'Not Assessed'}
-                              </span>
-                            </td>
-                            <td className="border border-gray-300 dark:border-gray-600 p-3">
-                              {controls.length > 0 ? (
-                                <ul className="list-disc list-inside text-sm">
-                                  {controls.slice(0, 2).map((control: any, idx: number) => (
-                                    <li key={idx}>
-                                      {typeof control === 'string' ? control : 
-                                       typeof control === 'object' && control ? 
-                                         String(control.description || control.measure || control.name || 'Control measure applied') :
-                                         String(control || 'Control measure applied')}
-                                    </li>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => {
+                                      const updatedTasks = [...formData.selectedTasks];
+                                      const updatedHazards = [...hazards, ''];
+                                      updatedTasks[index] = { ...updatedTasks[index], hazards: updatedHazards };
+                                      updateFormData({ selectedTasks: updatedTasks });
+                                    }}
+                                    className="w-full"
+                                  >
+                                    <Plus className="h-4 w-4 mr-2" />
+                                    Add Hazard
+                                  </Button>
+                                </div>
+                              </div>
+
+                              <div>
+                                <Label className="text-sm font-medium">Initial Risk Score</Label>
+                                <div className="flex items-center space-x-3 mt-2">
+                                  <Input
+                                    type="number"
+                                    min="1"
+                                    max="16"
+                                    value={initialRiskScore}
+                                    onChange={(e) => {
+                                      const score = parseInt(e.target.value);
+                                      const updatedTasks = [...formData.selectedTasks];
+                                      updatedTasks[index] = { ...updatedTasks[index], riskScore: score, initialRiskScore: score };
+                                      updateFormData({ selectedTasks: updatedTasks });
+                                    }}
+                                    className="w-20"
+                                  />
+                                  <Badge className={`${initialRiskScore >= 14 ? 'bg-red-600 text-white' : 
+                                    initialRiskScore >= 11 ? 'bg-red-500 text-white' :
+                                    initialRiskScore >= 7 ? 'bg-yellow-500 text-black' :
+                                    initialRiskScore >= 4 ? 'bg-green-500 text-white' :
+                                    'bg-green-600 text-white'}`}>
+                                    {initialRiskScore >= 14 ? 'Severe' :
+                                     initialRiskScore >= 11 ? 'High' :
+                                     initialRiskScore >= 7 ? 'Medium' :
+                                     initialRiskScore >= 4 ? 'Low' : 'Very Low'}
+                                  </Badge>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Right Column - Controls & Residual Risk */}
+                            <div className="space-y-4">
+                              <div>
+                                <Label className="text-sm font-medium">Control Measures</Label>
+                                <div className="space-y-2 mt-2">
+                                  {controls.map((control: any, cIdx: number) => (
+                                    <div key={cIdx} className="flex items-center space-x-2">
+                                      <Input
+                                        value={typeof control === 'string' ? control : 
+                                               typeof control === 'object' && control ? 
+                                                 String(control.description || control.measure || control.name || '') : ''}
+                                        onChange={(e) => {
+                                          const updatedTasks = [...formData.selectedTasks];
+                                          const updatedControls = [...controls];
+                                          updatedControls[cIdx] = e.target.value;
+                                          updatedTasks[index] = { ...updatedTasks[index], controlMeasures: updatedControls };
+                                          updateFormData({ selectedTasks: updatedTasks });
+                                        }}
+                                        placeholder="Describe control measure"
+                                        className="flex-1"
+                                      />
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => {
+                                          const updatedTasks = [...formData.selectedTasks];
+                                          const updatedControls = controls.filter((_: any, i: number) => i !== cIdx);
+                                          updatedTasks[index] = { ...updatedTasks[index], controlMeasures: updatedControls };
+                                          updateFormData({ selectedTasks: updatedTasks });
+                                        }}
+                                      >
+                                        <X className="h-4 w-4" />
+                                      </Button>
+                                    </div>
                                   ))}
-                                </ul>
-                              ) : (
-                                <span className="text-gray-500 text-sm">No controls listed</span>
-                              )}
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => {
+                                      const updatedTasks = [...formData.selectedTasks];
+                                      const updatedControls = [...controls, ''];
+                                      updatedTasks[index] = { ...updatedTasks[index], controlMeasures: updatedControls };
+                                      updateFormData({ selectedTasks: updatedTasks });
+                                    }}
+                                    className="w-full"
+                                  >
+                                    <Plus className="h-4 w-4 mr-2" />
+                                    Add Control
+                                  </Button>
+                                </div>
+                              </div>
+
+                              <div>
+                                <Label className="text-sm font-medium">Residual Risk Score</Label>
+                                <div className="flex items-center space-x-3 mt-2">
+                                  <Input
+                                    type="number"
+                                    min="1"
+                                    max="16"
+                                    value={residualRiskScore}
+                                    onChange={(e) => {
+                                      const score = parseInt(e.target.value);
+                                      const updatedTasks = [...formData.selectedTasks];
+                                      updatedTasks[index] = { ...updatedTasks[index], residualRiskScore: score };
+                                      updateFormData({ selectedTasks: updatedTasks });
+                                    }}
+                                    className="w-20"
+                                  />
+                                  <Badge className={`${residualRiskScore >= 14 ? 'bg-red-600 text-white' : 
+                                    residualRiskScore >= 11 ? 'bg-red-500 text-white' :
+                                    residualRiskScore >= 7 ? 'bg-yellow-500 text-black' :
+                                    residualRiskScore >= 4 ? 'bg-green-500 text-white' :
+                                    'bg-green-600 text-white'}`}>
+                                    {residualRiskScore >= 14 ? 'Severe' :
+                                     residualRiskScore >= 11 ? 'High' :
+                                     residualRiskScore >= 7 ? 'Medium' :
+                                     residualRiskScore >= 4 ? 'Low' : 'Very Low'}
+                                  </Badge>
+                                  {residualRiskScore < initialRiskScore && (
+                                    <span className="text-green-600 text-sm font-medium">↓ Reduced</span>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
                 </div>
               </CardContent>
             </Card>
