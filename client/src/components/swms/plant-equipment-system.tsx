@@ -377,6 +377,122 @@ export default function PlantEquipmentSystem({ plantEquipment, onUpdate }: Plant
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Edit Equipment Dialog */}
+      <Dialog open={!!editingEquipment} onOpenChange={(open) => !open && setEditingEquipment(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Plant & Equipment</DialogTitle>
+          </DialogHeader>
+          {editingEquipment && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="edit-equipment-name">Equipment Name</Label>
+                  <Input
+                    id="edit-equipment-name"
+                    value={editingEquipment.name || ''}
+                    onChange={(e) => setEditingEquipment({...editingEquipment, name: e.target.value})}
+                    placeholder="Enter equipment name"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-equipment-type">Type</Label>
+                  <Select 
+                    value={editingEquipment.type} 
+                    onValueChange={(value) => setEditingEquipment({...editingEquipment, type: value as PlantEquipment['type']})}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Plant">Plant</SelectItem>
+                      <SelectItem value="Equipment">Equipment</SelectItem>
+                      <SelectItem value="Tool">Tool</SelectItem>
+                      <SelectItem value="Vehicle">Vehicle</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="edit-equipment-model">Model</Label>
+                  <Input
+                    id="edit-equipment-model"
+                    value={editingEquipment.model || ''}
+                    onChange={(e) => setEditingEquipment({...editingEquipment, model: e.target.value})}
+                    placeholder="Model number"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-equipment-serial">Serial Number</Label>
+                  <Input
+                    id="edit-equipment-serial"
+                    value={editingEquipment.serialNumber || ''}
+                    onChange={(e) => setEditingEquipment({...editingEquipment, serialNumber: e.target.value})}
+                    placeholder="Serial number"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="edit-equipment-operator">Operator</Label>
+                  <Input
+                    id="edit-equipment-operator"
+                    value={editingEquipment.operator || ''}
+                    onChange={(e) => setEditingEquipment({...editingEquipment, operator: e.target.value})}
+                    placeholder="Operator name"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-equipment-risk">Risk Level</Label>
+                  <Select 
+                    value={editingEquipment.riskLevel} 
+                    onValueChange={(value) => setEditingEquipment({...editingEquipment, riskLevel: value as PlantEquipment['riskLevel']})}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select risk level" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Low">Low</SelectItem>
+                      <SelectItem value="Medium">Medium</SelectItem>
+                      <SelectItem value="High">High</SelectItem>
+                      <SelectItem value="Critical">Critical</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="edit-equipment-notes">Notes</Label>
+                <Textarea
+                  id="edit-equipment-notes"
+                  value={editingEquipment.notes || ''}
+                  onChange={(e) => setEditingEquipment({...editingEquipment, notes: e.target.value})}
+                  placeholder="Additional notes and requirements"
+                />
+              </div>
+
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" onClick={() => setEditingEquipment(null)}>
+                  Cancel
+                </Button>
+                <Button onClick={() => {
+                  const updatedEquipment = equipment.map(item => 
+                    item.id === editingEquipment.id ? editingEquipment : item
+                  );
+                  setEquipment(updatedEquipment);
+                  setEditingEquipment(null);
+                }}>
+                  Save Changes
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

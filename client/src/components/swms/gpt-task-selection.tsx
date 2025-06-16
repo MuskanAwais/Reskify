@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import { Loader2, Search, Bot, Edit, CheckCircle2, AlertCircle, Plus, Trash2, LogIn } from "lucide-react";
+import { Loader2, Search, Bot, Edit, CheckCircle2, AlertCircle, Plus, Trash2, LogIn, ArrowUp, ArrowDown, GripVertical } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
@@ -407,6 +407,26 @@ export default function GPTTaskSelection({
       title: "Task Removed",
       description: "Task has been removed from the list.",
     });
+  };
+
+  // Move task up in order
+  const moveTaskUp = (taskId: string) => {
+    const index = generatedTasks.findIndex(task => task.id === taskId);
+    if (index > 0) {
+      const newTasks = [...generatedTasks];
+      [newTasks[index - 1], newTasks[index]] = [newTasks[index], newTasks[index - 1]];
+      setGeneratedTasks(newTasks);
+    }
+  };
+
+  // Move task down in order
+  const moveTaskDown = (taskId: string) => {
+    const index = generatedTasks.findIndex(task => task.id === taskId);
+    if (index < generatedTasks.length - 1) {
+      const newTasks = [...generatedTasks];
+      [newTasks[index], newTasks[index + 1]] = [newTasks[index + 1], newTasks[index]];
+      setGeneratedTasks(newTasks);
+    }
   };
 
   // Update task name
@@ -853,17 +873,41 @@ export default function GPTTaskSelection({
                     {generatedTasks.map((task, index) => (
                       <div key={task.id} className="border rounded-lg p-4 bg-gray-50">
                         <div className="flex items-start justify-between mb-3">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-2">
-                              <span className="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center text-sm font-medium">{index + 1}</span>
-                              <Input
-                                value={task.name}
-                                onChange={(e) => updateTaskName(task.id, e.target.value)}
-                                className="flex-1 font-medium"
-                                placeholder="Task name"
-                              />
+                          <div className="flex items-start gap-3 flex-1">
+                            <div className="flex flex-col gap-1 mt-1">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => moveTaskUp(task.id)}
+                                disabled={index === 0}
+                                className="h-6 w-6 p-0 text-gray-500 hover:text-gray-700 disabled:opacity-30"
+                                title="Move up"
+                              >
+                                <ArrowUp className="h-3 w-3" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => moveTaskDown(task.id)}
+                                disabled={index === generatedTasks.length - 1}
+                                className="h-6 w-6 p-0 text-gray-500 hover:text-gray-700 disabled:opacity-30"
+                                title="Move down"
+                              >
+                                <ArrowDown className="h-3 w-3" />
+                              </Button>
                             </div>
-                            <p className="text-sm text-gray-600 mb-3">{task.description}</p>
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-2">
+                                <span className="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center text-sm font-medium">{index + 1}</span>
+                                <Input
+                                  value={task.name}
+                                  onChange={(e) => updateTaskName(task.id, e.target.value)}
+                                  className="flex-1 font-medium"
+                                  placeholder="Task name"
+                                />
+                              </div>
+                              <p className="text-sm text-gray-600 mb-3">{task.description}</p>
+                            </div>
                           </div>
                           <div className="flex gap-2">
                             <Button
@@ -877,7 +921,7 @@ export default function GPTTaskSelection({
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => removeTask(task.id)}
+                              onClick={() => removeGeneratedTask(task.id)}
                               className="text-red-600 hover:text-red-700"
                             >
                               <Trash2 className="h-4 w-4" />
@@ -967,9 +1011,9 @@ export default function GPTTaskSelection({
                       placeholder="Add additional task..."
                       value={newTask}
                       onChange={(e) => setNewTask(e.target.value)}
-                      onKeyPress={(e) => e.key === 'Enter' && addNewTask()}
+                      onKeyPress={(e) => e.key === 'Enter' && addNewTaskToGenerated()}
                     />
-                    <Button onClick={addNewTask} disabled={!newTask.trim()}>
+                    <Button onClick={addNewTaskToGenerated} disabled={!newTask.trim()}>
                       <Plus className="h-4 w-4" />
                     </Button>
                   </div>
