@@ -32,26 +32,46 @@ export class DatabaseStorage implements IStorage {
   private swmsDocuments: any[] = [];
 
   async getUser(id: number): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.id, id));
-    return user || undefined;
+    try {
+      const [user] = await db.select().from(users).where(eq(users.id, id));
+      return user || undefined;
+    } catch (error) {
+      console.error('Error fetching user:', error);
+      return undefined;
+    }
   }
 
   async getUserById(id: number): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.id, id));
-    return user || undefined;
+    try {
+      const [user] = await db.select().from(users).where(eq(users.id, id));
+      return user || undefined;
+    } catch (error) {
+      console.error('Error fetching user by ID:', error);
+      return undefined;
+    }
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.username, username));
-    return user || undefined;
+    try {
+      const [user] = await db.select().from(users).where(eq(users.username, username));
+      return user || undefined;
+    } catch (error) {
+      console.error('Error fetching user by username:', error);
+      return undefined;
+    }
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const [user] = await db
-      .insert(users)
-      .values(insertUser)
-      .returning();
-    return user;
+    try {
+      const [user] = await db
+        .insert(users)
+        .values(insertUser)
+        .returning();
+      return user;
+    } catch (error) {
+      console.error('Error creating user:', error);
+      throw error;
+    }
   }
 
   async getAllUsers(): Promise<User[]> {
