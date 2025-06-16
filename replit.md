@@ -105,6 +105,13 @@ Riskify is a comprehensive SWMS (Safe Work Method Statement) builder application
 
 ## Changelog
 
+- June 16, 2025. Critical System Recovery - Server routes corruption fixed and admin access restored:
+  * Completely reconstructed corrupted server routes file that was preventing application startup
+  * Rebuilt authentication system with proper session middleware and bcrypt password hashing
+  * Added missing SWMS storage interface methods for full CRUD operations
+  * Updated SWMS editor component to work with restored backend API endpoints
+  * Reset admin account (0421869995) password to "admin123" after authentication failure
+  * Application successfully restored to working state on port 5000
 - June 16, 2025. System Testing Complete - Comprehensive functionality verification:
   * All core features tested and confirmed working: draft saving/loading, credit deduction, AI risk assessment generation, PDF creation
   * Complete 7-step workflow tested end-to-end with successful draft creation (ID 103), credit usage (9 remaining), and PDF generation (43KB file)
