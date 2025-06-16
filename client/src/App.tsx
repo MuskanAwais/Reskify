@@ -18,6 +18,7 @@ import SwmsBuilder from "@/pages/swms-builder";
 import Profile from "@/pages/profile";
 import SafetyLibrary from "@/pages/safety-library";
 import MySwms from "@/pages/my-swms";
+import SwmsEditor from "@/pages/swms-editor";
 import Analytics from "@/pages/analytics";
 import AiAssistant from "@/pages/ai-assistant";
 import Settings from "@/pages/settings";

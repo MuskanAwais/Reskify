@@ -1241,7 +1241,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let userId = req.user?.id;
       if (!userId) {
         // Check session for user ID or default to user with test documents
-        userId = req.session?.passport?.user || 2;
+        userId = (req.session as any)?.passport?.user || 2;
       }
       
       console.log(`Fetching SWMS documents for user ${userId}`);
@@ -1422,10 +1422,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Comprehensive PDF generation endpoint with all required elements
-  app.post("/api/swms/pdf-download", bypassAuth, async (req, res) => {
+  app.post("/api/swms/pdf-download", async (req, res) => {
     try {
       const PDFDocument = require('pdfkit');
       const { projectName, projectNumber, projectAddress, swmsData, formData, companyName, principalContractor } = req.body;
+      
+      console.log('PDF generation request:', { projectName, projectNumber, projectAddress });
+      
+      if (!projectName) {
+        return res.status(400).json({ error: "Project name is required" });
+      }
+      
       const currentDate = new Date().toLocaleDateString('en-AU');
       
       // Create a new PDF document
