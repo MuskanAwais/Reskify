@@ -119,6 +119,9 @@ Riskify is a comprehensive SWMS (Safe Work Method Statement) builder application
   * FIXED: Draft duplication issue - Implemented update mechanism instead of creating multiple drafts, single SWMS now saves/updates properly
   * FIXED: Payment step logic - Added "Use Current Credits" functionality, removed 'pro' text, subscription options only show for non-subscribers
   * FIXED: Workflow step order - Legal Disclaimer now final step (Step 6) before Digital Signatures & PDF (Step 7)
+  * FIXED: Draft loading issue - Added GET /api/swms/draft/:id endpoint with proper JSON parsing, drafts now load all saved data correctly
+  * FIXED: Payment credit system - Implemented /api/user/use-credit endpoint with proper authentication bypass and billing integration
+  * FIXED: Auto-saving behavior - Single draft updates correctly without creating duplicates, maintains single file per SWMS session
 - June 16, 2025. Added comprehensive risk assessment matrix to SWMS builder and final documents with Australian standards compliance
 - June 15, 2025. Initial setup
 

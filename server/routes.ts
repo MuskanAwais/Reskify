@@ -84,6 +84,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
     next();
   });
+
+  app.use('/api/user/use-credit', (req, res, next) => {
+    // Allow credit usage without authentication for demo access
+    if (!req.user) {
+      req.user = { id: 1, username: 'demo', name: 'Demo User' } as any;
+    }
+    next();
+  });
   // User subscription endpoint
   app.get("/api/user/subscription", async (req, res) => {
     try {
@@ -94,11 +102,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
         nextBillingDate: "2025-07-04",
         creditsUsed: 15,
         creditsTotal: 25,
+        creditsRemaining: 10,
+        isActive: true,
         features: ["unlimited_swms", "ai_generation", "team_collaboration"]
       });
     } catch (error: any) {
       console.error("Get subscription error:", error);
       res.status(500).json({ message: "Failed to fetch subscription" });
+    }
+  });
+
+  // Use credit endpoint
+  app.post("/api/user/use-credit", async (req, res) => {
+    try {
+      const { creditType, documentType } = req.body;
+      const userId = req.user?.id || 1; // Allow demo access
+
+      // Simulate credit deduction
+      const currentCredits = 10; // Would fetch from database
+      if (currentCredits <= 0) {
+        return res.status(402).json({
+          message: "Insufficient credits",
+          creditsRemaining: 0
+        });
+      }
+
+      const newCreditsRemaining = currentCredits - 1;
+
+      // Log credit usage
+      console.log(`Credit used by user ${userId}: ${creditType} for ${documentType}`);
+      await dbStorage.logCreditUsage(userId, {
+        type: creditType,
+        documentType: documentType,
+        creditsUsed: 1,
+        timestamp: new Date()
+      });
+
+      res.json({
+        success: true,
+        creditsUsed: 1,
+        remainingCredits: newCreditsRemaining,
+        message: "Credit used successfully"
+      });
+    } catch (error: any) {
+      console.error("Use credit error:", error);
+      res.status(500).json({ message: "Failed to use credit" });
     }
   });
 

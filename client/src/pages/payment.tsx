@@ -90,6 +90,42 @@ export default function Payment() {
     setLocation("/swms-builder?step=6");
   };
 
+  const handleUseCreditMutation = useMutation({
+    mutationFn: async () => {
+      const response = await apiRequest("POST", "/api/user/use-credit", {
+        creditType: "swms_generation",
+        documentType: "swms"
+      });
+      return response.json();
+    },
+    onSuccess: (data) => {
+      toast({
+        title: "Credit Used Successfully",
+        description: `1 credit deducted. ${data.remainingCredits} credits remaining.`,
+      });
+      setLocation("/swms-builder?step=6");
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Credit Usage Failed",
+        description: error.message || "Unable to use credit. Please try again.",
+        variant: "destructive",
+      });
+    }
+  });
+
+  const handleUseCredit = () => {
+    if (hasAvailableCredits) {
+      handleUseCreditMutation.mutate();
+    } else {
+      toast({
+        title: "No Credits Available",
+        description: "Please purchase credits or select a payment option.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const mockSubscription = subscription || {
     plan: "pro",
     creditsRemaining: 10,
@@ -247,11 +283,17 @@ export default function Payment() {
             </CardHeader>
             <CardContent>
               <Button 
-                onClick={handleDemoBypass}
+                onClick={handleUseCredit}
+                disabled={handleUseCreditMutation.isPending}
                 className="w-full bg-blue-600 hover:bg-blue-700"
               >
-                Use 1 Credit for this SWMS
+                {handleUseCreditMutation.isPending ? "Processing..." : "Use 1 Credit for this SWMS"}
               </Button>
+              <div className="mt-3 text-center">
+                <Button variant="link" className="text-sm text-blue-600 p-0">
+                  Manage Billing & Credits
+                </Button>
+              </div>
             </CardContent>
           </Card>
         )}
