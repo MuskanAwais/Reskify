@@ -1,2 +1,1 @@
-// Backup of working routes before corruption
-// This file contains the clean routes structure
+// Backup of routes before fixing corruption
