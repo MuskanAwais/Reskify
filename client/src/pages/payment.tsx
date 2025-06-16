@@ -91,16 +91,18 @@ export default function Payment() {
   };
 
   const mockSubscription = subscription || {
-    plan: "One-Off SWMS",
-    creditsRemaining: 0,
-    creditsUsed: 45,
-    creditsTotal: 45,
+    plan: "pro",
+    creditsRemaining: 10,
+    creditsUsed: 15,
+    creditsTotal: 25,
     isActive: true
   };
 
   const creditsProgress = (mockSubscription as any).creditsTotal > 0 
     ? ((mockSubscription as any).creditsUsed / (mockSubscription as any).creditsTotal) * 100 
     : 0;
+
+  const hasAvailableCredits = (mockSubscription as any).creditsRemaining > 0;
 
   const createPaymentIntent = useMutation({
     mutationFn: async ({ amount, type }: { amount: number, type: string }) => {
@@ -215,8 +217,12 @@ export default function Payment() {
                 <span className="font-medium">{(mockSubscription as any).creditsUsed}/{(mockSubscription as any).creditsTotal} SWMS</span>
               </div>
               <Progress value={creditsProgress} className="h-2" />
+              <div className="flex justify-between text-sm mt-2">
+                <span className="text-muted-foreground">Credits Remaining</span>
+                <span className="font-medium text-green-600">{(mockSubscription as any).creditsRemaining} SWMS</span>
+              </div>
               <p className="text-sm text-muted-foreground">
-                Pay per SWMS document
+                {hasAvailableCredits ? "Use credits or pay per SWMS document" : "Pay per SWMS document"}
               </p>
               
               {(mockSubscription as any).creditsRemaining === 0 && (
@@ -229,6 +235,26 @@ export default function Payment() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Use Current Credits Option */}
+        {hasAvailableCredits && (
+          <Card className="mb-6 border-2 border-blue-200 bg-blue-50">
+            <CardHeader>
+              <CardTitle className="text-blue-800">Use Current Credits</CardTitle>
+              <CardDescription>
+                You have {(mockSubscription as any).creditsRemaining} credits remaining from your {(mockSubscription as any).plan} plan
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button 
+                onClick={handleDemoBypass}
+                className="w-full bg-blue-600 hover:bg-blue-700"
+              >
+                Use 1 Credit for this SWMS
+              </Button>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Admin Demo Toggle */}
         {isAdminDemo && (
