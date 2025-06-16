@@ -600,34 +600,56 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {/* Check if user has credits */}
-                {formData.userCredits > 0 && (
-                  <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-                    <div className="flex items-center justify-between mb-3">
-                      <div>
-                        <p className="font-medium text-green-800">Available Credits</p>
-                        <p className="text-green-700 text-sm">You have {formData.userCredits} SWMS credits remaining</p>
-                      </div>
-                      <Badge className="bg-green-100 text-green-800">
-                        {formData.userCredits} Credits
-                      </Badge>
+                {/* Use Current Credits Option */}
+                <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <p className="font-medium text-green-800">Use Current Credits</p>
+                      <p className="text-green-700 text-sm">You have 10 SWMS credits remaining from your subscription</p>
                     </div>
-                    <Button 
-                      size="lg"
-                      className="w-full bg-green-600 hover:bg-green-700"
-                      onClick={() => {
-                        updateFormData({ paymentMethod: 'credits' });
-                      }}
-                    >
-                      Use Current Credits (1 credit)
-                    </Button>
+                    <Badge className="bg-green-100 text-green-800">
+                      10 Credits
+                    </Badge>
                   </div>
-                )}
+                  <Button 
+                    size="lg"
+                    className="w-full bg-green-600 hover:bg-green-700"
+                    onClick={() => {
+                      updateFormData({ paymentMethod: 'credits', paid: true });
+                      // Move to next step (Legal Disclaimer)
+                      window.location.href = '/swms-builder?step=6';
+                    }}
+                  >
+                    Use Current Credits (1 credit)
+                  </Button>
+                </div>
                 
                 <div className="text-center">
                   <p className="text-gray-600 mb-4">
-                    {formData.userCredits > 0 ? 'Or proceed to payment for additional credits:' : 'To complete your SWMS document generation, please proceed to the payment page.'}
+                    Or purchase additional credits or upgrade:
                   </p>
+                  
+                  {/* Show only One-Off SWMS and Credit Pack for subscription users */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <Button 
+                      variant="outline"
+                      size="lg"
+                      onClick={() => window.location.href = '/payment?plan=one-off'}
+                      className="border-blue-200 text-blue-700 hover:bg-blue-50"
+                    >
+                      <CreditCard className="mr-2 h-4 w-4" />
+                      One-Off SWMS ($15)
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="lg"
+                      onClick={() => window.location.href = '/payment?plan=credits'}
+                      className="border-orange-200 text-orange-700 hover:bg-orange-50"
+                    >
+                      <Zap className="mr-2 h-4 w-4" />
+                      Credit Pack ($65)
+                    </Button>
+                  </div>
                   
                   {/* Admin Demo Toggle - Only visible to admin */}
                   {localStorage.getItem('isAppAdmin') === 'true' && (
@@ -646,15 +668,6 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
                       </Button>
                     </div>
                   )}
-                  
-                  <Button 
-                    size="lg"
-                    onClick={() => window.location.href = '/payment'}
-                    className="bg-blue-600 hover:bg-blue-700"
-                  >
-                    <CreditCard className="mr-2 h-4 w-4" />
-                    Go to Payment
-                  </Button>
                 </div>
               </div>
             </CardContent>
@@ -721,18 +734,21 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
       return (
         <div className="space-y-6">
           <div className="text-center">
-            <Scale className="mx-auto h-12 w-12 text-primary mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Legal Disclaimer</h3>
+            <PenTool className="mx-auto h-12 w-12 text-primary mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Digital Signatures & Completion</h3>
             <p className="text-gray-600 text-sm">
-              Accept terms and liability disclaimer to proceed
+              Add digital signatures and complete your SWMS document
             </p>
           </div>
 
-          <DisclaimerAcceptance
-            acceptedDisclaimer={formData.acceptedDisclaimer || false}
-            onAcceptanceChange={(accepted) => {
-              updateFormData({ acceptedDisclaimer: accepted });
-            }}
+          <DigitalSignatureSystem
+            formData={formData}
+            onDataChange={updateFormData}
+          />
+
+          <PDFPrintSystem
+            formData={formData}
+            onDataChange={updateFormData}
           />
         </div>
       );

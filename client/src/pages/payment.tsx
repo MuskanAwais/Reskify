@@ -203,7 +203,7 @@ export default function Payment() {
             <div className="flex items-center justify-between">
               <div>
                 <CardTitle className="text-lg">Current Plan</CardTitle>
-                <CardDescription>{(mockSubscription as any).plan}</CardDescription>
+                <CardDescription></CardDescription>
               </div>
               <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
                 {(mockSubscription as any).isActive ? "Active" : "Inactive"}
