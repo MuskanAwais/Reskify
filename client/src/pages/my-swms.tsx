@@ -66,21 +66,116 @@ export default function MySwms() {
   });
 
   const downloadDocumentMutation = useMutation({
-    mutationFn: async (document: SwmsDocument) => {
-      const blob = await generateProtectedPDF(document, user);
+    mutationFn: async (document: any) => {
+      // Use the comprehensive PDF generation endpoint
+      const response = await fetch('/api/swms/pdf-download', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          projectName: document.title || document.jobName,
+          projectNumber: document.jobNumber,
+          projectAddress: document.projectAddress || document.projectLocation,
+          companyName: document.principalContractor,
+          principalContractor: document.principalContractor,
+          swmsData: document.swmsData || {
+            activities: document.workActivities || [],
+            plantEquipment: document.plantEquipment || [],
+            emergencyProcedures: document.emergencyProcedures || {}
+          },
+          formData: {
+            jobName: document.title || document.jobName,
+            jobNumber: document.jobNumber,
+            projectLocation: document.projectAddress || document.projectLocation,
+            principalContractor: document.principalContractor,
+            supervisorName: document.responsiblePersons?.supervisor || 'N/A',
+            supervisorPhone: document.responsiblePersons?.phone || 'N/A'
+          }
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate PDF');
+      }
+
+      const blob = await response.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `${document.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_swms.pdf`;
+      a.download = `${(document.title || document.jobName).replace(/[^a-z0-9]/gi, '_').toLowerCase()}_swms.pdf`;
       a.click();
       URL.revokeObjectURL(url);
     },
     onSuccess: () => {
       toast({
         title: "Download Started",
-        description: "Your SWMS document is being downloaded.",
+        description: "Your comprehensive SWMS PDF is being downloaded.",
       });
     },
+    onError: (error) => {
+      toast({
+        title: "Download Failed",
+        description: "Failed to generate PDF. Please try again.",
+        variant: "destructive"
+      });
+    }
+  });
+
+  const viewPdfMutation = useMutation({
+    mutationFn: async (document: any) => {
+      // Generate PDF and open in new tab for viewing
+      const response = await fetch('/api/swms/pdf-download', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          projectName: document.title || document.jobName,
+          projectNumber: document.jobNumber,
+          projectAddress: document.projectAddress || document.projectLocation,
+          companyName: document.principalContractor,
+          principalContractor: document.principalContractor,
+          swmsData: document.swmsData || {
+            activities: document.workActivities || [],
+            plantEquipment: document.plantEquipment || [],
+            emergencyProcedures: document.emergencyProcedures || {}
+          },
+          formData: {
+            jobName: document.title || document.jobName,
+            jobNumber: document.jobNumber,
+            projectLocation: document.projectAddress || document.projectLocation,
+            principalContractor: document.principalContractor,
+            supervisorName: document.responsiblePersons?.supervisor || 'N/A',
+            supervisorPhone: document.responsiblePersons?.phone || 'N/A'
+          }
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate PDF');
+      }
+
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
+      
+      // Clean up the URL after a delay
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    },
+    onSuccess: () => {
+      toast({
+        title: "PDF Opened",
+        description: "Your SWMS PDF is now displayed in a new tab.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "View Failed",
+        description: "Failed to open PDF. Please try again.",
+        variant: "destructive"
+      });
+    }
   });
 
   const filteredDocuments = documents.filter((doc: SwmsDocument) => {
@@ -272,21 +367,38 @@ export default function MySwms() {
                 </div>
 
                 <div className="flex gap-2 mt-4 pt-4 border-t">
-                  <Link href={`/swms-builder?edit=${document.id}`}>
-                    <Button variant="outline" size="sm" className="flex-1">
-                      <Edit className="h-4 w-4 mr-1" />
-                      Edit
-                    </Button>
-                  </Link>
-                  
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => downloadDocumentMutation.mutate(document)}
-                    disabled={downloadDocumentMutation.isPending}
-                  >
-                    <Download className="h-4 w-4" />
-                  </Button>
+                  {document.status === 'completed' ? (
+                    // Completed documents: View PDF and Download
+                    <>
+                      <Button
+                        variant="default"
+                        size="sm"
+                        onClick={() => viewPdfMutation.mutate(document)}
+                        disabled={viewPdfMutation.isPending}
+                        className="flex-1 bg-primary/600 hover:bg-primary/700"
+                      >
+                        <Eye className="h-4 w-4 mr-1" />
+                        View PDF
+                      </Button>
+                      
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => downloadDocumentMutation.mutate(document)}
+                        disabled={downloadDocumentMutation.isPending}
+                      >
+                        <Download className="h-4 w-4" />
+                      </Button>
+                    </>
+                  ) : (
+                    // Draft documents: Edit option
+                    <Link href={`/swms-builder?edit=${document.id}`}>
+                      <Button variant="outline" size="sm" className="flex-1">
+                        <Edit className="h-4 w-4 mr-1" />
+                        Continue Editing
+                      </Button>
+                    </Link>
+                  )}
                   
                   <Button
                     variant="outline"

@@ -1619,7 +1619,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         doc.fontSize(16).fillColor('#1e40af').text('PLANT & EQUIPMENT', 50, yPos);
         yPos += 30;
         
-        swmsData.plantEquipment.forEach((equipment) => {
+        swmsData.plantEquipment.forEach((equipment: any) => {
           if (yPos > 700) {
             doc.addPage();
             addPageElements();
