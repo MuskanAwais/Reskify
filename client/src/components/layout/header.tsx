@@ -24,7 +24,8 @@ export default function Header() {
   const { user: authUser, logoutMutation } = useAuth();
   const [location] = useLocation();
 
-  const getInitials = (name: string) => {
+  const getInitials = (name: string | undefined | null) => {
+    if (!name) return 'U';
     return name
       .split(' ')
       .map(word => word.charAt(0))
