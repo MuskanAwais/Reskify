@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import { Input } from "@/components/ui/input";
-import { MapPin, CheckCircle } from "lucide-react";
+import { MapPin, CheckCircle, Loader2 } from "lucide-react";
 
-interface GoogleAddressAutocompleteProps {
+interface AustralianAddressAutocompleteProps {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
@@ -11,70 +11,88 @@ interface GoogleAddressAutocompleteProps {
   id?: string;
 }
 
-declare global {
-  interface Window {
-    google: any;
-    initGooglePlaces: () => void;
-  }
+interface AddressSuggestion {
+  text: string;
+  placeId: string;
 }
 
-export default function GoogleAddressAutocomplete({
+export default function AustralianAddressAutocomplete({
   value,
   onChange,
-  placeholder = "Start typing address...",
+  placeholder = "Start typing Australian address...",
   required = false,
   className = "",
   id = "address-input"
-}: GoogleAddressAutocompleteProps) {
+}: AustralianAddressAutocompleteProps) {
   const [isValidated, setIsValidated] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [suggestions, setSuggestions] = useState<AddressSuggestion[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const autocompleteRef = useRef<any>(null);
+  const debounceRef = useRef<NodeJS.Timeout>();
 
-  useEffect(() => {
-    // Initialize Google Places Autocomplete
-    const initializeAutocomplete = () => {
-      if (window.google && window.google.maps && window.google.maps.places && inputRef.current) {
-        autocompleteRef.current = new window.google.maps.places.Autocomplete(
-          inputRef.current,
-          {
-            types: ['address'],
-            componentRestrictions: { country: 'AU' }, // Restrict to Australia
-            fields: ['formatted_address', 'geometry', 'place_id', 'address_components']
-          }
-        );
+  // Free Australian address lookup using OpenStreetMap Nominatim
+  const searchAddresses = async (query: string): Promise<AddressSuggestion[]> => {
+    if (query.length < 3) return [];
 
-        autocompleteRef.current.addListener('place_changed', () => {
-          const place = autocompleteRef.current.getPlace();
-          
-          if (place && place.formatted_address) {
-            onChange(place.formatted_address);
-            setIsValidated(true);
-          } else {
-            setIsValidated(false);
-          }
-        });
-      }
-    };
+    try {
+      // Using Nominatim (free) with Australian country restriction
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?` +
+        `q=${encodeURIComponent(query)}&` +
+        `country=Australia&` +
+        `format=json&` +
+        `addressdetails=1&` +
+        `limit=5&` +
+        `bounded=1&` +
+        `viewbox=113.338953078,-43.6345972634,153.569469029,-10.6681857235` // Australia bounding box
+      );
 
-    // Load Google Places API if not already loaded
-    if (!window.google) {
-      const script = document.createElement('script');
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${import.meta.env.VITE_GOOGLE_PLACES_API_KEY}&libraries=places`;
-      script.async = true;
-      script.defer = true;
-      script.onload = initializeAutocomplete;
-      document.head.appendChild(script);
-    } else {
-      initializeAutocomplete();
+      if (!response.ok) throw new Error('Address search failed');
+
+      const data = await response.json();
+      
+      return data
+        .filter((item: any) => 
+          item.display_name && 
+          item.display_name.includes('Australia') &&
+          (item.class === 'building' || item.class === 'place' || item.type === 'house')
+        )
+        .map((item: any) => ({
+          text: item.display_name.replace(', Australia', ''),
+          placeId: item.place_id.toString()
+        }))
+        .slice(0, 5);
+    } catch (error) {
+      console.warn('Address search error:', error);
+      return [];
+    }
+  };
+
+  const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    onChange(newValue);
+    setIsValidated(false);
+
+    // Clear previous debounce
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
     }
 
-    return () => {
-      if (autocompleteRef.current) {
-        window.google.maps.event.clearInstanceListeners(autocompleteRef.current);
+    // Debounce address search
+    debounceRef.current = setTimeout(async () => {
+      if (newValue.length >= 3) {
+        setIsLoading(true);
+        const results = await searchAddresses(newValue);
+        setSuggestions(results);
+        setShowSuggestions(results.length > 0);
+        setIsLoading(false);
+      } else {
+        setSuggestions([]);
+        setShowSuggestions(false);
       }
-    };
-  }, [onChange]);
+    }, 300);
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
