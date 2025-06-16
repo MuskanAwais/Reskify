@@ -367,12 +367,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
       doc.fontSize(14).fillColor('#e2e8f0');
       doc.text('Riskify Professional Builder', pageWidth - 200, 55);
       
-      // Watermark content from discussions - project information
+      // RISKIFY WATERMARK - Restore original format from early development
       doc.save();
+      doc.opacity(0.05);
+      doc.fontSize(72).fillColor('#0F4037').font('Helvetica-Bold');
+      
+      // Main RISKIFY watermark in center
+      doc.text('RISKIFY', pageWidth/2 - 120, pageHeight/2 - 40, { width: 240, align: 'center' });
+      
+      // Project watermarks in corners
+      doc.fontSize(16);
       doc.opacity(0.08);
-      doc.fontSize(48).fillColor('#94a3b8').font('Helvetica-Bold');
-      const watermarkText = `${data.projectName || data.title || 'SWMS PROJECT'} - ${data.principalContractor || 'CONTRACTOR'}`;
-      doc.text(watermarkText, 100, 300, { width: 600, align: 'center' });
+      const projectName = data.projectName || data.title || 'SWMS PROJECT';
+      
+      // Top corners
+      doc.text('RISKIFY', 60, 100, { angle: -15 });
+      doc.text(projectName, pageWidth - 200, 100, { angle: 15 });
+      
+      // Bottom corners  
+      doc.text('RISKIFY', 60, pageHeight - 150, { angle: 15 });
+      doc.text(projectName, pageWidth - 200, pageHeight - 150, { angle: -15 });
+      
+      // Diagonal watermarks
+      doc.text('RISKIFY', 200, 200, { angle: -30 });
+      doc.text('RISKIFY', pageWidth - 300, 350, { angle: 30 });
+      
       doc.restore();
 
       let yPos = 110;
@@ -466,7 +485,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       ];
 
-      activities.forEach((activity, index) => {
+      activities.forEach((activity: any, index: number) => {
         const rowHeight = 35;
         const bgColor = index % 2 === 0 ? '#ffffff' : '#f9fafb';
         
