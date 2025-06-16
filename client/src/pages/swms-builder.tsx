@@ -88,7 +88,7 @@ export default function SwmsBuilder() {
   const loadDraftMutation = useMutation({
     mutationFn: async (id: number) => {
       const response = await apiRequest("GET", `/api/swms/draft/${id}`);
-      return response;
+      return await response.json();
     },
     onSuccess: (data: any) => {
       if (data) {
