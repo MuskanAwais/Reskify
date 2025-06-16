@@ -47,8 +47,8 @@ export function registerTestRoutes(app: Express) {
       };
 
       // Store in a global test storage (you can expand this)
-      global.testSWMSStorage = global.testSWMSStorage || {};
-      global.testSWMSStorage[testSwmsId] = fullTestData;
+      (global as any).testSWMSStorage = (global as any).testSWMSStorage || {};
+      (global as any).testSWMSStorage[testSwmsId] = fullTestData;
 
       res.json({
         success: true,
@@ -56,11 +56,12 @@ export function registerTestRoutes(app: Express) {
         message: "Test SWMS created with comprehensive data",
         data: fullTestData
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Test SWMS creation failed:", error);
       res.status(500).json({ 
         success: false, 
-        error: "Failed to create test SWMS" 
+        error: "Failed to create test SWMS",
+        details: error?.message 
       });
     }
   });
