@@ -1408,6 +1408,92 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // New PDFKit-based PDF generation endpoint
+  app.post("/api/swms/pdf-download", async (req, res) => {
+    try {
+      const PDFDocument = require('pdfkit');
+      const { projectName, projectNumber, projectAddress, swmsData, formData } = req.body;
+      const currentDate = new Date().toLocaleDateString('en-AU');
+      
+      // Create a new PDF document
+      const doc = new PDFDocument({
+        size: 'A4',
+        margins: { top: 50, bottom: 50, left: 50, right: 50 }
+      });
+      
+      // Set response headers for proper PDF download
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `attachment; filename="${projectNumber ? projectNumber + '_' : ''}${projectName.replace(/[^a-z0-9]/gi, '_')}_SWMS.pdf"`);
+      
+      // Pipe the PDF directly to response
+      doc.pipe(res);
+      
+      // Add watermark
+      doc.fontSize(48)
+         .fillColor('#f0f0f0')
+         .rotate(-45, { origin: [300, 400] })
+         .text(projectNumber || 'RISKIFY SWMS', 200, 350, { align: 'center', opacity: 0.3 })
+         .rotate(45, { origin: [300, 400] });
+      
+      // Header
+      doc.fillColor('#1e40af').fontSize(20)
+         .text('RISKIFY SAFETY MANAGEMENT SYSTEM', 50, 50, { align: 'center' });
+      
+      doc.fillColor('#000000').fontSize(24)
+         .text('SAFE WORK METHOD STATEMENT', 50, 80, { align: 'center' });
+      
+      // Project Information
+      let yPos = 140;
+      doc.fontSize(16).fillColor('#1e40af').text('Project Information:', 50, yPos);
+      
+      yPos += 30;
+      doc.fontSize(12).fillColor('#000000')
+         .text(`Project Name: ${projectName}`, 50, yPos)
+         .text(`Job Number: ${projectNumber || 'N/A'}`, 50, yPos + 20)
+         .text(`Project Address: ${projectAddress}`, 50, yPos + 40)
+         .text(`Document Date: ${currentDate}`, 50, yPos + 60);
+      
+      // Activities Section
+      if (swmsData?.activities && swmsData.activities.length > 0) {
+        yPos += 120;
+        doc.fontSize(16).fillColor('#1e40af').text('Work Activities:', 50, yPos);
+        
+        swmsData.activities.forEach((activity, index) => {
+          yPos += 30;
+          if (yPos > 700) {
+            doc.addPage();
+            yPos = 50;
+          }
+          
+          doc.fontSize(14).fillColor('#000000')
+             .text(`${index + 1}. ${activity.activity || 'Activity'}`, 50, yPos);
+          
+          if (activity.hazards && activity.hazards.length > 0) {
+            yPos += 20;
+            doc.fontSize(11).text(`Hazards: ${activity.hazards.join(', ')}`, 70, yPos);
+          }
+          
+          if (activity.controlMeasures && activity.controlMeasures.length > 0) {
+            yPos += 15;
+            doc.text(`Control Measures: ${activity.controlMeasures.join(', ')}`, 70, yPos);
+          }
+        });
+      }
+      
+      // Footer
+      doc.fontSize(8).fillColor('#666666')
+         .text(`Generated: ${currentDate}`, 50, 750)
+         .text(`Job: ${projectNumber || projectName}`, 250, 750)
+         .text('Riskify SWMS', 450, 750);
+      
+      doc.end();
+      console.log(`PDF generated successfully: ${projectName}`);
+    } catch (error) {
+      console.error("PDF generation failed:", error);
+      res.status(500).json({ error: "Failed to generate PDF" });
+    }
+  });
+
   app.post("/api/swms/:id/generate-pdf", async (req, res) => {
     try {
       const { id } = req.params;
