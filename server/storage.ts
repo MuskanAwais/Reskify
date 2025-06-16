@@ -1,6 +1,6 @@
 import { users, swmsDocuments, type User, type InsertUser } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, update } from "drizzle-orm";
 
 export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
@@ -14,6 +14,7 @@ export interface IStorage {
   logCreditUsage(userId: number, usage: any): Promise<void>;
   getUserSwms(userId: number): Promise<any[]>;
   createSwmsDraft(draft: any): Promise<any>;
+  updateSwmsDraft(draftId: string | number, draft: any): Promise<any>;
   getUserSwmsDrafts(userId: number): Promise<any[]>;
   getUserSwmsDocuments(): Promise<any[]>;
   getAllSwmsDocuments(): Promise<any[]>;
@@ -131,6 +132,50 @@ export class DatabaseStorage implements IStorage {
       }
       console.log('Draft saved to memory:', draft.id);
       return draft;
+    }
+  }
+
+  async updateSwmsDraft(draftId: string | number, draft: any): Promise<any> {
+    try {
+      // Update existing draft in database
+      const draftData = {
+        title: draft.title || draft.jobName || "Untitled SWMS",
+        jobName: draft.jobName || draft.title || "Untitled SWMS",
+        jobNumber: draft.jobNumber || `DRAFT-${Date.now()}`,
+        projectAddress: draft.projectAddress || "",
+        projectLocation: draft.projectAddress || "",
+        tradeType: draft.tradeType || "",
+        principalContractor: draft.principalContractor || "",
+        responsiblePersons: draft.responsiblePersons || [],
+        workActivities: Array.isArray(draft.activities) ? draft.activities : [],
+        activities: Array.isArray(draft.activities) ? draft.activities : [],
+        riskAssessments: Array.isArray(draft.riskAssessments) ? draft.riskAssessments : [],
+        safetyMeasures: draft.safetyMeasures || [],
+        emergencyProcedures: draft.emergencyProcedures || [],
+        complianceCodes: draft.complianceCodes || [],
+        userId: draft.userId || 1,
+        status: "draft",
+        aiEnhanced: draft.aiEnhanced || false,
+        updatedAt: new Date()
+      };
+
+      const [updatedDraft] = await db
+        .update(swmsDocuments)
+        .set(draftData)
+        .where(eq(swmsDocuments.id, Number(draftId)))
+        .returning();
+      
+      console.log('Draft updated in database:', updatedDraft.id);
+      return updatedDraft;
+    } catch (error) {
+      console.error('Error updating SWMS draft:', error);
+      // Fallback to memory storage
+      const existingIndex = this.swmsDrafts.findIndex(d => d.id === draftId);
+      if (existingIndex >= 0) {
+        this.swmsDrafts[existingIndex] = { ...draft, id: draftId };
+        return this.swmsDrafts[existingIndex];
+      }
+      throw error;
     }
   }
 

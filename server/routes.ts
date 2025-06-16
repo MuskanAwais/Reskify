@@ -1134,16 +1134,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/swms/draft", async (req, res) => {
     try {
       const draftData = req.body;
-      const draftId = draftData.draftId || Date.now().toString();
+      const existingDraftId = draftData.draftId;
       const userId = req.user?.id || 1; // Allow demo access for testing
       
-      console.log(`Saving SWMS draft for user ${userId}`);
+      console.log(`Saving SWMS draft for user ${userId}, existing ID: ${existingDraftId}`);
       
-      // Create draft entry in database
+      // Create or update draft entry
       const draftEntry = {
         title: draftData.title || draftData.jobName || "Untitled SWMS",
         jobName: draftData.jobName || "Untitled SWMS",
-        jobNumber: draftData.jobNumber || `DRAFT-${draftId}`,
+        jobNumber: draftData.jobNumber || `DRAFT-${Date.now()}`,
         projectAddress: draftData.projectAddress || "",
         tradeType: draftData.tradeType || draftData.customTradeType || "",
         activities: draftData.selectedTasks || [],
@@ -1156,14 +1156,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         formData: draftData // Store complete form data for editing
       };
       
-      // Save to database
-      const savedDraft = await dbStorage.createSwmsDraft(draftEntry);
-      console.log(`Draft saved successfully with ID: ${savedDraft.id}`);
+      let savedDraft;
+      if (existingDraftId) {
+        // Update existing draft
+        savedDraft = await dbStorage.updateSwmsDraft(existingDraftId, draftEntry);
+        console.log(`Draft updated successfully with ID: ${existingDraftId}`);
+      } else {
+        // Create new draft
+        savedDraft = await dbStorage.createSwmsDraft(draftEntry);
+        console.log(`New draft created with ID: ${savedDraft.id}`);
+      }
       
       res.json({ 
         success: true, 
-        message: "Draft saved successfully",
-        draftId: savedDraft.id || draftId
+        message: existingDraftId ? "Draft updated successfully" : "Draft saved successfully",
+        draftId: savedDraft.id || existingDraftId
       });
     } catch (error: any) {
       console.error("Save draft error:", error);

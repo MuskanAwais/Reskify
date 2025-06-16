@@ -93,6 +93,7 @@ export default function SwmsBuilder() {
     mutationFn: async (data: any) => {
       const response = await apiRequest("POST", "/api/swms/draft", {
         ...data,
+        draftId: draftId, // Include existing draft ID to update instead of create new
         status: "draft",
         currentStep,
         title: data.title || data.jobName || "Untitled SWMS",
@@ -102,7 +103,7 @@ export default function SwmsBuilder() {
       return response;
     },
     onSuccess: (data: any) => {
-      if (data?.draftId) {
+      if (data?.draftId && !draftId) {
         setDraftId(data.draftId);
         setIsDraft(true);
       }
@@ -167,7 +168,7 @@ export default function SwmsBuilder() {
   const autoSave = () => {
     if (formData.title || formData.jobName || formData.tradeType) {
       console.log('Auto-saving draft with form data:', formData);
-      saveDraftMutation.mutate(formData);
+      debouncedAutoSave(formData);
     } else {
       console.log('Skipping auto-save - insufficient data');
     }
