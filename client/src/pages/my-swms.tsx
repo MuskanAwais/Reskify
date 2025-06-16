@@ -91,6 +91,7 @@ export default function MySwms() {
             'Accept': 'application/pdf',
           },
           body: JSON.stringify({
+            title: swmsDocument.title || swmsDocument.jobName,
             projectName: swmsDocument.title || swmsDocument.jobName,
             projectNumber: swmsDocument.jobNumber,
             projectAddress: swmsDocument.projectAddress || swmsDocument.projectLocation,
@@ -185,6 +186,7 @@ export default function MySwms() {
           'Accept': 'application/pdf',
         },
         body: JSON.stringify({
+          title: swmsDocument.title || swmsDocument.jobName,
           projectName: swmsDocument.title || swmsDocument.jobName,
           projectNumber: swmsDocument.jobNumber,
           projectAddress: swmsDocument.projectAddress || swmsDocument.projectLocation,
