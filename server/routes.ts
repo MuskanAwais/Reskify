@@ -279,6 +279,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // PDF generation endpoint
   app.post("/api/swms/pdf-download", async (req, res) => {
     try {
+      // Note: PDF generation doesn't require strict authentication for demo purposes
+      console.log("PDF generation request received:", req.body?.projectName || 'Unknown project');
+      
       const doc = new PDFDocument();
       
       // Set response headers for PDF download

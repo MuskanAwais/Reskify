@@ -82,6 +82,7 @@ export default function MySwms() {
       // Use the comprehensive PDF generation endpoint
       const response = await fetch('/api/swms/pdf-download', {
         method: 'POST',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -154,6 +155,7 @@ export default function MySwms() {
       // Generate PDF and open in new tab for viewing
       const response = await fetch('/api/swms/pdf-download', {
         method: 'POST',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
