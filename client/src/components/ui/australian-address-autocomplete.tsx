@@ -74,8 +74,19 @@ export default function AustralianAddressAutocomplete({
 
   // Manual address validation for Australian addresses
   const validateManualAddress = (address: string): boolean => {
-    const addressPattern = /^\d+\s+[A-Za-z\s]+(Street|St|Road|Rd|Avenue|Ave|Drive|Dr|Lane|Ln|Court|Ct|Place|Pl|Crescent|Cres|Circuit|Cct|Way|Highway|Hwy|Terrace|Tce|Close|Cl|Boulevard|Blvd|Parade|Pde)\s*,?\s*[A-Za-z\s]+\s*,?\s*(NSW|VIC|QLD|WA|SA|TAS|ACT|NT)\s*\d{4}$/i;
-    return addressPattern.test(address.trim());
+    // More flexible pattern that accepts various Australian address formats
+    const patterns = [
+      // Standard format: 123 Main Street, Sydney NSW 2000
+      /^\d+\s+[A-Za-z\s]+(Street|St|Road|Rd|Avenue|Ave|Drive|Dr|Lane|Ln|Court|Ct|Place|Pl|Crescent|Cres|Circuit|Cct|Way|Highway|Hwy|Terrace|Tce|Close|Cl|Boulevard|Blvd|Parade|Pde)\s*,?\s*[A-Za-z\s]+\s*,?\s*(NSW|VIC|QLD|WA|SA|TAS|ACT|NT)\s*\d{4}$/i,
+      // Unit format: Unit 5/123 Main Street, Sydney NSW 2000
+      /^(Unit|Apt|Apartment|Suite|Lvl|Level)\s*\d+\/\d+\s+[A-Za-z\s]+(Street|St|Road|Rd|Avenue|Ave|Drive|Dr|Lane|Ln|Court|Ct|Place|Pl|Crescent|Cres|Circuit|Cct|Way|Highway|Hwy|Terrace|Tce|Close|Cl|Boulevard|Blvd|Parade|Pde)\s*,?\s*[A-Za-z\s]+\s*,?\s*(NSW|VIC|QLD|WA|SA|TAS|ACT|NT)\s*\d{4}$/i,
+      // PO Box format: PO Box 123, Sydney NSW 2000
+      /^(PO|P\.O\.)\s*Box\s*\d+\s*,?\s*[A-Za-z\s]+\s*,?\s*(NSW|VIC|QLD|WA|SA|TAS|ACT|NT)\s*\d{4}$/i,
+      // Simple format: Main Street, Sydney NSW 2000 (for rural addresses)
+      /^[A-Za-z\s]+(Street|St|Road|Rd|Avenue|Ave|Drive|Dr|Lane|Ln|Court|Ct|Place|Pl|Crescent|Cres|Circuit|Cct|Way|Highway|Hwy|Terrace|Tce|Close|Cl|Boulevard|Blvd|Parade|Pde)\s*,?\s*[A-Za-z\s]+\s*,?\s*(NSW|VIC|QLD|WA|SA|TAS|ACT|NT)\s*\d{4}$/i
+    ];
+    
+    return patterns.some(pattern => pattern.test(address.trim()));
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -136,14 +136,32 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
 
               <div>
                 <Label htmlFor="tradeType">Trade Type *</Label>
-                <Select
-                  value={formData.tradeType || ""}
-                  onValueChange={(value) => updateFormData({ tradeType: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select trade type" />
-                  </SelectTrigger>
-                  <SelectContent className="max-h-96 overflow-y-auto">
+                {formData.tradeType === "Other" ? (
+                  <div className="space-y-2">
+                    <Input
+                      value={formData.customTradeType || ""}
+                      onChange={(e) => updateFormData({ customTradeType: e.target.value })}
+                      placeholder="Enter your trade type"
+                      required
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => updateFormData({ tradeType: "", customTradeType: "" })}
+                    >
+                      Back to list
+                    </Button>
+                  </div>
+                ) : (
+                  <Select
+                    value={formData.tradeType || ""}
+                    onValueChange={(value) => updateFormData({ tradeType: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select trade type" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-96 overflow-y-auto">
                     {/* Core Construction Trades */}
                     <div className="px-2 py-1 text-xs font-semibold text-gray-500 uppercase tracking-wider">Core Construction</div>
                     <SelectItem value="General Construction">General Construction</SelectItem>
@@ -211,8 +229,12 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
                     <SelectItem value="Aged Care Construction">Aged Care Construction</SelectItem>
                     <SelectItem value="Data Centre Construction">Data Centre Construction</SelectItem>
                     <SelectItem value="Warehouse & Logistics">Warehouse & Logistics</SelectItem>
+                    
+                    {/* Other Option */}
+                    <SelectItem value="Other">Other (specify below)</SelectItem>
                   </SelectContent>
                 </Select>
+                )}
               </div>
 
               <div>
@@ -360,12 +382,13 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
                 <div className="space-y-6">
                   {formData.selectedTasks.filter((task: any) => task && typeof task === 'object').map((task: any, index: number) => {
                     const taskName = String(task.name || task.task || task.activity || `Task ${index + 1}`);
-                    const initialRiskScore = typeof task.riskScore === 'number' ? task.riskScore : 
-                                           typeof task.initialRiskScore === 'number' ? task.initialRiskScore : 8;
-                    const residualRiskScore = typeof task.residualRiskScore === 'number' ? task.residualRiskScore : initialRiskScore;
                     const hazards = Array.isArray(task.hazards) ? task.hazards : [];
                     const controls = Array.isArray(task.controlMeasures) ? task.controlMeasures :
                                     Array.isArray(task.controls) ? task.controls : [];
+                    const initialRiskScore = typeof task.riskScore === 'number' ? task.riskScore : 
+                                           typeof task.initialRiskScore === 'number' ? task.initialRiskScore : 8;
+                    const residualRiskScore = typeof task.residualRiskScore === 'number' ? task.residualRiskScore : 
+                                             (controls.length > 0 ? Math.max(1, Math.floor(initialRiskScore * 0.6)) : initialRiskScore);
 
                     return (
                       <Card key={index} className="border-l-4 border-l-blue-500">
