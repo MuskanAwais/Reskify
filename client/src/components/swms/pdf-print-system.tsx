@@ -91,7 +91,19 @@ export default function PDFPrintSystem({
       });
       
       if (download) {
+        // Check if response is actually a PDF
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/pdf')) {
+          // Try to get error message from response
+          const errorText = await response.text();
+          throw new Error(errorText || 'Invalid PDF response');
+        }
+        
         const blob = await response.blob();
+        if (blob.size === 0) {
+          throw new Error('Empty PDF generated');
+        }
+        
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;

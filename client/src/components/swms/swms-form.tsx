@@ -466,54 +466,22 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
       return (
         <div className="space-y-6">
           <div className="text-center">
-            <CheckSquare className="mx-auto h-12 w-12 text-primary mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Final Document</h3>
-            <p className="text-gray-600 text-sm">
-              Generate your complete SWMS document ready for use.
-            </p>
-          </div>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Document Generation</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-8">
-                <p className="text-gray-600 mb-4">Your SWMS is ready to be generated with all the information you've provided.</p>
-                <Button 
-                  size="lg"
-                  onClick={() => updateFormData({ documentGenerated: true })}
-                  className="bg-green-600 hover:bg-green-700"
-                >
-                  <FileText className="mr-2 h-4 w-4" />
-                  Generate SWMS Document
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      );
-
-    case 8:
-      return (
-        <div className="space-y-6">
-          <div className="text-center">
             <PenTool className="mx-auto h-12 w-12 text-primary mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Digital Signatures & PDF (Optional)</h3>
+            <h3 className="text-lg font-semibold mb-2">Digital Signatures & PDF</h3>
             <p className="text-gray-600 text-sm">
-              Digital signatures are optional. You can skip this step and proceed directly to download your SWMS document.
+              Generate your complete SWMS document with optional digital signatures.
             </p>
           </div>
 
           <Card>
             <CardHeader>
-              <CardTitle>Digital Signature Collection</CardTitle>
+              <CardTitle>Digital Signature Collection (Optional)</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
                 <p className="text-blue-800 font-medium mb-2">Optional Step</p>
                 <p className="text-gray-600">
-                  Digital signatures are optional. You can skip this step and proceed directly to generate your SWMS document.
+                  Digital signatures are optional. You can proceed directly to generate your SWMS document.
                 </p>
               </div>
             </CardContent>

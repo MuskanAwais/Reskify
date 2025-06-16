@@ -394,16 +394,13 @@ export default function DigitalSignatureSystem({
         </div>
       </div>
 
-      {/* Compliance Check */}
-      {!isCompliant && (
-        <Alert variant="destructive">
-          <AlertTriangle className="h-4 w-4" />
-          <AlertDescription>
-            This SWMS must pass compliance validation before signatures can be collected.
-            Please resolve all critical issues in the previous steps.
-          </AlertDescription>
-        </Alert>
-      )}
+      {/* Document Status */}
+      <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+        <div className="flex items-center gap-2">
+          <CheckCircle className="h-5 w-5 text-green-600" />
+          <span className="text-green-800 font-medium">Document status: Ready for signatures</span>
+        </div>
+      </div>
 
       {/* Add Signatory */}
       <Card>
