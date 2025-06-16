@@ -282,6 +282,106 @@ function generateHTMLPreview(swmsData: any): string {
     </div>
 
     <div class="section">
+        <h2>Risk Assessment Matrix</h2>
+        <p>This SWMS uses the Australian risk assessment standards for evaluating and managing workplace hazards.</p>
+        
+        <h3>Consequence Scale</h3>
+        <table border="1" style="width: 100%; border-collapse: collapse; margin: 10px 0;">
+            <thead>
+                <tr style="background: #f0f0f0;">
+                    <th style="padding: 8px; text-align: left;">Level</th>
+                    <th style="padding: 8px; text-align: left;">Description</th>
+                    <th style="padding: 8px; text-align: left;">Cost Range</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td style="padding: 8px;">Extreme</td><td style="padding: 8px;">Fatality, significant disability, catastrophic property damage</td><td style="padding: 8px;">$50,000+</td></tr>
+                <tr><td style="padding: 8px;">High</td><td style="padding: 8px;">Minor amputation, minor permanent disability, moderate property damage</td><td style="padding: 8px;">$15,000 - $50,000</td></tr>
+                <tr><td style="padding: 8px;">Medium</td><td style="padding: 8px;">Minor injury resulting in Loss Time Injury or Medically Treated Injury</td><td style="padding: 8px;">$1,000 - $15,000</td></tr>
+                <tr><td style="padding: 8px;">Low</td><td style="padding: 8px;">First Aid Treatment with no lost time</td><td style="padding: 8px;">$0 - $1,000</td></tr>
+            </tbody>
+        </table>
+
+        <h3>Likelihood Scale</h3>
+        <table border="1" style="width: 100%; border-collapse: collapse; margin: 10px 0;">
+            <thead>
+                <tr style="background: #f0f0f0;">
+                    <th style="padding: 8px; text-align: left;">Level</th>
+                    <th style="padding: 8px; text-align: left;">Frequency</th>
+                    <th style="padding: 8px; text-align: left;">Probability</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td style="padding: 8px;">Likely</td><td style="padding: 8px;">Monthly in the industry</td><td style="padding: 8px;">Good chance</td></tr>
+                <tr><td style="padding: 8px;">Possible</td><td style="padding: 8px;">Yearly in the industry</td><td style="padding: 8px;">Even chance</td></tr>
+                <tr><td style="padding: 8px;">Unlikely</td><td style="padding: 8px;">Every 10 years in the industry</td><td style="padding: 8px;">Low chance</td></tr>
+                <tr><td style="padding: 8px;">Very Rarely</td><td style="padding: 8px;">Once in a lifetime in the industry</td><td style="padding: 8px;">Practically no chance</td></tr>
+            </tbody>
+        </table>
+
+        <h3>Risk Matrix</h3>
+        <table border="1" style="width: 100%; border-collapse: collapse; margin: 10px 0;">
+            <thead>
+                <tr style="background: #f0f0f0;">
+                    <th style="padding: 8px; text-align: left;">Consequence</th>
+                    <th style="padding: 8px; text-align: center;">Likely</th>
+                    <th style="padding: 8px; text-align: center;">Possible</th>
+                    <th style="padding: 8px; text-align: center;">Unlikely</th>
+                    <th style="padding: 8px; text-align: center;">Very Rarely</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="padding: 8px; font-weight: bold;">Extreme</td>
+                    <td style="padding: 8px; text-align: center; background: #dc2626; color: white; font-weight: bold;">16</td>
+                    <td style="padding: 8px; text-align: center; background: #dc2626; color: white; font-weight: bold;">14</td>
+                    <td style="padding: 8px; text-align: center; background: #ef4444; color: white; font-weight: bold;">11</td>
+                    <td style="padding: 8px; text-align: center; background: #eab308; color: black; font-weight: bold;">7</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px; font-weight: bold;">High</td>
+                    <td style="padding: 8px; text-align: center; background: #ef4444; color: white; font-weight: bold;">15</td>
+                    <td style="padding: 8px; text-align: center; background: #ef4444; color: white; font-weight: bold;">12</td>
+                    <td style="padding: 8px; text-align: center; background: #eab308; color: black; font-weight: bold;">8</td>
+                    <td style="padding: 8px; text-align: center; background: #22c55e; color: white; font-weight: bold;">5</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px; font-weight: bold;">Medium</td>
+                    <td style="padding: 8px; text-align: center; background: #ef4444; color: white; font-weight: bold;">13</td>
+                    <td style="padding: 8px; text-align: center; background: #eab308; color: black; font-weight: bold;">9</td>
+                    <td style="padding: 8px; text-align: center; background: #22c55e; color: white; font-weight: bold;">6</td>
+                    <td style="padding: 8px; text-align: center; background: #16a34a; color: white; font-weight: bold;">3</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px; font-weight: bold;">Low</td>
+                    <td style="padding: 8px; text-align: center; background: #eab308; color: black; font-weight: bold;">10</td>
+                    <td style="padding: 8px; text-align: center; background: #22c55e; color: white; font-weight: bold;">7</td>
+                    <td style="padding: 8px; text-align: center; background: #22c55e; color: white; font-weight: bold;">4</td>
+                    <td style="padding: 8px; text-align: center; background: #16a34a; color: white; font-weight: bold;">2</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Action Required</h3>
+        <table border="1" style="width: 100%; border-collapse: collapse; margin: 10px 0;">
+            <thead>
+                <tr style="background: #f0f0f0;">
+                    <th style="padding: 8px; text-align: left;">Risk Score</th>
+                    <th style="padding: 8px; text-align: left;">Risk Level</th>
+                    <th style="padding: 8px; text-align: left;">Action Required</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td style="padding: 8px; background: #dc2626; color: white;">14-16</td><td style="padding: 8px;">Severe</td><td style="padding: 8px;">Action required immediately</td></tr>
+                <tr><td style="padding: 8px; background: #ef4444; color: white;">11-13</td><td style="padding: 8px;">High</td><td style="padding: 8px;">Action within 24 hrs</td></tr>
+                <tr><td style="padding: 8px; background: #eab308; color: black;">7-10</td><td style="padding: 8px;">Medium</td><td style="padding: 8px;">Action within 48 hrs</td></tr>
+                <tr><td style="padding: 8px; background: #22c55e; color: white;">4-6</td><td style="padding: 8px;">Low</td><td style="padding: 8px;">Monitor</td></tr>
+                <tr><td style="padding: 8px; background: #16a34a; color: white;">2-3</td><td style="padding: 8px;">Very Low</td><td style="padding: 8px;">No action required</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section">
         <h2>Work Activities (${swmsData.selectedTasks?.length || 0} tasks)</h2>
         ${swmsData.selectedTasks?.map((task: any) => `
             <div class="task">

@@ -365,10 +365,66 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
                   </p>
                 </div>
                 
-                <RiskValidationSystem
-                  tasks={formData.selectedTasks}
-                  onTasksUpdate={(tasks) => updateFormData({ selectedTasks: tasks })}
-                />
+                <div className="overflow-x-auto">
+                  <table className="w-full border-collapse border border-gray-300 dark:border-gray-600">
+                    <thead>
+                      <tr className="bg-gray-100 dark:bg-gray-800">
+                        <th className="border border-gray-300 dark:border-gray-600 p-3 text-left">Task</th>
+                        <th className="border border-gray-300 dark:border-gray-600 p-3 text-left">Key Hazards</th>
+                        <th className="border border-gray-300 dark:border-gray-600 p-3 text-center">Risk Score</th>
+                        <th className="border border-gray-300 dark:border-gray-600 p-3 text-center">Risk Level</th>
+                        <th className="border border-gray-300 dark:border-gray-600 p-3 text-left">Control Measures</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {formData.selectedTasks.map((task: any, index: number) => (
+                        <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                          <td className="border border-gray-300 dark:border-gray-600 p-3 font-medium">
+                            {task.name || task.task}
+                          </td>
+                          <td className="border border-gray-300 dark:border-gray-600 p-3">
+                            <ul className="list-disc list-inside text-sm">
+                              {(task.hazards || []).slice(0, 3).map((hazard: string, idx: number) => (
+                                <li key={idx}>{hazard}</li>
+                              ))}
+                            </ul>
+                          </td>
+                          <td className="border border-gray-300 dark:border-gray-600 p-3 text-center">
+                            <Badge className={`${task.riskScore >= 14 ? 'bg-red-600 text-white' : 
+                              task.riskScore >= 11 ? 'bg-red-500 text-white' :
+                              task.riskScore >= 7 ? 'bg-yellow-500 text-black' :
+                              task.riskScore >= 4 ? 'bg-green-500 text-white' :
+                              'bg-green-600 text-white'}`}>
+                              {task.riskScore || 'TBD'}
+                            </Badge>
+                          </td>
+                          <td className="border border-gray-300 dark:border-gray-600 p-3 text-center">
+                            <span className={`font-medium ${
+                              task.riskScore >= 14 ? 'text-red-600' :
+                              task.riskScore >= 11 ? 'text-red-500' :
+                              task.riskScore >= 7 ? 'text-yellow-600' :
+                              task.riskScore >= 4 ? 'text-green-600' :
+                              'text-green-700'
+                            }`}>
+                              {task.riskScore >= 14 ? 'Severe' :
+                               task.riskScore >= 11 ? 'High' :
+                               task.riskScore >= 7 ? 'Medium' :
+                               task.riskScore >= 4 ? 'Low' :
+                               'Very Low'}
+                            </span>
+                          </td>
+                          <td className="border border-gray-300 dark:border-gray-600 p-3">
+                            <ul className="list-disc list-inside text-sm">
+                              {(task.controlMeasures || []).slice(0, 2).map((control: string, idx: number) => (
+                                <li key={idx}>{control}</li>
+                              ))}
+                            </ul>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </CardContent>
             </Card>
           )}
@@ -570,7 +626,7 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
         </div>
       );
 
-    case 6:
+    case 7:
       return (
         <div className="space-y-6">
           <div className="text-center">
@@ -625,7 +681,7 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
         </div>
       );
 
-    case 7:
+    case 8:
       return (
         <div className="space-y-6">
           <div className="text-center">
