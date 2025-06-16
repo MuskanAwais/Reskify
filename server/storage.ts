@@ -1,6 +1,6 @@
 import { users, swmsDocuments, type User, type InsertUser } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, update } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 
 export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
@@ -82,13 +82,13 @@ export class DatabaseStorage implements IStorage {
     console.log(`Credit usage for user ${userId}:`, usage);
   }
 
-  async getUserSwms(userId: number): Promise<any[]> {
+  async getSwmsById(id: number): Promise<any | undefined> {
     try {
-      const userSwms = await db.select().from(swmsDocuments).where(eq(swmsDocuments.userId, userId));
-      return userSwms;
+      const [swms] = await db.select().from(swmsDocuments).where(eq(swmsDocuments.id, id));
+      return swms || undefined;
     } catch (error) {
-      console.error('Error fetching user SWMS:', error);
-      return [];
+      console.error('Error fetching SWMS by ID:', error);
+      return undefined;
     }
   }
 

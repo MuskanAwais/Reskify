@@ -69,7 +69,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   setupAuth(app);
   
   // Middleware to bypass auth for SWMS operations during demo
-  app.use('/api/swms/draft', (req, res, next) => {
+  app.use('/api/swms/draft*', (req, res, next) => {
     // Allow draft operations without authentication for demo access
     if (!req.user) {
       req.user = { id: 1, username: 'demo', name: 'Demo User' } as any;
