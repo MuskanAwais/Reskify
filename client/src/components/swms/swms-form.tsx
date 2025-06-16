@@ -32,7 +32,9 @@ import {
   Save,
   CheckCircle,
   PenTool,
-  CreditCard
+  CreditCard,
+  Plus,
+  X
 } from "lucide-react";
 import { SimplifiedTableEditor } from "./simplified-table-editor";
 import GPTTaskSelection from "./gpt-task-selection";
@@ -336,14 +338,69 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
 
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="emergencyContacts">Emergency Contacts</Label>
-                  <Textarea
-                    id="emergencyContacts"
-                    placeholder="List emergency contact numbers and procedures..."
-                    value={formData.emergencyContacts || ""}
-                    onChange={(e) => updateFormData({ emergencyContacts: e.target.value })}
-                    rows={3}
-                  />
+                  <Label>Emergency Contacts</Label>
+                  <div className="space-y-3 mt-2">
+                    {(formData.emergencyContactsList || []).map((contact: any, index: number) => (
+                      <div key={index} className="p-3 border rounded-lg bg-gray-50">
+                        <div className="flex justify-between items-center mb-2">
+                          <h5 className="font-medium text-sm">Contact {index + 1}</h5>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              const updated = (formData.emergencyContactsList || []).filter((_: any, i: number) => i !== index);
+                              updateFormData({ emergencyContactsList: updated });
+                            }}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                          <Input
+                            placeholder="Contact Name/Organization"
+                            value={contact.name || ""}
+                            onChange={(e) => {
+                              const updated = [...(formData.emergencyContactsList || [])];
+                              updated[index] = { ...updated[index], name: e.target.value };
+                              updateFormData({ emergencyContactsList: updated });
+                            }}
+                          />
+                          <Input
+                            placeholder="Phone Number"
+                            value={contact.phone || ""}
+                            onChange={(e) => {
+                              const updated = [...(formData.emergencyContactsList || [])];
+                              updated[index] = { ...updated[index], phone: e.target.value };
+                              updateFormData({ emergencyContactsList: updated });
+                            }}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => {
+                        const newContact = { name: "", phone: "" };
+                        const updated = [...(formData.emergencyContactsList || []), newContact];
+                        updateFormData({ emergencyContactsList: updated });
+                      }}
+                      className="w-full"
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Emergency Contact
+                    </Button>
+                    
+                    {(!formData.emergencyContactsList || formData.emergencyContactsList.length === 0) && (
+                      <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                        <p className="text-amber-800 text-sm font-medium mb-1">Optional Step</p>
+                        <p className="text-amber-700 text-sm">
+                          Emergency contacts are optional. This section will only appear in your SWMS if you add content.
+                        </p>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 <div>
@@ -393,13 +450,32 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
                 <p className="text-gray-600 mb-4">
                   To complete your SWMS document generation, please proceed to the payment page.
                 </p>
+                
+                {/* Admin Demo Toggle - Only visible to admin */}
+                {localStorage.getItem('isAppAdmin') === 'true' && (
+                  <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                    <p className="text-red-800 text-sm font-medium mb-2">Admin Demo Mode</p>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        localStorage.setItem('adminDemoMode', 'true');
+                        updateFormData({ adminDemoBypass: true });
+                      }}
+                      className="border-red-300 text-red-700 hover:bg-red-100"
+                    >
+                      Enable Demo Mode (Skip Payment)
+                    </Button>
+                  </div>
+                )}
+                
                 <Button 
                   size="lg"
                   onClick={() => window.location.href = '/payment'}
                   className="bg-blue-600 hover:bg-blue-700"
                 >
                   <CreditCard className="mr-2 h-4 w-4" />
-                  Go to Payment
+                  Take to Payment
                 </Button>
               </div>
             </CardContent>

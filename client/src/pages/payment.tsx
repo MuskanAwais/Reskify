@@ -346,7 +346,7 @@ export default function Payment() {
                 )}
               </div>
               <CardTitle className="text-xl">Subscription</CardTitle>
-              <CardDescription>Unlimited SWMS creation</CardDescription>
+              <CardDescription>10 SWMS per month + credits</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="text-center mb-4">
@@ -357,17 +357,17 @@ export default function Payment() {
                 </Badge>
                 <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded-lg">
                   <p className="text-xs text-green-800 font-medium">
-                    Just $4.90 per SWMS for first 10 documents
+                    10 SWMS documents included monthly
                   </p>
                   <p className="text-xs text-green-600">
-                    Then free for unlimited additional SWMS
+                    Additional SWMS via credit packs ($10 each)
                   </p>
                 </div>
               </div>
               <ul className="space-y-2 text-sm">
                 <li className="flex items-center">
                   <Check className="h-4 w-4 text-green-500 mr-2" />
-                  Unlimited SWMS documents
+                  10 SWMS documents per month
                 </li>
                 <li className="flex items-center">
                   <Check className="h-4 w-4 text-green-500 mr-2" />
