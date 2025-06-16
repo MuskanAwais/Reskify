@@ -429,12 +429,6 @@ export default function SwmsBuilder() {
 
       {/* Main Content */}
       <div className="max-w-5xl mx-auto">
-        {/* Live SWMS Previewer */}
-        <LiveSWMSPreviewer 
-          formData={formData}
-          currentStep={currentStep}
-        />
-        
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center">
@@ -476,6 +470,12 @@ export default function SwmsBuilder() {
             </div>
           </CardContent>
         </Card>
+        
+        {/* Live SWMS Previewer positioned below step content */}
+        <LiveSWMSPreviewer 
+          formData={formData}
+          currentStep={currentStep}
+        />
       </div>
     </div>
   );

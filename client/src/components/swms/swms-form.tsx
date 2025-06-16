@@ -659,12 +659,6 @@ export default function SWMSForm({ step, data = {}, onNext, onDataChange }: SWMS
         formData={formData} 
         onDataChange={updateFormData} 
       />
-      
-      {/* Live Preview positioned at bottom of each step */}
-      <LiveSWMSPreviewer 
-        formData={formData} 
-        currentStep={step} 
-      />
     </div>
   );
 }
