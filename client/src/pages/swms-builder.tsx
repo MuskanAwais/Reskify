@@ -92,15 +92,48 @@ export default function SwmsBuilder() {
     },
     onSuccess: (data: any) => {
       if (data) {
-        setFormData(data);
+        console.log('Draft data loaded:', data);
+        
+        // Map database fields to form structure
+        const mappedData = {
+          ...formData, // Keep existing form structure
+          id: data.id,
+          title: data.title || data.jobName || '',
+          jobName: data.jobName || data.title || '',
+          jobNumber: data.jobNumber || '',
+          projectAddress: data.projectAddress || '',
+          projectLocation: data.projectLocation || data.projectAddress || '',
+          startDate: data.startDate || '',
+          tradeType: data.tradeType || '',
+          customTradeType: data.customTradeType || '',
+          principalContractor: data.principalContractor || '',
+          responsiblePersons: data.responsiblePersons || [],
+          activities: data.activities || data.workActivities || [],
+          selectedTasks: data.activities || data.workActivities || [],
+          riskAssessments: data.riskAssessments || [],
+          safetyMeasures: data.safetyMeasures || [],
+          emergencyProcedures: data.emergencyProcedures || [],
+          complianceCodes: data.complianceCodes || [],
+          plantEquipment: data.plantEquipment || [],
+          monitoringRequirements: data.monitoringRequirements || [],
+          generalRequirements: data.generalRequirements || [],
+          acceptedDisclaimer: data.acceptedDisclaimer || false,
+          signatures: data.signatures || [],
+          draftId: data.id
+        };
+        
+        console.log('Mapped form data:', mappedData);
+        setFormData(mappedData);
         setDraftId(data.id);
         setIsDraft(true);
+        
         if (data.currentStep) {
           setCurrentStep(data.currentStep);
         }
+        
         toast({
           title: "Draft Loaded",
-          description: "Successfully loaded your draft SWMS document.",
+          description: `Successfully loaded "${data.title || 'Untitled SWMS'}" draft.`,
         });
       }
     },
