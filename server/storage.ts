@@ -13,6 +13,7 @@ export interface IStorage {
   updateUserAdminStatus(userId: number, isAdmin: boolean): Promise<void>;
   logCreditUsage(userId: number, usage: any): Promise<void>;
   getUserSwms(userId: number): Promise<any[]>;
+  getSwmsById(id: number): Promise<any | undefined>;
   createSwmsDraft(draft: any): Promise<any>;
   updateSwmsDraft(draftId: string | number, draft: any): Promise<any>;
   getUserSwmsDrafts(userId: number): Promise<any[]>;

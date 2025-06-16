@@ -1213,6 +1213,61 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get specific SWMS draft by ID for editing
+  app.get("/api/swms/draft/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const userId = req.user?.id || 1; // Allow demo access
+      
+      console.log(`Loading draft ${id} for user ${userId}`);
+      
+      // Get the specific draft document
+      const draft = await dbStorage.getSwmsById(parseInt(id));
+      
+      if (!draft) {
+        return res.status(404).json({ message: "Draft not found" });
+      }
+      
+      // Verify user owns this draft
+      if (draft.userId !== userId) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+      
+      // Return the complete form data for editing
+      res.json({
+        id: draft.id,
+        title: draft.title || draft.jobName || 'Untitled SWMS',
+        jobName: draft.jobName || draft.title || 'Untitled SWMS',
+        jobNumber: draft.jobNumber || '',
+        projectAddress: draft.projectAddress || '',
+        projectLocation: draft.projectLocation || draft.projectAddress || '',
+        startDate: draft.startDate || '',
+        tradeType: draft.tradeType || '',
+        customTradeType: draft.customTradeType || '',
+        principalContractor: draft.principalContractor || '',
+        responsiblePersons: draft.responsiblePersons || [],
+        activities: draft.activities || draft.workActivities || [],
+        selectedTasks: draft.activities || draft.workActivities || [],
+        riskAssessments: draft.riskAssessments || [],
+        safetyMeasures: draft.safetyMeasures || [],
+        emergencyProcedures: draft.emergencyProcedures || [],
+        complianceCodes: draft.complianceCodes || [],
+        plantEquipment: draft.plantEquipment || [],
+        monitoringRequirements: draft.monitoringRequirements || [],
+        generalRequirements: draft.generalRequirements || [],
+        acceptedDisclaimer: draft.acceptedDisclaimer || false,
+        signatures: draft.signatures || [],
+        status: draft.status || 'draft',
+        currentStep: draft.currentStep || 1,
+        createdAt: draft.createdAt,
+        updatedAt: draft.updatedAt
+      });
+    } catch (error: any) {
+      console.error("Get draft error:", error);
+      res.status(500).json({ message: "Failed to fetch draft" });
+    }
+  });
+
   // Signature and compliance management endpoints
   app.get("/api/swms/:id/signatures", async (req, res) => {
     try {

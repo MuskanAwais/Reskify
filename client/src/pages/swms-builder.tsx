@@ -58,23 +58,61 @@ export default function SwmsBuilder() {
 
   // Load saved data from localStorage on mount
   useEffect(() => {
-    const savedData = localStorage.getItem('swms-form-data');
-    if (savedData) {
-      try {
-        const parsedData = JSON.parse(savedData);
-        setFormData(prev => ({ ...prev, ...parsedData }));
-      } catch (error) {
-        console.error('Error loading saved data:', error);
+    const urlParams = new URLSearchParams(window.location.search);
+    const editId = urlParams.get('edit');
+    
+    if (editId) {
+      // Load draft from database
+      loadDraftMutation.mutate(parseInt(editId));
+    } else {
+      // Load from localStorage for new SWMS
+      const savedData = localStorage.getItem('swms-form-data');
+      if (savedData) {
+        try {
+          const parsedData = JSON.parse(savedData);
+          setFormData(prev => ({ ...prev, ...parsedData }));
+        } catch (error) {
+          console.error('Error loading saved data:', error);
+        }
       }
     }
     
     // Parse step from URL
-    const urlParams = new URLSearchParams(window.location.search);
     const step = parseInt(urlParams.get('step') || '1');
     if (step >= 1 && step <= STEPS.length) {
       setCurrentStep(step);
     }
   }, []);
+
+  // Load draft mutation
+  const loadDraftMutation = useMutation({
+    mutationFn: async (id: number) => {
+      const response = await apiRequest("GET", `/api/swms/draft/${id}`);
+      return response;
+    },
+    onSuccess: (data: any) => {
+      if (data) {
+        setFormData(data);
+        setDraftId(data.id);
+        setIsDraft(true);
+        if (data.currentStep) {
+          setCurrentStep(data.currentStep);
+        }
+        toast({
+          title: "Draft Loaded",
+          description: "Successfully loaded your draft SWMS document.",
+        });
+      }
+    },
+    onError: (error) => {
+      console.error('Failed to load draft:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load draft SWMS document.",
+        variant: "destructive",
+      });
+    },
+  });
 
   // Save data to localStorage whenever formData changes
   useEffect(() => {
