@@ -105,19 +105,16 @@ Riskify is a comprehensive SWMS (Safe Work Method Statement) builder application
 
 ## Changelog
 
-- June 16, 2025. Fixed multiple critical user-reported issues:
-  * Enhanced manual address entry with improved Australian address validation patterns
-  * Added "Other" trade type option with custom input field
-  * Fixed draft SWMS storage to properly save in "MY SWMS" section via database
-  * Improved residual risk score calculation and display in risk assessment
-  * Enhanced control measures rendering to prevent React object errors
-  * Updated risk assessment section to show proper scoring with reduction indicators
-  * Reorganized SWMS builder steps: Risk Assessment now in dedicated Step 3, Plant Equipment in Step 4
-  * Fixed equipment risk level calculations - measuring tools, brooms, cleaning equipment now correctly classified as low risk
-  * Added auto-populating control measures based on hazards with "Auto-Fill" button
-  * Fixed payment navigation issue - demo access now properly progresses through steps
-  * Corrected legal disclaimer validation to match new 8-step structure
-  * Updated database schema to support all required SWMS document fields
+- June 16, 2025. Major system overhaul - Streamlined SWMS Builder to 7-step workflow:
+  * Consolidated risk assessment into Step 2 with work activities for integrated workflow
+  * Removed task mode from SWMS generator - now only "Describe Job (AI-Powered)" and "Manual Entry" options
+  * Added manual address entry option with "Use as manual address" button for Australian addresses
+  * Enhanced payment step with "Use Current Credits" option when user has available credits
+  * Fixed payment navigation - demo access and credit users now properly bypass payment validation
+  * Automatic control measure pre-filling for all generated activities without user intervention
+  * Updated database schema with project_description column to prevent storage errors
+  * Equipment risk calculations now correctly classify measuring tools, brooms as low risk
+  * Streamlined 7-step structure: Project Details → Work Activities & Risk Assessment → Plant Equipment → Emergency & Monitoring → Payment → Legal Disclaimer → Digital Signatures
 - June 16, 2025. Added comprehensive risk assessment matrix to SWMS builder and final documents with Australian standards compliance
 - June 15, 2025. Initial setup
 
