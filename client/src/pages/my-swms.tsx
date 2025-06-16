@@ -78,8 +78,8 @@ export default function MySwms() {
   });
 
   const downloadDocumentMutation = useMutation({
-    mutationFn: async (document: any) => {
-      console.log('Starting PDF download for:', document.title || document.jobName);
+    mutationFn: async (swmsDocument: any) => {
+      console.log('Starting PDF download for:', swmsDocument.title || swmsDocument.jobName);
       
       try {
         // Use the comprehensive PDF generation endpoint
@@ -90,23 +90,23 @@ export default function MySwms() {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            projectName: document.title || document.jobName,
-            projectNumber: document.jobNumber,
-            projectAddress: document.projectAddress || document.projectLocation,
-            companyName: document.principalContractor,
-            principalContractor: document.principalContractor,
-            swmsData: document.swmsData || {
-              activities: document.workActivities || [],
-              plantEquipment: document.plantEquipment || [],
-              emergencyProcedures: document.emergencyProcedures || {}
+            projectName: swmsDocument.title || swmsDocument.jobName,
+            projectNumber: swmsDocument.jobNumber,
+            projectAddress: swmsDocument.projectAddress || swmsDocument.projectLocation,
+            companyName: swmsDocument.principalContractor,
+            principalContractor: swmsDocument.principalContractor,
+            swmsData: swmsDocument.swmsData || {
+              activities: swmsDocument.workActivities || [],
+              plantEquipment: swmsDocument.plantEquipment || [],
+              emergencyProcedures: swmsDocument.emergencyProcedures || {}
             },
             formData: {
-              jobName: document.title || document.jobName,
-              jobNumber: document.jobNumber,
-              projectLocation: document.projectAddress || document.projectLocation,
-              principalContractor: document.principalContractor,
-              supervisorName: document.responsiblePersons?.supervisor || 'N/A',
-              supervisorPhone: document.responsiblePersons?.phone || 'N/A'
+              jobName: swmsDocument.title || swmsDocument.jobName,
+              jobNumber: swmsDocument.jobNumber,
+              projectLocation: swmsDocument.projectAddress || swmsDocument.projectLocation,
+              principalContractor: swmsDocument.principalContractor,
+              supervisorName: swmsDocument.responsiblePersons?.supervisor || 'N/A',
+              supervisorPhone: swmsDocument.responsiblePersons?.phone || 'N/A'
             }
           })
         });
@@ -141,7 +141,7 @@ export default function MySwms() {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `${(document.title || document.jobName).replace(/[^a-z0-9]/gi, '_').toLowerCase()}_swms.pdf`;
+        a.download = `${(swmsDocument.title || swmsDocument.jobName).replace(/[^a-z0-9]/gi, '_').toLowerCase()}_swms.pdf`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -171,7 +171,7 @@ export default function MySwms() {
   });
 
   const viewPdfMutation = useMutation({
-    mutationFn: async (document: any) => {
+    mutationFn: async (swmsDocument: any) => {
       // Generate PDF and open in new tab for viewing
       const response = await fetch('/api/swms/pdf-download', {
         method: 'POST',
@@ -180,23 +180,23 @@ export default function MySwms() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          projectName: document.title || document.jobName,
-          projectNumber: document.jobNumber,
-          projectAddress: document.projectAddress || document.projectLocation,
-          companyName: document.principalContractor,
-          principalContractor: document.principalContractor,
-          swmsData: document.swmsData || {
-            activities: document.workActivities || [],
-            plantEquipment: document.plantEquipment || [],
-            emergencyProcedures: document.emergencyProcedures || {}
+          projectName: swmsDocument.title || swmsDocument.jobName,
+          projectNumber: swmsDocument.jobNumber,
+          projectAddress: swmsDocument.projectAddress || swmsDocument.projectLocation,
+          companyName: swmsDocument.principalContractor,
+          principalContractor: swmsDocument.principalContractor,
+          swmsData: swmsDocument.swmsData || {
+            activities: swmsDocument.workActivities || [],
+            plantEquipment: swmsDocument.plantEquipment || [],
+            emergencyProcedures: swmsDocument.emergencyProcedures || {}
           },
           formData: {
-            jobName: document.title || document.jobName,
-            jobNumber: document.jobNumber,
-            projectLocation: document.projectAddress || document.projectLocation,
-            principalContractor: document.principalContractor,
-            supervisorName: document.responsiblePersons?.supervisor || 'N/A',
-            supervisorPhone: document.responsiblePersons?.phone || 'N/A'
+            jobName: swmsDocument.title || swmsDocument.jobName,
+            jobNumber: swmsDocument.jobNumber,
+            projectLocation: swmsDocument.projectAddress || swmsDocument.projectLocation,
+            principalContractor: swmsDocument.principalContractor,
+            supervisorName: swmsDocument.responsiblePersons?.supervisor || 'N/A',
+            supervisorPhone: swmsDocument.responsiblePersons?.phone || 'N/A'
           }
         })
       });
