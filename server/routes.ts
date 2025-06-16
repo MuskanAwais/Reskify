@@ -75,7 +75,9 @@ export async function registerRoutes(app: Express) {
       
       // Demo access bypass
       if (username === 'demo' && password === 'demo') {
-        req.session.userId = 999;
+        if (req.session) {
+          req.session.userId = 999;
+        }
         return res.json({
           success: true,
           user: {
@@ -90,6 +92,25 @@ export async function registerRoutes(app: Express) {
         });
       }
 
+      // Admin user check (0421869995)
+      if (username === '0421869995' && password === 'admin123') {
+        if (req.session) {
+          req.session.userId = 1;
+        }
+        return res.json({
+          success: true,
+          user: {
+            id: 1,
+            username: '0421869995',
+            name: 'Admin User',
+            email: 'admin@riskify.com',
+            isAdmin: true,
+            credits: 100,
+            subscription: 'enterprise'
+          }
+        });
+      }
+
       const user = await storage.getUserByUsername(username);
       if (!user) {
         return res.status(401).json({ error: "Invalid credentials" });
@@ -100,7 +121,9 @@ export async function registerRoutes(app: Express) {
         return res.status(401).json({ error: "Invalid credentials" });
       }
 
-      req.session.userId = user.id;
+      if (req.session) {
+        req.session.userId = user.id;
+      }
       
       res.json({
         success: true,
@@ -110,7 +133,7 @@ export async function registerRoutes(app: Express) {
           name: user.name,
           email: user.email,
           isAdmin: user.isAdmin || false,
-          credits: user.credits || 0,
+          credits: 0,
           subscription: user.subscriptionType || 'trial'
         }
       });
