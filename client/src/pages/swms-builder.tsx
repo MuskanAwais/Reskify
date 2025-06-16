@@ -471,11 +471,13 @@ export default function SwmsBuilder() {
           </CardContent>
         </Card>
         
-        {/* Live SWMS Previewer positioned below step content */}
-        <LiveSWMSPreviewer 
-          formData={formData}
-          currentStep={currentStep}
-        />
+        {/* Live SWMS Previewer positioned below step content with spacing */}
+        <div className="mt-8">
+          <LiveSWMSPreviewer 
+            formData={formData}
+            currentStep={currentStep}
+          />
+        </div>
       </div>
     </div>
   );

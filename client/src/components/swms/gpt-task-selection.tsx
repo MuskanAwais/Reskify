@@ -369,26 +369,44 @@ export default function GPTTaskSelection({
   });
 
   // Add new task to generated list
-  const addNewTask = () => {
+  const addNewTaskToGenerated = () => {
     if (newTask.trim()) {
       const newTaskObj = {
         id: `activity-${generatedTasks.length + 1}`,
         name: newTask.trim(),
-        description: "",
-        hazards: [],
-        ppe: [],
-        tools: [],
-        trainingRequired: [],
+        description: "Custom task - manually added",
+        hazards: [
+          {
+            type: "General",
+            description: "Standard workplace hazards - to be assessed",
+            riskRating: 8
+          }
+        ],
+        ppe: ["Safety glasses", "Hard hat", "High-vis vest", "Safety boots"],
+        tools: ["Standard hand tools"],
+        trainingRequired: ["General construction induction", "Task-specific training"],
+        riskScore: 10,
+        residualRisk: 5,
+        legislation: "WHS Act 2011, WHS Regulation 2017",
         selected: true
       };
       setGeneratedTasks([...generatedTasks, newTaskObj]);
       setNewTask("");
+      
+      toast({
+        title: "Task Added",
+        description: "Additional task added successfully. You can edit it using the edit button.",
+      });
     }
   };
 
   // Remove task from generated list
-  const removeTask = (taskId: string) => {
+  const removeGeneratedTask = (taskId: string) => {
     setGeneratedTasks(generatedTasks.filter(task => task.id !== taskId));
+    toast({
+      title: "Task Removed",
+      description: "Task has been removed from the list.",
+    });
   };
 
   // Update task name
@@ -459,6 +477,8 @@ export default function GPTTaskSelection({
   const removeTaskFromList = (task: string) => {
     setTaskList(taskList.filter(t => t !== task));
   };
+
+
 
   const toggleRiskFactor = (factor: string) => {
     setSpecialRiskFactors(prev =>
