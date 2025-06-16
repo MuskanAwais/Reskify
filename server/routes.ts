@@ -279,143 +279,214 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // PDF generation endpoint
   app.post("/api/swms/pdf-download", async (req, res) => {
     try {
-      // Note: PDF generation doesn't require strict authentication for demo purposes
       console.log("PDF generation request received:", req.body?.projectName || 'Unknown project');
       
-      const doc = new PDFDocument();
-      
-      // Set response headers for PDF download
-      res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', 'attachment; filename="swms_document.pdf"');
-      
-      // Pipe the PDF to the response
-      doc.pipe(res);
-      
       const data = req.body;
+      const doc = new PDFDocument({ margin: 50 });
       
-      // Add Riskify logo/header
-      doc.fontSize(20).text('Riskify', 450, 50);
-      doc.fontSize(12).text('Professional SWMS Builder', 430, 75);
+      // Collect PDF data into buffer
+      const chunks: Buffer[] = [];
       
-      // Add watermark throughout document
-      const addWatermark = () => {
-        doc.opacity(0.1);
-        doc.fontSize(40);
-        doc.text('RISKIFY', 150, 400);
-        doc.opacity(1);
-      };
+      doc.on('data', (chunk) => {
+        chunks.push(chunk);
+      });
       
-      addWatermark();
+      doc.on('end', () => {
+        const pdfBuffer = Buffer.concat(chunks);
+        
+        // Set proper headers
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'attachment; filename="swms_document.pdf"');
+        res.setHeader('Content-Length', pdfBuffer.length.toString());
+        
+        // Send the PDF buffer
+        res.send(pdfBuffer);
+      });
       
-      // Document title
-      doc.fontSize(24).text('Safe Work Method Statement', 50, 120);
-      doc.fontSize(16).text(data.projectName || 'SWMS Document', 50, 150);
+      doc.on('error', (error) => {
+        console.error('PDF generation error:', error);
+        if (!res.headersSent) {
+          res.status(500).json({ error: "Failed to generate PDF" });
+        }
+      });
       
-      let yPos = 180;
+      // Add Riskify branding
+      doc.fontSize(20).fillColor('#1a365d').text('Riskify', 450, 50);
+      doc.fontSize(12).fillColor('#666').text('Professional SWMS Builder', 430, 75);
       
-      // Project details section
-      doc.fontSize(14).text('Project Details:', 50, yPos);
-      yPos += 25;
-      doc.fontSize(12);
-      doc.text(`Project: ${data.projectName || 'N/A'}`, 70, yPos);
-      yPos += 20;
-      doc.text(`Address: ${data.projectAddress || 'N/A'}`, 70, yPos);
-      yPos += 20;
-      doc.text(`Contractor: ${data.principalContractor || 'N/A'}`, 70, yPos);
-      yPos += 20;
-      doc.text(`Job Number: ${data.projectNumber || 'N/A'}`, 70, yPos);
+      // Add subtle watermark
+      doc.save();
+      doc.opacity(0.05);
+      doc.fontSize(60).fillColor('#cccccc').text('RISKIFY', 100, 350);
+      doc.restore();
+      
+      // Document header
+      doc.fontSize(24).fillColor('#000').text('Safe Work Method Statement', 50, 120);
+      doc.fontSize(16).fillColor('#333').text(data.projectName || 'SWMS Document', 50, 150);
+      
+      // Add border line
+      doc.moveTo(50, 175).lineTo(550, 175).stroke();
+      
+      let yPos = 200;
+      
+      // Project Details Section
+      doc.fontSize(16).fillColor('#1a365d').text('PROJECT DETAILS', 50, yPos);
       yPos += 30;
       
-      // Risk Assessment Table
-      doc.fontSize(14).text('Risk Assessment Matrix:', 50, yPos);
-      yPos += 25;
+      doc.fontSize(12).fillColor('#000');
+      const projectDetails = [
+        { label: 'Project Name:', value: data.projectName || 'N/A' },
+        { label: 'Project Address:', value: data.projectAddress || 'N/A' },
+        { label: 'Principal Contractor:', value: data.principalContractor || 'N/A' },
+        { label: 'Job Number:', value: data.projectNumber || 'N/A' },
+        { label: 'Trade Type:', value: data.tradeType || 'General Construction' },
+        { label: 'Document Date:', value: new Date().toLocaleDateString('en-AU') }
+      ];
       
-      // Table headers
-      doc.fontSize(10);
-      const tableHeaders = ['Activity', 'Hazards', 'Risk Level', 'Control Measures'];
-      const colWidths = [120, 120, 80, 120];
-      let xPos = 50;
-      
-      tableHeaders.forEach((header, i) => {
-        doc.rect(xPos, yPos, colWidths[i], 20).stroke();
-        doc.text(header, xPos + 5, yPos + 5);
-        xPos += colWidths[i];
+      projectDetails.forEach(detail => {
+        doc.text(detail.label, 70, yPos);
+        doc.text(detail.value, 200, yPos);
+        yPos += 20;
       });
+      
       yPos += 20;
       
-      // Sample risk assessment data
-      const riskData = data.swmsData?.activities || [
+      // Risk Assessment Section
+      doc.fontSize(16).fillColor('#1a365d').text('RISK ASSESSMENT MATRIX', 50, yPos);
+      yPos += 30;
+      
+      // Table setup
+      const tableTop = yPos;
+      const tableHeaders = ['Activity', 'Hazards', 'Risk Level', 'Control Measures'];
+      const colWidths = [120, 140, 80, 140];
+      const rowHeight = 25;
+      let xPos = 50;
+      
+      // Draw table headers
+      doc.fontSize(10).fillColor('#fff');
+      tableHeaders.forEach((header, i) => {
+        doc.rect(xPos, tableTop, colWidths[i], rowHeight).fillAndStroke('#1a365d', '#000');
+        doc.text(header, xPos + 5, tableTop + 8, { width: colWidths[i] - 10 });
+        xPos += colWidths[i];
+      });
+      
+      yPos = tableTop + rowHeight;
+      
+      // Risk assessment data
+      const riskData = data.swmsData?.activities || data.activities || [
         {
           activity: 'General Construction Work',
-          hazards: ['Falls', 'Manual Handling', 'Electrical'],
+          hazards: ['Falls from height', 'Manual handling injuries', 'Electrical hazards'],
           riskLevel: 'Medium',
-          controlMeasures: ['Safety harness', 'Proper lifting technique', 'Lockout/tagout']
+          controlMeasures: ['Safety harness and fall protection', 'Proper lifting techniques', 'Electrical safety procedures']
         }
       ];
       
+      doc.fillColor('#000');
       riskData.forEach((item: any, index: number) => {
         if (yPos > 700) {
           doc.addPage();
-          addWatermark();
+          doc.save();
+          doc.opacity(0.05);
+          doc.fontSize(60).fillColor('#cccccc').text('RISKIFY', 100, 350);
+          doc.restore();
           yPos = 50;
         }
         
         xPos = 50;
-        const rowHeight = 30;
+        const currentRowHeight = Math.max(rowHeight, 40);
         
         // Activity
-        doc.rect(xPos, yPos, colWidths[0], rowHeight).stroke();
-        doc.text(item.activity || 'Activity ' + (index + 1), xPos + 5, yPos + 5, { width: colWidths[0] - 10 });
+        doc.rect(xPos, yPos, colWidths[0], currentRowHeight).stroke();
+        doc.fontSize(9).text(item.activity || `Activity ${index + 1}`, xPos + 5, yPos + 5, { 
+          width: colWidths[0] - 10,
+          height: currentRowHeight - 10 
+        });
         xPos += colWidths[0];
         
         // Hazards
-        doc.rect(xPos, yPos, colWidths[1], rowHeight).stroke();
-        const hazards = Array.isArray(item.hazards) ? item.hazards.join(', ') : 'Various hazards';
-        doc.text(hazards, xPos + 5, yPos + 5, { width: colWidths[1] - 10 });
+        doc.rect(xPos, yPos, colWidths[1], currentRowHeight).stroke();
+        const hazards = Array.isArray(item.hazards) ? item.hazards.join(', ') : 'Various construction hazards';
+        doc.text(hazards, xPos + 5, yPos + 5, { 
+          width: colWidths[1] - 10,
+          height: currentRowHeight - 10 
+        });
         xPos += colWidths[1];
         
         // Risk Level
-        doc.rect(xPos, yPos, colWidths[2], rowHeight).stroke();
-        doc.text(item.riskLevel || 'Medium', xPos + 5, yPos + 5);
+        doc.rect(xPos, yPos, colWidths[2], currentRowHeight).stroke();
+        const riskLevel = item.riskLevel || 'Medium';
+        const riskColor = riskLevel === 'High' ? '#dc2626' : riskLevel === 'Low' ? '#16a34a' : '#ea580c';
+        doc.fillColor(riskColor).text(riskLevel, xPos + 5, yPos + 12);
+        doc.fillColor('#000');
         xPos += colWidths[2];
         
         // Control Measures
-        doc.rect(xPos, yPos, colWidths[3], rowHeight).stroke();
-        const controls = Array.isArray(item.controlMeasures) ? item.controlMeasures.join(', ') : 'Standard safety controls';
-        doc.text(controls, xPos + 5, yPos + 5, { width: colWidths[3] - 10 });
+        doc.rect(xPos, yPos, colWidths[3], currentRowHeight).stroke();
+        const controls = Array.isArray(item.controlMeasures) ? item.controlMeasures.join(', ') : 'Standard safety controls as per Australian standards';
+        doc.text(controls, xPos + 5, yPos + 5, { 
+          width: colWidths[3] - 10,
+          height: currentRowHeight - 10 
+        });
         
-        yPos += rowHeight;
+        yPos += currentRowHeight;
       });
       
-      // Emergency procedures
-      yPos += 30;
+      // Emergency Procedures Section
+      yPos += 40;
       if (yPos > 650) {
         doc.addPage();
-        addWatermark();
+        doc.save();
+        doc.opacity(0.05);
+        doc.fontSize(60).fillColor('#cccccc').text('RISKIFY', 100, 350);
+        doc.restore();
         yPos = 50;
       }
       
-      doc.fontSize(14).text('Emergency Procedures:', 50, yPos);
-      yPos += 25;
-      doc.fontSize(12);
-      doc.text('• In case of emergency, call 000', 70, yPos);
-      yPos += 15;
-      doc.text('• Evacuate to designated assembly point', 70, yPos);
-      yPos += 15;
-      doc.text('• Report all incidents to site supervisor', 70, yPos);
+      doc.fontSize(16).fillColor('#1a365d').text('EMERGENCY PROCEDURES', 50, yPos);
+      yPos += 30;
       
-      // Footer with compliance
-      yPos += 50;
-      doc.fontSize(10);
-      doc.text('This SWMS complies with Australian WHS regulations and AS/NZS standards', 50, yPos);
-      doc.text(`Generated: ${new Date().toLocaleDateString('en-AU')}`, 50, yPos + 15);
+      doc.fontSize(12).fillColor('#000');
+      const emergencyProcedures = [
+        'In case of emergency, immediately call 000',
+        'Evacuate to designated assembly point as per site evacuation plan',
+        'Report all incidents and near misses to site supervisor immediately',
+        'Ensure first aid is administered by qualified personnel only',
+        'Do not re-enter work area until cleared by safety officer'
+      ];
+      
+      emergencyProcedures.forEach(procedure => {
+        doc.text(`• ${procedure}`, 70, yPos);
+        yPos += 20;
+      });
+      
+      // Compliance Footer
+      yPos += 30;
+      doc.fontSize(10).fillColor('#666');
+      doc.text('This SWMS complies with:', 50, yPos);
+      yPos += 15;
+      doc.text('• Work Health and Safety Act 2011', 70, yPos);
+      yPos += 12;
+      doc.text('• Work Health and Safety Regulation 2017', 70, yPos);
+      yPos += 12;
+      doc.text('• Australian Standards AS/NZS 4804:2001', 70, yPos);
+      yPos += 12;
+      doc.text('• Safe Work Australia Guidelines', 70, yPos);
+      
+      // Document footer
+      yPos += 30;
+      doc.moveTo(50, yPos).lineTo(550, yPos).stroke();
+      yPos += 10;
+      doc.text(`Generated by Riskify Professional SWMS Builder - ${new Date().toLocaleDateString('en-AU')}`, 50, yPos);
       
       // Finalize the PDF
       doc.end();
       
     } catch (error) {
       console.error("PDF generation error:", error);
-      res.status(500).json({ error: "Failed to generate PDF" });
+      if (!res.headersSent) {
+        res.status(500).json({ error: "Failed to generate PDF" });
+      }
     }
   });
 
