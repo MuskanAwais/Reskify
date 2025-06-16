@@ -47,14 +47,14 @@ export default function MySwms() {
   const user = useUser();
 
   const { data: documentsData, isLoading } = useQuery({
-    queryKey: ["/api/swms/my-documents"],
+    queryKey: ["/api/swms"],
     enabled: !!user,
   });
 
-  // Combine drafts and completed documents into a single array
-  const documents = documentsData ? [...((documentsData as any).drafts || []), ...((documentsData as any).completed || [])] : [];
+  // Get documents array from API response
+  const documents = (documentsData as any)?.documents || [];
   
-  // Fix data structure for display
+  // Format documents for display
   const formattedDocuments = documents.map((doc: any) => ({
     ...doc,
     title: doc.title || doc.jobName || 'Untitled SWMS',
@@ -69,7 +69,7 @@ export default function MySwms() {
   const deleteDocumentMutation = useMutation({
     mutationFn: (id: number) => apiRequest("DELETE", `/api/swms/${id}`, {}),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/swms/my-documents"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/swms"] });
       toast({
         title: "Document Deleted",
         description: "SWMS document has been successfully deleted.",
