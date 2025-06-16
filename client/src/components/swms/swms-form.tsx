@@ -410,7 +410,8 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
                                         <X className="h-4 w-4" />
                                       </Button>
                                     </div>
-                                  ))}
+                                    );
+                                  })}
                                   <Button
                                     variant="outline"
                                     size="sm"
