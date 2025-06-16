@@ -404,7 +404,7 @@ export default function MySwms() {
                     </>
                   ) : (
                     // Draft documents: Edit option
-                    <Link href={`/swms-builder?edit=${document.id}`}>
+                    <Link href={`/swms-editor/${document.id}`}>
                       <Button variant="outline" size="sm" className="flex-1">
                         <Edit className="h-4 w-4 mr-1" />
                         Continue Editing

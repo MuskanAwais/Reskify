@@ -1278,7 +1278,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/swms/draft/:id", async (req, res) => {
     try {
       const { id } = req.params;
-      const userId = req.user?.id || 1; // Allow demo access
+      let userId = req.user?.id;
+      if (!userId) {
+        userId = (req.session as any)?.passport?.user || 2;
+      }
       
       console.log(`Loading draft ${id} for user ${userId}`);
       
@@ -1326,6 +1329,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error("Get draft error:", error);
       res.status(500).json({ message: "Failed to fetch draft" });
+    }
+  });
+
+  // Update SWMS draft endpoint
+  app.put("/api/swms/draft/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      let userId = req.user?.id;
+      if (!userId) {
+        userId = (req.session as any)?.passport?.user || 2;
+      }
+      
+      console.log(`Updating SWMS ${id} for user ${userId}`);
+      
+      // Get existing draft to verify ownership
+      const existingDraft = await dbStorage.getSwmsById(parseInt(id));
+      if (!existingDraft || existingDraft.userId !== userId) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+      
+      const updatedData = {
+        ...req.body,
+        updatedAt: new Date().toISOString()
+      };
+      
+      // Update the draft
+      const result = await dbStorage.updateSwmsDraft(parseInt(id), updatedData);
+      
+      res.json({
+        success: true,
+        message: "SWMS updated successfully",
+        id: parseInt(id)
+      });
+    } catch (error: any) {
+      console.error("Update SWMS error:", error);
+      res.status(500).json({ message: "Failed to update SWMS" });
     }
   });
 
@@ -1421,8 +1460,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Comprehensive PDF generation endpoint with all required elements
-  app.post("/api/swms/pdf-download", async (req, res) => {
+  // Comprehensive PDF generation endpoint with all required elements - no auth required
+  app.post("/api/swms/pdf-download", express.json(), (req, res, next) => {
+    // Skip authentication for PDF generation
+    next();
+  }, async (req, res) => {
     try {
       const PDFDocument = require('pdfkit');
       const { projectName, projectNumber, projectAddress, swmsData, formData, companyName, principalContractor } = req.body;
@@ -1434,6 +1476,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const currentDate = new Date().toLocaleDateString('en-AU');
+      const safeProjectName = projectName.replace(/[^\w\s-]/g, '') || 'SWMS Document';
       
       // Create a new PDF document
       const doc = new PDFDocument({

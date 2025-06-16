@@ -184,6 +184,7 @@ function Router() {
         <ProtectedRoute path="/generate" component={SwmsBuilder} />
         <ProtectedRoute path="/swms-builder" component={SwmsBuilder} />
         <ProtectedRoute path="/my-swms" component={MySwms} />
+        <ProtectedRoute path="/swms-editor/:id" component={SwmsEditor} />
         <ProtectedRoute path="/analytics" component={Analytics} />
         <ProtectedRoute path="/ai-assistant" component={AiAssistant} />
         <ProtectedRoute path="/profile" component={Profile} />
