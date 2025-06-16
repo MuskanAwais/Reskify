@@ -355,22 +355,27 @@ export class DatabaseStorage implements IStorage {
         userId: data.userId || 999,
         title: data.projectName || '',
         jobName: data.projectName || '',
-        projectLocation: data.projectAddress || '',
-        principalContractor: data.principalContractor || '',
         jobNumber: data.jobNumber || '',
-        tradeType: data.tradeType || '',
+        projectAddress: data.projectAddress || '',
+        projectLocation: data.projectAddress || '',
         projectDescription: data.projectDescription || '',
+        principalContractor: data.principalContractor || '',
+        tradeType: data.tradeType || '',
+        activities: [data.tradeType || 'General Construction'],
         workActivities: data.workActivities || [],
-        status: data.status || 'draft',
-        createdAt: data.createdAt || new Date(),
-        updatedAt: data.updatedAt || new Date()
+        riskAssessments: data.workActivities || [],
+        safetyMeasures: data.workActivities || [],
+        complianceCodes: ['WHS Act 2011', 'WHS Regulation 2017'],
+        responsiblePersons: [{name: 'Site Supervisor', role: 'Supervisor'}],
+        emergencyProcedures: {contacts: [], procedures: []},
+        status: data.status || 'draft'
       };
 
       const [savedDoc] = await db.insert(swmsDocuments).values(swmsData).returning();
-      console.log('SWMS saved:', savedDoc.id);
+      console.log('SWMS saved successfully:', savedDoc.id);
       return savedDoc;
     } catch (error) {
-      console.error('Error saving SWMS:', error);
+      console.error('Error saving SWMS to database:', error);
       // Fallback to memory storage
       const newDoc = { ...data, id: Date.now() };
       this.swmsDrafts.push(newDoc);
