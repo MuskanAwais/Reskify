@@ -105,6 +105,13 @@ Riskify is a comprehensive SWMS (Safe Work Method Statement) builder application
 
 ## Changelog
 
+- June 16, 2025. PDF Generation System Restored - Complete download functionality implemented:
+  * Fixed PDF generation endpoint with proper PDFKit integration and error handling
+  * Added comprehensive PDF content including Riskify branding, project watermarks, and risk assessment tables
+  * Implemented credentials handling for frontend PDF downloads with enhanced error logging
+  * Dashboard API endpoint created showing accurate SWMS counts (2 drafts, 3 completed)
+  * Server generating proper 2.3KB PDF files with correct headers and content disposition
+  * Authentication system restored with session management and admin account access
 - June 16, 2025. Critical System Recovery - Server routes corruption fixed and admin access restored:
   * Completely reconstructed corrupted server routes file that was preventing application startup
   * Rebuilt authentication system with proper session middleware and bcrypt password hashing

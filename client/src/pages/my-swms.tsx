@@ -79,61 +79,80 @@ export default function MySwms() {
 
   const downloadDocumentMutation = useMutation({
     mutationFn: async (document: any) => {
-      // Use the comprehensive PDF generation endpoint
-      const response = await fetch('/api/swms/pdf-download', {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          projectName: document.title || document.jobName,
-          projectNumber: document.jobNumber,
-          projectAddress: document.projectAddress || document.projectLocation,
-          companyName: document.principalContractor,
-          principalContractor: document.principalContractor,
-          swmsData: document.swmsData || {
-            activities: document.workActivities || [],
-            plantEquipment: document.plantEquipment || [],
-            emergencyProcedures: document.emergencyProcedures || {}
+      console.log('Starting PDF download for:', document.title || document.jobName);
+      
+      try {
+        // Use the comprehensive PDF generation endpoint
+        const response = await fetch('/api/swms/pdf-download', {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
           },
-          formData: {
-            jobName: document.title || document.jobName,
-            jobNumber: document.jobNumber,
-            projectLocation: document.projectAddress || document.projectLocation,
+          body: JSON.stringify({
+            projectName: document.title || document.jobName,
+            projectNumber: document.jobNumber,
+            projectAddress: document.projectAddress || document.projectLocation,
+            companyName: document.principalContractor,
             principalContractor: document.principalContractor,
-            supervisorName: document.responsiblePersons?.supervisor || 'N/A',
-            supervisorPhone: document.responsiblePersons?.phone || 'N/A'
-          }
-        })
-      });
+            swmsData: document.swmsData || {
+              activities: document.workActivities || [],
+              plantEquipment: document.plantEquipment || [],
+              emergencyProcedures: document.emergencyProcedures || {}
+            },
+            formData: {
+              jobName: document.title || document.jobName,
+              jobNumber: document.jobNumber,
+              projectLocation: document.projectAddress || document.projectLocation,
+              principalContractor: document.principalContractor,
+              supervisorName: document.responsiblePersons?.supervisor || 'N/A',
+              supervisorPhone: document.responsiblePersons?.phone || 'N/A'
+            }
+          })
+        });
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('PDF generation failed:', errorText);
-        throw new Error(`Failed to generate PDF: ${response.status}`);
+        console.log('Response status:', response.status);
+        console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('PDF generation failed:', errorText);
+          throw new Error(`Failed to generate PDF: ${response.status}`);
+        }
+
+        // Check if response is actually a PDF
+        const contentType = response.headers.get('content-type');
+        console.log('Content type:', contentType);
+        
+        if (!contentType || !contentType.includes('application/pdf')) {
+          console.error('Response is not a PDF:', contentType);
+          const responseText = await response.text();
+          console.error('Response body:', responseText);
+          throw new Error('Server returned invalid response format');
+        }
+
+        const blob = await response.blob();
+        console.log('Blob size:', blob.size, 'bytes');
+        
+        if (blob.size === 0) {
+          throw new Error('Empty PDF received from server');
+        }
+
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${(document.title || document.jobName).replace(/[^a-z0-9]/gi, '_').toLowerCase()}_swms.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        console.log('PDF download completed successfully');
+        return { success: true };
+      } catch (error) {
+        console.error('PDF download error:', error);
+        throw error;
       }
-
-      // Check if response is actually a PDF
-      const contentType = response.headers.get('content-type');
-      if (!contentType || !contentType.includes('application/pdf')) {
-        console.error('Response is not a PDF:', contentType);
-        throw new Error('Server returned invalid response format');
-      }
-
-      const blob = await response.blob();
-      if (blob.size === 0) {
-        throw new Error('Empty PDF received from server');
-      }
-
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${(document.title || document.jobName).replace(/[^a-z0-9]/gi, '_').toLowerCase()}_swms.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
     },
     onSuccess: () => {
       toast({
@@ -142,9 +161,10 @@ export default function MySwms() {
       });
     },
     onError: (error) => {
+      console.error("PDF download error:", error);
       toast({
         title: "Download Failed",
-        description: "Failed to generate PDF. Please try again.",
+        description: `Error: ${error.message || 'Failed to generate PDF. Please try again.'}`,
         variant: "destructive"
       });
     }
