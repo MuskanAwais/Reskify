@@ -590,15 +590,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const equipColWidths = [120, 80, 120, 160];
       const equipHeaderHeight = 25;
       
-      xPos = 50;
+      let equipXPos = 50;
       doc.fontSize(9).fillColor('#fff');
       equipHeaders.forEach((header, i) => {
-        doc.rect(xPos, yPos, equipColWidths[i], equipHeaderHeight).fillAndStroke('#1a365d', '#000');
-        doc.text(header, xPos + 3, yPos + 8, { 
+        doc.rect(equipXPos, yPos, equipColWidths[i], equipHeaderHeight).fillAndStroke('#1a365d', '#000');
+        doc.text(header, equipXPos + 3, yPos + 8, { 
           width: equipColWidths[i] - 6,
           align: 'center'
         });
-        xPos += equipColWidths[i];
+        equipXPos += equipColWidths[i];
       });
       yPos += equipHeaderHeight;
       
@@ -611,7 +611,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       doc.fillColor('#000');
       equipmentData.forEach((item: any, index: number) => {
         const equipRowHeight = 35;
-        xPos = 50;
+        let equipRowXPos = 50;
         
         if (index % 2 === 0) {
           doc.rect(50, yPos, 480, equipRowHeight).fillAndStroke('#f8f9fa', '#e9ecef');
@@ -620,18 +620,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
         
         doc.fontSize(8).fillColor('#000');
-        doc.text(item.equipment, xPos + 3, yPos + 5, { width: equipColWidths[0] - 6, height: equipRowHeight - 10 });
-        xPos += equipColWidths[0];
+        doc.text(item.equipment, equipRowXPos + 3, yPos + 5, { width: equipColWidths[0] - 6, height: equipRowHeight - 10 });
+        equipRowXPos += equipColWidths[0];
         
         const equipRisk = item.riskLevel || 'Medium';
         const equipRiskColor = equipRisk === 'High' ? '#dc2626' : equipRisk === 'Low' ? '#16a34a' : '#ea580c';
-        doc.fillColor(equipRiskColor).text(equipRisk, xPos + 3, yPos + 12, { width: equipColWidths[1] - 6, align: 'center' });
+        doc.fillColor(equipRiskColor).text(equipRisk, equipRowXPos + 3, yPos + 12, { width: equipColWidths[1] - 6, align: 'center' });
         doc.fillColor('#000');
-        xPos += equipColWidths[1];
+        equipRowXPos += equipColWidths[1];
         
-        doc.text(item.certifications, xPos + 3, yPos + 5, { width: equipColWidths[2] - 6, height: equipRowHeight - 10 });
-        xPos += equipColWidths[2];
-        doc.text(item.safety, xPos + 3, yPos + 5, { width: equipColWidths[3] - 6, height: equipRowHeight - 10 });
+        doc.text(item.certifications, equipRowXPos + 3, yPos + 5, { width: equipColWidths[2] - 6, height: equipRowHeight - 10 });
+        equipRowXPos += equipColWidths[2];
+        doc.text(item.safety, equipRowXPos + 3, yPos + 5, { width: equipColWidths[3] - 6, height: equipRowHeight - 10 });
         
         yPos += equipRowHeight;
       });
@@ -709,22 +709,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const sigColWidths = [100, 90, 100, 100, 90];
       const sigHeaderHeight = 25;
       
-      xPos = 50;
+      let sigXPos = 50;
       doc.fontSize(9).fillColor('#fff');
       sigHeaders.forEach((header, i) => {
-        doc.rect(xPos, yPos, sigColWidths[i], sigHeaderHeight).fillAndStroke('#1a365d', '#000');
-        doc.text(header, xPos + 3, yPos + 8, { 
+        doc.rect(sigXPos, yPos, sigColWidths[i], sigHeaderHeight).fillAndStroke('#1a365d', '#000');
+        doc.text(header, sigXPos + 3, yPos + 8, { 
           width: sigColWidths[i] - 6,
           align: 'center'
         });
-        xPos += sigColWidths[i];
+        sigXPos += sigColWidths[i];
       });
       yPos += sigHeaderHeight;
       
       // Create signature rows
       for (let i = 0; i < 8; i++) {
         const sigRowHeight = 40;
-        xPos = 50;
+        let sigRowXPos = 50;
         
         if (i % 2 === 0) {
           doc.rect(50, yPos, 480, sigRowHeight).fillAndStroke('#f8f9fa', '#e9ecef');
@@ -734,8 +734,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         // Draw individual cells for signatures
         sigColWidths.forEach((width, index) => {
-          doc.rect(xPos, yPos, width, sigRowHeight).stroke('#e9ecef');
-          xPos += width;
+          doc.rect(sigRowXPos, yPos, width, sigRowHeight).stroke('#e9ecef');
+          sigRowXPos += width;
         });
         
         yPos += sigRowHeight;
