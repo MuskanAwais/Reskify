@@ -67,10 +67,12 @@ export default function SwmsEditor() {
   });
   
   // Load SWMS data for editing
-  const { data: swmsData, isLoading } = useQuery({
-    queryKey: [`/api/swms/draft/${swmsId}`],
+  const { data: swmsResponse, isLoading } = useQuery({
+    queryKey: [`/api/swms/${swmsId}`],
     enabled: !!swmsId,
   });
+
+  const swmsData = (swmsResponse as any)?.document;
 
   const [projectInfo, setProjectInfo] = useState({
     title: "",
@@ -82,24 +84,25 @@ export default function SwmsEditor() {
 
   useEffect(() => {
     if (swmsData && typeof swmsData === 'object') {
+      const data = swmsData as any;
       setProjectInfo({
-        title: swmsData.title || swmsData.jobName || "",
-        projectNumber: swmsData.jobNumber || "",
-        projectAddress: swmsData.projectAddress || swmsData.projectLocation || "",
-        principalContractor: swmsData.principalContractor || "",
-        tradeType: swmsData.tradeType || ""
+        title: data.title || data.jobName || "",
+        projectNumber: data.jobNumber || "",
+        projectAddress: data.projectAddress || data.projectLocation || "",
+        principalContractor: data.principalContractor || "",
+        tradeType: data.tradeType || ""
       });
       
-      if (swmsData.activities) {
-        setActivities(swmsData.activities);
+      if (data.riskAssessments && Array.isArray(data.riskAssessments)) {
+        setActivities(data.riskAssessments);
       }
       
-      if (swmsData.plantEquipment) {
-        setPlantEquipment(swmsData.plantEquipment);
+      if (data.plantEquipment && Array.isArray(data.plantEquipment)) {
+        setPlantEquipment(data.plantEquipment);
       }
       
-      if (swmsData.emergencyProcedures) {
-        setEmergencyProcedures(swmsData.emergencyProcedures);
+      if (data.emergencyProcedures && typeof data.emergencyProcedures === 'object') {
+        setEmergencyProcedures(data.emergencyProcedures);
       }
     }
   }, [swmsData]);
@@ -107,15 +110,13 @@ export default function SwmsEditor() {
   const saveSwmsMutation = useMutation({
     mutationFn: async () => {
       const updatedData = {
-        ...swmsData,
-        swmsData: {
-          activities,
-          plantEquipment,
-          emergencyProcedures
-        }
+        riskAssessments: activities,
+        plantEquipment: plantEquipment,
+        emergencyProcedures: emergencyProcedures,
+        status: 'draft'
       };
       
-      return apiRequest("PUT", `/api/swms/draft/${swmsId}`, updatedData);
+      return apiRequest("PUT", `/api/swms/${swmsId}`, updatedData);
     },
     onSuccess: () => {
       toast({
