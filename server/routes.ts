@@ -323,6 +323,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const data = req.body;
       
+      // Import complete PDF generator
+      const { generateCompleteSWMSPDF } = await import('./pdf-generator-complete.js');
+      
+      const pdfBuffer = await generateCompleteSWMSPDF(data);
+      
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', 'attachment; filename="swms_document.pdf"');
+      res.setHeader('Content-Length', pdfBuffer.length.toString());
+      res.send(pdfBuffer);
+      
+    } catch (error) {
+      console.error("PDF generation error:", error);
+      if (!res.headersSent) {
+        res.status(500).json({ error: "Failed to generate PDF" });
+      }
+    }
+  });
+      
       // MODERN APP-STYLE FORMAT - Clean portrait layout like dashboard export
       const doc = new PDFDocument({ 
         size: 'A4',
@@ -457,9 +475,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       yPos += 220;
 
-      // Table headers - full width in landscape
-      const tableHeaders = ['Activity/Task', 'Hazards Identified', 'Risk Level', 'Control Measures', 'Legislation/Standards', 'Responsible Person'];
-      const colWidths = [120, 140, 80, 160, 120, 100];
+      // Add new page for main SWMS table
+      doc.addPage();
+      yPos = 40;
+
+      // MAIN SWMS TABLE CARD - Exact structure from screenshot
+      doc.fillColor('#ffffff').rect(40, yPos, 515, 40).fill();
+      doc.strokeColor('#e5e7eb').lineWidth(1).rect(40, yPos, 515, 40).stroke();
+      
+      // Card header
+      doc.fillColor('#dbeafe').rect(40, yPos, 515, 40).fill();
+      doc.strokeColor('#e5e7eb').rect(40, yPos, 515, 40).stroke();
+      doc.fontSize(16).fillColor('#1e3a8a').font('Helvetica-Bold');
+      doc.text('📊 Safe Work Method Statement - Risk Assessment', 60, yPos + 15);
+
+      yPos += 50;
+
+      // Table headers exactly as shown in screenshot
+      const swmsHeaders = [
+        'Activity / Item',
+        'Hazards / Risks', 
+        'Initial Risk Score',
+        'Control Measures / Risk Treatment',
+        'Legislation, Codes of Practice, and Guidelines',
+        'Residual Risk Score'
+      ];
+      const swmsColWidths = [85, 90, 55, 110, 120, 55];
       
       let xPos = 40;
       tableHeaders.forEach((header, i) => {
