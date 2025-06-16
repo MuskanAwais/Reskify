@@ -50,6 +50,11 @@ export default function PDFPrintSystem({
     try {
       setIsGenerating(true);
       
+      toast({
+        title: "Generating PDF",
+        description: "Processing your SWMS document...",
+      });
+      
       // Check download endpoint first to validate credits and deduct
       const downloadResponse = await apiRequest('GET', `/api/swms/${swmsId}/download`);
       const downloadData = await downloadResponse.json();

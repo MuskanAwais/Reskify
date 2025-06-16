@@ -72,9 +72,24 @@ export default function AustralianAddressAutocomplete({
     }
   };
 
+  // Manual address validation for Australian addresses
+  const validateManualAddress = (address: string): boolean => {
+    const addressPattern = /^\d+\s+[A-Za-z\s]+(Street|St|Road|Rd|Avenue|Ave|Drive|Dr|Lane|Ln|Court|Ct|Place|Pl|Crescent|Cres|Circuit|Cct|Way|Highway|Hwy|Terrace|Tce|Close|Cl|Boulevard|Blvd|Parade|Pde)\s*,?\s*[A-Za-z\s]+\s*,?\s*(NSW|VIC|QLD|WA|SA|TAS|ACT|NT)\s*\d{4}$/i;
+    return addressPattern.test(address.trim());
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     onChange(newValue);
+    
+    // Check manual entry validation
+    if (newValue.length > 15 && validateManualAddress(newValue)) {
+      setIsValidated(true);
+      setShowSuggestions(false);
+      setSuggestions([]);
+      return;
+    }
+    
     setIsValidated(false);
 
     if (debounceRef.current) {
