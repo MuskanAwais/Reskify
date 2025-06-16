@@ -4,6 +4,7 @@ import { eq, desc } from "drizzle-orm";
 
 export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
+  getUserById(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(insertUser: InsertUser): Promise<User>;
   getAllUsers(): Promise<User[]>;
@@ -19,6 +20,11 @@ export interface IStorage {
   getUserSwmsDrafts(userId: number): Promise<any[]>;
   getUserSwmsDocuments(): Promise<any[]>;
   getAllSwmsDocuments(): Promise<any[]>;
+  createSwmsDocument(data: any): Promise<any>;
+  getSwmsDocumentById(id: number): Promise<any | undefined>;
+  getSwmsDocumentsByUserId(userId: number): Promise<any[]>;
+  updateSwmsDocument(id: number, data: any): Promise<any>;
+  deleteSwmsDocument(id: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -26,6 +32,11 @@ export class DatabaseStorage implements IStorage {
   private swmsDocuments: any[] = [];
 
   async getUser(id: number): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
+  }
+
+  async getUserById(id: number): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, id));
     return user || undefined;
   }
@@ -251,6 +262,66 @@ export class DatabaseStorage implements IStorage {
     } catch (error) {
       console.error('Error fetching all SWMS documents:', error);
       return [];
+    }
+  }
+
+  async createSwmsDocument(data: any): Promise<any> {
+    try {
+      const [document] = await db
+        .insert(swmsDocuments)
+        .values(data)
+        .returning();
+      return document;
+    } catch (error) {
+      console.error('Error creating SWMS document:', error);
+      throw error;
+    }
+  }
+
+  async getSwmsDocumentById(id: number): Promise<any | undefined> {
+    try {
+      const [document] = await db.select().from(swmsDocuments).where(eq(swmsDocuments.id, id));
+      return document || undefined;
+    } catch (error) {
+      console.error('Error fetching SWMS document by ID:', error);
+      return undefined;
+    }
+  }
+
+  async getSwmsDocumentsByUserId(userId: number): Promise<any[]> {
+    try {
+      const documents = await db
+        .select()
+        .from(swmsDocuments)
+        .where(eq(swmsDocuments.userId, userId))
+        .orderBy(desc(swmsDocuments.createdAt));
+      return documents;
+    } catch (error) {
+      console.error('Error fetching SWMS documents by user ID:', error);
+      return [];
+    }
+  }
+
+  async updateSwmsDocument(id: number, data: any): Promise<any> {
+    try {
+      const [updatedDocument] = await db
+        .update(swmsDocuments)
+        .set(data)
+        .where(eq(swmsDocuments.id, id))
+        .returning();
+      return updatedDocument;
+    } catch (error) {
+      console.error('Error updating SWMS document:', error);
+      throw error;
+    }
+  }
+
+  async deleteSwmsDocument(id: number): Promise<void> {
+    try {
+      await db.delete(swmsDocuments).where(eq(swmsDocuments.id, id));
+    } catch (error) {
+      console.error('Error deleting SWMS document:', error);
+      throw error;
     }
   }
 }

@@ -1,9 +1,17 @@
-import { Express } from "express";
+import { Express, Request, Response } from "express";
 import { createServer, Server } from "http";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
+import session from "express-session";
 import { storage } from "./storage";
 import { insertUserSchema, insertSwmsSchema } from "../shared/schema";
+
+// Extend session types
+declare module "express-session" {
+  interface SessionData {
+    userId?: number;
+  }
+}
 
 async function hashPassword(password: string) {
   return bcrypt.hash(password, 10);
@@ -14,6 +22,17 @@ async function verifyPassword(password: string, hash: string) {
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Configure session middleware
+  app.use(session({
+    secret: process.env.SESSION_SECRET || 'default-secret-key',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: false, // Set to true in production with HTTPS
+      maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    }
+  }));
+
   // Health check endpoint
   app.get("/api/health", (req, res) => {
     res.json({ status: "ok", timestamp: new Date().toISOString() });

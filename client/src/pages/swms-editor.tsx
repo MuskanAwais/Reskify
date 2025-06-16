@@ -81,7 +81,7 @@ export default function SwmsEditor() {
   });
 
   useEffect(() => {
-    if (swmsData) {
+    if (swmsData && typeof swmsData === 'object') {
       setProjectInfo({
         title: swmsData.title || swmsData.jobName || "",
         projectNumber: swmsData.jobNumber || "",
@@ -90,16 +90,16 @@ export default function SwmsEditor() {
         tradeType: swmsData.tradeType || ""
       });
       
-      if (swmsData.swmsData?.activities) {
-        setActivities(swmsData.swmsData.activities);
+      if (swmsData.activities) {
+        setActivities(swmsData.activities);
       }
       
-      if (swmsData.swmsData?.plantEquipment) {
-        setPlantEquipment(swmsData.swmsData.plantEquipment);
+      if (swmsData.plantEquipment) {
+        setPlantEquipment(swmsData.plantEquipment);
       }
       
-      if (swmsData.swmsData?.emergencyProcedures) {
-        setEmergencyProcedures(swmsData.swmsData.emergencyProcedures);
+      if (swmsData.emergencyProcedures) {
+        setEmergencyProcedures(swmsData.emergencyProcedures);
       }
     }
   }, [swmsData]);
