@@ -614,20 +614,38 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
                                     </div>
                                     );
                                   })}
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => {
-                                      const updatedTasks = [...formData.selectedTasks];
-                                      const updatedControls = [...controls, ''];
-                                      updatedTasks[index] = { ...updatedTasks[index], controlMeasures: updatedControls };
-                                      updateFormData({ selectedTasks: updatedTasks });
-                                    }}
-                                    className="w-full"
-                                  >
-                                    <Plus className="h-4 w-4 mr-2" />
-                                    Add Control
-                                  </Button>
+                                  <div className="flex gap-2">
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => {
+                                        const updatedTasks = [...formData.selectedTasks];
+                                        const updatedControls = [...controls, ''];
+                                        updatedTasks[index] = { ...updatedTasks[index], controlMeasures: updatedControls };
+                                        updateFormData({ selectedTasks: updatedTasks });
+                                      }}
+                                      className="flex-1"
+                                    >
+                                      <Plus className="h-4 w-4 mr-2" />
+                                      Add Control
+                                    </Button>
+                                    {controls.length === 0 && (
+                                      <Button
+                                        variant="secondary"
+                                        size="sm"
+                                        onClick={() => {
+                                          const hazards = task.hazards || [];
+                                          const autoControls = getDefaultControlMeasures(hazards, task.name);
+                                          const updatedTasks = [...formData.selectedTasks];
+                                          updatedTasks[index] = { ...updatedTasks[index], controlMeasures: autoControls };
+                                          updateFormData({ selectedTasks: updatedTasks });
+                                        }}
+                                        className="flex-1"
+                                      >
+                                        Auto-Fill
+                                      </Button>
+                                    )}
+                                  </div>
                                 </div>
                               </div>
 

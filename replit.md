@@ -105,13 +105,19 @@ Riskify is a comprehensive SWMS (Safe Work Method Statement) builder application
 
 ## Changelog
 
-- June 16, 2025. Fixed multiple user-reported issues:
+- June 16, 2025. Fixed multiple critical user-reported issues:
   * Enhanced manual address entry with improved Australian address validation patterns
   * Added "Other" trade type option with custom input field
   * Fixed draft SWMS storage to properly save in "MY SWMS" section via database
   * Improved residual risk score calculation and display in risk assessment
   * Enhanced control measures rendering to prevent React object errors
   * Updated risk assessment section to show proper scoring with reduction indicators
+  * Reorganized SWMS builder steps: Risk Assessment now in dedicated Step 3, Plant Equipment in Step 4
+  * Fixed equipment risk level calculations - measuring tools, brooms, cleaning equipment now correctly classified as low risk
+  * Added auto-populating control measures based on hazards with "Auto-Fill" button
+  * Fixed payment navigation issue - demo access now properly progresses through steps
+  * Corrected legal disclaimer validation to match new 8-step structure
+  * Updated database schema to support all required SWMS document fields
 - June 16, 2025. Added comprehensive risk assessment matrix to SWMS builder and final documents with Australian standards compliance
 - June 15, 2025. Initial setup
 
