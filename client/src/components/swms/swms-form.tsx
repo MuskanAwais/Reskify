@@ -379,12 +379,14 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
                               <div>
                                 <Label className="text-sm font-medium">Identified Hazards</Label>
                                 <div className="space-y-2 mt-2">
-                                  {hazards.map((hazard: any, hIdx: number) => (
+                                  {hazards.map((hazard: any, hIdx: number) => {
+                                    const hazardText = typeof hazard === 'string' ? hazard : 
+                                                      typeof hazard === 'object' && hazard ? 
+                                                        String(hazard.description || hazard.type || hazard.name || hazard.hazard || '') : '';
+                                    return (
                                     <div key={hIdx} className="flex items-center space-x-2">
                                       <Input
-                                        value={typeof hazard === 'string' ? hazard : 
-                                               typeof hazard === 'object' && hazard ? 
-                                                 String(hazard.description || hazard.type || hazard.name || '') : ''}
+                                        value={hazardText}
                                         onChange={(e) => {
                                           const updatedTasks = [...formData.selectedTasks];
                                           const updatedHazards = [...hazards];
