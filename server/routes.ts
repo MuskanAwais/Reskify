@@ -323,11 +323,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const data = req.body;
       
-      // ORIGINAL WORKING FORMAT - A4 Portrait with proper RISKIFY watermarks
+      // LANDSCAPE FORMAT - A4 rotated with RISKIFY watermarks from watermark discussion
       const doc = new PDFDocument({ 
         size: 'A4',
-        layout: 'portrait',
-        margins: { top: 50, left: 50, right: 50, bottom: 50 }
+        layout: 'landscape',
+        margins: { top: 30, left: 30, right: 30, bottom: 30 }
       });
       
       // Collect PDF data into buffer
@@ -356,138 +356,129 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       });
 
-      const pageWidth = 595; // A4 portrait width
-      const pageHeight = 842; // A4 portrait height
+      const pageWidth = 842; // A4 landscape width
+      const pageHeight = 595; // A4 landscape height
       
-      // ORIGINAL RISKIFY WATERMARK PATTERN - Exactly as it was
+      // RISKIFY WATERMARK - Landscape format from watermark discussion
       doc.save();
-      doc.opacity(0.04);
-      doc.fontSize(60).fillColor('#0F4037').font('Helvetica-Bold');
+      doc.opacity(0.06);
+      doc.fontSize(48).fillColor('#0F4037').font('Helvetica-Bold');
       
-      // Main diagonal RISKIFY watermarks across the page
-      for (let i = 0; i < 8; i++) {
-        for (let j = 0; j < 6; j++) {
-          const x = i * 100 - 50;
-          const y = j * 150 + 50;
-          doc.text('RISKIFY', x, y, { width: 200, align: 'center' });
-        }
-      }
+      // Center large RISKIFY watermark
+      doc.text('RISKIFY', pageWidth/2 - 120, pageHeight/2 - 30, { width: 240, align: 'center' });
+      
+      // Corner project watermarks
+      doc.fontSize(24).opacity(0.08);
+      const projectName = data.projectName || data.title || 'SWMS PROJECT';
+      
+      // Four corners with RISKIFY branding
+      doc.text('RISKIFY', 60, 80);
+      doc.text('RISKIFY', pageWidth - 200, 80);
+      doc.text('RISKIFY', 60, pageHeight - 120);
+      doc.text('RISKIFY', pageWidth - 200, pageHeight - 120);
+      
+      // Diagonal project name watermarks
+      doc.fontSize(16).opacity(0.05);
+      doc.text(projectName, 150, 150);
+      doc.text(projectName, pageWidth - 350, 250);
+      doc.text(projectName, 200, pageHeight - 200);
+      
       doc.restore();
       
-      // HEADER SECTION - Original Riskify Branding
-      doc.fillColor('#1e40af').rect(0, 0, pageWidth, 80).fill();
-      doc.fontSize(28).fillColor('white').font('Helvetica-Bold');
-      doc.text('SAFE WORK METHOD STATEMENT', 50, 25);
-      doc.fontSize(12).fillColor('#e2e8f0');
-      doc.text('Riskify Professional Builder', pageWidth - 200, 50);
+      // HEADER SECTION - Landscape Header with Riskify Branding
+      doc.fillColor('#1e40af').rect(30, 30, pageWidth - 60, 60).fill();
+      doc.fontSize(24).fillColor('white').font('Helvetica-Bold');
+      doc.text('SAFE WORK METHOD STATEMENT', 50, 50);
+      doc.fontSize(14).fillColor('#e2e8f0');
+      doc.text('Riskify Professional Builder', pageWidth - 200, 55);
 
-      let yPos = 100;
+      let yPos = 110;
 
-      // PROJECT INFORMATION SECTION
-      doc.fillColor('#f8fafc').rect(50, yPos, pageWidth - 100, 120).fill();
-      doc.strokeColor('#e2e8f0').rect(50, yPos, pageWidth - 100, 120).stroke();
+      // PROJECT DETAILS CARD - Left side in landscape
+      doc.fillColor('#f8fafc').rect(30, yPos, (pageWidth - 90) / 2, 120).fill();
+      doc.strokeColor('#e2e8f0').rect(30, yPos, (pageWidth - 90) / 2, 120).stroke();
       
       doc.fontSize(16).fillColor('#1e40af').font('Helvetica-Bold');
-      doc.text('PROJECT INFORMATION', 70, yPos + 15);
+      doc.text('PROJECT DETAILS', 40, yPos + 10);
       
       doc.fontSize(11).fillColor('#475569').font('Helvetica');
-      const projectInfo = [
-        ['Project Name:', data.projectName || data.title || 'N/A'],
-        ['Project Address:', data.projectAddress || data.projectLocation || 'N/A'],
-        ['Principal Contractor:', data.principalContractor || 'N/A'],
+      const projectDetails = [
+        ['Project:', data.projectName || data.title || 'N/A'],
+        ['Location:', data.projectAddress || data.projectLocation || 'N/A'],
+        ['Contractor:', data.principalContractor || 'N/A'],
         ['Job Number:', data.projectNumber || data.jobNumber || 'N/A'],
-        ['Trade Type:', data.tradeType || 'General Construction'],
-        ['Document Date:', new Date().toLocaleDateString('en-AU')]
+        ['Trade:', data.tradeType || 'General Construction'],
+        ['Date:', new Date().toLocaleDateString('en-AU')]
       ];
       
-      let infoY = yPos + 40;
-      projectInfo.forEach(([label, value]) => {
-        doc.font('Helvetica-Bold').text(label, 70, infoY, { width: 120 });
-        doc.font('Helvetica').text(value, 200, infoY, { width: 250 });
-        infoY += 12;
+      let detailY = yPos + 35;
+      projectDetails.forEach(([label, value]) => {
+        doc.font('Helvetica-Bold').text(label, 45, detailY, { width: 100 });
+        doc.font('Helvetica').text(value, 150, detailY, { width: 200 });
+        detailY += 12;
+      });
+
+      // RISK LEGEND CARD - Right side in landscape
+      const rightCardX = 40 + (pageWidth - 90) / 2 + 20;
+      doc.fillColor('#f8fafc').rect(rightCardX, yPos, (pageWidth - 90) / 2, 120).fill();
+      doc.strokeColor('#e2e8f0').rect(rightCardX, yPos, (pageWidth - 90) / 2, 120).stroke();
+      
+      doc.fontSize(16).fillColor('#1e40af').font('Helvetica-Bold');
+      doc.text('RISK RATING LEGEND', rightCardX + 10, yPos + 10);
+
+      // COLORED RATING TAGS in landscape legend
+      const riskLevels = [
+        ['LOW', '#10b981', 'Continue with current controls'],
+        ['MEDIUM', '#f59e0b', 'Additional controls may be required'],
+        ['HIGH', '#ef4444', 'Additional controls required'],
+        ['EXTREME', '#7c2d12', 'Stop work - eliminate/substitute']
+      ];
+
+      let legendY = yPos + 35;
+      riskLevels.forEach(([level, color, description]) => {
+        // Colored rating tag
+        doc.fillColor(color).rect(rightCardX + 15, legendY, 60, 16).fill();
+        doc.fontSize(9).fillColor('white').font('Helvetica-Bold');
+        doc.text(level, rightCardX + 20, legendY + 3);
+        
+        // Description
+        doc.fontSize(9).fillColor('#475569').font('Helvetica');
+        doc.text(description, rightCardX + 85, legendY + 3, { width: 200 });
+        legendY += 20;
       });
 
       yPos += 140;
 
-      // RISK ASSESSMENT MATRIX - Original format
-      doc.fontSize(16).fillColor('#1e40af').font('Helvetica-Bold');
-      doc.text('RISK ASSESSMENT MATRIX', 50, yPos);
-      yPos += 25;
-
-      // Risk Matrix Legend
-      doc.fillColor('#fef3c7').rect(50, yPos, pageWidth - 100, 80).fill();
-      doc.strokeColor('#f59e0b').rect(50, yPos, pageWidth - 100, 80).stroke();
+      // Table headers - full width in landscape
+      const tableHeaders = ['Activity/Task', 'Hazards Identified', 'Risk Level', 'Control Measures', 'Legislation/Standards', 'Responsible Person'];
+      const colWidths = [120, 140, 80, 160, 120, 100];
       
-      doc.fontSize(12).fillColor('#92400e').font('Helvetica-Bold');
-      doc.text('RISK LEVELS', 70, yPos + 10);
-      
-      const riskLevels = [
-        { level: 'LOW (1-3)', color: '#10b981', description: 'Acceptable - Continue with current controls' },
-        { level: 'MEDIUM (4-9)', color: '#f59e0b', description: 'Monitor - Additional controls may be required' },
-        { level: 'HIGH (10-15)', color: '#ef4444', description: 'Unacceptable - Additional controls required' },
-        { level: 'EXTREME (16-25)', color: '#7c2d12', description: 'Stop work - Eliminate or substitute hazard' }
-      ];
-
-      let legendY = yPos + 30;
-      riskLevels.forEach(({ level, color, description }) => {
-        doc.fillColor(color).rect(70, legendY, 80, 10).fill();
-        doc.fontSize(9).fillColor('white').font('Helvetica-Bold');
-        doc.text(level, 75, legendY + 1);
-        
-        doc.fontSize(9).fillColor('#374151').font('Helvetica');
-        doc.text(description, 160, legendY + 1);
-        legendY += 12;
-      });
-
-      yPos += 100;
-
-      // WORK ACTIVITIES & RISK ASSESSMENT TABLE
-      doc.fontSize(16).fillColor('#1e40af').font('Helvetica-Bold');
-      doc.text('WORK ACTIVITIES & RISK ASSESSMENT', 50, yPos);
-      yPos += 25;
-
-      // Table headers
-      const headers = ['Activity', 'Hazards', 'Risk', 'Control Measures', 'Responsible'];
-      const colWidths = [100, 120, 60, 150, 80];
-      
-      let xPos = 50;
-      headers.forEach((header, i) => {
+      let xPos = 40;
+      tableHeaders.forEach((header, i) => {
         doc.fillColor('#1e40af').rect(xPos, yPos, colWidths[i], 25).fill();
         doc.fontSize(10).fillColor('white').font('Helvetica-Bold');
-        doc.text(header, xPos + 5, yPos + 8, { width: colWidths[i] - 10 });
+        doc.text(header, xPos + 5, yPos + 5, { width: colWidths[i] - 10 });
         xPos += colWidths[i];
       });
       yPos += 25;
 
-      // Get real SWMS data or use comprehensive defaults
-      const activities = data.riskAssessments || data.activities || [
+      // Activity data with full risk assessment - from watermark discussion format
+      const activities = data.swmsData?.activities || data.activities || data.workActivities || [
         {
-          activity: 'Site Establishment & Setup',
-          hazards: 'Manual handling, Vehicle movement, Uneven surfaces',
+          activity: 'Site Setup & Material Handling',
+          hazards: ['Manual handling injuries', 'Vehicle/plant movement', 'Trip hazards'],
           riskLevel: 'MEDIUM',
-          controlMeasures: 'Mechanical aids, Traffic control, Safety signage, PPE',
+          controlMeasures: ['Mechanical lifting aids', 'Traffic management plan', 'Clear walkways', 'Safety signage'],
+          legislation: ['WHS Act 2011', 'AS/NZS 4801:2001', 'Manual Handling COP'],
           responsible: 'Site Supervisor'
         },
         {
-          activity: 'Excavation Works',
-          hazards: 'Cave-in, Underground services, Falls',
+          activity: 'Construction Works',
+          hazards: ['Falls from height', 'Falling objects', 'Electrical hazards', 'Noise exposure'],
           riskLevel: 'HIGH',
-          controlMeasures: 'Shoring, Service location, Barriers, Competent person',
-          responsible: 'Excavation Supervisor'
-        },
-        {
-          activity: 'Concrete Works',
-          hazards: 'Chemical burns, Manual handling, Slip hazards',
-          riskLevel: 'MEDIUM',
-          controlMeasures: 'Chemical resistant gloves, Mechanical aids, Non-slip surfaces',
-          responsible: 'Concrete Supervisor'
-        },
-        {
-          activity: 'Working at Heights',
-          hazards: 'Falls from height, Falling objects',
-          riskLevel: 'HIGH',
-          controlMeasures: 'Fall protection, Scaffolding, Tool tethering, Exclusion zones',
-          responsible: 'Heights Supervisor'
+          controlMeasures: ['Working at heights permit', 'Safety harnesses', 'Hard hats', 'LOTO procedures', 'Hearing protection'],
+          legislation: ['WHS Regulation 2017', 'AS/NZS 1891.1', 'AS/NZS 3000:2018'],
+          responsible: 'Trade Supervisor'
         }
       ];
 
@@ -512,17 +503,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         doc.text(hazards, xPos + 5, yPos + 5, { width: colWidths[1] - 10 });
         xPos += colWidths[1];
 
-        // Risk Level with color coding
+        // Risk Level with COLORED TAG
         doc.fillColor(bgColor).rect(xPos, yPos, colWidths[2], rowHeight).fill();
         doc.strokeColor('#e2e8f0').rect(xPos, yPos, colWidths[2], rowHeight).stroke();
-        
         const riskLevel = activity.riskLevel || 'MEDIUM';
-        const riskColorData = riskLevels.find(r => r.level.includes(riskLevel));
-        const riskColor = riskColorData ? riskColorData.color : '#f59e0b';
+        const riskColor = riskLevels.find((r: any) => r[0] === riskLevel)?.[1] || '#f59e0b';
         
-        doc.fillColor(riskColor).rect(xPos + 5, yPos + 10, 50, 20).fill();
+        // Colored risk tag in cell
+        doc.fillColor(riskColor).rect(xPos + 10, yPos + 8, 60, 18).fill();
         doc.fontSize(8).fillColor('white').font('Helvetica-Bold');
-        doc.text(riskLevel, xPos + 8, yPos + 16);
+        doc.text(riskLevel, xPos + 15, yPos + 12);
         xPos += colWidths[2];
 
         // Control Measures
