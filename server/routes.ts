@@ -200,6 +200,32 @@ export async function registerRoutes(app: Express) {
     }
   });
 
+  // Get user SWMS documents - frontend compatibility endpoint
+  app.get("/api/swms", async (req, res) => {
+    try {
+      const userId = req.session?.userId || 999;
+      console.log('Fetching SWMS for user:', userId);
+      const swmsList = await storage.getUserSWMS(userId);
+      console.log('Found SWMS documents:', swmsList.length);
+      res.json(swmsList || []);
+    } catch (error) {
+      console.error("Get SWMS error:", error);
+      res.json([]);
+    }
+  });
+
+  // Get user SWMS documents - alternative endpoint
+  app.get("/api/swms/my-swms", async (req, res) => {
+    try {
+      const userId = req.session?.userId || 999;
+      const swmsList = await storage.getUserSWMS(userId);
+      res.json(swmsList || []);
+    } catch (error) {
+      console.error("Get SWMS error:", error);
+      res.json([]);
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

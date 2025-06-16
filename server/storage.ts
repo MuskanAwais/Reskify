@@ -357,11 +357,13 @@ export class DatabaseStorage implements IStorage {
         jobName: data.projectName || '',
         projectLocation: data.projectAddress || '',
         principalContractor: data.principalContractor || '',
-        projectNumber: data.jobNumber || '',
+        jobNumber: data.jobNumber || '',
         tradeType: data.tradeType || '',
         projectDescription: data.projectDescription || '',
-        workActivities: JSON.stringify(data.workActivities || []),
-        status: data.status || 'draft'
+        workActivities: data.workActivities || [],
+        status: data.status || 'draft',
+        createdAt: data.createdAt || new Date(),
+        updatedAt: data.updatedAt || new Date()
       };
 
       const [savedDoc] = await db.insert(swmsDocuments).values(swmsData).returning();
