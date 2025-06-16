@@ -34,7 +34,8 @@ import {
   PenTool,
   CreditCard,
   Plus,
-  X
+  X,
+  Scale
 } from "lucide-react";
 import { SimplifiedTableEditor } from "./simplified-table-editor";
 import GPTTaskSelection from "./gpt-task-selection";
@@ -834,14 +835,34 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
         </div>
       );
 
+    case 7:
+      return (
+        <div className="space-y-6">
+          <div className="text-center">
+            <Scale className="mx-auto h-12 w-12 text-primary mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Legal Disclaimer</h3>
+            <p className="text-gray-600 text-sm">
+              Accept terms and liability disclaimer to proceed
+            </p>
+          </div>
+
+          <DisclaimerAcceptance
+            acceptedDisclaimer={formData.acceptedDisclaimer || false}
+            onAcceptanceChange={(accepted) => {
+              updateFormData({ acceptedDisclaimer: accepted });
+            }}
+          />
+        </div>
+      );
+
     case 8:
       return (
         <div className="space-y-6">
           <div className="text-center">
-            <PenTool className="mx-auto h-12 w-12 text-primary mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Digital Signatures & PDF</h3>
+            <FileText className="mx-auto h-12 w-12 text-primary mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Digital Signatures & PDF Generation</h3>
             <p className="text-gray-600 text-sm">
-              Generate your complete SWMS document with optional digital signatures.
+              Generate complete SWMS document with optional digital signatures
             </p>
           </div>
 
