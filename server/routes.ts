@@ -17,6 +17,14 @@ import { registerTestRoutes } from "./test-routes";
 
 const scryptAsync = promisify(scrypt);
 
+// Middleware to bypass authentication for demo access
+const bypassAuth = (req: any, res: any, next: any) => {
+  if (!req.user) {
+    req.user = { id: 1, username: 'demo', name: 'Demo User' } as any;
+  }
+  next();
+};
+
 // Initialize Stripe
 if (!process.env.STRIPE_SECRET_KEY) {
   throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY');
