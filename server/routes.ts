@@ -45,6 +45,58 @@ export async function registerRoutes(app: Express) {
     doc.end();
   });
 
+  // Test Modern PDF endpoint
+  app.get("/api/test-modern-pdf", async (req, res) => {
+    try {
+      const { generateWorkingModernPDF } = await import('./pdf-generator-working-modern.js');
+      
+      const testData = {
+        work_activities: [
+          { activity: 'Site setup and safety briefing' },
+          { activity: 'Material delivery and storage' },
+          { activity: 'Installation of structural elements' }
+        ],
+        risk_assessments: [
+          { hazard: 'Falls from height', likelihood: 'Medium', severity: 'High', risk_level: 'High' },
+          { hazard: 'Manual handling', likelihood: 'High', severity: 'Medium', risk_level: 'Medium' }
+        ],
+        control_measures: [
+          { control_type: 'Engineering', control_measure: 'Install safety barriers and guardrails' },
+          { control_type: 'PPE', control_measure: 'Wear hard hats and safety harnesses' }
+        ],
+        emergency_procedures: {
+          emergency_contact: '000',
+          assembly_point: 'Main Gate',
+          nearest_hospital: 'Royal Melbourne Hospital'
+        }
+      };
+      
+      const doc = generateWorkingModernPDF({
+        swmsData: testData,
+        projectName: 'Test Construction Project',
+        projectAddress: '123 Test Street, Melbourne VIC',
+        uniqueId: `TEST-${Date.now()}`
+      });
+      
+      const chunks: Buffer[] = [];
+      doc.on('data', (chunk: Buffer) => chunks.push(chunk));
+      doc.on('end', () => {
+        const buffer = Buffer.concat(chunks);
+        res.writeHead(200, {
+          'Content-Type': 'application/pdf',
+          'Content-Disposition': 'inline; filename="modern_test.pdf"',
+          'Content-Length': buffer.length.toString()
+        });
+        res.end(buffer);
+      });
+      doc.end();
+      
+    } catch (error) {
+      console.error("Modern PDF test error:", error);
+      res.status(500).json({ error: "Failed to generate modern PDF test" });
+    }
+  });
+
   // Complete SWMS PDF Download endpoint
   app.post("/api/swms/pdf-download", async (req, res) => {
     try {
@@ -81,10 +133,10 @@ export async function registerRoutes(app: Express) {
       
       const data = req.body;
       
-      // Import fast modern PDF generator
-      const { generateFastModernPDF } = await import('./pdf-generator-fast-modern.js');
+      // Import working modern PDF generator
+      const { generateWorkingModernPDF } = await import('./pdf-generator-working-modern.js');
       
-      const doc = generateFastModernPDF({
+      const doc = generateWorkingModernPDF({
         swmsData: data,
         projectName: data.projectName || data.project_name || 'Unknown Project',
         projectAddress: data.projectAddress || data.project_address || 'Unknown Address',
@@ -360,9 +412,9 @@ export async function registerRoutes(app: Express) {
           : swmsDocument.work_activities || []
       };
 
-      const { generateFastModernPDF } = await import('./pdf-generator-fast-modern.js');
+      const { generateWorkingModernPDF } = await import('./pdf-generator-working-modern.js');
       
-      const doc = generateFastModernPDF({
+      const doc = generateWorkingModernPDF({
         swmsData: data,
         projectName: data.projectName || 'Unknown Project',
         projectAddress: data.projectAddress || 'Unknown Address',
