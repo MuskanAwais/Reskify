@@ -105,6 +105,7 @@ Riskify is a comprehensive SWMS (Safe Work Method Statement) builder application
 
 ## Changelog
 
+- June 17, 2025. PDF Generation System Completely Fixed & PDF Preview Added - Resolved critical PDF generation issues that were creating 20+ page documents with broken watermarks. Implemented fixed generator producing clean single-page landscape PDFs (3.9KB) with proper content display. Added live PDF preview modal system allowing users to see exact PDF output before downloading. Created three comprehensive finalized SWMS examples with all builder step data. Updated MY SWMS section with PDF preview buttons for both drafts and completed documents.
 - June 16, 2025. Landscape PDF Format Fully Restored - Successfully restored exact SWMS PDF format from watermark discussion period with proper landscape layout, RISKIFY watermark pattern across page, colored risk rating tags, and comprehensive 14KB documents matching original working format
 - June 16, 2025. Removed Compliance Percentage - Eliminated misleading compliance scores from SWMS document listings for cleaner, more accurate interface
 - June 16, 2025. Dashboard Layout Unification - Updated to consistent 2x2 grid layout across all devices: Create New SWMS (top left), Account Credits (top right), Draft SWMS (bottom left), Completed SWMS (bottom right)

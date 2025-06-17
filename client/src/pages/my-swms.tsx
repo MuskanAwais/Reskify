@@ -25,6 +25,7 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { generateProtectedPDF } from "@/lib/pdf-generator";
 import { useUser } from "@/App";
+import { PDFPreview } from "@/components/PDFPreview";
 
 interface SwmsDocument {
   id: number;
@@ -439,18 +440,23 @@ export default function MySwms() {
 
                 <div className="flex gap-2 mt-4 pt-4 border-t">
                   {document.status === 'completed' ? (
-                    // Completed documents: View PDF and Download
+                    // Completed documents: PDF Preview and Download
                     <>
-                      <Button
+                      <PDFPreview
+                        swmsData={{
+                          title: document.title,
+                          projectName: document.title,
+                          projectLocation: document.projectLocation,
+                          projectAddress: document.projectLocation,
+                          principalContractor: document.principalContractor || 'N/A',
+                          tradeType: document.tradeType,
+                          jobNumber: document.jobNumber || 'N/A',
+                          workActivities: document.workActivities || []
+                        }}
+                        onDownload={() => downloadDocumentMutation.mutate(document)}
+                        buttonText="Preview PDF"
                         variant="default"
-                        size="sm"
-                        onClick={() => viewPdfMutation.mutate(document)}
-                        disabled={viewPdfMutation.isPending}
-                        className="flex-1 bg-primary/600 hover:bg-primary/700"
-                      >
-                        <Eye className="h-4 w-4 mr-1" />
-                        View PDF
-                      </Button>
+                      />
                       
                       <Button
                         variant="outline"
@@ -462,13 +468,30 @@ export default function MySwms() {
                       </Button>
                     </>
                   ) : (
-                    // Draft documents: Edit option
-                    <Link href={`/swms-editor/${document.id}`}>
-                      <Button variant="outline" size="sm" className="flex-1">
-                        <Edit className="h-4 w-4 mr-1" />
-                        Continue Editing
-                      </Button>
-                    </Link>
+                    // Draft documents: Preview and Edit options
+                    <>
+                      <PDFPreview
+                        swmsData={{
+                          title: document.title,
+                          projectName: document.title,
+                          projectLocation: document.projectLocation,
+                          projectAddress: document.projectLocation,
+                          principalContractor: document.principalContractor || 'N/A',
+                          tradeType: document.tradeType,
+                          jobNumber: document.jobNumber || 'N/A',
+                          workActivities: document.workActivities || []
+                        }}
+                        buttonText="Preview"
+                        variant="outline"
+                      />
+                      
+                      <Link href={`/swms-editor/${document.id}`}>
+                        <Button variant="outline" size="sm">
+                          <Edit className="h-4 w-4 mr-1" />
+                          Edit
+                        </Button>
+                      </Link>
+                    </>
                   )}
                   
                   <Button
