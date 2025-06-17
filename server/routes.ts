@@ -81,10 +81,10 @@ export async function registerRoutes(app: Express) {
       
       const data = req.body;
       
-      // Import complete PDF generator
-      const { generateCompleteSWMSPDF } = await import('./pdf-generator-complete.js');
+      // Import modern PDF generator
+      const { generateModernSWMSPDF } = await import('./pdf-generator-modern.js');
       
-      const pdfBuffer = await generateCompleteSWMSPDF(data);
+      const pdfBuffer = await generateModernSWMSPDF(data);
       
       res.setHeader('Content-Type', 'application/pdf');
       res.setHeader('Content-Disposition', 'attachment; filename="swms_document.pdf"');
