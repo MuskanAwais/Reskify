@@ -81,10 +81,10 @@ export async function registerRoutes(app: Express) {
       
       const data = req.body;
       
-      // Import efficient modern PDF generator
-      const { generateEfficientModernPDF } = await import('./pdf-generator-efficient-modern.js');
+      // Import fast modern PDF generator
+      const { generateFastModernPDF } = await import('./pdf-generator-fast-modern.js');
       
-      const doc = generateSimpleModernPDF({
+      const doc = generateFastModernPDF({
         swmsData: data,
         projectName: data.projectName || data.project_name || 'Unknown Project',
         projectAddress: data.projectAddress || data.project_address || 'Unknown Address',
@@ -360,9 +360,9 @@ export async function registerRoutes(app: Express) {
           : swmsDocument.work_activities || []
       };
 
-      const { generateSimpleModernPDF } = await import('./pdf-generator-simple-modern.js');
+      const { generateFastModernPDF } = await import('./pdf-generator-fast-modern.js');
       
-      const doc = generateSimpleModernPDF({
+      const doc = generateFastModernPDF({
         swmsData: data,
         projectName: data.projectName || 'Unknown Project',
         projectAddress: data.projectAddress || 'Unknown Address',
