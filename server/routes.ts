@@ -192,7 +192,7 @@ export async function registerRoutes(app: Express) {
   app.get("/api/swms/my-swms", async (req, res) => {
     try {
       const userId = req.session.userId || 999;
-      const swmsList = await storage.getUserSWMS(userId);
+      const swmsList = await storage.getUserSwms(userId);
       res.json(swmsList || []);
     } catch (error) {
       console.error("Get SWMS error:", error);
@@ -205,11 +205,11 @@ export async function registerRoutes(app: Express) {
     try {
       const userId = req.session?.userId || 999;
       console.log('Fetching SWMS for user:', userId);
-      const swmsList = await storage.getUserSWMS(userId);
+      const swmsList = await storage.getUserSwms(userId);
       console.log('Found SWMS documents:', swmsList.length);
       
       // Format documents for frontend compatibility
-      const formattedDocuments = swmsList.map(doc => ({
+      const formattedDocuments = swmsList.map((doc: any) => ({
         ...doc,
         tradeType: doc.trade_type || doc.tradeType,
         projectLocation: doc.project_address || doc.project_location || doc.projectLocation,
@@ -229,7 +229,7 @@ export async function registerRoutes(app: Express) {
   app.get("/api/swms/my-swms", async (req, res) => {
     try {
       const userId = req.session?.userId || 999;
-      const swmsList = await storage.getUserSWMS(userId);
+      const swmsList = await storage.getUserSwms(userId);
       res.json(swmsList || []);
     } catch (error) {
       console.error("Get SWMS error:", error);

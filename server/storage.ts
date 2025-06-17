@@ -28,6 +28,7 @@ export interface IStorage {
   saveSWMSDraft(data: any): Promise<any>;
   getDraftCount(userId: number): Promise<number>;
   getCompletedCount(userId: number): Promise<number>;
+  getUserSwms(userId: number): Promise<any[]>;
   getUserSWMS(userId: number): Promise<any[]>;
 }
 
@@ -411,6 +412,10 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
+  async getUserSWMS(userId: number): Promise<any[]> {
+    // Alias method for backward compatibility
+    return this.getUserSwms(userId);
+  }
 
 }
 
