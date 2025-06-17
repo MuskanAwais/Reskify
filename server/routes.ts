@@ -2,6 +2,8 @@ import { Express } from "express";
 import { createServer } from "http";
 import PDFDocument from 'pdfkit';
 import bcryptjs from 'bcryptjs';
+import fs from 'fs';
+import path from 'path';
 import { storage } from "./storage.js";
 
 interface SessionData {
@@ -61,17 +63,19 @@ export async function registerRoutes(app: Express) {
       const originalFile = originalFileMap[requestTitle];
       if (originalFile) {
         // Serve the original PDF file
-        const fs = require('fs');
-        const path = require('path');
         const filePath = path.join(process.cwd(), originalFile);
         
         if (fs.existsSync(filePath)) {
+          console.log(`Serving original watermark discussion file: ${originalFile}`);
+          const fileBuffer = fs.readFileSync(filePath);
+          
           res.setHeader('Content-Type', 'application/pdf');
           res.setHeader('Content-Disposition', `attachment; filename="${originalFile}"`);
-          
-          const fileStream = fs.createReadStream(filePath);
-          fileStream.pipe(res);
+          res.setHeader('Content-Length', fileBuffer.length.toString());
+          res.send(fileBuffer);
           return;
+        } else {
+          console.log(`Original file not found: ${filePath}`);
         }
       }
       
@@ -280,8 +284,6 @@ export async function registerRoutes(app: Express) {
     }
     
     try {
-      const fs = require('fs');
-      const path = require('path');
       const filePath = path.join(process.cwd(), filename);
       
       if (!fs.existsSync(filePath)) {
