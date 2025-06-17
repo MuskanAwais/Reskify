@@ -81,10 +81,10 @@ export async function registerRoutes(app: Express) {
       
       const data = req.body;
       
-      // Import modern PDF generator
-      const { generateModernSWMSPDF } = await import('./pdf-generator-modern.js');
+      // Import fixed PDF generator
+      const { generateFixedSWMSPDF } = await import('./pdf-generator-fixed.js');
       
-      const pdfBuffer = await generateModernSWMSPDF(data);
+      const pdfBuffer = await generateFixedSWMSPDF(data);
       
       res.setHeader('Content-Type', 'application/pdf');
       res.setHeader('Content-Disposition', 'attachment; filename="swms_document.pdf"');
@@ -299,6 +299,27 @@ export async function registerRoutes(app: Express) {
     } catch (error) {
       console.error('Error serving PDF:', error);
       res.status(500).json({ error: "Failed to serve file" });
+    }
+  });
+
+  // PDF Preview endpoint
+  app.post('/api/swms/pdf-preview', async (req, res) => {
+    try {
+      const data = req.body;
+      
+      // Import fixed PDF generator
+      const { generateFixedSWMSPDF } = await import('./pdf-generator-fixed.js');
+      
+      const pdfBuffer = await generateFixedSWMSPDF(data);
+      
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', 'inline; filename="swms_preview.pdf"');
+      res.setHeader('Content-Length', pdfBuffer.length.toString());
+      res.send(pdfBuffer);
+      
+    } catch (error) {
+      console.error("PDF preview error:", error);
+      res.status(500).json({ error: "Failed to generate PDF preview" });
     }
   });
 
