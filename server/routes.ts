@@ -81,10 +81,10 @@ export async function registerRoutes(app: Express) {
       
       const data = req.body;
       
-      // Import modern PDF generator
-      const { generateModernPDF } = await import('./pdf-generator-modern.js');
+      // Import card-based PDF generator
+      const { generateCardBasedPDF } = await import('./pdf-generator-cards.js');
       
-      const doc = generateModernPDF({
+      const doc = generateCardBasedPDF({
         swmsData: data,
         projectName: data.projectName || data.project_name || 'Unknown Project',
         projectAddress: data.projectAddress || data.project_address || 'Unknown Address',
@@ -360,12 +360,12 @@ export async function registerRoutes(app: Express) {
           : swmsDocument.work_activities || []
       };
 
-      const { generateModernPDF } = await import('./pdf-generator-modern.js');
+      const { generateCardBasedPDF } = await import('./pdf-generator-cards.js');
       
-      const doc = generateModernPDF({
+      const doc = generateCardBasedPDF({
         swmsData: data,
-        projectName: data.project_name || 'Unknown Project',
-        projectAddress: data.project_address || 'Unknown Address',
+        projectName: data.projectName || 'Unknown Project',
+        projectAddress: data.projectAddress || 'Unknown Address',
         uniqueId: `SWMS-${swmsId}-${Date.now()}`
       });
       
@@ -386,12 +386,6 @@ export async function registerRoutes(app: Express) {
       });
       
       doc.end();
-      
-      res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', 'inline; filename="swms_preview.pdf"');
-      res.setHeader('Content-Length', pdfBuffer.length.toString());
-      res.setHeader('Cache-Control', 'no-cache');
-      res.send(pdfBuffer);
       
     } catch (error) {
       console.error("PDF preview by ID error:", error);
