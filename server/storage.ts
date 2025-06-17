@@ -260,6 +260,7 @@ export class DatabaseStorage implements IStorage {
 
   async getUserSwms(userId: number): Promise<any[]> {
     try {
+      console.log(`Querying database for user ${userId} SWMS documents...`);
       // Fetch all SWMS documents for the user (both drafts and completed)
       const documents = await db
         .select()
@@ -267,7 +268,8 @@ export class DatabaseStorage implements IStorage {
         .where(eq(swmsDocuments.userId, userId))
         .orderBy(desc(swmsDocuments.createdAt));
       
-      console.log(`Found ${documents.length} SWMS documents for user ${userId}`);
+      console.log(`Database returned ${documents.length} SWMS documents for user ${userId}`);
+      console.log('Sample document:', documents[0] ? { id: documents[0].id, title: documents[0].title } : 'none');
       return documents;
     } catch (error) {
       console.error('Error fetching user SWMS documents:', error);
