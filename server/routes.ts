@@ -515,9 +515,9 @@ export async function registerRoutes(app: Express) {
         return res.status(404).json({ error: "SWMS project not found" });
       }
 
-      const { generateWorkingModernPDF } = await import('./pdf-generator-working-modern.js');
+      const { generateFinalModernPDF } = await import('./pdf-generator-final-modern.js');
       
-      const doc = generateWorkingModernPDF({
+      const doc = generateFinalModernPDF({
         swmsData: projectData,
         projectName: projectData.title,
         projectAddress: projectData.projectAddress,
