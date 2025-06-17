@@ -237,6 +237,42 @@ export async function registerRoutes(app: Express) {
     }
   });
 
+  // Download original watermark discussion PDF files
+  app.get("/api/original-pdfs/:filename", (req, res) => {
+    const { filename } = req.params;
+    const allowedFiles = [
+      'sydney_highrise_swms_enhanced.pdf',
+      'test_landscape_swms.pdf', 
+      'final_test.pdf',
+      'modern_app_swms.pdf',
+      'sample_modern_swms.pdf'
+    ];
+    
+    if (!allowedFiles.includes(filename)) {
+      return res.status(404).json({ error: "File not found" });
+    }
+    
+    try {
+      const fs = require('fs');
+      const path = require('path');
+      const filePath = path.join(process.cwd(), filename);
+      
+      if (!fs.existsSync(filePath)) {
+        return res.status(404).json({ error: "File not found" });
+      }
+      
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+      
+      const fileStream = fs.createReadStream(filePath);
+      fileStream.pipe(res);
+      
+    } catch (error) {
+      console.error('Error serving PDF:', error);
+      res.status(500).json({ error: "Failed to serve file" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
