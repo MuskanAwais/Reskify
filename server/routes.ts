@@ -81,15 +81,26 @@ export async function registerRoutes(app: Express) {
       
       const data = req.body;
       
-      // Import fixed PDF generator
-      const { generateFixedSWMSPDF } = await import('./pdf-generator-fixed.js');
+      // Import modern PDF generator
+      const { generateModernPDF } = await import('./pdf-generator-modern.js');
       
-      const pdfBuffer = await generateFixedSWMSPDF(data);
+      const doc = generateModernPDF({
+        swmsData: data,
+        projectName: data.projectName || data.project_name || 'Unknown Project',
+        projectAddress: data.projectAddress || data.project_address || 'Unknown Address',
+        uniqueId: `SWMS-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+      });
       
-      res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', 'attachment; filename="swms_document.pdf"');
-      res.setHeader('Content-Length', pdfBuffer.length.toString());
-      res.send(pdfBuffer);
+      const chunks: Buffer[] = [];
+      doc.on('data', (chunk: Buffer) => chunks.push(chunk));
+      doc.on('end', () => {
+        const pdfBuffer = Buffer.concat(chunks);
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'attachment; filename="swms_document.pdf"');
+        res.setHeader('Content-Length', pdfBuffer.length.toString());
+        res.send(pdfBuffer);
+      });
+      doc.end();
       
     } catch (error) {
       console.error("PDF generation error:", error);
@@ -349,8 +360,32 @@ export async function registerRoutes(app: Express) {
           : swmsDocument.work_activities || []
       };
 
-      const { generateFixedSWMSPDF } = await import('./pdf-generator-fixed.js');
-      const pdfBuffer = await generateFixedSWMSPDF(data);
+      const { generateModernPDF } = await import('./pdf-generator-modern.js');
+      
+      const doc = generateModernPDF({
+        swmsData: data,
+        projectName: data.project_name || 'Unknown Project',
+        projectAddress: data.project_address || 'Unknown Address',
+        uniqueId: `SWMS-${swmsId}-${Date.now()}`
+      });
+      
+      const chunks: Buffer[] = [];
+      doc.on('data', (chunk: Buffer) => chunks.push(chunk));
+      
+      await new Promise<void>((resolve, reject) => {
+        doc.on('end', () => {
+          const pdfBuffer = Buffer.concat(chunks);
+          res.setHeader('Content-Type', 'application/pdf');
+          res.setHeader('Content-Disposition', 'inline; filename="swms_preview.pdf"');
+          res.setHeader('Content-Length', pdfBuffer.length.toString());
+          res.setHeader('Cache-Control', 'no-cache');
+          res.send(pdfBuffer);
+          resolve();
+        });
+        doc.on('error', reject);
+      });
+      
+      doc.end();
       
       res.setHeader('Content-Type', 'application/pdf');
       res.setHeader('Content-Disposition', 'inline; filename="swms_preview.pdf"');
