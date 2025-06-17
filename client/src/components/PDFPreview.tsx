@@ -5,6 +5,7 @@ import { Eye, Download, Loader2 } from 'lucide-react';
 
 interface PDFPreviewProps {
   swmsData: any;
+  swmsId?: number;
   onDownload?: () => void;
   buttonText?: string;
   variant?: 'outline' | 'default' | 'secondary';
@@ -29,10 +30,16 @@ export function PDFPreview({ swmsData, onDownload, buttonText = "Preview PDF", v
 
       if (response.ok) {
         const blob = await response.blob();
-        const url = URL.createObjectURL(blob);
-        setPdfUrl(url);
+        console.log('PDF blob size:', blob.size, 'type:', blob.type);
+        
+        if (blob.size > 0 && blob.type === 'application/pdf') {
+          const url = URL.createObjectURL(blob);
+          setPdfUrl(url);
+        } else {
+          console.error('Invalid PDF blob received:', blob.size, blob.type);
+        }
       } else {
-        console.error('PDF preview failed');
+        console.error('PDF preview failed:', response.status, response.statusText);
       }
     } catch (error) {
       console.error('Error generating PDF preview:', error);
@@ -137,11 +144,27 @@ export function PDFPreview({ swmsData, onDownload, buttonText = "Preview PDF", v
               </div>
             </div>
           ) : pdfUrl ? (
-            <iframe
-              src={pdfUrl}
-              className="w-full h-full border rounded-lg"
-              title="PDF Preview"
-            />
+            <div className="w-full h-full">
+              <object
+                data={pdfUrl}
+                type="application/pdf"
+                className="w-full h-full border rounded-lg"
+              >
+                <div className="flex items-center justify-center h-full bg-gray-50 border rounded-lg">
+                  <div className="text-center">
+                    <Eye className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                    <p className="text-gray-600 mb-4">PDF preview not supported in this browser</p>
+                    <Button
+                      onClick={() => window.open(pdfUrl, '_blank')}
+                      className="gap-2"
+                    >
+                      <Eye className="h-4 w-4" />
+                      Open PDF in New Tab
+                    </Button>
+                  </div>
+                </div>
+              </object>
+            </div>
           ) : (
             <div className="flex items-center justify-center h-full">
               <div className="text-center">

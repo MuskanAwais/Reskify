@@ -302,7 +302,7 @@ export async function registerRoutes(app: Express) {
     }
   });
 
-  // PDF Preview endpoint
+  // PDF Preview endpoint - serves PDF with browser-friendly headers
   app.post('/api/swms/pdf-preview', async (req, res) => {
     try {
       const data = req.body;
@@ -312,13 +312,54 @@ export async function registerRoutes(app: Express) {
       
       const pdfBuffer = await generateFixedSWMSPDF(data);
       
+      // Set headers for browser PDF display
       res.setHeader('Content-Type', 'application/pdf');
       res.setHeader('Content-Disposition', 'inline; filename="swms_preview.pdf"');
       res.setHeader('Content-Length', pdfBuffer.length.toString());
+      res.setHeader('Cache-Control', 'no-cache');
+      res.setHeader('X-Content-Type-Options', 'nosniff');
       res.send(pdfBuffer);
       
     } catch (error) {
       console.error("PDF preview error:", error);
+      res.status(500).json({ error: "Failed to generate PDF preview" });
+    }
+  });
+
+  // Alternative PDF preview endpoint that generates a direct URL
+  app.get('/api/swms/pdf-preview/:id', async (req, res) => {
+    try {
+      const swmsId = req.params.id;
+      const swmsDocument = await storage.getSwmsById(parseInt(swmsId));
+      
+      if (!swmsDocument) {
+        return res.status(404).json({ error: "SWMS not found" });
+      }
+
+      const data = {
+        title: swmsDocument.title,
+        projectName: swmsDocument.title,
+        projectLocation: swmsDocument.project_location,
+        projectAddress: swmsDocument.project_address,
+        principalContractor: swmsDocument.principal_contractor,
+        tradeType: swmsDocument.trade_type,
+        jobNumber: swmsDocument.job_number,
+        workActivities: typeof swmsDocument.work_activities === 'string' 
+          ? JSON.parse(swmsDocument.work_activities) 
+          : swmsDocument.work_activities || []
+      };
+
+      const { generateFixedSWMSPDF } = await import('./pdf-generator-fixed.js');
+      const pdfBuffer = await generateFixedSWMSPDF(data);
+      
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', 'inline; filename="swms_preview.pdf"');
+      res.setHeader('Content-Length', pdfBuffer.length.toString());
+      res.setHeader('Cache-Control', 'no-cache');
+      res.send(pdfBuffer);
+      
+    } catch (error) {
+      console.error("PDF preview by ID error:", error);
       res.status(500).json({ error: "Failed to generate PDF preview" });
     }
   });
