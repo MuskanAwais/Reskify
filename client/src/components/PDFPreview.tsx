@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Eye, Download, Loader2 } from 'lucide-react';
+import { PDFViewer } from './PDFViewer';
 
 interface PDFPreviewProps {
   swmsData: any;
@@ -156,15 +157,10 @@ export function PDFPreview({ swmsData, swmsId, onDownload, buttonText = "Preview
               </div>
             </div>
           ) : pdfUrl ? (
-            <div className="w-full h-full">
-              <iframe
-                src={pdfUrl}
-                className="w-full h-full border rounded-lg"
-                title="PDF Preview"
-                onLoad={() => console.log('PDF iframe loaded successfully')}
-                onError={() => console.error('PDF iframe failed to load')}
-              />
-            </div>
+            <PDFViewer 
+              pdfUrl={pdfUrl} 
+              onDownload={handleDownload}
+            />
           ) : (
             <div className="flex items-center justify-center h-full">
               <div className="text-center">
