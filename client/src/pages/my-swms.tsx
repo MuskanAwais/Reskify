@@ -453,6 +453,7 @@ export default function MySwms() {
                           jobNumber: document.jobNumber || 'N/A',
                           workActivities: document.workActivities || []
                         }}
+                        swmsId={document.id}
                         onDownload={() => downloadDocumentMutation.mutate(document)}
                         buttonText="Preview PDF"
                         variant="default"
@@ -481,6 +482,7 @@ export default function MySwms() {
                           jobNumber: document.jobNumber || 'N/A',
                           workActivities: document.workActivities || []
                         }}
+                        swmsId={document.id}
                         buttonText="Preview"
                         variant="outline"
                       />

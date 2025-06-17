@@ -11,14 +11,24 @@ interface PDFPreviewProps {
   variant?: 'outline' | 'default' | 'secondary';
 }
 
-export function PDFPreview({ swmsData, onDownload, buttonText = "Preview PDF", variant = "outline" }: PDFPreviewProps) {
+export function PDFPreview({ swmsData, swmsId, onDownload, buttonText = "Preview PDF", variant = "outline" }: PDFPreviewProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [useDirectUrl, setUseDirectUrl] = useState(false);
 
   const generatePreview = async () => {
     setIsLoading(true);
     try {
+      // Try direct URL approach first if we have an ID
+      if (swmsId && !useDirectUrl) {
+        const directUrl = `/api/swms/pdf-preview/${swmsId}`;
+        setPdfUrl(directUrl);
+        setUseDirectUrl(true);
+        return;
+      }
+
+      // Fallback to blob approach
       const response = await fetch('/api/swms/pdf-preview', {
         method: 'POST',
         headers: {
@@ -35,6 +45,7 @@ export function PDFPreview({ swmsData, onDownload, buttonText = "Preview PDF", v
         if (blob.size > 0 && blob.type === 'application/pdf') {
           const url = URL.createObjectURL(blob);
           setPdfUrl(url);
+          setUseDirectUrl(false);
         } else {
           console.error('Invalid PDF blob received:', blob.size, blob.type);
         }
@@ -57,10 +68,11 @@ export function PDFPreview({ swmsData, onDownload, buttonText = "Preview PDF", v
 
   const handleClose = () => {
     setIsOpen(false);
-    if (pdfUrl) {
+    if (pdfUrl && !useDirectUrl) {
       URL.revokeObjectURL(pdfUrl);
-      setPdfUrl(null);
     }
+    setPdfUrl(null);
+    setUseDirectUrl(false);
   };
 
   const handleDownload = async () => {
@@ -145,25 +157,13 @@ export function PDFPreview({ swmsData, onDownload, buttonText = "Preview PDF", v
             </div>
           ) : pdfUrl ? (
             <div className="w-full h-full">
-              <object
-                data={pdfUrl}
-                type="application/pdf"
+              <iframe
+                src={pdfUrl}
                 className="w-full h-full border rounded-lg"
-              >
-                <div className="flex items-center justify-center h-full bg-gray-50 border rounded-lg">
-                  <div className="text-center">
-                    <Eye className="h-12 w-12 mx-auto mb-4 text-gray-400" />
-                    <p className="text-gray-600 mb-4">PDF preview not supported in this browser</p>
-                    <Button
-                      onClick={() => window.open(pdfUrl, '_blank')}
-                      className="gap-2"
-                    >
-                      <Eye className="h-4 w-4" />
-                      Open PDF in New Tab
-                    </Button>
-                  </div>
-                </div>
-              </object>
+                title="PDF Preview"
+                onLoad={() => console.log('PDF iframe loaded successfully')}
+                onError={() => console.error('PDF iframe failed to load')}
+              />
             </div>
           ) : (
             <div className="flex items-center justify-center h-full">
