@@ -411,25 +411,7 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async getUserSWMS(userId: number): Promise<any[]> {
-    try {
-      const allDocs = await db
-        .select()
-        .from(swmsDocuments)
-        .where(eq(swmsDocuments.userId, userId))
-        .orderBy(desc(swmsDocuments.updatedAt));
-      
-      return allDocs.map(doc => ({
-        ...doc,
-        workActivities: doc.workActivities ? JSON.parse(doc.workActivities) : []
-      }));
-    } catch (error) {
-      console.error('Error getting user SWMS:', error);
-      return [...this.swmsDrafts, ...this.swmsDocuments]
-        .filter(doc => doc.userId === userId)
-        .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
-    }
-  }
+
 }
 
 export const storage = new DatabaseStorage();

@@ -207,10 +207,21 @@ export async function registerRoutes(app: Express) {
       console.log('Fetching SWMS for user:', userId);
       const swmsList = await storage.getUserSWMS(userId);
       console.log('Found SWMS documents:', swmsList.length);
-      res.json(swmsList || []);
+      
+      // Format documents for frontend compatibility
+      const formattedDocuments = swmsList.map(doc => ({
+        ...doc,
+        tradeType: doc.trade_type || doc.tradeType,
+        projectLocation: doc.project_address || doc.project_location || doc.projectLocation,
+        jobName: doc.job_name || doc.jobName,
+        aiEnhanced: doc.ai_enhanced || false,
+        createdAt: doc.created_at || doc.createdAt
+      }));
+      
+      res.json({ documents: formattedDocuments });
     } catch (error) {
       console.error("Get SWMS error:", error);
-      res.json([]);
+      res.json({ documents: [] });
     }
   });
 
