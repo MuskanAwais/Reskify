@@ -199,12 +199,111 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
       ].filter(c => c && c.trim());
     }
     
-    // Ensure we have at least some content
-    if (hazards.length === 0) {
-      hazards = ['Falls from height', 'Crushing from equipment', 'Weather conditions'];
+    // Ensure minimum 8 hazards and controls per activity protocol
+    if (hazards.length < 8) {
+      const activityType = activity.activity || activity.description || '';
+      let defaultHazards = [];
+      
+      if (activityType.toLowerCase().includes('asbestos')) {
+        defaultHazards = [
+          'Asbestos fiber inhalation causing mesothelioma',
+          'Cross-contamination to clean areas',
+          'Improper disposal creating environmental hazard',
+          'Equipment contamination spreading fibers',
+          'Skin and eye contact with asbestos',
+          'Environmental fiber release to atmosphere',
+          'Worker exposure during material handling',
+          'Public health risk from airborne particles'
+        ];
+      } else if (activityType.toLowerCase().includes('demolition')) {
+        defaultHazards = [
+          'Structural collapse during demolition work',
+          'Flying debris striking workers or public',
+          'Dust inhalation causing respiratory issues',
+          'Excessive noise exposure causing hearing damage',
+          'Vibration damage to adjacent structures',
+          'Underground utility strikes causing electrocution',
+          'Heavy machinery equipment failure',
+          'Fall hazards from elevated work platforms'
+        ];
+      } else if (activityType.toLowerCase().includes('electrical')) {
+        defaultHazards = [
+          'Electrical shock and electrocution hazards',
+          'Arc flash and electrical burns',
+          'Equipment failure causing injury',
+          'Working at height installation risks',
+          'Manual handling of heavy equipment',
+          'Exposure to live electrical systems',
+          'Fire risk from electrical faults',
+          'Tool and equipment malfunction hazards'
+        ];
+      } else {
+        defaultHazards = [
+          'Falls from height during work activities',
+          'Manual handling injuries from heavy lifting',
+          'Crushing injuries from equipment operation',
+          'Struck by moving machinery or materials',
+          'Weather exposure affecting work safety',
+          'Slip, trip and fall hazards on surfaces',
+          'Noise exposure from construction activities',
+          'Chemical exposure from construction materials'
+        ];
+      }
+      
+      hazards = [...hazards, ...defaultHazards.slice(hazards.length)].slice(0, 8);
     }
-    if (controlMeasures.length === 0) {
-      controlMeasures = ['Full body harness with 2 lanyards', 'Certified dogman directing lifts', 'Weather monitoring procedures'];
+    
+    if (controlMeasures.length < 8) {
+      const activityType = activity.activity || activity.description || '';
+      let defaultControls = [];
+      
+      if (activityType.toLowerCase().includes('asbestos')) {
+        defaultControls = [
+          'P2 respirator masks mandatory for all workers',
+          'Negative pressure enclosure system installed',
+          'Licensed asbestos disposal contractor engaged',
+          'Comprehensive decontamination procedures',
+          'Full body disposable protective suits',
+          'Continuous air monitoring throughout work',
+          'Competent person supervision at all times',
+          'Emergency response plan activated'
+        ];
+      } else if (activityType.toLowerCase().includes('demolition')) {
+        defaultControls = [
+          'Structural engineer assessment completed',
+          'Exclusion zone establishment and barriers',
+          'Water suppression dust control systems',
+          'Mandatory hearing protection for all workers',
+          'Continuous vibration monitoring systems',
+          'Utility isolation and location verification',
+          'Daily pre-start equipment inspections',
+          'Fall protection harness systems installed'
+        ];
+      } else if (activityType.toLowerCase().includes('electrical')) {
+        defaultControls = [
+          'Isolation and lockout/tagout procedures',
+          'Electrical testing before work commences',
+          'Arc flash personal protective equipment',
+          'Safety harness systems for elevated work',
+          'Mechanical lifting aids for heavy equipment',
+          'Voltage detection equipment mandatory',
+          'Fire suppression systems operational',
+          'Daily tool and equipment inspections'
+        ];
+      } else {
+        defaultControls = [
+          'Safety harness with dual lanyards required',
+          'Mechanical lifting aids for manual handling',
+          'Equipment operator competency verification',
+          'Exclusion zones around moving machinery',
+          'Weather monitoring and work cessation protocols',
+          'Non-slip footwear and housekeeping standards',
+          'Hearing protection in designated areas',
+          'Material safety data sheets readily available'
+        ];
+      }
+      
+      controlMeasures = [...controlMeasures, ...defaultControls.slice(controlMeasures.length)].slice(0, 8);
     }
     
     // Extract additional SWMS builder data
@@ -214,18 +313,16 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
     const ppe = activity.ppe || control.ppe || [];
     const qualifications = activity.qualifications || risk.qualifications || [];
     
-    // Calculate dynamic row height based on all content
-    const contentLines = [
-      ...hazards,
-      ...controlMeasures,
-      ...(Array.isArray(legislation) ? legislation : [legislation].filter(Boolean)),
-      ...(Array.isArray(ppe) ? ppe : [ppe].filter(Boolean)),
-      ...(Array.isArray(qualifications) ? qualifications : [qualifications].filter(Boolean))
-    ].filter(Boolean);
+    // Calculate dynamic row height based on tallest cell content
+    const hazardHeight = (hazards.length * 8) + (legislation.length > 0 ? legislation.length * 6 + 12 : 0);
+    const controlHeight = (controlMeasures.length * 8) + 
+                         (ppe.length > 0 ? ppe.length * 6 + 12 : 0) + 
+                         (qualifications.length > 0 ? qualifications.length * 6 + 12 : 0) + 
+                         (workMethod ? 24 : 0);
+    const activityHeight = 10 + (workMethod ? 18 : 0) + (additionalInfo ? 18 : 0);
     
-    const minRowHeight = 45;
-    const lineHeight = 9;
-    const rowHeight = Math.max(contentLines.length * lineHeight + 20, minRowHeight);
+    const tallestContent = Math.max(hazardHeight, controlHeight, activityHeight, 35);
+    const rowHeight = tallestContent + 10; // Add padding
     
     // Alternating row colors
     if (i % 2 === 1) {
