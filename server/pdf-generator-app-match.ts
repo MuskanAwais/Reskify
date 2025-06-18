@@ -47,14 +47,9 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
 
   // App card helper function
   function appCard(x: number, y: number, w: number, h: number, title: string, headerColor = colors.primary) {
-    // Card background
+    // Card background - solid white
     doc.fillColor(colors.white);
     doc.roundedRect(x, y - 25, w, h + 25, 8);
-    doc.fill();
-    
-    // Card shadow
-    doc.fillColor('#00000010');
-    doc.roundedRect(x + 2, y - 23, w, h + 25, 8);
     doc.fill();
     
     // Card border
@@ -165,11 +160,11 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
     isEmergencyLeft = !isEmergencyLeft;
   });
 
-  // Construction Control Risk Matrix Section - 2x2 grid layout
-  const sectionY = appCard(30, 280, 780, 180, 'CONSTRUCTION CONTROL RISK MATRIX', colors.slate);
+  // Construction Control Risk Matrix Section - 2x2 grid layout with proper spacing
+  const sectionY = appCard(30, 280, 780, 200, 'CONSTRUCTION CONTROL RISK MATRIX', colors.slate);
   
   // A - Qualitative Scale Card (top left)
-  const qualY = appCard(50, 310, 360, 70, 'A - QUALITATIVE SCALE', colors.secondary);
+  const qualY = appCard(50, 320, 370, 80, 'A - QUALITATIVE SCALE', colors.secondary);
   
   const qualitativeData = [
     ['Extreme', 'Fatality, significant disability'],
@@ -188,12 +183,12 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
     doc.font('Helvetica');
     doc.fontSize(6);
     doc.fillColor(colors.text);
-    doc.text(description, 110, qualRowY, { width: 280, height: 12 });
-    qualRowY += 14;
+    doc.text(description, 110, qualRowY, { width: 290, height: 12 });
+    qualRowY += 16;
   });
 
-  // B - Quantitative Scale Card (top right)
-  const quantY = appCard(430, 310, 360, 70, 'B - QUANTITATIVE SCALE', colors.success);
+  // B - Quantitative Scale Card (top right) - with 20px spacing
+  const quantY = appCard(440, 320, 370, 80, 'B - QUANTITATIVE SCALE', colors.success);
   
   const quantitativeData = [
     ['$50,000+', 'Likely - Monthly'],
@@ -207,17 +202,17 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
     doc.font('Helvetica-Bold');
     doc.fontSize(7);
     doc.fillColor(colors.text);
-    doc.text(cost, 440, quantRowY);
+    doc.text(cost, 450, quantRowY);
     
     doc.font('Helvetica');
     doc.fontSize(6);
     doc.fillColor(colors.text);
-    doc.text(probability, 530, quantRowY, { width: 240, height: 12 });
-    quantRowY += 14;
+    doc.text(probability, 540, quantRowY, { width: 250, height: 12 });
+    quantRowY += 16;
   });
 
-  // C - Likelihood vs Consequence Card (bottom left)
-  const likelihoodY = appCard(50, 400, 360, 70, 'C - LIKELIHOOD vs CONSEQUENCE', colors.warning);
+  // C - Likelihood vs Consequence Card (bottom left) - with 20px vertical spacing
+  const likelihoodY = appCard(50, 420, 370, 80, 'C - LIKELIHOOD vs CONSEQUENCE', colors.warning);
   
   const riskMatrixGrid = [
     ['', 'Likely', 'Possible', 'Unlikely'],
@@ -249,11 +244,11 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
       }
       gridX += 35;
     });
-    gridRowY += 14;
+    gridRowY += 16;
   });
 
-  // D - Risk Scoring Card (bottom right)
-  const scoringY = appCard(430, 400, 360, 70, 'D - RISK SCORING', colors.danger);
+  // D - Risk Scoring Card (bottom right) - with 20px spacing
+  const scoringY = appCard(440, 420, 370, 80, 'D - RISK SCORING', colors.danger);
   
   const scoringData = [
     ['16-18', 'Severe (E)', 'Action now'],
@@ -361,8 +356,11 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
     equipRowY += equipRowHeight;
   });
 
-  // Work Activities & Risk Assessment Card - showing all activities
-  const riskY = appCard(30, 640, 780, 160, 'WORK ACTIVITIES & RISK ASSESSMENT', colors.secondary);
+  // Page 2 - SWMS Activities Table
+  doc.addPage();
+  
+  // Work Activities & Risk Assessment Card - full page
+  const riskY = appCard(30, 80, 780, 500, 'WORK ACTIVITIES & RISK ASSESSMENT', colors.secondary);
 
   const riskHeaders = ['Activity', 'Hazards', 'Initial Risk', 'Control Measures', 'Residual Risk'];
   const colWidths = [150, 180, 80, 250, 80];
@@ -386,18 +384,20 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
     headerX += colWidths[index];
   });
 
-  // Risk assessment data - First 4 activities to fit properly
+  // Risk assessment data - All activities
   const risks = swmsData.risk_assessments || [
     { activity: 'Cable tray installation on levels 15-20', hazards: 'Falls from height during work activities', initial_risk: 'H (16)', control_measures: 'Safety harness with dual lanyards required', residual_risk: 'L (4)' },
     { activity: 'Main switchboard upgrades', hazards: 'Manual handling injuries from heavy lifting', initial_risk: 'M (12)', control_measures: 'Mechanical lifting aids for manual handling', residual_risk: 'L (3)' },
     { activity: 'Lighting circuit installation', hazards: 'Falls from height during work activities', initial_risk: 'M (9)', control_measures: 'Exclusion zones around moving machinery', residual_risk: 'L (2)' },
-    { activity: 'Emergency lighting system testing', hazards: 'Falls from height during work activities', initial_risk: 'M (8)', control_measures: 'Equipment operator competency verification', residual_risk: 'L (2)' }
+    { activity: 'Emergency lighting system testing', hazards: 'Falls from height during work activities', initial_risk: 'M (8)', control_measures: 'Equipment operator competency verification', residual_risk: 'L (2)' },
+    { activity: 'Power distribution panel installation', hazards: 'Electrical shock from live components', initial_risk: 'H (15)', control_measures: 'Lockout/tagout procedures and PPE', residual_risk: 'L (3)' },
+    { activity: 'Fire alarm system wiring', hazards: 'Working at height in confined spaces', initial_risk: 'M (10)', control_measures: 'Scaffolding and fall protection systems', residual_risk: 'L (2)' }
   ];
   
   let rowY = riskY + 16;
-  const rowHeight = 25;
+  const rowHeight = 30;
   
-  risks.slice(0, 4).forEach((risk: any, index: number) => {
+  risks.forEach((risk: any, index: number) => {
     let cellX = 50;
     
     // Row background
@@ -445,10 +445,6 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
     
     rowY += rowHeight;
   });
-
-  // Add new page if there are more activities
-  if (risks.length > 3) {
-    doc.addPage();
     
     // Continue SWMS table on new page - full width card
     const continueY = appCard(30, 80, 780, 400, 'WORK ACTIVITIES & RISK ASSESSMENT (CONTINUED)', colors.secondary);
