@@ -97,13 +97,16 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
   doc.text(`Date: ${new Date().toLocaleDateString()}`, 600, 40);
 
   // Project details cards - side by side
-  const projectY = appCard(30, 120, 380, 80, 'PROJECT DETAILS', colors.primary);
+  const projectY = appCard(30, 120, 380, 80, 'PROJECT INFORMATION', colors.primary);
   
   const projectDetails = [
+    ['Head Contractor:', swmsData.head_contractor || swmsData.company_name || 'Not specified'],
     ['Project Name:', projectName],
     ['Project Address:', projectAddress],
-    ['Principal Contractor:', swmsData.principal_contractor || 'Not specified'],
-    ['Start Date:', swmsData.start_date || new Date().toLocaleDateString()]
+    ['Site Manager:', swmsData.site_manager || 'Not specified'],
+    ['Document ID:', uniqueId],
+    ['Date Generated:', new Date().toLocaleDateString()],
+    ['Trade Type:', swmsData.trade_type || 'General Construction']
   ];
   
   let detailY = projectY;
@@ -124,8 +127,8 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
     doc.fontSize(7);
     doc.text(value, currentX, currentY + 10, { width: 180, height: 12 });
     
-    if (isLeft) leftY += 22;
-    else rightY += 22;
+    if (isLeft) leftY += 18;
+    else rightY += 18;
     
     isLeft = !isLeft;
   });
@@ -237,8 +240,8 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
     scoringRowY += 16;
   });
 
-  // Work Activities & Risk Assessment Card
-  const riskY = appCard(30, 460, 780, 200, 'WORK ACTIVITIES & RISK ASSESSMENT', colors.secondary);
+  // Work Activities & Risk Assessment Card - First Page (3 activities max)
+  const riskY = appCard(30, 460, 780, 140, 'WORK ACTIVITIES & RISK ASSESSMENT', colors.secondary);
 
   const riskHeaders = ['Activity', 'Hazards', 'Initial Risk', 'Control Measures', 'Residual Risk'];
   const colWidths = [150, 180, 80, 250, 80];
@@ -262,12 +265,12 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
     headerX += colWidths[index];
   });
 
-  // Risk assessment data
+  // Risk assessment data - First 3 activities only
   const risks = swmsData.risk_assessments || [];
   let rowY = riskY + 16;
   const rowHeight = 30;
   
-  risks.slice(0, 5).forEach((risk: any, index: number) => {
+  risks.slice(0, 3).forEach((risk: any, index: number) => {
     let cellX = 50;
     
     // Row background
@@ -316,6 +319,84 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
     rowY += rowHeight;
   });
 
+  // Add new page if there are more activities
+  if (risks.length > 3) {
+    doc.addPage();
+    
+    // Continue SWMS table on new page - full width card
+    const continueY = appCard(30, 80, 780, 400, 'WORK ACTIVITIES & RISK ASSESSMENT (CONTINUED)', colors.secondary);
+    
+    // Table header for continuation
+    doc.fillColor(colors.background);
+    doc.roundedRect(50, continueY, 740, 16, 4);
+    doc.fill();
+    
+    doc.strokeColor(colors.border);
+    doc.lineWidth(0.5);
+    doc.roundedRect(50, continueY, 740, 16, 4);
+    doc.stroke();
+    
+    let continueHeaderX = 50;
+    riskHeaders.forEach((header, index) => {
+      doc.fillColor(colors.text);
+      doc.font('Helvetica-Bold');
+      doc.fontSize(7);
+      doc.text(header, continueHeaderX + 3, continueY + 5, { width: colWidths[index] - 6 });
+      continueHeaderX += colWidths[index];
+    });
+
+    // Remaining activities
+    let continueRowY = continueY + 16;
+    risks.slice(3).forEach((risk: any, index: number) => {
+      let cellX = 50;
+      
+      // Row background
+      if (index % 2 === 1) {
+        doc.fillColor('#f8fafc');
+        doc.roundedRect(50, continueRowY, 740, rowHeight, 2);
+        doc.fill();
+      }
+      
+      const rowData = [
+        risk.activity || 'Activity not specified',
+        risk.hazards || 'No hazards identified',
+        risk.initial_risk || 'M (8)',
+        risk.control_measures || 'Standard safety controls',
+        risk.residual_risk || 'L (2)'
+      ];
+      
+      rowData.forEach((data, colIndex) => {
+        // Risk score badges
+        if (colIndex === 2 || colIndex === 4) {
+          const riskLevel = data.includes('H') ? 'HIGH' : data.includes('M') ? 'MEDIUM' : 'LOW';
+          const badgeColor = riskLevel === 'HIGH' ? colors.danger : riskLevel === 'MEDIUM' ? colors.warning : colors.success;
+          
+          doc.fillColor(badgeColor);
+          doc.roundedRect(cellX + 2, continueRowY + 2, colWidths[colIndex] - 4, 12, 2);
+          doc.fill();
+          
+          doc.fillColor(colors.white);
+          doc.font('Helvetica-Bold');
+          doc.fontSize(7);
+          doc.text(data, cellX + 4, continueRowY + 6, { width: colWidths[colIndex] - 8, align: 'center' });
+        } else {
+          doc.fillColor(colors.text);
+          doc.font('Helvetica');
+          doc.fontSize(6);
+          doc.text(data, cellX + 3, continueRowY + 4, { 
+            width: colWidths[colIndex] - 6, 
+            height: rowHeight - 8,
+            ellipsis: true 
+          });
+        }
+        
+        cellX += colWidths[colIndex];
+      });
+      
+      continueRowY += rowHeight;
+    });
+  }
+
   // Emergency procedures card
   const emergencyY = appCard(450, 120, 360, 80, 'EMERGENCY PROCEDURES', colors.danger);
   
@@ -350,6 +431,82 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
     isEmergencyLeft = !isEmergencyLeft;
   });
 
+  // Add signatory page
+  doc.addPage();
+  
+  // Document Approval & Signatures Card
+  const signatoryY = appCard(30, 80, 780, 450, 'DOCUMENT APPROVAL & SIGNATURES', colors.primary);
+  
+  // Manual Site Sign-on Table
+  doc.fillColor(colors.text);
+  doc.font('Helvetica-Bold');
+  doc.fontSize(10);
+  doc.text('MANUAL SITE SIGN-ON TABLE', 50, signatoryY + 20);
+  
+  const signatoryHeaders = ['#', 'Name', 'Number', 'Signature', 'Date'];
+  const signatoryColWidths = [40, 180, 120, 240, 140];
+  
+  // Table header
+  doc.fillColor(colors.background);
+  doc.roundedRect(50, signatoryY + 40, 720, 16, 4);
+  doc.fill();
+  
+  doc.strokeColor(colors.border);
+  doc.lineWidth(0.5);
+  doc.roundedRect(50, signatoryY + 40, 720, 16, 4);
+  doc.stroke();
+  
+  let sigHeaderX = 50;
+  signatoryHeaders.forEach((header, index) => {
+    doc.fillColor(colors.text);
+    doc.font('Helvetica-Bold');
+    doc.fontSize(8);
+    doc.text(header, sigHeaderX + 3, signatoryY + 47, { width: signatoryColWidths[index] - 6 });
+    sigHeaderX += signatoryColWidths[index];
+  });
+
+  // Create 20 empty signature rows
+  let sigRowY = signatoryY + 56;
+  const sigRowHeight = 18;
+  
+  for (let i = 1; i <= 20; i++) {
+    let sigCellX = 50;
+    
+    // Row background
+    if (i % 2 === 0) {
+      doc.fillColor('#f8fafc');
+      doc.roundedRect(50, sigRowY, 720, sigRowHeight, 2);
+      doc.fill();
+    }
+    
+    // Row number
+    doc.fillColor(colors.text);
+    doc.font('Helvetica');
+    doc.fontSize(7);
+    doc.text(i.toString(), sigCellX + 15, sigRowY + 6);
+    
+    // Draw cell borders
+    signatoryColWidths.forEach((width, colIndex) => {
+      if (colIndex > 0) {
+        doc.strokeColor(colors.border);
+        doc.lineWidth(0.5);
+        doc.moveTo(sigCellX, sigRowY);
+        doc.lineTo(sigCellX, sigRowY + sigRowHeight);
+        doc.stroke();
+      }
+      sigCellX += width;
+    });
+    
+    // Bottom border for row
+    doc.strokeColor(colors.border);
+    doc.lineWidth(0.5);
+    doc.moveTo(50, sigRowY + sigRowHeight);
+    doc.lineTo(770, sigRowY + sigRowHeight);
+    doc.stroke();
+    
+    sigRowY += sigRowHeight;
+  }
+  
   // Watermark
   doc.fillColor('#00000008');
   doc.font('Helvetica-Bold');
@@ -357,5 +514,4 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
   doc.text('RISKIFY', 350, 350, { align: 'center' });
 
   return doc;
-}
 }
