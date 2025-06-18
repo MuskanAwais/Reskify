@@ -307,13 +307,13 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
   doc.roundedRect(50, matrixY, 620, 16, 4);
   doc.fill();
   
-  let riskHeaderX = 50;
+  let matrixHeaderX = 50;
   riskHeaders.forEach((header, index) => {
     doc.fillColor(colors.white);
     doc.font('Helvetica-Bold');
     doc.fontSize(7);
-    doc.text(header, riskHeaderX + 3, matrixY + 5, { width: riskColWidths[index] - 6 });
-    riskHeaderX += riskColWidths[index];
+    doc.text(header, matrixHeaderX + 3, matrixY + 5, { width: riskColWidths[index] - 6 });
+    matrixHeaderX += riskColWidths[index];
   });
 
   const riskData = [
