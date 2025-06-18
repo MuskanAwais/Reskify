@@ -34,30 +34,27 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
 
   // Card function with app-style rounded corners
   function appCard(x: number, y: number, w: number, h: number, title: string, headerColor = colors.primary) {
-    // Card background with rounded corners
-    doc.fillColor(colors.white);
-    doc.roundedRect(x, y, w, h, 12);
-    doc.fill();
-    
-    // Card border
-    doc.strokeColor(colors.border);
-    doc.lineWidth(0.5);
-    doc.roundedRect(x, y, w, h, 12);
-    doc.stroke();
-
-    // Header with rounded top corners
+    // Separate colored header bar - standalone
     doc.fillColor(headerColor);
-    doc.roundedRect(x, y, w, 35, 12);
-    doc.fill();
-    // Square off bottom of header
-    doc.rect(x, y + 28, w, 7);
+    doc.roundedRect(x, y, w, 32, 12);
     doc.fill();
     
-    // Title text
+    // Header text in white
     doc.fillColor(colors.white);
     doc.font('Helvetica-Bold');
     doc.fontSize(12);
-    doc.text(title, x + 15, y + 12);
+    doc.text(title, x + 15, y + 10);
+    
+    // White content card below header (separate)
+    doc.fillColor(colors.white);
+    doc.roundedRect(x, y + 38, w, h - 38, 12);
+    doc.fill();
+    
+    // Content card border
+    doc.strokeColor(colors.border);
+    doc.lineWidth(0.5);
+    doc.roundedRect(x, y + 38, w, h - 38, 12);
+    doc.stroke();
     
     return y + 45; // Return content start position
   }
@@ -67,15 +64,21 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
   doc.rect(0, 0, 842, 60);
   doc.fill();
   
-  // Riskify logo (left) - actual styling
-  doc.fillColor('#1f2937');
-  doc.font('Helvetica-Bold');
-  doc.fontSize(18);
-  doc.text('Riskify', 30, 18);
-  doc.font('Helvetica');
-  doc.fontSize(9);
-  doc.fillColor(colors.textMuted);
-  doc.text('AI SWMS Generator', 30, 40);
+  // Riskify logo (left) - add actual logo image
+  try {
+    // Try to load the logo from assets
+    doc.image('attached_assets/generated-icon.png', 30, 12, { width: 40, height: 40 });
+  } catch (error) {
+    // Fallback to styled text if image not found
+    doc.fillColor('#1f2937');
+    doc.font('Helvetica-Bold');
+    doc.fontSize(18);
+    doc.text('Riskify', 30, 18);
+    doc.font('Helvetica');
+    doc.fontSize(9);
+    doc.fillColor(colors.textMuted);
+    doc.text('AI SWMS Generator', 30, 40);
+  }
   
   // Company logo placeholder (right)
   doc.strokeColor(colors.border);
@@ -127,9 +130,9 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
   // Work Activities & Risk Assessment Card
   const riskY = appCard(30, 240, 780, 300, 'WORK ACTIVITIES & RISK ASSESSMENT', colors.secondary);
 
-  // Table headers
+  // Table headers with adjusted column widths to prevent overflow
   const headers = ['#', 'Activity/Item', 'Hazards/Risks', 'Initial Risk Score', 'Control Measures', 'Residual Risk Score'];
-  const colWidths = [30, 150, 200, 90, 220, 90];
+  const colWidths = [30, 140, 180, 80, 200, 70];
   
   // Header background
   doc.fillColor('#f1f5f9');
@@ -253,26 +256,34 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
         const shortRisk = data.includes('H') ? 'H' : data.includes('M') ? 'M' : 'L';
         doc.text(shortRisk, cellX + 10, rowY + 12, { width: colWidths[colIndex] - 20, align: 'center' });
       }
-      // Hazards column - list each hazard on separate line
+      // Hazards column - list each hazard on separate line with proper wrapping
       else if (colIndex === 2) {
         let hazardY = rowY + 5;
-        hazards.forEach(hazard => {
+        hazards.slice(0, 4).forEach((hazard: any) => {
           doc.fillColor(colors.text);
           doc.font('Helvetica');
-          doc.fontSize(7);
-          doc.text(`• ${hazard}`, cellX + 5, hazardY, { width: colWidths[colIndex] - 10 });
-          hazardY += 12;
+          doc.fontSize(6);
+          doc.text(`• ${hazard}`, cellX + 3, hazardY, { 
+            width: colWidths[colIndex] - 6,
+            height: 10,
+            ellipsis: true
+          });
+          hazardY += 10;
         });
       }
-      // Controls column - list each control on separate line
+      // Controls column - list each control on separate line with proper wrapping
       else if (colIndex === 4) {
         let controlY = rowY + 5;
-        controlMeasures.forEach(controlMeasure => {
+        controlMeasures.slice(0, 4).forEach((controlMeasure: any) => {
           doc.fillColor(colors.text);
           doc.font('Helvetica');
-          doc.fontSize(7);
-          doc.text(`• ${controlMeasure}`, cellX + 5, controlY, { width: colWidths[colIndex] - 10 });
-          controlY += 12;
+          doc.fontSize(6);
+          doc.text(`• ${controlMeasure}`, cellX + 3, controlY, { 
+            width: colWidths[colIndex] - 6,
+            height: 10,
+            ellipsis: true
+          });
+          controlY += 10;
         });
       }
       // Regular text columns
