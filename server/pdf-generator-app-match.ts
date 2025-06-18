@@ -129,8 +129,124 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
     else rightY += 22;
   });
 
-  // Work Activities & Risk Assessment Card
-  const riskY = appCard(30, 240, 780, 200, 'WORK ACTIVITIES & RISK ASSESSMENT', colors.secondary);
+  // Construction Control Risk Matrix Card - positioned before activities
+  const matrixY = appCard(30, 240, 780, 160, 'CONSTRUCTION CONTROL RISK MATRIX', colors.slate);
+  
+  // Comprehensive risk matrix with A, B, C, D sections
+  const matrixSections = [
+    {
+      title: 'A - Qualitative Scale',
+      headers: ['', 'Qualitative Scale'],
+      data: [
+        ['Extreme', 'Fatality, significant disability, catastrophic property damage'],
+        ['High', 'Minor amputation, minor permanent disability, moderate property damage'],
+        ['Medium', 'Minor injury resulting in Lost Time Injury or Medically Treated Injury'],
+        ['Low', 'First Aid Treatment with no lost time']
+      ],
+      x: 50, width: 180
+    },
+    {
+      title: 'B - Quantitative Scale',
+      headers: ['Quantitative Scale', 'Magnitude Scale', 'Probability Scale'],
+      data: [
+        ['$50,000+', 'Likely', 'Monthly in the industry'],
+        ['$15,000 - $50,000', 'Possible', 'Yearly in the industry'],
+        ['$1,000 - $15,000', 'Unlikely', 'Every 10 years in the industry'],
+        ['$0 - $1,000', 'Very Rarely', 'Once in a lifetime in the industry']
+      ],
+      x: 240, width: 190
+    },
+    {
+      title: 'C - Likelihood vs Consequence',
+      headers: ['Likely', 'Possible', 'Unlikely', 'Very Rare'],
+      data: [
+        ['Extreme', 'High', 'Medium', 'Low'],
+        ['16', '14', '11', '7'],
+        ['15', '12', '8', ''],
+        ['13', '9', '', '']
+      ],
+      x: 440, width: 160
+    },
+    {
+      title: 'D - Risk Scoring',
+      headers: ['Score', 'Ranking', 'Action'],
+      data: [
+        ['16 - 18', 'Severe (E)', 'Action required now'],
+        ['11 - 15', 'High (H)', 'Action within 24 hrs'],
+        ['7 - 10', 'Medium (M)', 'Action within 1 week'],
+        ['1 - 6', 'Low (L)', 'Monitor']
+      ],
+      x: 610, width: 170
+    }
+  ];
+
+  let currentY = matrixY + 10;
+  
+  // Draw comprehensive matrix sections
+  matrixSections.forEach((section, sectionIndex) => {
+    // Section background with color coding
+    const sectionColors = ['#E0F2FE', '#ECFDF5', '#FEF3C7', '#FEE2E2'];
+    doc.fillColor(sectionColors[sectionIndex]);
+    doc.roundedRect(section.x, currentY, section.width, 120, 4);
+    doc.fill();
+    
+    // Section border
+    doc.strokeColor(colors.border);
+    doc.lineWidth(0.5);
+    doc.roundedRect(section.x, currentY, section.width, 120, 4);
+    doc.stroke();
+    
+    // Section title
+    doc.fillColor(colors.text);
+    doc.font('Helvetica-Bold');
+    doc.fontSize(8);
+    doc.text(section.title, section.x + 5, currentY + 5);
+    
+    // Headers
+    let headerY = currentY + 20;
+    doc.fontSize(7);
+    section.headers.forEach((header, index) => {
+      doc.text(header, section.x + 5 + (index * (section.width - 10) / section.headers.length), headerY);
+    });
+    
+    // Data rows with color coding for risk levels
+    let dataY = headerY + 15;
+    section.data.forEach((row, rowIndex) => {
+      row.forEach((cell, cellIndex) => {
+        const cellX = section.x + 5 + (cellIndex * (section.width - 10) / row.length);
+        
+        // Color code risk levels in section C
+        if (sectionIndex === 2 && rowIndex === 0) {
+          const riskColors = { 'Extreme': '#DC2626', 'High': '#F59E0B', 'Medium': '#10B981', 'Low': '#6B7280' };
+          if (riskColors[cell]) {
+            doc.fillColor(riskColors[cell]);
+            doc.roundedRect(cellX - 2, dataY - 2, 35, 12, 2);
+            doc.fill();
+            doc.fillColor(colors.white);
+          }
+        }
+        
+        // Color code scores in section C
+        if (sectionIndex === 2 && rowIndex > 0 && cell) {
+          const score = parseInt(cell);
+          const scoreColor = score >= 16 ? '#DC2626' : score >= 11 ? '#F59E0B' : score >= 7 ? '#10B981' : '#6B7280';
+          doc.fillColor(scoreColor);
+          doc.roundedRect(cellX - 2, dataY - 2, 20, 12, 2);
+          doc.fill();
+          doc.fillColor(colors.white);
+        }
+        
+        doc.font('Helvetica');
+        doc.fontSize(6);
+        doc.text(cell, cellX, dataY, { width: (section.width - 10) / row.length - 5 });
+        doc.fillColor(colors.text);
+      });
+      dataY += 15;
+    });
+  });
+
+  // Work Activities & Risk Assessment Card - positioned after matrix
+  const riskY = appCard(30, 420, 780, 200, 'WORK ACTIVITIES & RISK ASSESSMENT', colors.secondary);
 
   // Table headers with adjusted column widths to prevent overflow
   const headers = ['#', 'Activity/Item', 'Hazards/Risks', 'Initial Risk Score', 'Control Measures', 'Residual Risk Score'];
