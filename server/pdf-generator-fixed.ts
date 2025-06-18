@@ -139,11 +139,11 @@ export function generateAppMatchPDF(swmsData: any): PDFDocument {
     isEmergencyLeft = !isEmergencyLeft;
   });
 
-  // Construction Control Risk Matrix Section - 2x2 grid layout with proper spacing
-  const sectionY = appCard(30, 280, 780, 200, 'CONSTRUCTION CONTROL RISK MATRIX', colors.slate);
+  // Construction Control Risk Matrix Section - 2x2 grid layout fitting within main card
+  const sectionY = appCard(30, 280, 780, 240, 'CONSTRUCTION CONTROL RISK MATRIX', colors.slate);
   
-  // A - Qualitative Scale Card (top left)
-  const qualY = appCard(50, 320, 370, 80, 'A - QUALITATIVE SCALE', colors.secondary);
+  // A - Qualitative Scale Card (top left) - reduced spacing
+  const qualY = appCard(50, 315, 355, 75, 'A - QUALITATIVE SCALE', colors.secondary);
   
   const qualitativeData = [
     ['Extreme', 'Fatality, significant disability, catastrophic property damage'],
@@ -155,19 +155,19 @@ export function generateAppMatchPDF(swmsData: any): PDFDocument {
   let qualRowY = qualY;
   qualitativeData.forEach(([level, description]) => {
     doc.font('Helvetica-Bold');
-    doc.fontSize(7);
+    doc.fontSize(6);
     doc.fillColor(colors.text);
     doc.text(level, 60, qualRowY);
     
     doc.font('Helvetica');
-    doc.fontSize(6);
+    doc.fontSize(5);
     doc.fillColor(colors.text);
-    doc.text(description, 110, qualRowY, { width: 290, height: 12 });
-    qualRowY += 16;
+    doc.text(description, 100, qualRowY, { width: 285, height: 10 });
+    qualRowY += 14;
   });
 
-  // B - Quantitative Scale Card (top right) - with 20px spacing
-  const quantY = appCard(440, 320, 370, 80, 'B - QUANTITATIVE SCALE', colors.success);
+  // B - Quantitative Scale Card (top right) - 15px spacing
+  const quantY = appCard(425, 315, 355, 75, 'B - QUANTITATIVE SCALE', colors.success);
   
   const quantitativeData = [
     ['$50,000+', 'Likely - Monthly in the industry, Good chance'],
@@ -179,19 +179,19 @@ export function generateAppMatchPDF(swmsData: any): PDFDocument {
   let quantRowY = quantY;
   quantitativeData.forEach(([cost, probability]) => {
     doc.font('Helvetica-Bold');
-    doc.fontSize(7);
-    doc.fillColor(colors.text);
-    doc.text(cost, 450, quantRowY);
-    
-    doc.font('Helvetica');
     doc.fontSize(6);
     doc.fillColor(colors.text);
-    doc.text(probability, 540, quantRowY, { width: 250, height: 12 });
-    quantRowY += 16;
+    doc.text(cost, 435, quantRowY);
+    
+    doc.font('Helvetica');
+    doc.fontSize(5);
+    doc.fillColor(colors.text);
+    doc.text(probability, 505, quantRowY, { width: 260, height: 10 });
+    quantRowY += 14;
   });
 
-  // C - Likelihood vs Consequence Card (bottom left) - with 20px vertical spacing
-  const likelihoodY = appCard(50, 420, 370, 80, 'C - LIKELIHOOD vs CONSEQUENCE', colors.warning);
+  // C - Likelihood vs Consequence Card (bottom left) - 20px vertical spacing from top row
+  const likelihoodY = appCard(50, 410, 355, 75, 'C - LIKELIHOOD vs CONSEQUENCE', colors.warning);
   
   const riskMatrixGrid = [
     ['', 'Likely', 'Possible', 'Unlikely', 'Very Rarely'],
@@ -211,7 +211,7 @@ export function generateAppMatchPDF(swmsData: any): PDFDocument {
           const score = parseInt(cell);
           const scoreColor = score >= 16 ? '#DC2626' : score >= 11 ? '#F59E0B' : score >= 7 ? '#10B981' : '#6B7280';
           doc.fillColor(scoreColor);
-          doc.roundedRect(gridX - 2, gridRowY - 2, 30, 14, 2);
+          doc.roundedRect(gridX - 2, gridRowY - 2, 28, 12, 2);
           doc.fill();
           doc.fillColor(colors.white);
         } else {
@@ -219,16 +219,16 @@ export function generateAppMatchPDF(swmsData: any): PDFDocument {
         }
         
         doc.font(rowIndex === 0 || colIndex === 0 ? 'Helvetica-Bold' : 'Helvetica');
-        doc.fontSize(6);
-        doc.text(cell, gridX, gridRowY, { width: 30 });
+        doc.fontSize(5);
+        doc.text(cell, gridX, gridRowY, { width: 28 });
       }
-      gridX += 35;
+      gridX += 30;
     });
-    gridRowY += 16;
+    gridRowY += 12;
   });
 
-  // D - Risk Scoring Card (bottom right) - with 20px spacing
-  const scoringY = appCard(440, 420, 370, 80, 'D - RISK SCORING', colors.danger);
+  // D - Risk Scoring Card (bottom right) - 15px spacing from top right
+  const scoringY = appCard(425, 410, 355, 75, 'D - RISK SCORING', colors.danger);
   
   const scoringData = [
     ['16-18', 'Severe (E)', 'Action now'],
@@ -240,15 +240,15 @@ export function generateAppMatchPDF(swmsData: any): PDFDocument {
   let scoringRowY = scoringY;
   scoringData.forEach(([score, ranking, action]) => {
     doc.font('Helvetica-Bold');
-    doc.fontSize(7);
-    doc.fillColor(colors.text);
-    doc.text(`${score} ${ranking}`, 450, scoringRowY);
-    
-    doc.font('Helvetica');
     doc.fontSize(6);
     doc.fillColor(colors.text);
-    doc.text(action, 540, scoringRowY, { width: 230, height: 12 });
-    scoringRowY += 16;
+    doc.text(`${score} ${ranking}`, 435, scoringRowY);
+    
+    doc.font('Helvetica');
+    doc.fontSize(5);
+    doc.fillColor(colors.text);
+    doc.text(action, 520, scoringRowY, { width: 240, height: 10 });
+    scoringRowY += 14;
   });
 
   // Remove Plant & Equipment Register from page 1 - will be moved to page 3
@@ -281,62 +281,62 @@ export function generateAppMatchPDF(swmsData: any): PDFDocument {
     headerX += colWidths[index];
   });
 
-  // Risk assessment data - Complete activities from builder
+  // Risk assessment data - Complete activities with legislation references
   const risks = swmsData.risk_assessments || [
     { 
-      activity: 'Cable tray installation on levels 15-20', 
-      hazards: 'Falls from height during work activities, Manual handling of heavy cable trays, Electrical hazards from live circuits', 
+      activity: 'Cable tray installation on levels 15-20\nLegislation: WHS Regulation 2017 Part 4.4 - Falls', 
+      hazards: 'Falls from height during work activities\nManual handling of heavy cable trays\nElectrical hazards from live circuits', 
       initial_risk: 'H (16)', 
-      control_measures: 'Safety harness with dual lanyards required, Use mechanical lifting aids, Lockout/tagout procedures before work', 
+      control_measures: 'Safety harness with dual lanyards required\nUse mechanical lifting aids\nLockout/tagout procedures before work', 
       residual_risk: 'L (4)' 
     },
     { 
-      activity: 'Main switchboard upgrades and electrical panel work', 
-      hazards: 'Electrical shock from live components, Manual handling injuries from heavy equipment, Arc flash potential', 
+      activity: 'Main switchboard upgrades and electrical panel work\nLegislation: AS/NZS 3000:2018 Wiring Rules', 
+      hazards: 'Electrical shock from live components\nManual handling injuries from heavy equipment\nArc flash potential', 
       initial_risk: 'H (15)', 
-      control_measures: 'De-energize circuits before work, Use insulated tools and PPE, Mechanical lifting aids for panels', 
+      control_measures: 'De-energize circuits before work\nUse insulated tools and PPE\nMechanical lifting aids for panels', 
       residual_risk: 'L (3)' 
     },
     { 
-      activity: 'Lighting circuit installation throughout building', 
-      hazards: 'Falls from height using ladders, Electrical shock hazards, Eye strain from poor lighting', 
+      activity: 'Lighting circuit installation throughout building\nLegislation: AS/NZS 3000:2018 Section 2', 
+      hazards: 'Falls from height using ladders\nElectrical shock hazards\nEye strain from poor lighting', 
       initial_risk: 'M (12)', 
-      control_measures: 'Scaffold access platforms, Test circuits before touching, Adequate temporary lighting', 
+      control_measures: 'Scaffold access platforms\nTest circuits before touching\nAdequate temporary lighting', 
       residual_risk: 'L (2)' 
     },
     { 
-      activity: 'Emergency lighting system testing and commissioning', 
-      hazards: 'Working in low light conditions, Electrical testing hazards, Falls during emergency testing', 
+      activity: 'Emergency lighting system testing and commissioning\nLegislation: AS 2293.1-2018 Emergency Lighting', 
+      hazards: 'Working in low light conditions\nElectrical testing hazards\nFalls during emergency testing', 
       initial_risk: 'M (9)', 
-      control_measures: 'Portable lighting during tests, Qualified electrical testing personnel, Fall protection systems', 
+      control_measures: 'Portable lighting during tests\nQualified electrical testing personnel\nFall protection systems', 
       residual_risk: 'L (2)' 
     },
     { 
-      activity: 'Power distribution panel installation in plant rooms', 
-      hazards: 'Heavy lifting of electrical panels, Electrical shock from terminations, Confined space work', 
+      activity: 'Power distribution panel installation in plant rooms\nLegislation: AS/NZS 3000:2018 Section 6', 
+      hazards: 'Heavy lifting of electrical panels\nElectrical shock from terminations\nConfined space work', 
       initial_risk: 'H (15)', 
-      control_measures: 'Crane assistance for heavy panels, Lockout/tagout procedures, Confined space permits and monitoring', 
+      control_measures: 'Crane assistance for heavy panels\nLockout/tagout procedures\nConfined space permits and monitoring', 
       residual_risk: 'L (3)' 
     },
     { 
-      activity: 'Fire alarm system wiring and device installation', 
-      hazards: 'Working at height in ceiling voids, Electrical connections, Asbestos exposure in old buildings', 
+      activity: 'Fire alarm system wiring and device installation\nLegislation: AS 1670.1-2018 Fire Detection', 
+      hazards: 'Working at height in ceiling voids\nElectrical connections\nAsbestos exposure in old buildings', 
       initial_risk: 'M (10)', 
-      control_measures: 'Mobile scaffolding for ceiling work, Qualified fire system technicians, Asbestos assessment before work', 
+      control_measures: 'Mobile scaffolding for ceiling work\nQualified fire system technicians\nAsbestos assessment before work', 
       residual_risk: 'L (2)' 
     },
     {
-      activity: 'Underground cable installation and trenching work',
-      hazards: 'Cave-in from trenching, Underground utilities strike, Manual handling of cables',
+      activity: 'Underground cable installation and trenching work\nLegislation: WHS Regulation 2017 Part 4.3 - Excavation',
+      hazards: 'Cave-in from trenching\nUnderground utilities strike\nManual handling of cables',
       initial_risk: 'H (14)',
-      control_measures: 'Dial before you dig, Trench shoring systems, Cable pulling equipment and proper lifting techniques',
+      control_measures: 'Dial before you dig\nTrench shoring systems\nCable pulling equipment and proper lifting techniques',
       residual_risk: 'M (6)'
     },
     {
-      activity: 'High voltage switchgear installation and testing',
-      hazards: 'High voltage electrical hazards, Arc flash incidents, Heavy equipment handling',
+      activity: 'High voltage switchgear installation and testing\nLegislation: AS/NZS 4871.1-2015 Electrical Apparatus',
+      hazards: 'High voltage electrical hazards\nArc flash incidents\nHeavy equipment handling',
       initial_risk: 'E (18)',
-      control_measures: 'Qualified HV electricians only, Arc flash PPE and face shields, Crane lifting for switchgear',
+      control_measures: 'Qualified HV electricians only\nArc flash PPE and face shields\nCrane lifting for switchgear',
       residual_risk: 'M (8)'
     }
   ];
