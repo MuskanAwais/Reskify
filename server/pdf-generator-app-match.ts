@@ -1,4 +1,4 @@
-import * as PDFDocument from 'pdfkit';
+const PDFDocument = require('pdfkit');
 import * as fs from 'fs';
 import * as path from 'path';
 
