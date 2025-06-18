@@ -133,10 +133,10 @@ export async function registerRoutes(app: Express) {
       
       const data = req.body;
       
-      // Import modern app PDF generator  
-      const { generateModernAppPDF } = await import('./pdf-generator-modern-app.js');
+      // Import app match PDF generator  
+      const { generateAppMatchPDF } = await import('./pdf-generator-app-match.js');
       
-      const doc = generateModernAppPDF({
+      const doc = generateAppMatchPDF({
         swmsData: data,
         projectName: data.projectName || data.project_name || 'Unknown Project',
         projectAddress: data.projectAddress || data.project_address || 'Unknown Address',
@@ -515,9 +515,9 @@ export async function registerRoutes(app: Express) {
         return res.status(404).json({ error: "SWMS project not found" });
       }
 
-      const { generateModernAppPDF } = await import('./pdf-generator-modern-app.js');
+      const { generateAppMatchPDF } = await import('./pdf-generator-app-match.js');
       
-      const doc = generateModernAppPDF({
+      const doc = generateAppMatchPDF({
         swmsData: projectData,
         projectName: projectData.title,
         projectAddress: projectData.projectAddress,
