@@ -129,120 +129,112 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
     else rightY += 22;
   });
 
-  // Construction Control Risk Matrix Card - positioned before activities
-  const matrixY = appCard(30, 240, 780, 160, 'CONSTRUCTION CONTROL RISK MATRIX', colors.slate);
+  // Construction Control Risk Matrix Section - Main header
+  const sectionY = appCard(30, 240, 780, 200, 'CONSTRUCTION CONTROL RISK MATRIX', colors.slate);
   
-  // Comprehensive risk matrix with A, B, C, D sections
-  const matrixSections = [
-    {
-      title: 'A - Qualitative Scale',
-      headers: ['', 'Qualitative Scale'],
-      data: [
-        ['Extreme', 'Fatality, significant disability, catastrophic property damage'],
-        ['High', 'Minor amputation, minor permanent disability, moderate property damage'],
-        ['Medium', 'Minor injury resulting in Lost Time Injury or Medically Treated Injury'],
-        ['Low', 'First Aid Treatment with no lost time']
-      ],
-      x: 50, width: 180
-    },
-    {
-      title: 'B - Quantitative Scale',
-      headers: ['Quantitative Scale', 'Magnitude Scale', 'Probability Scale'],
-      data: [
-        ['$50,000+', 'Likely', 'Monthly in the industry'],
-        ['$15,000 - $50,000', 'Possible', 'Yearly in the industry'],
-        ['$1,000 - $15,000', 'Unlikely', 'Every 10 years in the industry'],
-        ['$0 - $1,000', 'Very Rarely', 'Once in a lifetime in the industry']
-      ],
-      x: 240, width: 190
-    },
-    {
-      title: 'C - Likelihood vs Consequence',
-      headers: ['Likely', 'Possible', 'Unlikely', 'Very Rare'],
-      data: [
-        ['Extreme', 'High', 'Medium', 'Low'],
-        ['16', '14', '11', '7'],
-        ['15', '12', '8', ''],
-        ['13', '9', '', '']
-      ],
-      x: 440, width: 160
-    },
-    {
-      title: 'D - Risk Scoring',
-      headers: ['Score', 'Ranking', 'Action'],
-      data: [
-        ['16 - 18', 'Severe (E)', 'Action required now'],
-        ['11 - 15', 'High (H)', 'Action within 24 hrs'],
-        ['7 - 10', 'Medium (M)', 'Action within 1 week'],
-        ['1 - 6', 'Low (L)', 'Monitor']
-      ],
-      x: 610, width: 170
-    }
+  // A - Qualitative Scale Card (top left)
+  const qualY = appCard(50, 280, 180, 80, 'A - QUALITATIVE SCALE', colors.secondary);
+  
+  const qualitativeData = [
+    ['Extreme', 'Fatality, significant disability'],
+    ['High', 'Minor amputation, permanent disability'],
+    ['Medium', 'Minor injury, Lost Time Injury'],
+    ['Low', 'First Aid Treatment only']
   ];
-
-  let currentY = matrixY + 10;
   
-  // Draw comprehensive matrix sections
-  matrixSections.forEach((section, sectionIndex) => {
-    // Section background with color coding
-    const sectionColors = ['#E0F2FE', '#ECFDF5', '#FEF3C7', '#FEE2E2'];
-    doc.fillColor(sectionColors[sectionIndex]);
-    doc.roundedRect(section.x, currentY, section.width, 120, 4);
-    doc.fill();
-    
-    // Section border
-    doc.strokeColor(colors.border);
-    doc.lineWidth(0.5);
-    doc.roundedRect(section.x, currentY, section.width, 120, 4);
-    doc.stroke();
-    
-    // Section title
-    doc.fillColor(colors.text);
+  let qualRowY = qualY;
+  qualitativeData.forEach(([level, description]) => {
     doc.font('Helvetica-Bold');
-    doc.fontSize(8);
-    doc.text(section.title, section.x + 5, currentY + 5);
+    doc.fontSize(6);
+    doc.fillColor(colors.text);
+    doc.text(level, 60, qualRowY);
     
-    // Headers
-    let headerY = currentY + 20;
-    doc.fontSize(7);
-    section.headers.forEach((header, index) => {
-      doc.text(header, section.x + 5 + (index * (section.width - 10) / section.headers.length), headerY);
-    });
+    doc.font('Helvetica');
+    doc.fontSize(5);
+    doc.text(description, 60, qualRowY + 8, { width: 150, height: 10 });
+    qualRowY += 16;
+  });
+
+  // B - Quantitative Scale Card (top right)
+  const quantY = appCard(240, 280, 180, 80, 'B - QUANTITATIVE SCALE', colors.success);
+  
+  const quantitativeData = [
+    ['$50,000+', 'Likely - Monthly'],
+    ['$15,000-$50,000', 'Possible - Yearly'],
+    ['$1,000-$15,000', 'Unlikely - 10 years'],
+    ['$0-$1,000', 'Very Rarely - Lifetime']
+  ];
+  
+  let quantRowY = quantY;
+  quantitativeData.forEach(([cost, probability]) => {
+    doc.font('Helvetica-Bold');
+    doc.fontSize(6);
+    doc.fillColor(colors.text);
+    doc.text(cost, 250, quantRowY);
     
-    // Data rows with color coding for risk levels
-    let dataY = headerY + 15;
-    section.data.forEach((row, rowIndex) => {
-      row.forEach((cell, cellIndex) => {
-        const cellX = section.x + 5 + (cellIndex * (section.width - 10) / row.length);
-        
-        // Color code risk levels in section C
-        if (sectionIndex === 2 && rowIndex === 0) {
-          const riskColors = { 'Extreme': '#DC2626', 'High': '#F59E0B', 'Medium': '#10B981', 'Low': '#6B7280' };
-          if (riskColors[cell]) {
-            doc.fillColor(riskColors[cell]);
-            doc.roundedRect(cellX - 2, dataY - 2, 35, 12, 2);
-            doc.fill();
-            doc.fillColor(colors.white);
-          }
-        }
-        
-        // Color code scores in section C
-        if (sectionIndex === 2 && rowIndex > 0 && cell) {
+    doc.font('Helvetica');
+    doc.fontSize(5);
+    doc.text(probability, 250, quantRowY + 8, { width: 150, height: 10 });
+    quantRowY += 16;
+  });
+
+  // C - Likelihood vs Consequence Card (bottom left)
+  const likelihoodY = appCard(50, 370, 180, 80, 'C - LIKELIHOOD vs CONSEQUENCE', colors.warning);
+  
+  // Risk matrix grid with color coding
+  const riskMatrixGrid = [
+    ['', 'Likely', 'Possible', 'Unlikely'],
+    ['Extreme', '16', '14', '11'],
+    ['High', '15', '12', '8'],
+    ['Medium', '13', '9', '']
+  ];
+  
+  let gridRowY = likelihoodY;
+  riskMatrixGrid.forEach((row, rowIndex) => {
+    let gridX = 60;
+    row.forEach((cell, colIndex) => {
+      if (cell) {
+        // Color code risk scores
+        if (rowIndex > 0 && colIndex > 0 && cell) {
           const score = parseInt(cell);
           const scoreColor = score >= 16 ? '#DC2626' : score >= 11 ? '#F59E0B' : score >= 7 ? '#10B981' : '#6B7280';
           doc.fillColor(scoreColor);
-          doc.roundedRect(cellX - 2, dataY - 2, 20, 12, 2);
+          doc.roundedRect(gridX - 1, gridRowY - 1, 20, 12, 2);
           doc.fill();
           doc.fillColor(colors.white);
         }
         
-        doc.font('Helvetica');
-        doc.fontSize(6);
-        doc.text(cell, cellX, dataY, { width: (section.width - 10) / row.length - 5 });
+        doc.font(rowIndex === 0 || colIndex === 0 ? 'Helvetica-Bold' : 'Helvetica');
+        doc.fontSize(5);
+        doc.text(cell, gridX, gridRowY, { width: 20 });
         doc.fillColor(colors.text);
-      });
-      dataY += 15;
+      }
+      gridX += 25;
     });
+    gridRowY += 16;
+  });
+
+  // D - Risk Scoring Card (bottom right)
+  const scoringY = appCard(240, 370, 180, 80, 'D - RISK SCORING', colors.danger);
+  
+  const scoringData = [
+    ['16-18', 'Severe (E)', 'Action now'],
+    ['11-15', 'High (H)', 'Action 24hrs'],
+    ['7-10', 'Medium (M)', 'Action 1 week'],
+    ['1-6', 'Low (L)', 'Monitor']
+  ];
+  
+  let scoringRowY = scoringY;
+  scoringData.forEach(([score, ranking, action]) => {
+    doc.font('Helvetica-Bold');
+    doc.fontSize(6);
+    doc.fillColor(colors.text);
+    doc.text(`${score} ${ranking}`, 250, scoringRowY);
+    
+    doc.font('Helvetica');
+    doc.fontSize(5);
+    doc.text(action, 250, scoringRowY + 8, { width: 150, height: 10 });
+    scoringRowY += 16;
   });
 
   // Work Activities & Risk Assessment Card - positioned after matrix
@@ -680,80 +672,7 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
     rowY += rowHeight;
   }
 
-  // Construction Control Risk Matrix Card - same page
-  const matrixY = appCard(450, 240, 350, 200, 'CONSTRUCTION CONTROL RISK MATRIX', colors.slate);
-
-  // Risk level definitions table
-  const riskHeaders = ['Risk Level', 'Qualitative Scale', 'Quantitative Scale', 'Magnitude Scale', 'Probability Scale'];
-  const riskColWidths = [60, 120, 80, 90];
-  const riskHeadersShort = ['Risk Level', 'Description', 'Cost Range', 'Likelihood'];
-  
-  doc.fillColor(colors.white);
-  doc.roundedRect(470, matrixY, 330, 16, 4);
-  doc.fill();
-  
-  doc.strokeColor(colors.border);
-  doc.lineWidth(0.5);
-  doc.roundedRect(470, matrixY, 330, 16, 4);
-  doc.stroke();
-  
-  let matrixHeaderX = 470;
-  riskHeadersShort.forEach((header, index) => {
-    doc.fillColor(colors.text);
-    doc.font('Helvetica-Bold');
-    doc.fontSize(7);
-    doc.text(header, matrixHeaderX + 3, matrixY + 5, { width: riskColWidths[index] - 6 });
-    matrixHeaderX += riskColWidths[index];
-  });
-
-  const riskData = [
-    ['Extreme', 'Fatality, major disability', '$50,000+', 'Likely'],
-    ['High', 'Major injury, property damage', '$15,000-$50,000', 'Possible'],
-    ['Medium', 'Minor injury, lost time', '$1,000-$15,000', 'Unlikely'],
-    ['Low', 'First aid treatment only', '$0-$1,000', 'Rare']
-  ];
-
-  let riskRowY = matrixY + 16;
-  riskData.forEach((row, index) => {
-    let riskCellX = 470;
-    
-    row.forEach((data, colIndex) => {
-      if (index % 2 === 1) {
-        doc.fillColor('#f8fafc');
-        doc.roundedRect(riskCellX, riskRowY, riskColWidths[colIndex], 16, 2);
-        doc.fill();
-      }
-      
-      if (colIndex === 0) {
-        const riskLevel = data;
-        const badgeColor = riskLevel === 'Extreme' ? colors.danger : 
-                          riskLevel === 'High' ? colors.warning : 
-                          riskLevel === 'Medium' ? colors.primary : colors.success;
-        
-        doc.fillColor(badgeColor);
-        doc.roundedRect(riskCellX + 2, riskRowY + 2, riskColWidths[colIndex] - 4, 12, 2);
-        doc.fill();
-        
-        doc.fillColor(colors.white);
-        doc.font('Helvetica-Bold');
-        doc.fontSize(7);
-        doc.text(data, riskCellX + 4, riskRowY + 6, { width: riskColWidths[colIndex] - 8, align: 'center' });
-      } else {
-        doc.fillColor(colors.text);
-        doc.font('Helvetica');
-        doc.fontSize(6);
-        doc.text(data, riskCellX + 3, riskRowY + 4, { 
-          width: riskColWidths[colIndex] - 6, 
-          height: 8,
-          ellipsis: true 
-        });
-      }
-      
-      riskCellX += riskColWidths[colIndex];
-    });
-    
-    riskRowY += 16;
-  });
+  // Old matrix code removed - now using 2x2 grid layout above
 
   // Plant & Equipment Register Card
   const equipY = appCard(30, 250, 780, 200, 'PLANT & EQUIPMENT REGISTER', colors.warning);
