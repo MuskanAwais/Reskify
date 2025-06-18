@@ -445,9 +445,8 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
     
     rowY += rowHeight;
   });
-    
-    // Continue SWMS table on new page - full width card
-    const continueY = appCard(30, 80, 780, 400, 'WORK ACTIVITIES & RISK ASSESSMENT (CONTINUED)', colors.secondary);
+
+  // Add signatory page
     
     // Table header for continuation
     doc.fillColor(colors.background);
