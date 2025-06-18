@@ -1,16 +1,19 @@
 <svg width="120" height="50" viewBox="0 0 120 50" xmlns="http://www.w3.org/2000/svg">
-  <!-- Background -->
-  <rect width="120" height="50" fill="#ffffff" rx="8"/>
+  <!-- Define gradient -->
+  <defs>
+    <linearGradient id="textGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#10b981;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#047857;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#064e3b;stop-opacity:1" />
+    </linearGradient>
+  </defs>
   
-  <!-- Riskify Text -->
-  <text x="10" y="22" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#1f2937">Riskify</text>
+  <!-- Background -->
+  <rect width="120" height="50" fill="#ffffff"/>
+  
+  <!-- Riskify Text with green gradient -->
+  <text x="5" y="22" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="url(#textGradient)">Riskify</text>
   
   <!-- AI SWMS Generator Text -->
-  <text x="10" y="38" font-family="Arial, sans-serif" font-size="9" fill="#6b7280">AI SWMS Generator</text>
-  
-  <!-- Logo Icon - Shield with checkmark -->
-  <g transform="translate(95, 8)">
-    <path d="M12 2 L6 4 L6 12 C6 16 9 20 12 22 C15 20 18 16 18 12 L18 4 Z" fill="#4f46e5" stroke="#4f46e5" stroke-width="0.5"/>
-    <path d="M9 12 L11 14 L15 10" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-  </g>
+  <text x="5" y="38" font-family="Arial, sans-serif" font-size="9" fill="#6b7280">AI SWMS Generator</text>
 </svg>

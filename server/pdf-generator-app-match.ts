@@ -134,10 +134,16 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
   const headers = ['#', 'Activity/Item', 'Hazards/Risks', 'Initial Risk Score', 'Control Measures', 'Residual Risk Score'];
   const colWidths = [30, 140, 180, 80, 200, 70];
   
-  // Header background
-  doc.fillColor('#f1f5f9');
+  // Header background - neutral white
+  doc.fillColor(colors.white);
   doc.roundedRect(50, riskY, 740, 18, 4);
   doc.fill();
+  
+  // Header border
+  doc.strokeColor(colors.border);
+  doc.lineWidth(0.5);
+  doc.roundedRect(50, riskY, 740, 18, 4);
+  doc.stroke();
 
   let riskHeaderX = 50;
   headers.forEach((header, index) => {
@@ -566,13 +572,18 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
   const riskHeaders = ['Risk Level', 'Qualitative Scale', 'Quantitative Scale', 'Magnitude Scale', 'Probability Scale'];
   const riskColWidths = [80, 200, 120, 100, 120];
   
-  doc.fillColor(colors.slate);
+  doc.fillColor(colors.white);
   doc.roundedRect(50, matrixY, 620, 16, 4);
   doc.fill();
   
+  doc.strokeColor(colors.border);
+  doc.lineWidth(0.5);
+  doc.roundedRect(50, matrixY, 620, 16, 4);
+  doc.stroke();
+  
   let matrixHeaderX = 50;
   riskHeaders.forEach((header, index) => {
-    doc.fillColor(colors.white);
+    doc.fillColor(colors.text);
     doc.font('Helvetica-Bold');
     doc.fontSize(7);
     doc.text(header, matrixHeaderX + 3, matrixY + 5, { width: riskColWidths[index] - 6 });
@@ -634,13 +645,18 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
   const equipHeaders = ['Item', 'Description', 'Make/Model', 'Registration', 'Inspection Date', 'Risk Level', 'Controls'];
   const equipColWidths = [80, 140, 120, 100, 80, 70, 150];
   
-  doc.fillColor(colors.warning);
+  doc.fillColor(colors.white);
   doc.roundedRect(50, equipY, 740, 16, 4);
   doc.fill();
   
+  doc.strokeColor(colors.border);
+  doc.lineWidth(0.5);
+  doc.roundedRect(50, equipY, 740, 16, 4);
+  doc.stroke();
+  
   let equipHeaderX = 50;
   equipHeaders.forEach((header, index) => {
-    doc.fillColor(colors.white);
+    doc.fillColor(colors.text);
     doc.font('Helvetica-Bold');
     doc.fontSize(7);
     doc.text(header, equipHeaderX + 3, equipY + 5, { width: equipColWidths[index] - 6 });
@@ -767,14 +783,19 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
   const signOnColWidths = [50, 200, 250, 240]; // #, Name, Number, Signature, Date
   const signOnHeaders = ['#', 'Name', 'Number', 'Signature', 'Date'];
   
-  // Table header with rounded corners
-  doc.fillColor(colors.primary);
+  // Table header with neutral background
+  doc.fillColor(colors.white);
   doc.roundedRect(50, tableY, 740, 20, 4);
   doc.fill();
   
+  doc.strokeColor(colors.border);
+  doc.lineWidth(0.5);
+  doc.roundedRect(50, tableY, 740, 20, 4);
+  doc.stroke();
+  
   let signOnHeaderX = 50;
   signOnHeaders.forEach((header, index) => {
-    doc.fillColor(colors.white);
+    doc.fillColor(colors.text);
     doc.font('Helvetica-Bold');
     doc.fontSize(8);
     doc.text(header, signOnHeaderX + 5, tableY + 6);
