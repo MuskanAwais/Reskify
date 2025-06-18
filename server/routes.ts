@@ -133,10 +133,10 @@ export async function registerRoutes(app: Express) {
       
       const data = req.body;
       
-      // Import structured PDF generator  
-      const { generateStructuredPDF } = await import('./pdf-generator-structured.js');
+      // Import muted cards PDF generator  
+      const { generateMutedCardsPDF } = await import('./pdf-generator-muted-cards.js');
       
-      const doc = generateStructuredPDF({
+      const doc = generateMutedCardsPDF({
         swmsData: data,
         projectName: data.projectName || data.project_name || 'Unknown Project',
         projectAddress: data.projectAddress || data.project_address || 'Unknown Address',
@@ -515,9 +515,9 @@ export async function registerRoutes(app: Express) {
         return res.status(404).json({ error: "SWMS project not found" });
       }
 
-      const { generateStructuredPDF } = await import('./pdf-generator-structured.js');
+      const { generateMutedCardsPDF } = await import('./pdf-generator-muted-cards.js');
       
-      const doc = generateStructuredPDF({
+      const doc = generateMutedCardsPDF({
         swmsData: projectData,
         projectName: projectData.title,
         projectAddress: projectData.projectAddress,
