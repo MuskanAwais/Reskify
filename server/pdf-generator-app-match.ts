@@ -64,15 +64,15 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
   doc.rect(0, 0, 842, 60);
   doc.fill();
   
-  // Riskify logo (left) - green gradient matching login screen
+  // Riskify logo (left) - exact green gradient from login screen
   doc.font('Helvetica-Bold');
-  doc.fontSize(18);
-  doc.fillColor('#10b981'); // Green gradient start
-  doc.text('Riskify', 30, 18);
+  doc.fontSize(20);
+  doc.fillColor('#4ade80'); // Bright green from login screen
+  doc.text('Riskify', 30, 16);
   doc.font('Helvetica');
-  doc.fontSize(9);
+  doc.fontSize(10);
   doc.fillColor('#6b7280');
-  doc.text('AI SWMS Generator', 30, 38);
+  doc.text('AI SWMS Generator', 30, 40);
   
   // Company logo placeholder (right)
   doc.strokeColor(colors.border);
@@ -126,7 +126,7 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
 
   // Table headers with adjusted column widths to prevent overflow
   const headers = ['#', 'Activity/Item', 'Hazards/Risks', 'Initial Risk Score', 'Control Measures', 'Residual Risk Score'];
-  const colWidths = [30, 140, 180, 80, 200, 70];
+  const colWidths = [30, 130, 170, 80, 190, 100];
   
   // Header background - neutral white
   doc.fillColor(colors.white);
