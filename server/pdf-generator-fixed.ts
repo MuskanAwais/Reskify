@@ -146,10 +146,10 @@ export function generateAppMatchPDF(swmsData: any): PDFDocument {
   const qualY = appCard(50, 320, 370, 80, 'A - QUALITATIVE SCALE', colors.secondary);
   
   const qualitativeData = [
-    ['Extreme', 'Fatality, significant disability'],
-    ['High', 'Minor amputation, permanent disability'],
-    ['Medium', 'Minor injury, Lost Time Injury'],
-    ['Low', 'First Aid Treatment only']
+    ['Extreme', 'Fatality, significant disability, catastrophic property damage'],
+    ['High', 'Minor amputation, minor permanent disability, moderate property damage'],
+    ['Medium', 'Minor injury resulting in an Loss Time Injury or Medically Treated Injury'],
+    ['Low', 'First Aid Treatment with no lost time']
   ];
   
   let qualRowY = qualY;
@@ -170,10 +170,10 @@ export function generateAppMatchPDF(swmsData: any): PDFDocument {
   const quantY = appCard(440, 320, 370, 80, 'B - QUANTITATIVE SCALE', colors.success);
   
   const quantitativeData = [
-    ['$50,000+', 'Likely - Monthly'],
-    ['$15,000-$50,000', 'Possible - Yearly'],
-    ['$1,000-$15,000', 'Unlikely - 10 years'],
-    ['$0-$1,000', 'Very Rarely - Lifetime']
+    ['$50,000+', 'Likely - Monthly in the industry, Good chance'],
+    ['$15,000-$50,000', 'Possible - Yearly in the industry, Even chance'],
+    ['$1,000-$15,000', 'Unlikely - Every 10 years in the industry, Low chance'],
+    ['$0-$1,000', 'Very Rarely - Once in a lifetime in the industry, Practically no chance']
   ];
   
   let quantRowY = quantY;
@@ -194,10 +194,11 @@ export function generateAppMatchPDF(swmsData: any): PDFDocument {
   const likelihoodY = appCard(50, 420, 370, 80, 'C - LIKELIHOOD vs CONSEQUENCE', colors.warning);
   
   const riskMatrixGrid = [
-    ['', 'Likely', 'Possible', 'Unlikely'],
-    ['Extreme', '16', '14', '11'],
-    ['High', '15', '12', '8'],
-    ['Medium', '13', '9', '']
+    ['', 'Likely', 'Possible', 'Unlikely', 'Very Rarely'],
+    ['Extreme', '16', '14', '11', '7'],
+    ['High', '15', '12', '8', ''],
+    ['Medium', '13', '9', '', ''],
+    ['Low', '10', '', '', '']
   ];
   
   let gridRowY = likelihoodY;
@@ -250,90 +251,7 @@ export function generateAppMatchPDF(swmsData: any): PDFDocument {
     scoringRowY += 16;
   });
 
-  // Plant & Equipment Register Card
-  const equipY = appCard(30, 530, 780, 120, 'PLANT & EQUIPMENT REGISTER', colors.warning);
-
-  const equipHeaders = ['Item', 'Description', 'Make/Model', 'Registration', 'Inspection Date', 'Risk Level'];
-  const equipColWidths = [120, 180, 140, 120, 100, 80];
-  
-  // Equipment table header
-  doc.fillColor(colors.background);
-  doc.roundedRect(50, equipY, 720, 16, 4);
-  doc.fill();
-  
-  doc.strokeColor(colors.border);
-  doc.lineWidth(0.5);
-  doc.roundedRect(50, equipY, 720, 16, 4);
-  doc.stroke();
-  
-  let equipHeaderX = 50;
-  equipHeaders.forEach((header, index) => {
-    doc.fillColor(colors.text);
-    doc.font('Helvetica-Bold');
-    doc.fontSize(7);
-    doc.text(header, equipHeaderX + 3, equipY + 5, { width: equipColWidths[index] - 6 });
-    equipHeaderX += equipColWidths[index];
-  });
-
-  // Equipment data
-  const equipment = swmsData.plant_equipment || swmsData.equipment || [
-    { item: 'Mobile Crane', description: '50T Mobile Crane', make: 'Liebherr LTM 1050', registration: 'CR002-2024', inspection: '10/06/2025', risk: 'High' },
-    { item: 'Excavator', description: '20T Hydraulic Excavator', make: 'Caterpillar 320D', registration: 'EX001-2024', inspection: '15/06/2025', risk: 'Medium' },
-    { item: 'Power Tools', description: 'Various hand tools', make: 'DeWalt/Makita', registration: 'N/A', inspection: '01/06/2025', risk: 'Low' }
-  ];
-  
-  let equipRowY = equipY + 16;
-  const equipRowHeight = 20;
-  
-  equipment.slice(0, 4).forEach((equip: any, index: number) => {
-    let equipCellX = 50;
-    
-    // Row background
-    if (index % 2 === 1) {
-      doc.fillColor('#f8fafc');
-      doc.roundedRect(50, equipRowY, 720, equipRowHeight, 2);
-      doc.fill();
-    }
-    
-    const equipRowData = [
-      equip.item || 'Equipment item',
-      equip.description || 'Description not provided',
-      equip.make || 'Make/Model not specified',
-      equip.registration || 'N/A',
-      equip.inspection || 'Not scheduled',
-      equip.risk || 'Medium'
-    ];
-    
-    equipRowData.forEach((data, colIndex) => {
-      // Risk level badges
-      if (colIndex === 5) {
-        const riskLevel = data.toUpperCase();
-        const badgeColor = riskLevel === 'HIGH' ? colors.danger : riskLevel === 'MEDIUM' ? colors.warning : colors.success;
-        
-        doc.fillColor(badgeColor);
-        doc.roundedRect(equipCellX + 2, equipRowY + 2, equipColWidths[colIndex] - 4, 12, 2);
-        doc.fill();
-        
-        doc.fillColor(colors.white);
-        doc.font('Helvetica-Bold');
-        doc.fontSize(7);
-        doc.text(data, equipCellX + 4, equipRowY + 6, { width: equipColWidths[colIndex] - 8, align: 'center' });
-      } else {
-        doc.fillColor(colors.text);
-        doc.font('Helvetica');
-        doc.fontSize(6);
-        doc.text(data, equipCellX + 3, equipRowY + 4, { 
-          width: equipColWidths[colIndex] - 6, 
-          height: equipRowHeight - 8,
-          ellipsis: true 
-        });
-      }
-      
-      equipCellX += equipColWidths[colIndex];
-    });
-    
-    equipRowY += equipRowHeight;
-  });
+  // Remove Plant & Equipment Register from page 1 - will be moved to page 3
 
   // Page 2 - SWMS Activities Table
   doc.addPage();
@@ -363,20 +281,104 @@ export function generateAppMatchPDF(swmsData: any): PDFDocument {
     headerX += colWidths[index];
   });
 
-  // Risk assessment data - All activities
+  // Risk assessment data - Complete activities from builder
   const risks = swmsData.risk_assessments || [
-    { activity: 'Cable tray installation on levels 15-20', hazards: 'Falls from height during work activities', initial_risk: 'H (16)', control_measures: 'Safety harness with dual lanyards required', residual_risk: 'L (4)' },
-    { activity: 'Main switchboard upgrades', hazards: 'Manual handling injuries from heavy lifting', initial_risk: 'M (12)', control_measures: 'Mechanical lifting aids for manual handling', residual_risk: 'L (3)' },
-    { activity: 'Lighting circuit installation', hazards: 'Falls from height during work activities', initial_risk: 'M (9)', control_measures: 'Exclusion zones around moving machinery', residual_risk: 'L (2)' },
-    { activity: 'Emergency lighting system testing', hazards: 'Falls from height during work activities', initial_risk: 'M (8)', control_measures: 'Equipment operator competency verification', residual_risk: 'L (2)' },
-    { activity: 'Power distribution panel installation', hazards: 'Electrical shock from live components', initial_risk: 'H (15)', control_measures: 'Lockout/tagout procedures and PPE', residual_risk: 'L (3)' },
-    { activity: 'Fire alarm system wiring', hazards: 'Working at height in confined spaces', initial_risk: 'M (10)', control_measures: 'Scaffolding and fall protection systems', residual_risk: 'L (2)' }
+    { 
+      activity: 'Cable tray installation on levels 15-20', 
+      hazards: 'Falls from height during work activities, Manual handling of heavy cable trays, Electrical hazards from live circuits', 
+      initial_risk: 'H (16)', 
+      control_measures: 'Safety harness with dual lanyards required, Use mechanical lifting aids, Lockout/tagout procedures before work', 
+      residual_risk: 'L (4)' 
+    },
+    { 
+      activity: 'Main switchboard upgrades and electrical panel work', 
+      hazards: 'Electrical shock from live components, Manual handling injuries from heavy equipment, Arc flash potential', 
+      initial_risk: 'H (15)', 
+      control_measures: 'De-energize circuits before work, Use insulated tools and PPE, Mechanical lifting aids for panels', 
+      residual_risk: 'L (3)' 
+    },
+    { 
+      activity: 'Lighting circuit installation throughout building', 
+      hazards: 'Falls from height using ladders, Electrical shock hazards, Eye strain from poor lighting', 
+      initial_risk: 'M (12)', 
+      control_measures: 'Scaffold access platforms, Test circuits before touching, Adequate temporary lighting', 
+      residual_risk: 'L (2)' 
+    },
+    { 
+      activity: 'Emergency lighting system testing and commissioning', 
+      hazards: 'Working in low light conditions, Electrical testing hazards, Falls during emergency testing', 
+      initial_risk: 'M (9)', 
+      control_measures: 'Portable lighting during tests, Qualified electrical testing personnel, Fall protection systems', 
+      residual_risk: 'L (2)' 
+    },
+    { 
+      activity: 'Power distribution panel installation in plant rooms', 
+      hazards: 'Heavy lifting of electrical panels, Electrical shock from terminations, Confined space work', 
+      initial_risk: 'H (15)', 
+      control_measures: 'Crane assistance for heavy panels, Lockout/tagout procedures, Confined space permits and monitoring', 
+      residual_risk: 'L (3)' 
+    },
+    { 
+      activity: 'Fire alarm system wiring and device installation', 
+      hazards: 'Working at height in ceiling voids, Electrical connections, Asbestos exposure in old buildings', 
+      initial_risk: 'M (10)', 
+      control_measures: 'Mobile scaffolding for ceiling work, Qualified fire system technicians, Asbestos assessment before work', 
+      residual_risk: 'L (2)' 
+    },
+    {
+      activity: 'Underground cable installation and trenching work',
+      hazards: 'Cave-in from trenching, Underground utilities strike, Manual handling of cables',
+      initial_risk: 'H (14)',
+      control_measures: 'Dial before you dig, Trench shoring systems, Cable pulling equipment and proper lifting techniques',
+      residual_risk: 'M (6)'
+    },
+    {
+      activity: 'High voltage switchgear installation and testing',
+      hazards: 'High voltage electrical hazards, Arc flash incidents, Heavy equipment handling',
+      initial_risk: 'E (18)',
+      control_measures: 'Qualified HV electricians only, Arc flash PPE and face shields, Crane lifting for switchgear',
+      residual_risk: 'M (8)'
+    }
   ];
   
   let rowY = riskY + 16;
-  const rowHeight = 30;
+  const rowHeight = 40; // Increased height for longer text
+  
+  // Show first 6 activities per page
+  const activitiesPerPage = 6;
+  let currentPageActivities = 0;
   
   risks.forEach((risk: any, index: number) => {
+    // Check if we need a new page
+    if (currentPageActivities >= activitiesPerPage && index < risks.length) {
+      doc.addPage();
+      
+      // Continue activities table on new page
+      const continueY = appCard(30, 80, 780, 500, 'WORK ACTIVITIES & RISK ASSESSMENT (CONTINUED)', colors.secondary);
+      
+      // Table header for continuation
+      doc.fillColor(colors.background);
+      doc.roundedRect(50, continueY, 740, 16, 4);
+      doc.fill();
+      
+      doc.strokeColor(colors.border);
+      doc.lineWidth(0.5);
+      doc.roundedRect(50, continueY, 740, 16, 4);
+      doc.stroke();
+      
+      let continueHeaderX = 50;
+      riskHeaders.forEach((header, headerIndex) => {
+        doc.fillColor(colors.text);
+        doc.font('Helvetica-Bold');
+        doc.fontSize(7);
+        doc.text(header, continueHeaderX + 3, continueY + 5, { width: colWidths[headerIndex] - 6 });
+        continueHeaderX += colWidths[headerIndex];
+      });
+      
+      rowY = continueY + 16;
+      currentPageActivities = 0;
+    }
+    
     let cellX = 50;
     
     // Row background
@@ -397,25 +399,24 @@ export function generateAppMatchPDF(swmsData: any): PDFDocument {
     rowData.forEach((data, colIndex) => {
       // Risk score badges
       if (colIndex === 2 || colIndex === 4) {
-        const riskLevel = data.includes('H') ? 'HIGH' : data.includes('M') ? 'MEDIUM' : 'LOW';
-        const badgeColor = riskLevel === 'HIGH' ? colors.danger : riskLevel === 'MEDIUM' ? colors.warning : colors.success;
+        const riskLevel = data.includes('E') ? 'EXTREME' : data.includes('H') ? 'HIGH' : data.includes('M') ? 'MEDIUM' : 'LOW';
+        const badgeColor = riskLevel === 'EXTREME' ? '#7C2D12' : riskLevel === 'HIGH' ? colors.danger : riskLevel === 'MEDIUM' ? colors.warning : colors.success;
         
         doc.fillColor(badgeColor);
-        doc.roundedRect(cellX + 2, rowY + 2, colWidths[colIndex] - 4, 12, 2);
+        doc.roundedRect(cellX + 2, rowY + 2, colWidths[colIndex] - 4, 14, 2);
         doc.fill();
         
         doc.fillColor(colors.white);
         doc.font('Helvetica-Bold');
         doc.fontSize(7);
-        doc.text(data, cellX + 4, rowY + 6, { width: colWidths[colIndex] - 8, align: 'center' });
+        doc.text(data, cellX + 4, rowY + 7, { width: colWidths[colIndex] - 8, align: 'center' });
       } else {
         doc.fillColor(colors.text);
         doc.font('Helvetica');
         doc.fontSize(6);
         doc.text(data, cellX + 3, rowY + 4, { 
           width: colWidths[colIndex] - 6, 
-          height: rowHeight - 8,
-          ellipsis: true 
+          height: rowHeight - 8
         });
       }
       
@@ -423,6 +424,102 @@ export function generateAppMatchPDF(swmsData: any): PDFDocument {
     });
     
     rowY += rowHeight;
+    currentPageActivities++;
+  });
+
+  // Add Plant & Equipment Register page
+  doc.addPage();
+  
+  // Plant & Equipment Register Card
+  const equipY = appCard(30, 80, 780, 400, 'PLANT & EQUIPMENT REGISTER', colors.warning);
+
+  const equipHeaders = ['Item', 'Description', 'Make/Model', 'Registration', 'Inspection Date', 'Risk Level'];
+  const equipColWidths = [120, 180, 140, 120, 100, 80];
+  
+  // Equipment table header
+  doc.fillColor(colors.background);
+  doc.roundedRect(50, equipY, 720, 16, 4);
+  doc.fill();
+  
+  doc.strokeColor(colors.border);
+  doc.lineWidth(0.5);
+  doc.roundedRect(50, equipY, 720, 16, 4);
+  doc.stroke();
+  
+  let equipHeaderX = 50;
+  equipHeaders.forEach((header, index) => {
+    doc.fillColor(colors.text);
+    doc.font('Helvetica-Bold');
+    doc.fontSize(7);
+    doc.text(header, equipHeaderX + 3, equipY + 5, { width: equipColWidths[index] - 6 });
+    equipHeaderX += equipColWidths[index];
+  });
+
+  // Equipment data - comprehensive electrical equipment list
+  const equipment = swmsData.plant_equipment || swmsData.equipment || [
+    { item: 'Mobile Crane', description: '50T Mobile Crane', make: 'Liebherr LTM 1050', registration: 'CR002-2024', inspection: '10/06/2025', risk: 'High' },
+    { item: 'Excavator', description: '20T Hydraulic Excavator', make: 'Caterpillar 320D', registration: 'EX001-2024', inspection: '15/06/2025', risk: 'Medium' },
+    { item: 'Power Tools', description: 'Various hand tools', make: 'DeWalt/Makita', registration: 'N/A', inspection: '01/06/2025', risk: 'Low' },
+    { item: 'Cable Pulling Winch', description: 'Electric cable pulling winch 5000kg', make: 'Greenlee 6500', registration: 'CPW001-2024', inspection: '20/06/2025', risk: 'Medium' },
+    { item: 'Scissor Lift', description: '10m Electric Scissor Lift', make: 'Genie GS-2032', registration: 'SL003-2024', inspection: '25/06/2025', risk: 'High' },
+    { item: 'Generator', description: '100kVA Diesel Generator', make: 'Caterpillar C4.4', registration: 'GEN002-2024', inspection: '12/06/2025', risk: 'Medium' },
+    { item: 'Electrical Test Equipment', description: 'Insulation and continuity tester', make: 'Fluke 1587', registration: 'ETE001-2024', inspection: '05/06/2025', risk: 'Low' },
+    { item: 'Cable Trenching Machine', description: 'Walk-behind trenching machine', make: 'Ditch Witch RT12', registration: 'CTM001-2024', inspection: '18/06/2025', risk: 'High' },
+    { item: 'Conduit Bending Machine', description: 'Hydraulic conduit bender up to 100mm', make: 'Greenlee 881', registration: 'CBM001-2024', inspection: '22/06/2025', risk: 'Low' },
+    { item: 'Core Drilling Rig', description: 'Diamond core drilling rig', make: 'Hilti DD 350', registration: 'CDR001-2024', inspection: '28/06/2025', risk: 'Medium' }
+  ];
+  
+  let equipRowY = equipY + 16;
+  const equipRowHeight = 25;
+  
+  equipment.forEach((equip: any, index: number) => {
+    let equipCellX = 50;
+    
+    // Row background
+    if (index % 2 === 1) {
+      doc.fillColor('#f8fafc');
+      doc.roundedRect(50, equipRowY, 720, equipRowHeight, 2);
+      doc.fill();
+    }
+    
+    const equipRowData = [
+      equip.item || 'Equipment item',
+      equip.description || 'Description not provided',
+      equip.make || 'Make/Model not specified',
+      equip.registration || 'N/A',
+      equip.inspection || 'Not scheduled',
+      equip.risk || 'Medium'
+    ];
+    
+    equipRowData.forEach((data, colIndex) => {
+      // Risk level badges
+      if (colIndex === 5) {
+        const riskLevel = data.toUpperCase();
+        const badgeColor = riskLevel === 'HIGH' ? colors.danger : riskLevel === 'MEDIUM' ? colors.warning : colors.success;
+        
+        doc.fillColor(badgeColor);
+        doc.roundedRect(equipCellX + 2, equipRowY + 2, equipColWidths[colIndex] - 4, 14, 2);
+        doc.fill();
+        
+        doc.fillColor(colors.white);
+        doc.font('Helvetica-Bold');
+        doc.fontSize(7);
+        doc.text(data, equipCellX + 4, equipRowY + 7, { width: equipColWidths[colIndex] - 8, align: 'center' });
+      } else {
+        doc.fillColor(colors.text);
+        doc.font('Helvetica');
+        doc.fontSize(6);
+        doc.text(data, equipCellX + 3, equipRowY + 4, { 
+          width: equipColWidths[colIndex] - 6, 
+          height: equipRowHeight - 8,
+          ellipsis: true 
+        });
+      }
+      
+      equipCellX += equipColWidths[colIndex];
+    });
+    
+    equipRowY += equipRowHeight;
   });
 
   // Add signatory page
