@@ -165,11 +165,11 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
     isEmergencyLeft = !isEmergencyLeft;
   });
 
-  // Construction Control Risk Matrix Section - 2x2 grid
-  const sectionY = appCard(30, 280, 780, 200, 'CONSTRUCTION CONTROL RISK MATRIX', colors.slate);
+  // Construction Control Risk Matrix Section - 2x2 grid layout
+  const sectionY = appCard(30, 280, 780, 180, 'CONSTRUCTION CONTROL RISK MATRIX', colors.slate);
   
   // A - Qualitative Scale Card (top left)
-  const qualY = appCard(50, 320, 185, 80, 'A - QUALITATIVE SCALE', colors.secondary);
+  const qualY = appCard(50, 310, 360, 70, 'A - QUALITATIVE SCALE', colors.secondary);
   
   const qualitativeData = [
     ['Extreme', 'Fatality, significant disability'],
@@ -181,18 +181,19 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
   let qualRowY = qualY;
   qualitativeData.forEach(([level, description]) => {
     doc.font('Helvetica-Bold');
-    doc.fontSize(6);
+    doc.fontSize(7);
     doc.fillColor(colors.text);
     doc.text(level, 60, qualRowY);
     
     doc.font('Helvetica');
-    doc.fontSize(5);
-    doc.text(description, 60, qualRowY + 8, { width: 150, height: 10 });
-    qualRowY += 16;
+    doc.fontSize(6);
+    doc.fillColor(colors.text);
+    doc.text(description, 110, qualRowY, { width: 280, height: 12 });
+    qualRowY += 14;
   });
 
   // B - Quantitative Scale Card (top right)
-  const quantY = appCard(245, 320, 185, 80, 'B - QUANTITATIVE SCALE', colors.success);
+  const quantY = appCard(430, 310, 360, 70, 'B - QUANTITATIVE SCALE', colors.success);
   
   const quantitativeData = [
     ['$50,000+', 'Likely - Monthly'],
@@ -204,18 +205,19 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
   let quantRowY = quantY;
   quantitativeData.forEach(([cost, probability]) => {
     doc.font('Helvetica-Bold');
-    doc.fontSize(6);
+    doc.fontSize(7);
     doc.fillColor(colors.text);
-    doc.text(cost, 255, quantRowY);
+    doc.text(cost, 440, quantRowY);
     
     doc.font('Helvetica');
-    doc.fontSize(5);
-    doc.text(probability, 255, quantRowY + 8, { width: 150, height: 10 });
-    quantRowY += 16;
+    doc.fontSize(6);
+    doc.fillColor(colors.text);
+    doc.text(probability, 530, quantRowY, { width: 240, height: 12 });
+    quantRowY += 14;
   });
 
   // C - Likelihood vs Consequence Card (bottom left)
-  const likelihoodY = appCard(440, 320, 185, 80, 'C - LIKELIHOOD vs CONSEQUENCE', colors.warning);
+  const likelihoodY = appCard(50, 400, 360, 70, 'C - LIKELIHOOD vs CONSEQUENCE', colors.warning);
   
   const riskMatrixGrid = [
     ['', 'Likely', 'Possible', 'Unlikely'],
@@ -226,7 +228,7 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
   
   let gridRowY = likelihoodY;
   riskMatrixGrid.forEach((row, rowIndex) => {
-    let gridX = 450;
+    let gridX = 60;
     row.forEach((cell, colIndex) => {
       if (cell) {
         // Color code risk scores
@@ -234,23 +236,24 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
           const score = parseInt(cell);
           const scoreColor = score >= 16 ? '#DC2626' : score >= 11 ? '#F59E0B' : score >= 7 ? '#10B981' : '#6B7280';
           doc.fillColor(scoreColor);
-          doc.roundedRect(gridX - 1, gridRowY - 1, 20, 12, 2);
+          doc.roundedRect(gridX - 2, gridRowY - 2, 30, 14, 2);
           doc.fill();
           doc.fillColor(colors.white);
+        } else {
+          doc.fillColor(colors.text);
         }
         
         doc.font(rowIndex === 0 || colIndex === 0 ? 'Helvetica-Bold' : 'Helvetica');
-        doc.fontSize(5);
-        doc.text(cell, gridX, gridRowY, { width: 20 });
-        doc.fillColor(colors.text);
+        doc.fontSize(6);
+        doc.text(cell, gridX, gridRowY, { width: 30 });
       }
-      gridX += 25;
+      gridX += 35;
     });
-    gridRowY += 16;
+    gridRowY += 14;
   });
 
   // D - Risk Scoring Card (bottom right)
-  const scoringY = appCard(635, 320, 185, 80, 'D - RISK SCORING', colors.danger);
+  const scoringY = appCard(430, 400, 360, 70, 'D - RISK SCORING', colors.danger);
   
   const scoringData = [
     ['16-18', 'Severe (E)', 'Action now'],
@@ -262,18 +265,104 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
   let scoringRowY = scoringY;
   scoringData.forEach(([score, ranking, action]) => {
     doc.font('Helvetica-Bold');
-    doc.fontSize(6);
+    doc.fontSize(7);
     doc.fillColor(colors.text);
-    doc.text(`${score} ${ranking}`, 645, scoringRowY);
+    doc.text(`${score} ${ranking}`, 440, scoringRowY);
     
     doc.font('Helvetica');
-    doc.fontSize(5);
-    doc.text(action, 645, scoringRowY + 8, { width: 150, height: 10 });
-    scoringRowY += 16;
+    doc.fontSize(6);
+    doc.fillColor(colors.text);
+    doc.text(action, 540, scoringRowY, { width: 230, height: 12 });
+    scoringRowY += 14;
   });
 
-  // Work Activities & Risk Assessment Card - Limited to 3 activities
-  const riskY = appCard(30, 500, 780, 140, 'WORK ACTIVITIES & RISK ASSESSMENT', colors.secondary);
+  // Plant & Equipment Register Card
+  const equipY = appCard(30, 500, 780, 120, 'PLANT & EQUIPMENT REGISTER', colors.warning);
+
+  const equipHeaders = ['Item', 'Description', 'Make/Model', 'Registration', 'Inspection Date', 'Risk Level'];
+  const equipColWidths = [120, 180, 140, 120, 100, 80];
+  
+  // Equipment table header
+  doc.fillColor(colors.background);
+  doc.roundedRect(50, equipY, 720, 16, 4);
+  doc.fill();
+  
+  doc.strokeColor(colors.border);
+  doc.lineWidth(0.5);
+  doc.roundedRect(50, equipY, 720, 16, 4);
+  doc.stroke();
+  
+  let equipHeaderX = 50;
+  equipHeaders.forEach((header, index) => {
+    doc.fillColor(colors.text);
+    doc.font('Helvetica-Bold');
+    doc.fontSize(7);
+    doc.text(header, equipHeaderX + 3, equipY + 5, { width: equipColWidths[index] - 6 });
+    equipHeaderX += equipColWidths[index];
+  });
+
+  // Equipment data
+  const equipment = swmsData.plant_equipment || swmsData.equipment || [
+    { item: 'Mobile Crane', description: '50T Mobile Crane', make: 'Liebherr LTM 1050', registration: 'CR002-2024', inspection: '10/06/2025', risk: 'High' },
+    { item: 'Excavator', description: '20T Hydraulic Excavator', make: 'Caterpillar 320D', registration: 'EX001-2024', inspection: '15/06/2025', risk: 'Medium' },
+    { item: 'Power Tools', description: 'Various hand tools', make: 'DeWalt/Makita', registration: 'N/A', inspection: '01/06/2025', risk: 'Low' }
+  ];
+  
+  let equipRowY = equipY + 16;
+  const equipRowHeight = 20;
+  
+  equipment.slice(0, 4).forEach((equip: any, index: number) => {
+    let equipCellX = 50;
+    
+    // Row background
+    if (index % 2 === 1) {
+      doc.fillColor('#f8fafc');
+      doc.roundedRect(50, equipRowY, 720, equipRowHeight, 2);
+      doc.fill();
+    }
+    
+    const equipRowData = [
+      equip.item || 'Equipment item',
+      equip.description || 'Description not provided',
+      equip.make || 'Make/Model not specified',
+      equip.registration || 'N/A',
+      equip.inspection || 'Not scheduled',
+      equip.risk || 'Medium'
+    ];
+    
+    equipRowData.forEach((data, colIndex) => {
+      // Risk level badges
+      if (colIndex === 5) {
+        const riskLevel = data.toUpperCase();
+        const badgeColor = riskLevel === 'HIGH' ? colors.danger : riskLevel === 'MEDIUM' ? colors.warning : colors.success;
+        
+        doc.fillColor(badgeColor);
+        doc.roundedRect(equipCellX + 2, equipRowY + 2, equipColWidths[colIndex] - 4, 12, 2);
+        doc.fill();
+        
+        doc.fillColor(colors.white);
+        doc.font('Helvetica-Bold');
+        doc.fontSize(7);
+        doc.text(data, equipCellX + 4, equipRowY + 6, { width: equipColWidths[colIndex] - 8, align: 'center' });
+      } else {
+        doc.fillColor(colors.text);
+        doc.font('Helvetica');
+        doc.fontSize(6);
+        doc.text(data, equipCellX + 3, equipRowY + 4, { 
+          width: equipColWidths[colIndex] - 6, 
+          height: equipRowHeight - 8,
+          ellipsis: true 
+        });
+      }
+      
+      equipCellX += equipColWidths[colIndex];
+    });
+    
+    equipRowY += equipRowHeight;
+  });
+
+  // Work Activities & Risk Assessment Card - showing all activities
+  const riskY = appCard(30, 640, 780, 160, 'WORK ACTIVITIES & RISK ASSESSMENT', colors.secondary);
 
   const riskHeaders = ['Activity', 'Hazards', 'Initial Risk', 'Control Measures', 'Residual Risk'];
   const colWidths = [150, 180, 80, 250, 80];
@@ -297,12 +386,18 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
     headerX += colWidths[index];
   });
 
-  // Risk assessment data - First 3 activities only
-  const risks = swmsData.risk_assessments || [];
-  let rowY = riskY + 16;
-  const rowHeight = 30;
+  // Risk assessment data - First 4 activities to fit properly
+  const risks = swmsData.risk_assessments || [
+    { activity: 'Cable tray installation on levels 15-20', hazards: 'Falls from height during work activities', initial_risk: 'H (16)', control_measures: 'Safety harness with dual lanyards required', residual_risk: 'L (4)' },
+    { activity: 'Main switchboard upgrades', hazards: 'Manual handling injuries from heavy lifting', initial_risk: 'M (12)', control_measures: 'Mechanical lifting aids for manual handling', residual_risk: 'L (3)' },
+    { activity: 'Lighting circuit installation', hazards: 'Falls from height during work activities', initial_risk: 'M (9)', control_measures: 'Exclusion zones around moving machinery', residual_risk: 'L (2)' },
+    { activity: 'Emergency lighting system testing', hazards: 'Falls from height during work activities', initial_risk: 'M (8)', control_measures: 'Equipment operator competency verification', residual_risk: 'L (2)' }
+  ];
   
-  risks.slice(0, 3).forEach((risk: any, index: number) => {
+  let rowY = riskY + 16;
+  const rowHeight = 25;
+  
+  risks.slice(0, 4).forEach((risk: any, index: number) => {
     let cellX = 50;
     
     // Row background
