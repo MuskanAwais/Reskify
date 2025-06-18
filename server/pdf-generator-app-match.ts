@@ -1,4 +1,4 @@
-const PDFDocument = require('pdfkit');
+import PDFDocument from 'pdfkit';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -96,8 +96,8 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
   doc.text(`Document ID: ${uniqueId}`, 600, 25);
   doc.text(`Date: ${new Date().toLocaleDateString()}`, 600, 40);
 
-  // Project details cards - side by side
-  const projectY = appCard(30, 120, 380, 80, 'PROJECT INFORMATION', colors.primary);
+  // Project Information card - enhanced with company details
+  const projectY = appCard(30, 120, 380, 120, 'PROJECT INFORMATION', colors.primary);
   
   const projectDetails = [
     ['Head Contractor:', swmsData.head_contractor || swmsData.company_name || 'Not specified'],
@@ -109,7 +109,6 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
     ['Trade Type:', swmsData.trade_type || 'General Construction']
   ];
   
-  let detailY = projectY;
   let isLeft = true;
   let leftY = projectY;
   let rightY = projectY;
@@ -127,17 +126,50 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
     doc.fontSize(7);
     doc.text(value, currentX, currentY + 10, { width: 180, height: 12 });
     
-    if (isLeft) leftY += 18;
-    else rightY += 18;
+    if (isLeft) leftY += 16;
+    else rightY += 16;
     
     isLeft = !isLeft;
   });
 
-  // Construction Control Risk Matrix Section - Main header with 2x2 grid
-  const sectionY = appCard(30, 240, 780, 200, 'CONSTRUCTION CONTROL RISK MATRIX', colors.slate);
+  // Emergency procedures card
+  const emergencyY = appCard(450, 120, 360, 120, 'EMERGENCY PROCEDURES', colors.danger);
+  
+  const emergencyData = [
+    ['Emergency Contact:', swmsData.emergency_contact || '000'],
+    ['Site Supervisor:', swmsData.site_supervisor || 'Not specified'],
+    ['Assembly Point:', swmsData.assembly_point || 'Main entrance'],
+    ['Nearest Hospital:', swmsData.nearest_hospital || 'Local hospital']
+  ];
+  
+  let isEmergencyLeft = true;
+  let emergencyLeftY = emergencyY;
+  let emergencyRightY = emergencyY;
+  
+  emergencyData.forEach(([label, value]) => {
+    const currentX = isEmergencyLeft ? 470 : 650;
+    const currentY = isEmergencyLeft ? emergencyLeftY : emergencyRightY;
+    
+    doc.font('Helvetica-Bold');
+    doc.fontSize(7);
+    doc.fillColor(colors.text);
+    doc.text(label, currentX, currentY);
+    
+    doc.font('Helvetica');
+    doc.fontSize(7);
+    doc.text(value, currentX, currentY + 10, { width: 140, height: 12 });
+    
+    if (isEmergencyLeft) emergencyLeftY += 22;
+    else emergencyRightY += 22;
+    
+    isEmergencyLeft = !isEmergencyLeft;
+  });
+
+  // Construction Control Risk Matrix Section - 2x2 grid
+  const sectionY = appCard(30, 280, 780, 200, 'CONSTRUCTION CONTROL RISK MATRIX', colors.slate);
   
   // A - Qualitative Scale Card (top left)
-  const qualY = appCard(50, 280, 185, 80, 'A - QUALITATIVE SCALE', colors.secondary);
+  const qualY = appCard(50, 320, 185, 80, 'A - QUALITATIVE SCALE', colors.secondary);
   
   const qualitativeData = [
     ['Extreme', 'Fatality, significant disability'],
@@ -160,7 +192,7 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
   });
 
   // B - Quantitative Scale Card (top right)
-  const quantY = appCard(245, 280, 185, 80, 'B - QUANTITATIVE SCALE', colors.success);
+  const quantY = appCard(245, 320, 185, 80, 'B - QUANTITATIVE SCALE', colors.success);
   
   const quantitativeData = [
     ['$50,000+', 'Likely - Monthly'],
@@ -183,7 +215,7 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
   });
 
   // C - Likelihood vs Consequence Card (bottom left)
-  const likelihoodY = appCard(440, 280, 185, 80, 'C - LIKELIHOOD vs CONSEQUENCE', colors.warning);
+  const likelihoodY = appCard(440, 320, 185, 80, 'C - LIKELIHOOD vs CONSEQUENCE', colors.warning);
   
   const riskMatrixGrid = [
     ['', 'Likely', 'Possible', 'Unlikely'],
@@ -218,7 +250,7 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
   });
 
   // D - Risk Scoring Card (bottom right)
-  const scoringY = appCard(635, 280, 185, 80, 'D - RISK SCORING', colors.danger);
+  const scoringY = appCard(635, 320, 185, 80, 'D - RISK SCORING', colors.danger);
   
   const scoringData = [
     ['16-18', 'Severe (E)', 'Action now'],
@@ -240,8 +272,8 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
     scoringRowY += 16;
   });
 
-  // Work Activities & Risk Assessment Card - First Page (3 activities max)
-  const riskY = appCard(30, 460, 780, 140, 'WORK ACTIVITIES & RISK ASSESSMENT', colors.secondary);
+  // Work Activities & Risk Assessment Card - Limited to 3 activities
+  const riskY = appCard(30, 500, 780, 140, 'WORK ACTIVITIES & RISK ASSESSMENT', colors.secondary);
 
   const riskHeaders = ['Activity', 'Hazards', 'Initial Risk', 'Control Measures', 'Residual Risk'];
   const colWidths = [150, 180, 80, 250, 80];
@@ -396,40 +428,6 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
       continueRowY += rowHeight;
     });
   }
-
-  // Emergency procedures card
-  const emergencyY = appCard(450, 120, 360, 80, 'EMERGENCY PROCEDURES', colors.danger);
-  
-  const emergencyData = [
-    ['Emergency Contact:', swmsData.emergency_contact || '000'],
-    ['Site Supervisor:', swmsData.site_supervisor || 'Not specified'],
-    ['Assembly Point:', swmsData.assembly_point || 'Main entrance'],
-    ['Nearest Hospital:', swmsData.nearest_hospital || 'Local hospital']
-  ];
-  
-  let emergencyRowY = emergencyY;
-  let isEmergencyLeft = true;
-  let emergencyLeftY = emergencyY;
-  let emergencyRightY = emergencyY;
-  
-  emergencyData.forEach(([label, value]) => {
-    const currentX = isEmergencyLeft ? 470 : 650;
-    const currentY = isEmergencyLeft ? emergencyLeftY : emergencyRightY;
-    
-    doc.font('Helvetica-Bold');
-    doc.fontSize(7);
-    doc.fillColor(colors.text);
-    doc.text(label, currentX, currentY);
-    
-    doc.font('Helvetica');
-    doc.fontSize(7);
-    doc.text(value, currentX, currentY + 10, { width: 140, height: 12 });
-    
-    if (isEmergencyLeft) emergencyLeftY += 22;
-    else emergencyRightY += 22;
-    
-    isEmergencyLeft = !isEmergencyLeft;
-  });
 
   // Add signatory page
   doc.addPage();
