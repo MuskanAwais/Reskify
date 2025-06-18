@@ -140,10 +140,10 @@ export function generateAppMatchPDF(swmsData: any): PDFDocument {
   });
 
   // Construction Control Risk Matrix Section - 2x2 grid layout fitting within main card
-  const sectionY = appCard(30, 280, 780, 240, 'CONSTRUCTION CONTROL RISK MATRIX', colors.slate);
+  const sectionY = appCard(30, 280, 780, 220, 'CONSTRUCTION CONTROL RISK MATRIX', colors.slate);
   
-  // A - Qualitative Scale Card (top left) - reduced spacing
-  const qualY = appCard(50, 315, 355, 75, 'A - QUALITATIVE SCALE', colors.secondary);
+  // A - Qualitative Scale Card (top left) - properly contained
+  const qualY = appCard(50, 310, 350, 70, 'A - QUALITATIVE SCALE', colors.secondary);
   
   const qualitativeData = [
     ['Extreme', 'Fatality, significant disability, catastrophic property damage'],
@@ -162,12 +162,12 @@ export function generateAppMatchPDF(swmsData: any): PDFDocument {
     doc.font('Helvetica');
     doc.fontSize(5);
     doc.fillColor(colors.text);
-    doc.text(description, 100, qualRowY, { width: 285, height: 10 });
-    qualRowY += 14;
+    doc.text(description, 100, qualRowY, { width: 280, height: 10 });
+    qualRowY += 13;
   });
 
-  // B - Quantitative Scale Card (top right) - 15px spacing
-  const quantY = appCard(425, 315, 355, 75, 'B - QUANTITATIVE SCALE', colors.success);
+  // B - Quantitative Scale Card (top right) - 20px spacing from A
+  const quantY = appCard(420, 310, 350, 70, 'B - QUANTITATIVE SCALE', colors.success);
   
   const quantitativeData = [
     ['$50,000+', 'Likely - Monthly in the industry, Good chance'],
@@ -181,17 +181,17 @@ export function generateAppMatchPDF(swmsData: any): PDFDocument {
     doc.font('Helvetica-Bold');
     doc.fontSize(6);
     doc.fillColor(colors.text);
-    doc.text(cost, 435, quantRowY);
+    doc.text(cost, 430, quantRowY);
     
     doc.font('Helvetica');
     doc.fontSize(5);
     doc.fillColor(colors.text);
-    doc.text(probability, 505, quantRowY, { width: 260, height: 10 });
-    quantRowY += 14;
+    doc.text(probability, 500, quantRowY, { width: 250, height: 10 });
+    quantRowY += 13;
   });
 
   // C - Likelihood vs Consequence Card (bottom left) - 20px vertical spacing from top row
-  const likelihoodY = appCard(50, 410, 355, 75, 'C - LIKELIHOOD vs CONSEQUENCE', colors.warning);
+  const likelihoodY = appCard(50, 400, 350, 70, 'C - LIKELIHOOD vs CONSEQUENCE', colors.warning);
   
   const riskMatrixGrid = [
     ['', 'Likely', 'Possible', 'Unlikely', 'Very Rarely'],
@@ -211,7 +211,7 @@ export function generateAppMatchPDF(swmsData: any): PDFDocument {
           const score = parseInt(cell);
           const scoreColor = score >= 16 ? '#DC2626' : score >= 11 ? '#F59E0B' : score >= 7 ? '#10B981' : '#6B7280';
           doc.fillColor(scoreColor);
-          doc.roundedRect(gridX - 2, gridRowY - 2, 28, 12, 2);
+          doc.roundedRect(gridX - 2, gridRowY - 2, 26, 11, 2);
           doc.fill();
           doc.fillColor(colors.white);
         } else {
@@ -220,15 +220,15 @@ export function generateAppMatchPDF(swmsData: any): PDFDocument {
         
         doc.font(rowIndex === 0 || colIndex === 0 ? 'Helvetica-Bold' : 'Helvetica');
         doc.fontSize(5);
-        doc.text(cell, gridX, gridRowY, { width: 28 });
+        doc.text(cell, gridX, gridRowY, { width: 26 });
       }
-      gridX += 30;
+      gridX += 28;
     });
-    gridRowY += 12;
+    gridRowY += 11;
   });
 
-  // D - Risk Scoring Card (bottom right) - 15px spacing from top right
-  const scoringY = appCard(425, 410, 355, 75, 'D - RISK SCORING', colors.danger);
+  // D - Risk Scoring Card (bottom right) - 20px spacing from C
+  const scoringY = appCard(420, 400, 350, 70, 'D - RISK SCORING', colors.danger);
   
   const scoringData = [
     ['16-18', 'Severe (E)', 'Action now'],
@@ -242,13 +242,13 @@ export function generateAppMatchPDF(swmsData: any): PDFDocument {
     doc.font('Helvetica-Bold');
     doc.fontSize(6);
     doc.fillColor(colors.text);
-    doc.text(`${score} ${ranking}`, 435, scoringRowY);
+    doc.text(`${score} ${ranking}`, 430, scoringRowY);
     
     doc.font('Helvetica');
     doc.fontSize(5);
     doc.fillColor(colors.text);
-    doc.text(action, 520, scoringRowY, { width: 240, height: 10 });
-    scoringRowY += 14;
+    doc.text(action, 515, scoringRowY, { width: 235, height: 10 });
+    scoringRowY += 13;
   });
 
   // Remove Plant & Equipment Register from page 1 - will be moved to page 3
@@ -411,12 +411,36 @@ export function generateAppMatchPDF(swmsData: any): PDFDocument {
         doc.fontSize(7);
         doc.text(data, cellX + 4, rowY + 7, { width: colWidths[colIndex] - 8, align: 'center' });
       } else {
+        // Handle multi-line text with proper line breaks
         doc.fillColor(colors.text);
         doc.font('Helvetica');
         doc.fontSize(6);
-        doc.text(data, cellX + 3, rowY + 4, { 
-          width: colWidths[colIndex] - 6, 
-          height: rowHeight - 8
+        
+        // Split by newlines and render each line separately
+        const lines = data.split('\n');
+        let lineY = rowY + 4;
+        const lineHeight = 8;
+        
+        lines.forEach((line, lineIndex) => {
+          if (lineIndex < 4 && lineY + lineHeight <= rowY + rowHeight - 4) { // Max 4 lines per cell
+            // Special formatting for legislation lines
+            if (line.startsWith('Legislation:')) {
+              doc.font('Helvetica-Bold');
+              doc.fontSize(5);
+              doc.fillColor('#1e40af'); // Blue color for legislation
+            } else {
+              doc.font('Helvetica');
+              doc.fontSize(6);
+              doc.fillColor(colors.text);
+            }
+            
+            doc.text(line.trim(), cellX + 3, lineY, { 
+              width: colWidths[colIndex] - 6,
+              height: lineHeight,
+              ellipsis: true
+            });
+            lineY += lineHeight;
+          }
         });
       }
       
