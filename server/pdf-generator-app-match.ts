@@ -702,8 +702,8 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
     equipRowY += 18;
   });
 
-  // Emergency Procedures Card - matching SWMS builder format
-  const emergY = appCard(30, 470, 780, 100, 'EMERGENCY PROCEDURES & CONTACTS', colors.danger);
+  // Emergency Procedures Card - positioned after activities, within card bounds
+  const emergY = appCard(30, 460, 400, 120, 'EMERGENCY PROCEDURES & CONTACTS', colors.danger);
   
   // Emergency contact fields in proper layout
   const emergencyFields = [
