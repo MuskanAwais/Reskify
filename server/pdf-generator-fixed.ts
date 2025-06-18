@@ -139,11 +139,22 @@ export function generateAppMatchPDF(swmsData: any): PDFDocument {
     isEmergencyLeft = !isEmergencyLeft;
   });
 
-  // Construction Control Risk Matrix Section - 2x2 grid layout with proper spacing
-  const sectionY = appCard(30, 280, 780, 220, 'CONSTRUCTION CONTROL RISK MATRIX', colors.slate);
+  // Construction Control Risk Matrix Section - 2x2 grid with clear spacing between cards
+  const matrixY = appCard(30, 280, 780, 240, 'CONSTRUCTION CONTROL RISK MATRIX', colors.slate);
   
-  // A - Qualitative Scale Card (top left) 
-  const qualY = appCard(50, 310, 340, 70, 'A - QUALITATIVE SCALE', colors.secondary);
+  // Calculate positioning with gaps between cards
+  const cardWidth = 360;
+  const cardHeight = 80;
+  const horizontalGap = 40; // Space between A/B and C/D
+  const verticalGap = 25;   // Space between top and bottom rows
+  
+  const leftX = 50;
+  const rightX = leftX + cardWidth + horizontalGap;
+  const topY = matrixY + 25;
+  const bottomY = topY + cardHeight + verticalGap;
+  
+  // A - Qualitative Scale Card (top left)
+  const qualY = appCard(leftX, topY, cardWidth, cardHeight, 'A - QUALITATIVE SCALE', colors.secondary);
   
   const qualitativeData = [
     ['Extreme', 'Fatality, significant disability, catastrophic property damage'],
@@ -157,17 +168,17 @@ export function generateAppMatchPDF(swmsData: any): PDFDocument {
     doc.font('Helvetica-Bold');
     doc.fontSize(6);
     doc.fillColor(colors.text);
-    doc.text(level, 60, qualRowY);
+    doc.text(level, leftX + 10, qualRowY);
     
     doc.font('Helvetica');
     doc.fontSize(5);
     doc.fillColor(colors.text);
-    doc.text(description, 100, qualRowY, { width: 270, height: 10 });
-    qualRowY += 13;
+    doc.text(description, leftX + 50, qualRowY, { width: cardWidth - 60, height: 10 });
+    qualRowY += 14;
   });
 
-  // B - Quantitative Scale Card (top right) - 30px spacing from A
-  const quantY = appCard(420, 310, 340, 70, 'B - QUANTITATIVE SCALE', colors.success);
+  // B - Quantitative Scale Card (top right)
+  const quantY = appCard(rightX, topY, cardWidth, cardHeight, 'B - QUANTITATIVE SCALE', colors.success);
   
   const quantitativeData = [
     ['$50,000+', 'Likely - Monthly in the industry, Good chance'],
@@ -181,17 +192,17 @@ export function generateAppMatchPDF(swmsData: any): PDFDocument {
     doc.font('Helvetica-Bold');
     doc.fontSize(6);
     doc.fillColor(colors.text);
-    doc.text(cost, 430, quantRowY);
+    doc.text(cost, rightX + 10, quantRowY);
     
     doc.font('Helvetica');
     doc.fontSize(5);
     doc.fillColor(colors.text);
-    doc.text(probability, 500, quantRowY, { width: 240, height: 10 });
-    quantRowY += 13;
+    doc.text(probability, rightX + 80, quantRowY, { width: cardWidth - 90, height: 10 });
+    quantRowY += 14;
   });
 
-  // C - Likelihood vs Consequence Card (bottom left) - 20px vertical spacing from A
-  const likelihoodY = appCard(50, 400, 340, 70, 'C - LIKELIHOOD vs CONSEQUENCE', colors.warning);
+  // C - Likelihood vs Consequence Card (bottom left)
+  const likelihoodY = appCard(leftX, bottomY, cardWidth, cardHeight, 'C - LIKELIHOOD vs CONSEQUENCE', colors.warning);
   
   const riskMatrixGrid = [
     ['', 'Likely', 'Possible', 'Unlikely', 'Very Rarely'],
@@ -203,7 +214,7 @@ export function generateAppMatchPDF(swmsData: any): PDFDocument {
   
   let gridRowY = likelihoodY;
   riskMatrixGrid.forEach((row, rowIndex) => {
-    let gridX = 60;
+    let gridX = leftX + 10;
     row.forEach((cell, colIndex) => {
       if (cell) {
         // Color code risk scores
@@ -211,7 +222,7 @@ export function generateAppMatchPDF(swmsData: any): PDFDocument {
           const score = parseInt(cell);
           const scoreColor = score >= 16 ? '#DC2626' : score >= 11 ? '#F59E0B' : score >= 7 ? '#10B981' : '#6B7280';
           doc.fillColor(scoreColor);
-          doc.roundedRect(gridX - 2, gridRowY - 2, 26, 11, 2);
+          doc.roundedRect(gridX - 2, gridRowY - 2, 28, 12, 2);
           doc.fill();
           doc.fillColor(colors.white);
         } else {
@@ -220,15 +231,15 @@ export function generateAppMatchPDF(swmsData: any): PDFDocument {
         
         doc.font(rowIndex === 0 || colIndex === 0 ? 'Helvetica-Bold' : 'Helvetica');
         doc.fontSize(5);
-        doc.text(cell, gridX, gridRowY, { width: 26 });
+        doc.text(cell, gridX, gridRowY, { width: 28 });
       }
-      gridX += 28;
+      gridX += 30;
     });
-    gridRowY += 11;
+    gridRowY += 12;
   });
 
-  // D - Risk Scoring Card (bottom right) - 30px spacing from C
-  const scoringY = appCard(420, 400, 340, 70, 'D - RISK SCORING', colors.danger);
+  // D - Risk Scoring Card (bottom right)
+  const scoringY = appCard(rightX, bottomY, cardWidth, cardHeight, 'D - RISK SCORING', colors.danger);
   
   const scoringData = [
     ['16-18', 'Severe (E)', 'Action now'],
@@ -242,13 +253,13 @@ export function generateAppMatchPDF(swmsData: any): PDFDocument {
     doc.font('Helvetica-Bold');
     doc.fontSize(6);
     doc.fillColor(colors.text);
-    doc.text(`${score} ${ranking}`, 430, scoringRowY);
+    doc.text(`${score} ${ranking}`, rightX + 10, scoringRowY);
     
     doc.font('Helvetica');
     doc.fontSize(5);
     doc.fillColor(colors.text);
-    doc.text(action, 515, scoringRowY, { width: 225, height: 10 });
-    scoringRowY += 13;
+    doc.text(action, rightX + 90, scoringRowY, { width: cardWidth - 100, height: 10 });
+    scoringRowY += 14;
   });
 
   // Remove Plant & Equipment Register from page 1 - will be moved to page 3
@@ -589,18 +600,20 @@ export function generateAppMatchPDF(swmsData: any): PDFDocument {
     sigHeaderX += signatoryColWidths[index];
   });
 
-  // Manual sign-on rows - fit within card boundaries
+  // Manual sign-on rows - fit within card boundaries (reduce to fit properly)
   let sigRowY = signatoryY + 56;
-  const sigRowHeight = 18;
-  const maxRows = Math.floor((450 - 56) / sigRowHeight); // Fit within card height
+  const sigRowHeight = 16;
+  const tableWidth = 720;
+  const availableHeight = 450 - 80; // Card height minus header space
+  const maxRows = Math.floor(availableHeight / sigRowHeight);
   
-  for (let i = 1; i <= Math.min(20, maxRows); i++) {
+  for (let i = 1; i <= Math.min(18, maxRows); i++) {
     let sigCellX = 50;
     
     // Row background
     if (i % 2 === 0) {
       doc.fillColor('#f8fafc');
-      doc.roundedRect(50, sigRowY, 720, sigRowHeight, 2);
+      doc.roundedRect(50, sigRowY, tableWidth, sigRowHeight, 2);
       doc.fill();
     }
     
@@ -608,7 +621,7 @@ export function generateAppMatchPDF(swmsData: any): PDFDocument {
     doc.fillColor(colors.text);
     doc.font('Helvetica');
     doc.fontSize(7);
-    doc.text(i.toString(), sigCellX + 15, sigRowY + 5);
+    doc.text(i.toString(), sigCellX + 15, sigRowY + 4);
     
     // Draw cell borders
     signatoryColWidths.forEach((width, colIndex) => {
