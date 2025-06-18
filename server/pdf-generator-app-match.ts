@@ -64,15 +64,26 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
   doc.rect(0, 0, 842, 60);
   doc.fill();
   
-  // Riskify logo (left) - exact green gradient from login screen
-  doc.font('Helvetica-Bold');
-  doc.fontSize(20);
-  doc.fillColor('#4ade80'); // Bright green from login screen
-  doc.text('Riskify', 30, 16);
-  doc.font('Helvetica');
-  doc.fontSize(10);
-  doc.fillColor('#6b7280');
-  doc.text('AI SWMS Generator', 30, 40);
+  // Riskify logo (left) - actual PNG logo from login screen
+  try {
+    doc.image('attached_assets/Screenshot 2025-06-18 at 3.25.52 pm_1750224372528.png', 30, 10, { 
+      width: 150, 
+      height: 40,
+      fit: [150, 40],
+      align: 'left',
+      valign: 'top'
+    });
+  } catch (error) {
+    // Fallback with green gradient text matching login screen
+    doc.font('Helvetica-Bold');
+    doc.fontSize(20);
+    doc.fillColor('#4ade80');
+    doc.text('Riskify', 30, 16);
+    doc.font('Helvetica');
+    doc.fontSize(10);
+    doc.fillColor('#6b7280');
+    doc.text('AI SWMS Generator', 30, 40);
+  }
   
   // Company logo placeholder (right)
   doc.strokeColor(colors.border);
