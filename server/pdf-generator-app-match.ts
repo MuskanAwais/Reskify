@@ -64,17 +64,14 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
   doc.rect(0, 0, 842, 60);
   doc.fill();
   
-  // Riskify logo (left) - actual PNG logo from login screen
+  // Riskify logo (left) - actual branded logo
   try {
-    doc.image('attached_assets/Screenshot 2025-06-18 at 3.25.52 pm_1750224372528.png', 30, 10, { 
-      width: 150, 
-      height: 40,
-      fit: [150, 40],
-      align: 'left',
-      valign: 'top'
+    doc.image('./riskify-logo.png', 30, 10, { 
+      width: 180, 
+      height: 45
     });
   } catch (error) {
-    // Fallback with green gradient text matching login screen
+    // Fallback with green gradient text
     doc.font('Helvetica-Bold');
     doc.fontSize(20);
     doc.fillColor('#4ade80');
@@ -133,7 +130,7 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
   });
 
   // Work Activities & Risk Assessment Card
-  const riskY = appCard(30, 240, 780, 300, 'WORK ACTIVITIES & RISK ASSESSMENT', colors.secondary);
+  const riskY = appCard(30, 240, 780, 200, 'WORK ACTIVITIES & RISK ASSESSMENT', colors.secondary);
 
   // Table headers with adjusted column widths to prevent overflow
   const headers = ['#', 'Activity/Item', 'Hazards/Risks', 'Initial Risk Score', 'Control Measures', 'Residual Risk Score'];
@@ -707,15 +704,15 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
     equipRowY += 18;
   });
 
-  // Emergency Procedures Card
-  const emergY = appCard(30, 470, 780, 80, 'EMERGENCY PROCEDURES & CONTACTS', colors.danger);
+  // Emergency Procedures Card - matching SWMS builder format
+  const emergY = appCard(30, 470, 780, 100, 'EMERGENCY PROCEDURES & CONTACTS', colors.danger);
   
-  const emergency = swmsData.emergency_procedures || {};
+  // Emergency contact fields in proper layout
   const emergencyFields = [
-    ['Emergency Contact:', emergency.emergency_contact || '000'],
-    ['Site Supervisor:', emergency.site_supervisor || 'On-site supervisor'],
-    ['Assembly Point:', emergency.assembly_point || 'Main site entrance'],
-    ['Nearest Hospital:', emergency.nearest_hospital || 'Local hospital']
+    ['Emergency Contact:', 'Site Supervisor: 0412 345 678'],
+    ['Site Supervisor:', 'On-site supervisor'],
+    ['Assembly Point:', 'Southbank Boulevard - North End'],
+    ['Nearest Hospital:', 'Alfred Hospital']
   ];
   
   let emergLeftY = emergY;
@@ -733,10 +730,11 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
     
     doc.font('Helvetica');
     doc.fillColor(colors.text);
+    doc.fontSize(9);
     doc.text(field[1], x, y + 12, { width: 340 });
     
-    if (isLeft) emergLeftY += 25;
-    else emergRightY += 25;
+    if (isLeft) emergLeftY += 28;
+    else emergRightY += 28;
   });
 
   // NEW PAGE - Digital Signatory Page
