@@ -136,21 +136,21 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
   doc.roundedRect(50, riskY, 740, 18, 4);
   doc.fill();
 
-  let headerX = 50;
+  let riskHeaderX = 50;
   headers.forEach((header, index) => {
     doc.strokeColor(colors.border);
     doc.lineWidth(0.3);
     if (index > 0) {
-      doc.moveTo(headerX, riskY);
-      doc.lineTo(headerX, riskY + 18);
+      doc.moveTo(riskHeaderX, riskY);
+      doc.lineTo(riskHeaderX, riskY + 18);
       doc.stroke();
     }
     
     doc.fillColor(colors.text);
     doc.font('Helvetica-Bold');
     doc.fontSize(8);
-    doc.text(header, headerX + 3, riskY + 6, { width: colWidths[index] - 6 });
-    headerX += colWidths[index];
+    doc.text(header, riskHeaderX + 3, riskY + 6, { width: colWidths[index] - 6 });
+    riskHeaderX += colWidths[index];
   });
 
   // Activity data with separated hazards and controls
@@ -494,55 +494,69 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
     appSigY += 20;
   }
   
-  // Manual signature section
+  // Manual Site Sign-On Table
   doc.fillColor(colors.text);
   doc.font('Helvetica-Bold');
   doc.fontSize(10);
-  doc.text('MANUAL SIGNATURES', 50, appSigY);
+  doc.text('MANUAL SITE SIGN-ON TABLE', 50, appSigY);
   
-  const manualSignatories = [
-    'PREPARED BY:',
-    'REVIEWED BY:', 
-    'APPROVED BY:',
-    'SITE SUPERVISOR:'
-  ];
+  let tableY = appSigY + 25;
+  const signOnColWidths = [50, 200, 250, 240]; // #, Name, Number, Signature, Date
+  const signOnHeaders = ['#', 'Name', 'Number', 'Signature', 'Date'];
   
-  let manualSigY = appSigY + 30;
-  manualSignatories.forEach((title, index) => {
-    const x = (index % 2) * 390 + 50;
-    const y = manualSigY + Math.floor(index / 2) * 120;
-    
-    doc.fillColor(colors.text);
+  // Table header with rounded corners
+  doc.fillColor(colors.primary);
+  doc.roundedRect(50, tableY, 740, 20, 4);
+  doc.fill();
+  
+  let signOnHeaderX = 50;
+  signOnHeaders.forEach((header, index) => {
+    doc.fillColor(colors.white);
     doc.font('Helvetica-Bold');
-    doc.fontSize(9);
-    doc.text(title, x, y);
-    
-    // Signature box with rounded corners
-    doc.strokeColor(colors.border);
-    doc.lineWidth(0.5);
-    doc.roundedRect(x, y + 20, 360, 80, 6);
-    doc.stroke();
-    
-    doc.font('Helvetica');
     doc.fontSize(8);
-    doc.fillColor(colors.textMuted);
-    doc.text('Name:', x + 10, y + 30);
-    doc.text('Signature:', x + 10, y + 55);
-    doc.text('Date:', x + 10, y + 80);
+    doc.text(header, signOnHeaderX + 5, tableY + 6);
+    signOnHeaderX += signOnColWidths[index];
+  });
+  
+  // 20 blank rows for manual sign-on
+  tableY += 20;
+  for (let row = 1; row <= 20; row++) {
+    // Alternating row colors
+    if (row % 2 === 0) {
+      doc.fillColor('#f8fafc');
+      doc.rect(50, tableY, 740, 18);
+      doc.fill();
+    }
     
-    // Signature lines
+    // Row borders
     doc.strokeColor(colors.border);
     doc.lineWidth(0.3);
-    doc.moveTo(x + 50, y + 38);
-    doc.lineTo(x + 350, y + 38);
+    doc.rect(50, tableY, 740, 18);
     doc.stroke();
-    doc.moveTo(x + 60, y + 63);
-    doc.lineTo(x + 350, y + 63);
-    doc.stroke();
-    doc.moveTo(x + 40, y + 88);
-    doc.lineTo(x + 150, y + 88);
-    doc.stroke();
-  });
+    
+    // Column dividers and row number
+    let cellX = 50;
+    signOnColWidths.forEach((width, colIndex) => {
+      if (colIndex > 0) {
+        doc.strokeColor(colors.border);
+        doc.moveTo(cellX, tableY);
+        doc.lineTo(cellX, tableY + 18);
+        doc.stroke();
+      }
+      
+      // Add row number in first column
+      if (colIndex === 0) {
+        doc.fillColor(colors.textMuted);
+        doc.font('Helvetica');
+        doc.fontSize(7);
+        doc.text(row.toString(), cellX + 5, tableY + 5);
+      }
+      
+      cellX += width;
+    });
+    
+    tableY += 18;
+  }
 
   // Footer
   const footerY = 520;
