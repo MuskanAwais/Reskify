@@ -67,14 +67,15 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
   doc.rect(0, 0, 842, 60);
   doc.fill();
   
-  // Riskify logo area (left)
-  doc.fillColor(colors.text);
+  // Riskify logo (left) - actual styling
+  doc.fillColor('#1f2937');
   doc.font('Helvetica-Bold');
-  doc.fontSize(16);
-  doc.text('Riskify', 30, 20);
+  doc.fontSize(18);
+  doc.text('Riskify', 30, 18);
   doc.font('Helvetica');
-  doc.fontSize(10);
-  doc.text('AI SWMS Generator', 30, 38);
+  doc.fontSize(9);
+  doc.fillColor(colors.textMuted);
+  doc.text('AI SWMS Generator', 30, 40);
   
   // Company logo placeholder (right)
   doc.strokeColor(colors.border);
@@ -89,7 +90,7 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
   // Project Information Card - exactly like your app
   const projectY = appCard(30, 80, 780, 140, 'PROJECT INFORMATION', colors.primary);
   
-  // Project details in 2 columns with proper spacing
+  // Project details in 2 columns with better spacing
   const projectFields = [
     ['Project Name:', swmsData.projectName || swmsData.title || projectName],
     ['Project Address:', swmsData.projectAddress || projectAddress],
@@ -97,30 +98,30 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
     ['Site Manager:', swmsData.siteManager || swmsData.site_manager || 'Not specified'],
     ['Document ID:', uniqueId],
     ['Date Generated:', new Date().toLocaleDateString('en-AU')],
-    ['Trade Type:', swmsData.tradeType || swmsData.trade_type || 'Structural Steel'],
+    ['Trade Type:', swmsData.tradeType || swmsData.trade_type || 'Demolition & Hazmat'],
     ['Status:', 'Active Document']
   ];
 
-  let leftY = projectY;
-  let rightY = projectY;
+  let leftY = projectY + 10;
+  let rightY = projectY + 10;
   
   projectFields.forEach((field, index) => {
     const isLeft = index % 2 === 0;
-    const x = isLeft ? 50 : 420;
+    const x = isLeft ? 55 : 435;
     const y = isLeft ? leftY : rightY;
     
     doc.font('Helvetica-Bold');
     doc.fillColor(colors.textMuted);
-    doc.fontSize(9);
+    doc.fontSize(8);
     doc.text(field[0], x, y);
     
     doc.font('Helvetica');
     doc.fillColor(colors.text);
-    doc.fontSize(9);
-    doc.text(field[1], x, y + 12, { width: 340, height: 12, ellipsis: true });
+    doc.fontSize(8);
+    doc.text(field[1], x, y + 10, { width: 320, height: 10, ellipsis: true });
     
-    if (isLeft) leftY += 25;
-    else rightY += 25;
+    if (isLeft) leftY += 22;
+    else rightY += 22;
   });
 
   // Work Activities & Risk Assessment Card
@@ -166,17 +167,42 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
     const control = controls[i] || {};
     
     // Calculate row height based on content
-    const hazards = [
-      risk.hazard1 || 'Falls from height',
-      risk.hazard2 || 'Crushing from equipment', 
-      risk.hazard3 || 'Weather conditions'
-    ].filter(h => h);
+    // Extract genuine hazards and controls from SWMS data - 8 per task
+    let hazards = [];
+    let controlMeasures = [];
     
-    const controlMeasures = [
-      control.control1 || 'Full body harness with 2 lanyards',
-      control.control2 || 'Certified dogman directing lifts',
-      control.control3 || 'Weather monitoring procedures'
-    ].filter(c => c);
+    // Try to get authentic data from multiple sources
+    if (risk.hazards && Array.isArray(risk.hazards)) {
+      hazards = risk.hazards.slice(0, 8);
+    } else if (activity.hazards) {
+      hazards = Array.isArray(activity.hazards) ? activity.hazards.slice(0, 8) : [activity.hazards];
+    } else {
+      // Extract all hazard fields from risk object
+      hazards = [
+        risk.hazard1, risk.hazard2, risk.hazard3, risk.hazard4, 
+        risk.hazard5, risk.hazard6, risk.hazard7, risk.hazard8
+      ].filter(h => h && h.trim());
+    }
+    
+    if (control.controls && Array.isArray(control.controls)) {
+      controlMeasures = control.controls.slice(0, 8);
+    } else if (activity.controls) {
+      controlMeasures = Array.isArray(activity.controls) ? activity.controls.slice(0, 8) : [activity.controls];
+    } else {
+      // Extract all control measure fields from control object
+      controlMeasures = [
+        control.control1, control.control2, control.control3, control.control4,
+        control.control5, control.control6, control.control7, control.control8
+      ].filter(c => c && c.trim());
+    }
+    
+    // Ensure we have at least some content
+    if (hazards.length === 0) {
+      hazards = ['Falls from height', 'Crushing from equipment', 'Weather conditions'];
+    }
+    if (controlMeasures.length === 0) {
+      controlMeasures = ['Full body harness with 2 lanyards', 'Certified dogman directing lifts', 'Weather monitoring procedures'];
+    }
     
     const rowHeight = Math.max(hazards.length * 12, controlMeasures.length * 12, 30);
     
@@ -218,13 +244,14 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
         const badgeColor = riskLevel === 'HIGH' ? colors.danger : riskLevel === 'MEDIUM' ? colors.warning : colors.success;
         
         doc.fillColor(badgeColor);
-        doc.roundedRect(cellX + 5, rowY + 5, colWidths[colIndex] - 10, 20, 4);
+        doc.roundedRect(cellX + 10, rowY + 8, colWidths[colIndex] - 20, 14, 7);
         doc.fill();
         
         doc.fillColor(colors.white);
         doc.font('Helvetica-Bold');
-        doc.fontSize(8);
-        doc.text(data, cellX + 8, rowY + 12, { width: colWidths[colIndex] - 16, align: 'center' });
+        doc.fontSize(7);
+        const shortRisk = data.includes('H') ? 'H' : data.includes('M') ? 'M' : 'L';
+        doc.text(shortRisk, cellX + 10, rowY + 12, { width: colWidths[colIndex] - 20, align: 'center' });
       }
       // Hazards column - list each hazard on separate line
       else if (colIndex === 2) {
