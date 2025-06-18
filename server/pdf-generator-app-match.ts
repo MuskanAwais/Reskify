@@ -207,7 +207,25 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
       controlMeasures = ['Full body harness with 2 lanyards', 'Certified dogman directing lifts', 'Weather monitoring procedures'];
     }
     
-    const rowHeight = Math.max(hazards.length * 12, controlMeasures.length * 12, 30);
+    // Extract additional SWMS builder data
+    const legislation = activity.legislation || risk.legislation || control.legislation || [];
+    const additionalInfo = activity.additional_info || risk.additional_info || '';
+    const workMethod = activity.work_method || activity.method || '';
+    const ppe = activity.ppe || control.ppe || [];
+    const qualifications = activity.qualifications || risk.qualifications || [];
+    
+    // Calculate dynamic row height based on all content
+    const contentLines = [
+      ...hazards,
+      ...controlMeasures,
+      ...(Array.isArray(legislation) ? legislation : [legislation].filter(Boolean)),
+      ...(Array.isArray(ppe) ? ppe : [ppe].filter(Boolean)),
+      ...(Array.isArray(qualifications) ? qualifications : [qualifications].filter(Boolean))
+    ].filter(Boolean);
+    
+    const minRowHeight = 45;
+    const lineHeight = 9;
+    const rowHeight = Math.max(contentLines.length * lineHeight + 20, minRowHeight);
     
     // Alternating row colors
     if (i % 2 === 1) {
@@ -256,37 +274,174 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
         const shortRisk = data.includes('H') ? 'H' : data.includes('M') ? 'M' : 'L';
         doc.text(shortRisk, cellX + 10, rowY + 12, { width: colWidths[colIndex] - 20, align: 'center' });
       }
-      // Hazards column - list each hazard on separate line with proper wrapping
+      // Hazards column - comprehensive hazard information
       else if (colIndex === 2) {
-        let hazardY = rowY + 5;
-        hazards.slice(0, 4).forEach((hazard: any) => {
+        let hazardY = rowY + 3;
+        
+        // All hazards
+        hazards.forEach((hazard: any) => {
           doc.fillColor(colors.text);
           doc.font('Helvetica');
           doc.fontSize(6);
           doc.text(`• ${hazard}`, cellX + 3, hazardY, { 
             width: colWidths[colIndex] - 6,
-            height: 10,
-            ellipsis: true
+            height: 8
           });
-          hazardY += 10;
+          hazardY += 8;
         });
+        
+        // Add legislation if available
+        if (legislation && legislation.length > 0) {
+          hazardY += 2;
+          doc.font('Helvetica-Bold');
+          doc.fontSize(5);
+          doc.fillColor(colors.textMuted);
+          doc.text('Legislation:', cellX + 3, hazardY);
+          hazardY += 6;
+          
+          const legArray = Array.isArray(legislation) ? legislation : [legislation];
+          legArray.forEach((leg: any) => {
+            if (leg) {
+              doc.font('Helvetica');
+              doc.fontSize(5);
+              doc.fillColor(colors.text);
+              doc.text(`• ${leg}`, cellX + 3, hazardY, { 
+                width: colWidths[colIndex] - 6,
+                height: 6
+              });
+              hazardY += 6;
+            }
+          });
+        }
       }
-      // Controls column - list each control on separate line with proper wrapping
+      // Controls column - comprehensive control information
       else if (colIndex === 4) {
-        let controlY = rowY + 5;
-        controlMeasures.slice(0, 4).forEach((controlMeasure: any) => {
+        let controlY = rowY + 3;
+        
+        // All control measures
+        controlMeasures.forEach((controlMeasure: any) => {
           doc.fillColor(colors.text);
           doc.font('Helvetica');
           doc.fontSize(6);
           doc.text(`• ${controlMeasure}`, cellX + 3, controlY, { 
             width: colWidths[colIndex] - 6,
-            height: 10,
-            ellipsis: true
+            height: 8
           });
-          controlY += 10;
+          controlY += 8;
         });
+        
+        // Add PPE requirements
+        if (ppe && ppe.length > 0) {
+          controlY += 2;
+          doc.font('Helvetica-Bold');
+          doc.fontSize(5);
+          doc.fillColor(colors.textMuted);
+          doc.text('PPE Required:', cellX + 3, controlY);
+          controlY += 6;
+          
+          const ppeArray = Array.isArray(ppe) ? ppe : [ppe];
+          ppeArray.forEach((item: any) => {
+            if (item) {
+              doc.font('Helvetica');
+              doc.fontSize(5);
+              doc.fillColor(colors.text);
+              doc.text(`• ${item}`, cellX + 3, controlY, { 
+                width: colWidths[colIndex] - 6,
+                height: 6
+              });
+              controlY += 6;
+            }
+          });
+        }
+        
+        // Add qualifications
+        if (qualifications && qualifications.length > 0) {
+          controlY += 2;
+          doc.font('Helvetica-Bold');
+          doc.fontSize(5);
+          doc.fillColor(colors.textMuted);
+          doc.text('Qualifications:', cellX + 3, controlY);
+          controlY += 6;
+          
+          const qualArray = Array.isArray(qualifications) ? qualifications : [qualifications];
+          qualArray.forEach((qual: any) => {
+            if (qual) {
+              doc.font('Helvetica');
+              doc.fontSize(5);
+              doc.fillColor(colors.text);
+              doc.text(`• ${qual}`, cellX + 3, controlY, { 
+                width: colWidths[colIndex] - 6,
+                height: 6
+              });
+              controlY += 6;
+            }
+          });
+        }
+        
+        // Add work method if available
+        if (workMethod) {
+          controlY += 2;
+          doc.font('Helvetica-Bold');
+          doc.fontSize(5);
+          doc.fillColor(colors.textMuted);
+          doc.text('Work Method:', cellX + 3, controlY);
+          controlY += 6;
+          
+          doc.font('Helvetica');
+          doc.fontSize(5);
+          doc.fillColor(colors.text);
+          doc.text(workMethod, cellX + 3, controlY, { 
+            width: colWidths[colIndex] - 6,
+            height: 12
+          });
+        }
       }
-      // Regular text columns
+      // Activity/Item column - comprehensive activity information  
+      else if (colIndex === 1) {
+        let activityY = rowY + 3;
+        
+        // Main activity name
+        doc.fillColor(colors.text);
+        doc.font('Helvetica-Bold');
+        doc.fontSize(7);
+        doc.text(data, cellX + 3, activityY, { 
+          width: colWidths[colIndex] - 6,
+          height: 8
+        });
+        activityY += 10;
+        
+        // Add work method if available
+        if (workMethod) {
+          doc.font('Helvetica');
+          doc.fontSize(5);
+          doc.fillColor(colors.textMuted);
+          doc.text('Method:', cellX + 3, activityY);
+          activityY += 6;
+          
+          doc.fillColor(colors.text);
+          doc.text(workMethod, cellX + 3, activityY, { 
+            width: colWidths[colIndex] - 6,
+            height: 10
+          });
+          activityY += 12;
+        }
+        
+        // Add additional info if available
+        if (additionalInfo) {
+          doc.font('Helvetica');
+          doc.fontSize(5);
+          doc.fillColor(colors.textMuted);
+          doc.text('Notes:', cellX + 3, activityY);
+          activityY += 6;
+          
+          doc.fillColor(colors.text);
+          doc.text(additionalInfo, cellX + 3, activityY, { 
+            width: colWidths[colIndex] - 6,
+            height: 10
+          });
+        }
+      }
+      // Regular text columns (risk scores, row numbers)
       else if (data) {
         doc.fillColor(colors.text);
         doc.font(colIndex === 0 ? 'Helvetica-Bold' : 'Helvetica');
