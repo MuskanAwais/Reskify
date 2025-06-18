@@ -564,27 +564,25 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
     rowY += rowHeight;
   }
 
-  // NEW PAGE - Construction Control Risk Matrix
-  doc.addPage();
-
-  // Construction Control Risk Matrix Card
-  const matrixY = appCard(30, 30, 780, 200, 'CONSTRUCTION CONTROL RISK MATRIX', colors.slate);
+  // Construction Control Risk Matrix Card - same page
+  const matrixY = appCard(450, 240, 350, 200, 'CONSTRUCTION CONTROL RISK MATRIX', colors.slate);
 
   // Risk level definitions table
   const riskHeaders = ['Risk Level', 'Qualitative Scale', 'Quantitative Scale', 'Magnitude Scale', 'Probability Scale'];
-  const riskColWidths = [80, 200, 120, 100, 120];
+  const riskColWidths = [60, 120, 80, 90];
+  const riskHeadersShort = ['Risk Level', 'Description', 'Cost Range', 'Likelihood'];
   
   doc.fillColor(colors.white);
-  doc.roundedRect(50, matrixY, 620, 16, 4);
+  doc.roundedRect(470, matrixY, 330, 16, 4);
   doc.fill();
   
   doc.strokeColor(colors.border);
   doc.lineWidth(0.5);
-  doc.roundedRect(50, matrixY, 620, 16, 4);
+  doc.roundedRect(470, matrixY, 330, 16, 4);
   doc.stroke();
   
-  let matrixHeaderX = 50;
-  riskHeaders.forEach((header, index) => {
+  let matrixHeaderX = 470;
+  riskHeadersShort.forEach((header, index) => {
     doc.fillColor(colors.text);
     doc.font('Helvetica-Bold');
     doc.fontSize(7);
@@ -593,15 +591,15 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
   });
 
   const riskData = [
-    ['Extreme', 'Fatality, significant disability, catastrophic property damage', '$50,000+', 'Likely', 'Good chance'],
-    ['High', 'Major amputation, minor permanent disability, moderate property damage', '$15,000-$50,000', 'Possible', 'Even chance'],
-    ['Medium', 'Minor injury resulting in Lost Time Injury or Medically Treated Injury', '$1,000-$15,000', 'Unlikely', 'Low chance'],
-    ['Low', 'First Aid Treatment with no lost time', '$0-$1,000', 'Very Rarely', 'Practically no chance']
+    ['Extreme', 'Fatality, major disability', '$50,000+', 'Likely'],
+    ['High', 'Major injury, property damage', '$15,000-$50,000', 'Possible'],
+    ['Medium', 'Minor injury, lost time', '$1,000-$15,000', 'Unlikely'],
+    ['Low', 'First aid treatment only', '$0-$1,000', 'Rare']
   ];
 
   let riskRowY = matrixY + 16;
   riskData.forEach((row, index) => {
-    let riskCellX = 50;
+    let riskCellX = 470;
     
     row.forEach((data, colIndex) => {
       if (index % 2 === 1) {
