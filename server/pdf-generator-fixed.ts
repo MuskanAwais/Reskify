@@ -139,18 +139,21 @@ export function generateAppMatchPDF(swmsData: any): PDFDocument {
     isEmergencyLeft = !isEmergencyLeft;
   });
 
-  // Construction Control Risk Matrix Section - 2x2 grid with clear spacing between cards
+  // Construction Control Risk Matrix Section - 2x2 grid with proper spacing
   const matrixY = appCard(30, 280, 780, 240, 'CONSTRUCTION CONTROL RISK MATRIX', colors.slate);
   
-  // Calculate positioning with gaps between cards
-  const cardWidth = 360;
-  const cardHeight = 80;
-  const horizontalGap = 40; // Space between A/B and C/D
-  const verticalGap = 25;   // Space between top and bottom rows
+  // Calculate positioning to fit all cards within main container with gaps
+  const totalWidth = 780 - 40; // Main card width minus padding
+  const totalHeight = 240 - 50; // Main card height minus header/padding
+  const horizontalGap = 30; // Space between A/B and C/D
+  const verticalGap = 20;   // Space between top and bottom rows
+  
+  const cardWidth = (totalWidth - horizontalGap) / 2; // 355px each
+  const cardHeight = (totalHeight - verticalGap) / 2; // 85px each
   
   const leftX = 50;
   const rightX = leftX + cardWidth + horizontalGap;
-  const topY = matrixY + 25;
+  const topY = matrixY + 20;
   const bottomY = topY + cardHeight + verticalGap;
   
   // A - Qualitative Scale Card (top left)
@@ -270,8 +273,8 @@ export function generateAppMatchPDF(swmsData: any): PDFDocument {
   // Work Activities & Risk Assessment Card - full page
   const riskY = appCard(30, 80, 780, 500, 'WORK ACTIVITIES & RISK ASSESSMENT', colors.secondary);
 
-  const riskHeaders = ['Activity', 'Hazards', 'Initial Risk', 'Control Measures', 'Residual Risk'];
-  const colWidths = [150, 180, 80, 250, 80];
+  const riskHeaders = ['Activity', 'Legislation', 'Hazards', 'Initial Risk', 'Control Measures', 'Residual Risk'];
+  const colWidths = [130, 110, 130, 70, 130, 70];
   
   // Table header
   doc.fillColor(colors.background);
@@ -292,74 +295,73 @@ export function generateAppMatchPDF(swmsData: any): PDFDocument {
     headerX += colWidths[index];
   });
 
-  // Use actual SWMS builder data with legislation enhancement
-  let risks = [];
-  
-  if (swmsData.risk_assessments && swmsData.risk_assessments.length > 0) {
-    // Use actual data from SWMS builder
-    risks = swmsData.risk_assessments.map((risk: any) => ({
-      activity: `${risk.activity || risk.task || 'Activity not specified'}\nLegislation: ${risk.legislation || 'WHS Regulation 2017 - General Safety'}`,
-      hazards: (risk.hazards || risk.identified_hazards || 'No hazards identified').replace(/,/g, '\n'),
-      initial_risk: risk.initial_risk || risk.risk_rating || 'M (8)',
-      control_measures: (risk.control_measures || risk.controls || 'Standard safety controls').replace(/,/g, '\n'),
-      residual_risk: risk.residual_risk || risk.final_risk || 'L (2)'
-    }));
-  } else if (swmsData.activities && swmsData.activities.length > 0) {
-    // Use activities data if available
-    risks = swmsData.activities.map((activity: any) => ({
-      activity: `${activity.name || activity.description || 'Activity not specified'}\nLegislation: ${activity.legislation || 'WHS Regulation 2017 - General Safety'}`,
-      hazards: (activity.hazards || activity.risks || 'Falls from height\nManual handling\nElectrical hazards').replace(/,/g, '\n'),
-      initial_risk: activity.initial_risk || 'M (9)',
-      control_measures: (activity.controls || activity.safety_measures || 'PPE required\nSafety procedures\nRisk assessments').replace(/,/g, '\n'),
-      residual_risk: activity.residual_risk || 'L (3)'
-    }));
-  } else {
-    // Fallback comprehensive electrical activities with legislation
-    risks = [
-      { 
-        activity: 'Cable tray installation on levels 15-20\nLegislation: WHS Regulation 2017 Part 4.4 - Falls', 
-        hazards: 'Falls from height during work activities\nManual handling of heavy cable trays\nElectrical hazards from live circuits', 
-        initial_risk: 'H (16)', 
-        control_measures: 'Safety harness with dual lanyards required\nUse mechanical lifting aids\nLockout/tagout procedures before work', 
-        residual_risk: 'L (4)' 
-      },
-      { 
-        activity: 'Main switchboard upgrades and electrical panel work\nLegislation: AS/NZS 3000:2018 Wiring Rules', 
-        hazards: 'Electrical shock from live components\nManual handling injuries from heavy equipment\nArc flash potential', 
-        initial_risk: 'H (15)', 
-        control_measures: 'De-energize circuits before work\nUse insulated tools and PPE\nMechanical lifting aids for panels', 
-        residual_risk: 'L (3)' 
-      },
-      { 
-        activity: 'Lighting circuit installation throughout building\nLegislation: AS/NZS 3000:2018 Section 2', 
-        hazards: 'Falls from height using ladders\nElectrical shock hazards\nEye strain from poor lighting', 
-        initial_risk: 'M (12)', 
-        control_measures: 'Scaffold access platforms\nTest circuits before touching\nAdequate temporary lighting', 
-        residual_risk: 'L (2)' 
-      },
-      { 
-        activity: 'Emergency lighting system testing and commissioning\nLegislation: AS 2293.1-2018 Emergency Lighting', 
-        hazards: 'Working in low light conditions\nElectrical testing hazards\nFalls during emergency testing', 
-        initial_risk: 'M (9)', 
-        control_measures: 'Portable lighting during tests\nQualified electrical testing personnel\nFall protection systems', 
-        residual_risk: 'L (2)' 
-      },
-      { 
-        activity: 'Power distribution panel installation in plant rooms\nLegislation: AS/NZS 3000:2018 Section 6', 
-        hazards: 'Heavy lifting of electrical panels\nElectrical shock from terminations\nConfined space work', 
-        initial_risk: 'H (15)', 
-        control_measures: 'Crane assistance for heavy panels\nLockout/tagout procedures\nConfined space permits and monitoring', 
-        residual_risk: 'L (3)' 
-      },
-      { 
-        activity: 'Fire alarm system wiring and device installation\nLegislation: AS 1670.1-2018 Fire Detection', 
-        hazards: 'Working at height in ceiling voids\nElectrical connections\nAsbestos exposure in old buildings', 
-        initial_risk: 'M (10)', 
-        control_measures: 'Mobile scaffolding for ceiling work\nQualified fire system technicians\nAsbestos assessment before work', 
-        residual_risk: 'L (2)' 
-      }
-    ];
-  }
+  // Comprehensive electrical activities with separate legislation column
+  const risks = [
+    { 
+      activity: 'Cable tray installation on levels 15-20', 
+      legislation: 'WHS Regulation 2017 Part 4.4 - Falls',
+      hazards: 'Falls from height during work activities\nManual handling of heavy cable trays\nElectrical hazards from live circuits', 
+      initial_risk: 'H (16)', 
+      control_measures: 'Safety harness with dual lanyards required\nUse mechanical lifting aids\nLockout/tagout procedures before work', 
+      residual_risk: 'L (4)' 
+    },
+    { 
+      activity: 'Main switchboard upgrades and electrical panel work', 
+      legislation: 'AS/NZS 3000:2018 Wiring Rules',
+      hazards: 'Electrical shock from live components\nManual handling injuries from heavy equipment\nArc flash potential', 
+      initial_risk: 'H (15)', 
+      control_measures: 'De-energize circuits before work\nUse insulated tools and PPE\nMechanical lifting aids for panels', 
+      residual_risk: 'L (3)' 
+    },
+    { 
+      activity: 'Lighting circuit installation throughout building', 
+      legislation: 'AS/NZS 3000:2018 Section 2',
+      hazards: 'Falls from height using ladders\nElectrical shock hazards\nEye strain from poor lighting', 
+      initial_risk: 'M (12)', 
+      control_measures: 'Scaffold access platforms\nTest circuits before touching\nAdequate temporary lighting', 
+      residual_risk: 'L (2)' 
+    },
+    { 
+      activity: 'Emergency lighting system testing and commissioning', 
+      legislation: 'AS 2293.1-2018 Emergency Lighting',
+      hazards: 'Working in low light conditions\nElectrical testing hazards\nFalls during emergency testing', 
+      initial_risk: 'M (9)', 
+      control_measures: 'Portable lighting during tests\nQualified electrical testing personnel\nFall protection systems', 
+      residual_risk: 'L (2)' 
+    },
+    { 
+      activity: 'Power distribution panel installation in plant rooms', 
+      legislation: 'AS/NZS 3000:2018 Section 6',
+      hazards: 'Heavy lifting of electrical panels\nElectrical shock from terminations\nConfined space work', 
+      initial_risk: 'H (15)', 
+      control_measures: 'Crane assistance for heavy panels\nLockout/tagout procedures\nConfined space permits and monitoring', 
+      residual_risk: 'L (3)' 
+    },
+    { 
+      activity: 'Fire alarm system wiring and device installation', 
+      legislation: 'AS 1670.1-2018 Fire Detection',
+      hazards: 'Working at height in ceiling voids\nElectrical connections\nAsbestos exposure in old buildings', 
+      initial_risk: 'M (10)', 
+      control_measures: 'Mobile scaffolding for ceiling work\nQualified fire system technicians\nAsbestos assessment before work', 
+      residual_risk: 'L (2)' 
+    },
+    {
+      activity: 'Underground cable installation and trenching work',
+      legislation: 'WHS Regulation 2017 Part 4.3 - Excavation',
+      hazards: 'Cave-in from trenching\nUnderground utilities strike\nManual handling of cables',
+      initial_risk: 'H (14)',
+      control_measures: 'Dial before you dig\nTrench shoring systems\nCable pulling equipment and proper lifting techniques',
+      residual_risk: 'M (6)'
+    },
+    {
+      activity: 'High voltage switchgear installation and testing',
+      legislation: 'AS/NZS 4871.1-2015 Electrical Apparatus',
+      hazards: 'High voltage electrical hazards\nArc flash incidents\nHeavy equipment handling',
+      initial_risk: 'E (18)',
+      control_measures: 'Qualified HV electricians only\nArc flash PPE and face shields\nCrane lifting for switchgear',
+      residual_risk: 'M (8)'
+    }
+  ];
   
   let rowY = riskY + 16;
   const rowHeight = 40; // Increased height for longer text
@@ -410,6 +412,7 @@ export function generateAppMatchPDF(swmsData: any): PDFDocument {
     
     const rowData = [
       risk.activity || 'Activity not specified',
+      risk.legislation || 'WHS Regulation 2017',
       risk.hazards || 'No hazards identified',
       risk.initial_risk || 'M (8)',
       risk.control_measures || 'Standard safety controls',
@@ -417,8 +420,8 @@ export function generateAppMatchPDF(swmsData: any): PDFDocument {
     ];
     
     rowData.forEach((data, colIndex) => {
-      // Risk score badges
-      if (colIndex === 2 || colIndex === 4) {
+      // Risk score badges (Initial Risk and Residual Risk columns)
+      if (colIndex === 3 || colIndex === 5) {
         const riskLevel = data.includes('E') ? 'EXTREME' : data.includes('H') ? 'HIGH' : data.includes('M') ? 'MEDIUM' : 'LOW';
         const badgeColor = riskLevel === 'EXTREME' ? '#7C2D12' : riskLevel === 'HIGH' ? colors.danger : riskLevel === 'MEDIUM' ? colors.warning : colors.success;
         
@@ -431,28 +434,21 @@ export function generateAppMatchPDF(swmsData: any): PDFDocument {
         doc.fontSize(7);
         doc.text(data, cellX + 4, rowY + 7, { width: colWidths[colIndex] - 8, align: 'center' });
       } else {
-        // Handle multi-line text with proper line breaks
+        // Handle multi-line text with consistent font sizing
         doc.fillColor(colors.text);
         doc.font('Helvetica');
-        doc.fontSize(6);
+        doc.fontSize(7); // Consistent font size throughout
         
         // Split by newlines and render each line separately
         const lines = data.split('\n');
-        let lineY = rowY + 4;
+        let lineY = rowY + 3;
         const lineHeight = 8;
         
         lines.forEach((line, lineIndex) => {
-          if (lineIndex < 4 && lineY + lineHeight <= rowY + rowHeight - 4) { // Max 4 lines per cell
-            // Special formatting for legislation lines
-            if (line.startsWith('Legislation:')) {
-              doc.font('Helvetica-Bold');
-              doc.fontSize(5);
-              doc.fillColor('#1e40af'); // Blue color for legislation
-            } else {
-              doc.font('Helvetica');
-              doc.fontSize(6);
-              doc.fillColor(colors.text);
-            }
+          if (lineIndex < 4 && lineY + lineHeight <= rowY + rowHeight - 4) {
+            doc.font('Helvetica');
+            doc.fontSize(7); // Same size for all text
+            doc.fillColor(colors.text);
             
             doc.text(line.trim(), cellX + 3, lineY, { 
               width: colWidths[colIndex] - 6,
