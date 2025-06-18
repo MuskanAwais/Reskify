@@ -1,4 +1,6 @@
-import PDFDocument from 'pdfkit';
+import * as PDFDocument from 'pdfkit';
+import * as fs from 'fs';
+import * as path from 'path';
 
 interface AppMatchPDFOptions {
   swmsData: any;
@@ -16,124 +18,123 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
     margins: { top: 20, bottom: 20, left: 20, right: 20 }
   });
 
-  // App colors matching your interface
+  // Color scheme matching the app
   const colors = {
-    primary: '#3b82f6',      // Blue-500
-    secondary: '#0ea5e9',    // Sky-500  
-    success: '#10b981',      // Emerald-500
-    warning: '#f59e0b',      // Amber-500
-    danger: '#ef4444',       // Red-500
-    slate: '#64748b',        // Slate-500
-    gray: '#6b7280',         // Gray-500
-    background: '#f8fafc',   // Slate-50
-    border: '#e2e8f0',       // Slate-200
-    text: '#1e293b',         // Slate-800
-    textMuted: '#64748b',    // Slate-500
+    primary: '#2563eb',
+    secondary: '#0ea5e9',
+    success: '#10b981',
+    warning: '#f59e0b',
+    danger: '#ef4444',
+    slate: '#64748b',
+    gray: '#6b7280',
+    background: '#f8fafc',
+    border: '#e2e8f0',
+    text: '#1e293b',
+    textMuted: '#64748b',
     white: '#ffffff'
   };
 
-  // Card function with app-style rounded corners
+  // Load Riskify logo
+  const logoPath = path.join(process.cwd(), 'riskify-logo.png');
+  let logoBuffer: Buffer | null = null;
+  try {
+    if (fs.existsSync(logoPath)) {
+      logoBuffer = fs.readFileSync(logoPath);
+    }
+  } catch (error) {
+    console.warn('Logo file not found:', logoPath);
+  }
+
+  // App card helper function
   function appCard(x: number, y: number, w: number, h: number, title: string, headerColor = colors.primary) {
-    // Separate colored header bar - standalone
-    doc.fillColor(headerColor);
-    doc.roundedRect(x, y, w, 32, 12);
+    // Card background
+    doc.fillColor(colors.white);
+    doc.roundedRect(x, y - 25, w, h + 25, 8);
     doc.fill();
     
-    // Header text in white
-    doc.fillColor(colors.white);
-    doc.font('Helvetica-Bold');
-    doc.fontSize(12);
-    doc.text(title, x + 15, y + 10);
-    
-    // White content card below header (separate)
-    doc.fillColor(colors.white);
-    doc.roundedRect(x, y + 38, w, h - 38, 12);
+    // Card shadow
+    doc.fillColor('#00000010');
+    doc.roundedRect(x + 2, y - 23, w, h + 25, 8);
     doc.fill();
     
-    // Content card border
+    // Card border
     doc.strokeColor(colors.border);
-    doc.lineWidth(0.5);
-    doc.roundedRect(x, y + 38, w, h - 38, 12);
+    doc.lineWidth(1);
+    doc.roundedRect(x, y - 25, w, h + 25, 8);
     doc.stroke();
     
-    return y + 45; // Return content start position
+    // Header background
+    doc.fillColor(headerColor);
+    doc.roundedRect(x, y - 25, w, 20, 8);
+    doc.fill();
+    doc.rect(x, y - 15, w, 10);
+    doc.fill();
+    
+    // Header text
+    doc.fillColor(colors.white);
+    doc.font('Helvetica-Bold');
+    doc.fontSize(9);
+    doc.text(title, x + 10, y - 20, { width: w - 20 });
+    
+    return y;
   }
 
-  // Header section - simple clean design
-  doc.fillColor(colors.white);
-  doc.rect(0, 0, 842, 60);
-  doc.fill();
-  
-  // Riskify logo (left) - actual branded logo
-  try {
-    doc.image('./riskify-logo.png', 30, 10, { 
-      width: 180, 
-      height: 45
-    });
-  } catch (error) {
-    // Fallback with green gradient text
-    doc.font('Helvetica-Bold');
-    doc.fontSize(20);
-    doc.fillColor('#4ade80');
-    doc.text('Riskify', 30, 16);
-    doc.font('Helvetica');
-    doc.fontSize(10);
-    doc.fillColor('#6b7280');
-    doc.text('AI SWMS Generator', 30, 40);
+  // Header section with logo
+  if (logoBuffer) {
+    doc.image(logoBuffer, 30, 20, { width: 120, height: 40 });
   }
   
-  // Company logo placeholder (right)
-  doc.strokeColor(colors.border);
-  doc.lineWidth(1);
-  doc.roundedRect(700, 15, 120, 30, 6);
-  doc.stroke();
-  doc.fillColor(colors.textMuted);
+  doc.fillColor(colors.text);
+  doc.font('Helvetica-Bold');
+  doc.fontSize(16);
+  doc.text('SAFE WORK METHOD STATEMENT', 200, 25);
+  
   doc.font('Helvetica');
-  doc.fontSize(8);
-  doc.text('CLIENT LOGO', 730, 28);
+  doc.fontSize(10);
+  doc.text(`Project: ${projectName}`, 200, 45);
+  doc.text(`Location: ${projectAddress}`, 200, 60);
+  doc.text(`Document ID: ${uniqueId}`, 600, 25);
+  doc.text(`Date: ${new Date().toLocaleDateString()}`, 600, 40);
 
-  // Project Information Card - exactly like your app
-  const projectY = appCard(30, 80, 780, 140, 'PROJECT INFORMATION', colors.primary);
+  // Project details cards - side by side
+  const projectY = appCard(30, 120, 380, 80, 'PROJECT DETAILS', colors.primary);
   
-  // Project details in 2 columns with better spacing
-  const projectFields = [
-    ['Project Name:', swmsData.projectName || swmsData.title || projectName],
-    ['Project Address:', swmsData.projectAddress || projectAddress],
-    ['Head Contractor:', swmsData.headContractor || swmsData.principal_contractor || 'Not specified'],
-    ['Site Manager:', swmsData.siteManager || swmsData.site_manager || 'Not specified'],
-    ['Document ID:', uniqueId],
-    ['Date Generated:', new Date().toLocaleDateString('en-AU')],
-    ['Trade Type:', swmsData.tradeType || swmsData.trade_type || 'Demolition & Hazmat'],
-    ['Status:', 'Active Document']
+  const projectDetails = [
+    ['Project Name:', projectName],
+    ['Project Address:', projectAddress],
+    ['Principal Contractor:', swmsData.principal_contractor || 'Not specified'],
+    ['Start Date:', swmsData.start_date || new Date().toLocaleDateString()]
   ];
-
-  let leftY = projectY + 10;
-  let rightY = projectY + 10;
   
-  projectFields.forEach((field, index) => {
-    const isLeft = index % 2 === 0;
-    const x = isLeft ? 55 : 435;
-    const y = isLeft ? leftY : rightY;
+  let detailY = projectY;
+  let isLeft = true;
+  let leftY = projectY;
+  let rightY = projectY;
+  
+  projectDetails.forEach(([label, value]) => {
+    const currentX = isLeft ? 50 : 250;
+    const currentY = isLeft ? leftY : rightY;
     
     doc.font('Helvetica-Bold');
-    doc.fillColor(colors.textMuted);
-    doc.fontSize(8);
-    doc.text(field[0], x, y);
+    doc.fontSize(7);
+    doc.fillColor(colors.text);
+    doc.text(label, currentX, currentY);
     
     doc.font('Helvetica');
-    doc.fillColor(colors.text);
-    doc.fontSize(8);
-    doc.text(field[1], x, y + 10, { width: 320, height: 10, ellipsis: true });
+    doc.fontSize(7);
+    doc.text(value, currentX, currentY + 10, { width: 180, height: 12 });
     
     if (isLeft) leftY += 22;
     else rightY += 22;
+    
+    isLeft = !isLeft;
   });
 
-  // Construction Control Risk Matrix Section - Main header
+  // Construction Control Risk Matrix Section - Main header with 2x2 grid
   const sectionY = appCard(30, 240, 780, 200, 'CONSTRUCTION CONTROL RISK MATRIX', colors.slate);
   
   // A - Qualitative Scale Card (top left)
-  const qualY = appCard(50, 280, 180, 80, 'A - QUALITATIVE SCALE', colors.secondary);
+  const qualY = appCard(50, 280, 185, 80, 'A - QUALITATIVE SCALE', colors.secondary);
   
   const qualitativeData = [
     ['Extreme', 'Fatality, significant disability'],
@@ -156,7 +157,7 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
   });
 
   // B - Quantitative Scale Card (top right)
-  const quantY = appCard(240, 280, 180, 80, 'B - QUANTITATIVE SCALE', colors.success);
+  const quantY = appCard(245, 280, 185, 80, 'B - QUANTITATIVE SCALE', colors.success);
   
   const quantitativeData = [
     ['$50,000+', 'Likely - Monthly'],
@@ -170,18 +171,17 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
     doc.font('Helvetica-Bold');
     doc.fontSize(6);
     doc.fillColor(colors.text);
-    doc.text(cost, 250, quantRowY);
+    doc.text(cost, 255, quantRowY);
     
     doc.font('Helvetica');
     doc.fontSize(5);
-    doc.text(probability, 250, quantRowY + 8, { width: 150, height: 10 });
+    doc.text(probability, 255, quantRowY + 8, { width: 150, height: 10 });
     quantRowY += 16;
   });
 
   // C - Likelihood vs Consequence Card (bottom left)
-  const likelihoodY = appCard(50, 370, 180, 80, 'C - LIKELIHOOD vs CONSEQUENCE', colors.warning);
+  const likelihoodY = appCard(440, 280, 185, 80, 'C - LIKELIHOOD vs CONSEQUENCE', colors.warning);
   
-  // Risk matrix grid with color coding
   const riskMatrixGrid = [
     ['', 'Likely', 'Possible', 'Unlikely'],
     ['Extreme', '16', '14', '11'],
@@ -191,7 +191,7 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
   
   let gridRowY = likelihoodY;
   riskMatrixGrid.forEach((row, rowIndex) => {
-    let gridX = 60;
+    let gridX = 450;
     row.forEach((cell, colIndex) => {
       if (cell) {
         // Color code risk scores
@@ -215,7 +215,7 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
   });
 
   // D - Risk Scoring Card (bottom right)
-  const scoringY = appCard(240, 370, 180, 80, 'D - RISK SCORING', colors.danger);
+  const scoringY = appCard(635, 280, 185, 80, 'D - RISK SCORING', colors.danger);
   
   const scoringData = [
     ['16-18', 'Severe (E)', 'Action now'],
@@ -229,439 +229,83 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
     doc.font('Helvetica-Bold');
     doc.fontSize(6);
     doc.fillColor(colors.text);
-    doc.text(`${score} ${ranking}`, 250, scoringRowY);
+    doc.text(`${score} ${ranking}`, 645, scoringRowY);
     
     doc.font('Helvetica');
     doc.fontSize(5);
-    doc.text(action, 250, scoringRowY + 8, { width: 150, height: 10 });
+    doc.text(action, 645, scoringRowY + 8, { width: 150, height: 10 });
     scoringRowY += 16;
   });
 
-  // Work Activities & Risk Assessment Card - positioned after matrix
-  const riskY = appCard(30, 420, 780, 200, 'WORK ACTIVITIES & RISK ASSESSMENT', colors.secondary);
+  // Work Activities & Risk Assessment Card
+  const riskY = appCard(30, 460, 780, 200, 'WORK ACTIVITIES & RISK ASSESSMENT', colors.secondary);
 
-  // Table headers with adjusted column widths to prevent overflow
-  const headers = ['#', 'Activity/Item', 'Hazards/Risks', 'Initial Risk Score', 'Control Measures', 'Residual Risk Score'];
-  const colWidths = [30, 130, 170, 80, 190, 100];
+  const riskHeaders = ['Activity', 'Hazards', 'Initial Risk', 'Control Measures', 'Residual Risk'];
+  const colWidths = [150, 180, 80, 250, 80];
   
-  // Header background - neutral white
-  doc.fillColor(colors.white);
-  doc.roundedRect(50, riskY, 740, 18, 4);
+  // Table header
+  doc.fillColor(colors.background);
+  doc.roundedRect(50, riskY, 740, 16, 4);
   doc.fill();
   
-  // Header border
   doc.strokeColor(colors.border);
   doc.lineWidth(0.5);
-  doc.roundedRect(50, riskY, 740, 18, 4);
+  doc.roundedRect(50, riskY, 740, 16, 4);
   doc.stroke();
-
-  let riskHeaderX = 50;
-  headers.forEach((header, index) => {
-    doc.strokeColor(colors.border);
-    doc.lineWidth(0.3);
-    if (index > 0) {
-      doc.moveTo(riskHeaderX, riskY);
-      doc.lineTo(riskHeaderX, riskY + 18);
-      doc.stroke();
-    }
-    
+  
+  let headerX = 50;
+  riskHeaders.forEach((header, index) => {
     doc.fillColor(colors.text);
     doc.font('Helvetica-Bold');
-    doc.fontSize(8);
-    doc.text(header, riskHeaderX + 3, riskY + 6, { width: colWidths[index] - 6 });
-    riskHeaderX += colWidths[index];
+    doc.fontSize(7);
+    doc.text(header, headerX + 3, riskY + 5, { width: colWidths[index] - 6 });
+    headerX += colWidths[index];
   });
 
-  // Activity data with separated hazards and controls
-  const activities = swmsData.work_activities || swmsData.activities || [];
-  const risks = swmsData.risk_assessments || swmsData.risks || [];
-  const controls = swmsData.control_measures || swmsData.controls || [];
+  // Risk assessment data
+  const risks = swmsData.risk_assessments || [];
+  let rowY = riskY + 16;
+  const rowHeight = 30;
   
-  let rowY = riskY + 18;
-  const maxRows = Math.min(8, Math.max(activities.length, risks.length, controls.length));
-  
-  for (let i = 0; i < maxRows; i++) {
-    const activity = activities[i] || {};
-    const risk = risks[i] || {};
-    const control = controls[i] || {};
+  risks.slice(0, 5).forEach((risk: any, index: number) => {
+    let cellX = 50;
     
-    // Calculate row height based on content
-    // Extract genuine hazards and controls from SWMS data - 8 per task
-    let hazards = [];
-    let controlMeasures = [];
-    
-    // Try to get authentic data from multiple sources
-    if (risk.hazards && Array.isArray(risk.hazards)) {
-      hazards = risk.hazards.slice(0, 8);
-    } else if (activity.hazards) {
-      hazards = Array.isArray(activity.hazards) ? activity.hazards.slice(0, 8) : [activity.hazards];
-    } else {
-      // Extract all hazard fields from risk object
-      hazards = [
-        risk.hazard1, risk.hazard2, risk.hazard3, risk.hazard4, 
-        risk.hazard5, risk.hazard6, risk.hazard7, risk.hazard8
-      ].filter(h => h && h.trim());
-    }
-    
-    if (control.controls && Array.isArray(control.controls)) {
-      controlMeasures = control.controls.slice(0, 8);
-    } else if (activity.controls) {
-      controlMeasures = Array.isArray(activity.controls) ? activity.controls.slice(0, 8) : [activity.controls];
-    } else {
-      // Extract all control measure fields from control object
-      controlMeasures = [
-        control.control1, control.control2, control.control3, control.control4,
-        control.control5, control.control6, control.control7, control.control8
-      ].filter(c => c && c.trim());
-    }
-    
-    // Ensure minimum 8 hazards and controls per activity protocol
-    if (hazards.length < 8) {
-      const activityType = activity.activity || activity.description || '';
-      let defaultHazards = [];
-      
-      if (activityType.toLowerCase().includes('asbestos')) {
-        defaultHazards = [
-          'Asbestos fiber inhalation causing mesothelioma',
-          'Cross-contamination to clean areas',
-          'Improper disposal creating environmental hazard',
-          'Equipment contamination spreading fibers',
-          'Skin and eye contact with asbestos',
-          'Environmental fiber release to atmosphere',
-          'Worker exposure during material handling',
-          'Public health risk from airborne particles'
-        ];
-      } else if (activityType.toLowerCase().includes('demolition')) {
-        defaultHazards = [
-          'Structural collapse during demolition work',
-          'Flying debris striking workers or public',
-          'Dust inhalation causing respiratory issues',
-          'Excessive noise exposure causing hearing damage',
-          'Vibration damage to adjacent structures',
-          'Underground utility strikes causing electrocution',
-          'Heavy machinery equipment failure',
-          'Fall hazards from elevated work platforms'
-        ];
-      } else if (activityType.toLowerCase().includes('electrical')) {
-        defaultHazards = [
-          'Electrical shock and electrocution hazards',
-          'Arc flash and electrical burns',
-          'Equipment failure causing injury',
-          'Working at height installation risks',
-          'Manual handling of heavy equipment',
-          'Exposure to live electrical systems',
-          'Fire risk from electrical faults',
-          'Tool and equipment malfunction hazards'
-        ];
-      } else {
-        defaultHazards = [
-          'Falls from height during work activities',
-          'Manual handling injuries from heavy lifting',
-          'Crushing injuries from equipment operation',
-          'Struck by moving machinery or materials',
-          'Weather exposure affecting work safety',
-          'Slip, trip and fall hazards on surfaces',
-          'Noise exposure from construction activities',
-          'Chemical exposure from construction materials'
-        ];
-      }
-      
-      hazards = [...hazards, ...defaultHazards.slice(hazards.length)].slice(0, 8);
-    }
-    
-    if (controlMeasures.length < 8) {
-      const activityType = activity.activity || activity.description || '';
-      let defaultControls = [];
-      
-      if (activityType.toLowerCase().includes('asbestos')) {
-        defaultControls = [
-          'P2 respirator masks mandatory for all workers',
-          'Negative pressure enclosure system installed',
-          'Licensed asbestos disposal contractor engaged',
-          'Comprehensive decontamination procedures',
-          'Full body disposable protective suits',
-          'Continuous air monitoring throughout work',
-          'Competent person supervision at all times',
-          'Emergency response plan activated'
-        ];
-      } else if (activityType.toLowerCase().includes('demolition')) {
-        defaultControls = [
-          'Structural engineer assessment completed',
-          'Exclusion zone establishment and barriers',
-          'Water suppression dust control systems',
-          'Mandatory hearing protection for all workers',
-          'Continuous vibration monitoring systems',
-          'Utility isolation and location verification',
-          'Daily pre-start equipment inspections',
-          'Fall protection harness systems installed'
-        ];
-      } else if (activityType.toLowerCase().includes('electrical')) {
-        defaultControls = [
-          'Isolation and lockout/tagout procedures',
-          'Electrical testing before work commences',
-          'Arc flash personal protective equipment',
-          'Safety harness systems for elevated work',
-          'Mechanical lifting aids for heavy equipment',
-          'Voltage detection equipment mandatory',
-          'Fire suppression systems operational',
-          'Daily tool and equipment inspections'
-        ];
-      } else {
-        defaultControls = [
-          'Safety harness with dual lanyards required',
-          'Mechanical lifting aids for manual handling',
-          'Equipment operator competency verification',
-          'Exclusion zones around moving machinery',
-          'Weather monitoring and work cessation protocols',
-          'Non-slip footwear and housekeeping standards',
-          'Hearing protection in designated areas',
-          'Material safety data sheets readily available'
-        ];
-      }
-      
-      controlMeasures = [...controlMeasures, ...defaultControls.slice(controlMeasures.length)].slice(0, 8);
-    }
-    
-    // Extract additional SWMS builder data
-    const legislation = activity.legislation || risk.legislation || control.legislation || [];
-    const additionalInfo = activity.additional_info || risk.additional_info || '';
-    const workMethod = activity.work_method || activity.method || '';
-    const ppe = activity.ppe || control.ppe || [];
-    const qualifications = activity.qualifications || risk.qualifications || [];
-    
-    // Calculate dynamic row height based on tallest cell content
-    const hazardHeight = (hazards.length * 8) + (legislation.length > 0 ? legislation.length * 6 + 12 : 0);
-    const controlHeight = (controlMeasures.length * 8) + 
-                         (ppe.length > 0 ? ppe.length * 6 + 12 : 0) + 
-                         (qualifications.length > 0 ? qualifications.length * 6 + 12 : 0) + 
-                         (workMethod ? 24 : 0);
-    const activityHeight = 10 + (workMethod ? 18 : 0) + (additionalInfo ? 18 : 0);
-    
-    const tallestContent = Math.max(hazardHeight, controlHeight, activityHeight, 35);
-    const rowHeight = tallestContent + 10; // Add padding
-    
-    // Alternating row colors
-    if (i % 2 === 1) {
+    // Row background
+    if (index % 2 === 1) {
       doc.fillColor('#f8fafc');
-      doc.roundedRect(50, rowY, 740, rowHeight, 4);
+      doc.roundedRect(50, rowY, 740, rowHeight, 2);
       doc.fill();
     }
-
-    // Row border
-    doc.strokeColor(colors.border);
-    doc.lineWidth(0.3);
-    doc.roundedRect(50, rowY, 740, rowHeight, 4);
-    doc.stroke();
-
-    let cellX = 50;
+    
     const rowData = [
-      (i + 1).toString(),
-      activity.activity || activity.description || `Activity ${i + 1}`,
-      '', // Hazards will be handled separately
-      risk.initial_risk || risk.risk_level || 'M (8)',
-      '', // Controls will be handled separately  
+      risk.activity || 'Activity not specified',
+      risk.hazards || 'No hazards identified',
+      risk.initial_risk || 'M (8)',
+      risk.control_measures || 'Standard safety controls',
       risk.residual_risk || 'L (2)'
     ];
     
     rowData.forEach((data, colIndex) => {
-      // Vertical lines
-      if (colIndex > 0) {
-        doc.strokeColor(colors.border);
-        doc.moveTo(cellX, rowY);
-        doc.lineTo(cellX, rowY + rowHeight);
-        doc.stroke();
-      }
-      
       // Risk score badges
-      if (colIndex === 3 || colIndex === 5) {
+      if (colIndex === 2 || colIndex === 4) {
         const riskLevel = data.includes('H') ? 'HIGH' : data.includes('M') ? 'MEDIUM' : 'LOW';
         const badgeColor = riskLevel === 'HIGH' ? colors.danger : riskLevel === 'MEDIUM' ? colors.warning : colors.success;
         
         doc.fillColor(badgeColor);
-        doc.roundedRect(cellX + 10, rowY + 8, colWidths[colIndex] - 20, 14, 7);
+        doc.roundedRect(cellX + 2, rowY + 2, colWidths[colIndex] - 4, 12, 2);
         doc.fill();
         
         doc.fillColor(colors.white);
         doc.font('Helvetica-Bold');
         doc.fontSize(7);
-        const shortRisk = data.includes('H') ? 'H' : data.includes('M') ? 'M' : 'L';
-        doc.text(shortRisk, cellX + 10, rowY + 12, { width: colWidths[colIndex] - 20, align: 'center' });
-      }
-      // Hazards column - comprehensive hazard information
-      else if (colIndex === 2) {
-        let hazardY = rowY + 3;
-        
-        // All hazards
-        hazards.forEach((hazard: any) => {
-          doc.fillColor(colors.text);
-          doc.font('Helvetica');
-          doc.fontSize(6);
-          doc.text(`• ${hazard}`, cellX + 3, hazardY, { 
-            width: colWidths[colIndex] - 6,
-            height: 8
-          });
-          hazardY += 8;
-        });
-        
-        // Add legislation if available
-        if (legislation && legislation.length > 0) {
-          hazardY += 2;
-          doc.font('Helvetica-Bold');
-          doc.fontSize(5);
-          doc.fillColor(colors.textMuted);
-          doc.text('Legislation:', cellX + 3, hazardY);
-          hazardY += 6;
-          
-          const legArray = Array.isArray(legislation) ? legislation : [legislation];
-          legArray.forEach((leg: any) => {
-            if (leg) {
-              doc.font('Helvetica');
-              doc.fontSize(5);
-              doc.fillColor(colors.text);
-              doc.text(`• ${leg}`, cellX + 3, hazardY, { 
-                width: colWidths[colIndex] - 6,
-                height: 6
-              });
-              hazardY += 6;
-            }
-          });
-        }
-      }
-      // Controls column - comprehensive control information
-      else if (colIndex === 4) {
-        let controlY = rowY + 3;
-        
-        // All control measures
-        controlMeasures.forEach((controlMeasure: any) => {
-          doc.fillColor(colors.text);
-          doc.font('Helvetica');
-          doc.fontSize(6);
-          doc.text(`• ${controlMeasure}`, cellX + 3, controlY, { 
-            width: colWidths[colIndex] - 6,
-            height: 8
-          });
-          controlY += 8;
-        });
-        
-        // Add PPE requirements
-        if (ppe && ppe.length > 0) {
-          controlY += 2;
-          doc.font('Helvetica-Bold');
-          doc.fontSize(5);
-          doc.fillColor(colors.textMuted);
-          doc.text('PPE Required:', cellX + 3, controlY);
-          controlY += 6;
-          
-          const ppeArray = Array.isArray(ppe) ? ppe : [ppe];
-          ppeArray.forEach((item: any) => {
-            if (item) {
-              doc.font('Helvetica');
-              doc.fontSize(5);
-              doc.fillColor(colors.text);
-              doc.text(`• ${item}`, cellX + 3, controlY, { 
-                width: colWidths[colIndex] - 6,
-                height: 6
-              });
-              controlY += 6;
-            }
-          });
-        }
-        
-        // Add qualifications
-        if (qualifications && qualifications.length > 0) {
-          controlY += 2;
-          doc.font('Helvetica-Bold');
-          doc.fontSize(5);
-          doc.fillColor(colors.textMuted);
-          doc.text('Qualifications:', cellX + 3, controlY);
-          controlY += 6;
-          
-          const qualArray = Array.isArray(qualifications) ? qualifications : [qualifications];
-          qualArray.forEach((qual: any) => {
-            if (qual) {
-              doc.font('Helvetica');
-              doc.fontSize(5);
-              doc.fillColor(colors.text);
-              doc.text(`• ${qual}`, cellX + 3, controlY, { 
-                width: colWidths[colIndex] - 6,
-                height: 6
-              });
-              controlY += 6;
-            }
-          });
-        }
-        
-        // Add work method if available
-        if (workMethod) {
-          controlY += 2;
-          doc.font('Helvetica-Bold');
-          doc.fontSize(5);
-          doc.fillColor(colors.textMuted);
-          doc.text('Work Method:', cellX + 3, controlY);
-          controlY += 6;
-          
-          doc.font('Helvetica');
-          doc.fontSize(5);
-          doc.fillColor(colors.text);
-          doc.text(workMethod, cellX + 3, controlY, { 
-            width: colWidths[colIndex] - 6,
-            height: 12
-          });
-        }
-      }
-      // Activity/Item column - comprehensive activity information  
-      else if (colIndex === 1) {
-        let activityY = rowY + 3;
-        
-        // Main activity name
+        doc.text(data, cellX + 4, rowY + 6, { width: colWidths[colIndex] - 8, align: 'center' });
+      } else {
         doc.fillColor(colors.text);
-        doc.font('Helvetica-Bold');
-        doc.fontSize(7);
-        doc.text(data, cellX + 3, activityY, { 
-          width: colWidths[colIndex] - 6,
-          height: 8
-        });
-        activityY += 10;
-        
-        // Add work method if available
-        if (workMethod) {
-          doc.font('Helvetica');
-          doc.fontSize(5);
-          doc.fillColor(colors.textMuted);
-          doc.text('Method:', cellX + 3, activityY);
-          activityY += 6;
-          
-          doc.fillColor(colors.text);
-          doc.text(workMethod, cellX + 3, activityY, { 
-            width: colWidths[colIndex] - 6,
-            height: 10
-          });
-          activityY += 12;
-        }
-        
-        // Add additional info if available
-        if (additionalInfo) {
-          doc.font('Helvetica');
-          doc.fontSize(5);
-          doc.fillColor(colors.textMuted);
-          doc.text('Notes:', cellX + 3, activityY);
-          activityY += 6;
-          
-          doc.fillColor(colors.text);
-          doc.text(additionalInfo, cellX + 3, activityY, { 
-            width: colWidths[colIndex] - 6,
-            height: 10
-          });
-        }
-      }
-      // Regular text columns (risk scores, row numbers)
-      else if (data) {
-        doc.fillColor(colors.text);
-        doc.font(colIndex === 0 ? 'Helvetica-Bold' : 'Helvetica');
-        doc.fontSize(8);
-        doc.text(data, cellX + 5, rowY + 8, { 
-          width: colWidths[colIndex] - 10, 
-          height: rowHeight - 10,
+        doc.font('Helvetica');
+        doc.fontSize(6);
+        doc.text(data, cellX + 3, rowY + 4, { 
+          width: colWidths[colIndex] - 6, 
+          height: rowHeight - 8,
           ellipsis: true 
         });
       }
@@ -670,225 +314,48 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
     });
     
     rowY += rowHeight;
-  }
+  });
 
-  // Old matrix code removed - now using 2x2 grid layout above
-
-  // Plant & Equipment Register Card
-  const equipY = appCard(30, 250, 780, 200, 'PLANT & EQUIPMENT REGISTER', colors.warning);
-
-  const equipHeaders = ['Item', 'Description', 'Make/Model', 'Registration', 'Inspection Date', 'Risk Level', 'Controls'];
-  const equipColWidths = [80, 140, 120, 100, 80, 70, 150];
+  // Emergency procedures card
+  const emergencyY = appCard(450, 120, 360, 80, 'EMERGENCY PROCEDURES', colors.danger);
   
-  doc.fillColor(colors.white);
-  doc.roundedRect(50, equipY, 740, 16, 4);
-  doc.fill();
+  const emergencyData = [
+    ['Emergency Contact:', swmsData.emergency_contact || '000'],
+    ['Site Supervisor:', swmsData.site_supervisor || 'Not specified'],
+    ['Assembly Point:', swmsData.assembly_point || 'Main entrance'],
+    ['Nearest Hospital:', swmsData.nearest_hospital || 'Local hospital']
+  ];
   
-  doc.strokeColor(colors.border);
-  doc.lineWidth(0.5);
-  doc.roundedRect(50, equipY, 740, 16, 4);
-  doc.stroke();
+  let emergencyRowY = emergencyY;
+  let isEmergencyLeft = true;
+  let emergencyLeftY = emergencyY;
+  let emergencyRightY = emergencyY;
   
-  let equipHeaderX = 50;
-  equipHeaders.forEach((header, index) => {
-    doc.fillColor(colors.text);
+  emergencyData.forEach(([label, value]) => {
+    const currentX = isEmergencyLeft ? 470 : 650;
+    const currentY = isEmergencyLeft ? emergencyLeftY : emergencyRightY;
+    
     doc.font('Helvetica-Bold');
     doc.fontSize(7);
-    doc.text(header, equipHeaderX + 3, equipY + 5, { width: equipColWidths[index] - 6 });
-    equipHeaderX += equipColWidths[index];
-  });
-
-  const equipment = swmsData.plant_equipment || swmsData.equipment || [
-    { item: 'Mobile Crane', description: '50T Mobile Crane', make: 'Liebherr LTM 1050', registration: 'CR002-2024', inspection: '10/06/2025', risk: 'High', controls: 'Dogman supervision, exclusion zones' },
-    { item: 'Excavator', description: '20T Hydraulic Excavator', make: 'Caterpillar 320D', registration: 'EX001-2024', inspection: '15/06/2025', risk: 'Medium', controls: 'Daily pre-start checks' }
-  ];
-  
-  let equipRowY = equipY + 16;
-  equipment.slice(0, 6).forEach((equip: any, index: number) => {
-    if (index % 2 === 1) {
-      doc.fillColor('#f8fafc');
-      doc.roundedRect(50, equipRowY, 740, 18, 2);
-      doc.fill();
-    }
-    
-    const equipData = [
-      equip.item || '',
-      equip.description || '',
-      equip.make || '',
-      equip.registration || '',
-      equip.inspection || '',
-      equip.risk || '',
-      equip.controls || ''
-    ];
-    
-    let equipCellX = 50;
-    equipData.forEach((data, colIndex) => {
-      doc.fillColor(colors.text);
-      doc.font('Helvetica');
-      doc.fontSize(7);
-      doc.text(data, equipCellX + 3, equipRowY + 4, { 
-        width: equipColWidths[colIndex] - 6, 
-        height: 12,
-        ellipsis: true 
-      });
-      equipCellX += equipColWidths[colIndex];
-    });
-    
-    equipRowY += 18;
-  });
-
-  // Emergency Procedures Card - positioned after activities, within card bounds
-  const emergY = appCard(30, 460, 400, 120, 'EMERGENCY PROCEDURES & CONTACTS', colors.danger);
-  
-  // Emergency contact fields in proper layout
-  const emergencyFields = [
-    ['Emergency Contact:', 'Site Supervisor: 0412 345 678'],
-    ['Site Supervisor:', 'On-site supervisor'],
-    ['Assembly Point:', 'Southbank Boulevard - North End'],
-    ['Nearest Hospital:', 'Alfred Hospital']
-  ];
-  
-  let emergLeftY = emergY;
-  let emergRightY = emergY;
-  
-  emergencyFields.forEach((field, index) => {
-    const isLeft = index % 2 === 0;
-    const x = isLeft ? 50 : 420;
-    const y = isLeft ? emergLeftY : emergRightY;
-    
-    doc.font('Helvetica-Bold');
-    doc.fillColor(colors.textMuted);
-    doc.fontSize(9);
-    doc.text(field[0], x, y);
+    doc.fillColor(colors.text);
+    doc.text(label, currentX, currentY);
     
     doc.font('Helvetica');
-    doc.fillColor(colors.text);
-    doc.fontSize(9);
-    doc.text(field[1], x, y + 12, { width: 340 });
+    doc.fontSize(7);
+    doc.text(value, currentX, currentY + 10, { width: 140, height: 12 });
     
-    if (isLeft) emergLeftY += 28;
-    else emergRightY += 28;
+    if (isEmergencyLeft) emergencyLeftY += 22;
+    else emergencyRightY += 22;
+    
+    isEmergencyLeft = !isEmergencyLeft;
   });
 
-  // NEW PAGE - Digital Signatory Page
-  doc.addPage();
-
-  // Digital Signatory Card - Full page
-  const sigY = appCard(30, 30, 780, 480, 'DOCUMENT APPROVAL & SIGNATURES', colors.primary);
-
-  // App signatory data section
-  const signatures = swmsData.signatures || swmsData.digital_signatures || {};
-  let appSigY = sigY;
-  
-  if (Object.keys(signatures).length > 0) {
-    doc.fillColor(colors.text);
-    doc.font('Helvetica-Bold');
-    doc.fontSize(10);
-    doc.text('DIGITAL SIGNATURES (FROM APPLICATION)', 50, appSigY);
-    
-    const appSignatures = [
-      ['Prepared By:', signatures.prepared_by_name || 'Not signed', signatures.prepared_by_date || ''],
-      ['Reviewed By:', signatures.reviewed_by_name || 'Not signed', signatures.reviewed_by_date || ''],
-      ['Approved By:', signatures.approved_by_name || 'Not signed', signatures.approved_by_date || ''],
-      ['Site Supervisor:', signatures.supervisor_name || 'Not signed', signatures.supervisor_date || '']
-    ];
-    
-    appSigY += 25;
-    appSignatures.forEach(([role, name, date]) => {
-      doc.fillColor(colors.textMuted);
-      doc.font('Helvetica-Bold');
-      doc.fontSize(8);
-      doc.text(role, 50, appSigY);
-      
-      doc.fillColor(colors.text);
-      doc.font('Helvetica');
-      doc.text(`${name} ${date ? `(${date})` : ''}`, 150, appSigY);
-      appSigY += 15;
-    });
-    
-    appSigY += 20;
-  }
-  
-  // Manual Site Sign-On Table
-  doc.fillColor(colors.text);
+  // Watermark
+  doc.fillColor('#00000008');
   doc.font('Helvetica-Bold');
-  doc.fontSize(10);
-  doc.text('MANUAL SITE SIGN-ON TABLE', 50, appSigY);
-  
-  let tableY = appSigY + 25;
-  const signOnColWidths = [50, 200, 250, 240]; // #, Name, Number, Signature, Date
-  const signOnHeaders = ['#', 'Name', 'Number', 'Signature', 'Date'];
-  
-  // Table header with neutral background
-  doc.fillColor(colors.white);
-  doc.roundedRect(50, tableY, 740, 20, 4);
-  doc.fill();
-  
-  doc.strokeColor(colors.border);
-  doc.lineWidth(0.5);
-  doc.roundedRect(50, tableY, 740, 20, 4);
-  doc.stroke();
-  
-  let signOnHeaderX = 50;
-  signOnHeaders.forEach((header, index) => {
-    doc.fillColor(colors.text);
-    doc.font('Helvetica-Bold');
-    doc.fontSize(8);
-    doc.text(header, signOnHeaderX + 5, tableY + 6);
-    signOnHeaderX += signOnColWidths[index];
-  });
-  
-  // 20 blank rows for manual sign-on
-  tableY += 20;
-  for (let row = 1; row <= 20; row++) {
-    // Alternating row colors
-    if (row % 2 === 0) {
-      doc.fillColor('#f8fafc');
-      doc.rect(50, tableY, 740, 18);
-      doc.fill();
-    }
-    
-    // Row borders
-    doc.strokeColor(colors.border);
-    doc.lineWidth(0.3);
-    doc.rect(50, tableY, 740, 18);
-    doc.stroke();
-    
-    // Column dividers and row number
-    let cellX = 50;
-    signOnColWidths.forEach((width, colIndex) => {
-      if (colIndex > 0) {
-        doc.strokeColor(colors.border);
-        doc.moveTo(cellX, tableY);
-        doc.lineTo(cellX, tableY + 18);
-        doc.stroke();
-      }
-      
-      // Add row number in first column
-      if (colIndex === 0) {
-        doc.fillColor(colors.textMuted);
-        doc.font('Helvetica');
-        doc.fontSize(7);
-        doc.text(row.toString(), cellX + 5, tableY + 5);
-      }
-      
-      cellX += width;
-    });
-    
-    tableY += 18;
-  }
-
-  // Footer
-  const footerY = 520;
-  doc.fillColor(colors.primary);
-  doc.roundedRect(30, footerY, 780, 40, 6);
-  doc.fill();
-  
-  doc.fillColor(colors.white);
-  doc.font('Helvetica');
-  doc.fontSize(8);
-  doc.text('Generated by RISKIFY Professional SWMS Builder', 45, footerY + 12);
-  doc.text(`Document ID: ${uniqueId} | Generated: ${new Date().toLocaleString('en-AU')}`, 45, footerY + 25);
+  doc.fontSize(60);
+  doc.text('RISKIFY', 350, 350, { align: 'center' });
 
   return doc;
+}
 }

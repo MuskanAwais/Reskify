@@ -358,3 +358,4 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
 
   return doc;
 }
+}
