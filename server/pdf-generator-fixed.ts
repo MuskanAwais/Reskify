@@ -274,7 +274,7 @@ export function generateAppMatchPDF(swmsData: any): PDFDocument {
   const riskY = appCard(30, 80, 780, 500, 'WORK ACTIVITIES & RISK ASSESSMENT', colors.secondary);
 
   const riskHeaders = ['Activity', 'Legislation', 'Hazards', 'Initial Risk', 'Control Measures', 'Residual Risk'];
-  const colWidths = [130, 110, 130, 70, 130, 70];
+  const colWidths = [120, 100, 120, 70, 120, 70];
   
   // Table header
   doc.fillColor(colors.background);
@@ -288,6 +288,15 @@ export function generateAppMatchPDF(swmsData: any): PDFDocument {
   
   let headerX = 50;
   riskHeaders.forEach((header, index) => {
+    // Draw header column separator
+    if (index > 0) {
+      doc.strokeColor(colors.border);
+      doc.lineWidth(0.5);
+      doc.moveTo(headerX, riskY);
+      doc.lineTo(headerX, riskY + 16);
+      doc.stroke();
+    }
+    
     doc.fillColor(colors.text);
     doc.font('Helvetica-Bold');
     doc.fontSize(7);
@@ -420,6 +429,15 @@ export function generateAppMatchPDF(swmsData: any): PDFDocument {
     ];
     
     rowData.forEach((data, colIndex) => {
+      // Draw column separator
+      if (colIndex > 0) {
+        doc.strokeColor(colors.border);
+        doc.lineWidth(0.5);
+        doc.moveTo(cellX, rowY);
+        doc.lineTo(cellX, rowY + rowHeight);
+        doc.stroke();
+      }
+      
       // Risk score badges (Initial Risk and Residual Risk columns)
       if (colIndex === 3 || colIndex === 5) {
         const riskLevel = data.includes('E') ? 'EXTREME' : data.includes('H') ? 'HIGH' : data.includes('M') ? 'MEDIUM' : 'LOW';
