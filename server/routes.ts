@@ -133,8 +133,8 @@ export async function registerRoutes(app: Express) {
       
       const data = req.body;
       
-      // Import comprehensive PDF generator with proper spacing and all sections
-      const { generateAppMatchPDF } = await import('./pdf-generator-comprehensive');
+      // Import authentic PDF generator with proper card spacing and real data only
+      const { generateAppMatchPDF } = await import('./pdf-generator-authentic');
       
       const doc = generateAppMatchPDF({
         swmsData: data,
@@ -515,7 +515,7 @@ export async function registerRoutes(app: Express) {
         return res.status(404).json({ error: "SWMS project not found" });
       }
 
-      const { generateAppMatchPDF } = await import('./pdf-generator-comprehensive');
+      const { generateAppMatchPDF } = await import('./pdf-generator-authentic');
       
       const doc = generateAppMatchPDF({
         swmsData: projectData,
