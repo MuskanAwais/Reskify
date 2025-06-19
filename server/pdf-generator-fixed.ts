@@ -172,13 +172,13 @@ export function generateAppMatchPDF(swmsData: any) {
     doc.font('Helvetica-Bold');
     doc.fontSize(6);
     doc.fillColor(colors.text);
-    doc.text(level, leftX + 10, qualRowY);
+    doc.text(level, leftX + 8, qualRowY);
     
     doc.font('Helvetica');
     doc.fontSize(5);
     doc.fillColor(colors.text);
-    doc.text(description, leftX + 50, qualRowY, { width: cardWidth - 60, height: 10 });
-    qualRowY += 14;
+    doc.text(description, leftX + 55, qualRowY, { width: cardWidth - 65, height: 10 });
+    qualRowY += 12;
   });
 
   // B - Quantitative Scale Card (top right)
@@ -196,13 +196,13 @@ export function generateAppMatchPDF(swmsData: any) {
     doc.font('Helvetica-Bold');
     doc.fontSize(6);
     doc.fillColor(colors.text);
-    doc.text(cost, rightX + 10, quantRowY);
+    doc.text(cost, rightX + 8, quantRowY);
     
     doc.font('Helvetica');
     doc.fontSize(5);
     doc.fillColor(colors.text);
-    doc.text(probability, rightX + 80, quantRowY, { width: cardWidth - 90, height: 10 });
-    quantRowY += 14;
+    doc.text(probability, rightX + 85, quantRowY, { width: cardWidth - 95, height: 10 });
+    quantRowY += 12;
   });
 
   // C - Likelihood vs Consequence Card (bottom left)
@@ -218,7 +218,7 @@ export function generateAppMatchPDF(swmsData: any) {
   
   let gridRowY = likelihoodY;
   riskMatrixGrid.forEach((row, rowIndex) => {
-    let gridX = leftX + 10;
+    let gridX = leftX + 8;
     row.forEach((cell, colIndex) => {
       if (cell) {
         // Color code risk scores
@@ -226,7 +226,7 @@ export function generateAppMatchPDF(swmsData: any) {
           const score = parseInt(cell);
           const scoreColor = score >= 16 ? '#DC2626' : score >= 11 ? '#F59E0B' : score >= 7 ? '#10B981' : '#6B7280';
           doc.fillColor(scoreColor);
-          doc.roundedRect(gridX - 2, gridRowY - 2, 28, 12, 2);
+          doc.roundedRect(gridX - 1, gridRowY - 1, 24, 10, 1);
           doc.fill();
           doc.fillColor(colors.white);
         } else {
@@ -235,11 +235,11 @@ export function generateAppMatchPDF(swmsData: any) {
         
         doc.font(rowIndex === 0 || colIndex === 0 ? 'Helvetica-Bold' : 'Helvetica');
         doc.fontSize(5);
-        doc.text(cell, gridX, gridRowY, { width: 28 });
+        doc.text(cell, gridX, gridRowY, { width: 24 });
       }
-      gridX += 30;
+      gridX += 26;
     });
-    gridRowY += 12;
+    gridRowY += 10;
   });
 
   // D - Risk Scoring Card (bottom right)
@@ -257,13 +257,13 @@ export function generateAppMatchPDF(swmsData: any) {
     doc.font('Helvetica-Bold');
     doc.fontSize(6);
     doc.fillColor(colors.text);
-    doc.text(`${score} ${ranking}`, rightX + 10, scoringRowY);
+    doc.text(`${score} ${ranking}`, rightX + 8, scoringRowY);
     
     doc.font('Helvetica');
     doc.fontSize(5);
     doc.fillColor(colors.text);
-    doc.text(action, rightX + 90, scoringRowY, { width: cardWidth - 100, height: 10 });
-    scoringRowY += 14;
+    doc.text(action, rightX + 95, scoringRowY, { width: cardWidth - 105, height: 10 });
+    scoringRowY += 12;
   });
 
   // Remove Plant & Equipment Register from page 1 - will be moved to page 3
@@ -472,7 +472,7 @@ export function generateAppMatchPDF(swmsData: any) {
         let lineY = rowY + 3;
         const lineHeight = 8;
         
-        lines.forEach((line, lineIndex) => {
+        lines.forEach((line: string, lineIndex: number) => {
           if (lineY + lineHeight <= rowY + rowHeight - 4) {
             doc.font('Helvetica');
             doc.fontSize(7); // Same size for all text
