@@ -202,8 +202,8 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
     qualRowY += 12;
   });
 
-  // B - Quantitative Scale Card (top right) - with 20px spacing
-  const quantY = appCard(440, 320, 370, 80, 'B - QUANTITATIVE SCALE', colors.success);
+  // B - Quantitative Scale Card (top right)
+  const quantY = appCard(rightCardX, topCardY, cardW, cardH, 'B - QUANTITATIVE SCALE', colors.success);
   
   const quantitativeData = [
     ['$50,000+', 'Likely - Monthly'],
@@ -215,19 +215,19 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
   let quantRowY = quantY;
   quantitativeData.forEach(([cost, probability]) => {
     doc.font('Helvetica-Bold');
-    doc.fontSize(7);
-    doc.fillColor(colors.text);
-    doc.text(cost, 450, quantRowY);
-    
-    doc.font('Helvetica');
     doc.fontSize(6);
     doc.fillColor(colors.text);
-    doc.text(probability, 540, quantRowY, { width: 250, height: 12 });
-    quantRowY += 16;
+    doc.text(cost, rightCardX + 8, quantRowY);
+    
+    doc.font('Helvetica');
+    doc.fontSize(5);
+    doc.fillColor(colors.text);
+    doc.text(probability, rightCardX + 85, quantRowY, { width: cardW - 95, height: 10 });
+    quantRowY += 12;
   });
 
-  // C - Likelihood vs Consequence Card (bottom left) - with 20px vertical spacing
-  const likelihoodY = appCard(50, 420, 370, 80, 'C - LIKELIHOOD vs CONSEQUENCE', colors.warning);
+  // C - Likelihood vs Consequence Card (bottom left)
+  const likelihoodY = appCard(leftCardX, bottomCardY, cardW, cardH, 'C - LIKELIHOOD vs CONSEQUENCE', colors.warning);
   
   const riskMatrixGrid = [
     ['', 'Likely', 'Possible', 'Unlikely'],
@@ -238,7 +238,7 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
   
   let gridRowY = likelihoodY;
   riskMatrixGrid.forEach((row, rowIndex) => {
-    let gridX = 60;
+    let gridX = leftCardX + 8;
     row.forEach((cell, colIndex) => {
       if (cell) {
         // Color code risk scores
@@ -246,7 +246,7 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
           const score = parseInt(cell);
           const scoreColor = score >= 16 ? '#DC2626' : score >= 11 ? '#F59E0B' : score >= 7 ? '#10B981' : '#6B7280';
           doc.fillColor(scoreColor);
-          doc.roundedRect(gridX - 2, gridRowY - 2, 30, 14, 2);
+          doc.roundedRect(gridX - 1, gridRowY - 1, 24, 10, 1);
           doc.fill();
           doc.fillColor(colors.white);
         } else {
@@ -254,16 +254,16 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
         }
         
         doc.font(rowIndex === 0 || colIndex === 0 ? 'Helvetica-Bold' : 'Helvetica');
-        doc.fontSize(6);
-        doc.text(cell, gridX, gridRowY, { width: 30 });
+        doc.fontSize(5);
+        doc.text(cell, gridX, gridRowY, { width: 24 });
       }
-      gridX += 35;
+      gridX += 26;
     });
-    gridRowY += 16;
+    gridRowY += 10;
   });
 
-  // D - Risk Scoring Card (bottom right) - with 20px spacing
-  const scoringY = appCard(440, 420, 370, 80, 'D - RISK SCORING', colors.danger);
+  // D - Risk Scoring Card (bottom right)
+  const scoringY = appCard(rightCardX, bottomCardY, cardW, cardH, 'D - RISK SCORING', colors.danger);
   
   const scoringData = [
     ['16-18', 'Severe (E)', 'Action now'],
@@ -275,15 +275,15 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
   let scoringRowY = scoringY;
   scoringData.forEach(([score, ranking, action]) => {
     doc.font('Helvetica-Bold');
-    doc.fontSize(7);
-    doc.fillColor(colors.text);
-    doc.text(`${score} ${ranking}`, 440, scoringRowY);
-    
-    doc.font('Helvetica');
     doc.fontSize(6);
     doc.fillColor(colors.text);
-    doc.text(action, 540, scoringRowY, { width: 230, height: 12 });
-    scoringRowY += 14;
+    doc.text(`${score} ${ranking}`, rightCardX + 8, scoringRowY);
+    
+    doc.font('Helvetica');
+    doc.fontSize(5);
+    doc.fillColor(colors.text);
+    doc.text(action, rightCardX + 95, scoringRowY, { width: cardW - 105, height: 10 });
+    scoringRowY += 12;
   });
 
   // Plant & Equipment Register Card
