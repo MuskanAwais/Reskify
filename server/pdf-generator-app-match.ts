@@ -462,6 +462,8 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
   });
 
   // Add signatory page
+  doc.addPage();
+  let continueY = 80;
     
     // Table header for continuation
     doc.fillColor(colors.background);
