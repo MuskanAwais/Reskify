@@ -163,8 +163,23 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
   // Construction Control Risk Matrix Section - 2x2 grid layout with proper spacing
   const sectionY = appCard(30, 280, 780, 200, 'CONSTRUCTION CONTROL RISK MATRIX', colors.slate);
   
+  // Calculate positioning for equal spacing within container
+  const containerPadding = 20;
+  const cardGapH = 20; // Horizontal gap between cards
+  const cardGapV = 15; // Vertical gap between cards
+  const availableWidth = 780 - (containerPadding * 2);
+  const availableHeight = 200 - 40; // Minus header space
+  
+  const cardW = (availableWidth - cardGapH) / 2;
+  const cardH = (availableHeight - cardGapV) / 2;
+  
+  const leftCardX = 30 + containerPadding;
+  const rightCardX = leftCardX + cardW + cardGapH;
+  const topCardY = 300;
+  const bottomCardY = topCardY + cardH + cardGapV;
+  
   // A - Qualitative Scale Card (top left)
-  const qualY = appCard(50, 320, 370, 80, 'A - QUALITATIVE SCALE', colors.secondary);
+  const qualY = appCard(leftCardX, topCardY, cardW, cardH, 'A - QUALITATIVE SCALE', colors.secondary);
   
   const qualitativeData = [
     ['Extreme', 'Fatality, significant disability'],
@@ -176,15 +191,15 @@ export function generateAppMatchPDF(options: AppMatchPDFOptions) {
   let qualRowY = qualY;
   qualitativeData.forEach(([level, description]) => {
     doc.font('Helvetica-Bold');
-    doc.fontSize(7);
-    doc.fillColor(colors.text);
-    doc.text(level, 60, qualRowY);
-    
-    doc.font('Helvetica');
     doc.fontSize(6);
     doc.fillColor(colors.text);
-    doc.text(description, 110, qualRowY, { width: 290, height: 12 });
-    qualRowY += 16;
+    doc.text(level, leftCardX + 8, qualRowY);
+    
+    doc.font('Helvetica');
+    doc.fontSize(5);
+    doc.fillColor(colors.text);
+    doc.text(description, leftCardX + 55, qualRowY, { width: cardW - 65, height: 10 });
+    qualRowY += 12;
   });
 
   // B - Quantitative Scale Card (top right) - with 20px spacing
