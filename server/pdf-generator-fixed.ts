@@ -2,7 +2,7 @@ import PDFDocument from 'pdfkit';
 import fs from 'fs';
 import path from 'path';
 
-export function generateAppMatchPDF(swmsData: any): PDFDocument {
+export function generateAppMatchPDF(swmsData: any) {
   const doc = new PDFDocument({ 
     size: 'A4', 
     layout: 'landscape',
@@ -140,20 +140,21 @@ export function generateAppMatchPDF(swmsData: any): PDFDocument {
   });
 
   // Construction Control Risk Matrix Section - 2x2 grid with proper spacing
-  const matrixY = appCard(30, 280, 780, 240, 'CONSTRUCTION CONTROL RISK MATRIX', colors.slate);
+  const matrixY = appCard(30, 280, 780, 200, 'CONSTRUCTION CONTROL RISK MATRIX', colors.slate);
   
-  // Calculate positioning to fit all cards within main container with gaps
-  const totalWidth = 780 - 40; // Main card width minus padding
-  const totalHeight = 240 - 50; // Main card height minus header/padding
-  const horizontalGap = 30; // Space between A/B and C/D
-  const verticalGap = 20;   // Space between top and bottom rows
+  // Calculate positioning to fit all cards within main container with equal gaps
+  const containerPadding = 20; // Padding inside main card
+  const totalWidth = 780 - (containerPadding * 2); // Available width for cards
+  const totalHeight = 200 - 40; // Available height for cards (minus header)
+  const horizontalGap = 20; // Space between left/right cards
+  const verticalGap = 15;   // Space between top/bottom cards
   
-  const cardWidth = (totalWidth - horizontalGap) / 2; // 355px each
-  const cardHeight = (totalHeight - verticalGap) / 2; // 85px each
+  const cardWidth = (totalWidth - horizontalGap) / 2; // Equal width cards
+  const cardHeight = (totalHeight - verticalGap) / 2; // Equal height cards
   
-  const leftX = 50;
+  const leftX = 30 + containerPadding;
   const rightX = leftX + cardWidth + horizontalGap;
-  const topY = matrixY + 20;
+  const topY = matrixY + 15;
   const bottomY = topY + cardHeight + verticalGap;
   
   // A - Qualitative Scale Card (top left)
