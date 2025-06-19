@@ -273,8 +273,8 @@ export function generateAppMatchPDF(swmsData: any): PDFDocument {
   // Work Activities & Risk Assessment Card - full page
   const riskY = appCard(30, 80, 780, 500, 'WORK ACTIVITIES & RISK ASSESSMENT', colors.secondary);
 
-  const riskHeaders = ['Activity', 'Legislation', 'Hazards', 'Initial Risk', 'Control Measures', 'Residual Risk'];
-  const colWidths = [120, 100, 120, 70, 120, 70];
+  const riskHeaders = ['Activity', 'Hazards', 'Initial Risk', 'Control Measures', 'Residual Risk', 'Legislation'];
+  const colWidths = [130, 140, 70, 150, 70, 120];
   
   // Table header
   doc.fillColor(colors.background);
@@ -373,7 +373,7 @@ export function generateAppMatchPDF(swmsData: any): PDFDocument {
   ];
   
   let rowY = riskY + 16;
-  const rowHeight = 40; // Increased height for longer text
+  const rowHeight = 50; // Increased height for longer text with bullet points
   
   // Show first 6 activities per page
   const activitiesPerPage = 6;
@@ -399,6 +399,15 @@ export function generateAppMatchPDF(swmsData: any): PDFDocument {
       
       let continueHeaderX = 50;
       riskHeaders.forEach((header, headerIndex) => {
+        // Draw header column separator for continuation
+        if (headerIndex > 0) {
+          doc.strokeColor(colors.border);
+          doc.lineWidth(0.5);
+          doc.moveTo(continueHeaderX, continueY);
+          doc.lineTo(continueHeaderX, continueY + 16);
+          doc.stroke();
+        }
+        
         doc.fillColor(colors.text);
         doc.font('Helvetica-Bold');
         doc.fontSize(7);
@@ -421,11 +430,11 @@ export function generateAppMatchPDF(swmsData: any): PDFDocument {
     
     const rowData = [
       risk.activity || 'Activity not specified',
-      risk.legislation || 'WHS Regulation 2017',
       risk.hazards || 'No hazards identified',
       risk.initial_risk || 'M (8)',
       risk.control_measures || 'Standard safety controls',
-      risk.residual_risk || 'L (2)'
+      risk.residual_risk || 'L (2)',
+      risk.legislation || 'WHS Regulation 2017'
     ];
     
     rowData.forEach((data, colIndex) => {
@@ -439,7 +448,7 @@ export function generateAppMatchPDF(swmsData: any): PDFDocument {
       }
       
       // Risk score badges (Initial Risk and Residual Risk columns)
-      if (colIndex === 3 || colIndex === 5) {
+      if (colIndex === 2 || colIndex === 4) {
         const riskLevel = data.includes('E') ? 'EXTREME' : data.includes('H') ? 'HIGH' : data.includes('M') ? 'MEDIUM' : 'LOW';
         const badgeColor = riskLevel === 'EXTREME' ? '#7C2D12' : riskLevel === 'HIGH' ? colors.danger : riskLevel === 'MEDIUM' ? colors.warning : colors.success;
         
@@ -463,15 +472,19 @@ export function generateAppMatchPDF(swmsData: any): PDFDocument {
         const lineHeight = 8;
         
         lines.forEach((line, lineIndex) => {
-          if (lineIndex < 4 && lineY + lineHeight <= rowY + rowHeight - 4) {
+          if (lineY + lineHeight <= rowY + rowHeight - 4) {
             doc.font('Helvetica');
             doc.fontSize(7); // Same size for all text
             doc.fillColor(colors.text);
             
-            doc.text(line.trim(), cellX + 3, lineY, { 
+            // Add bullet points for hazards and control measures columns
+            const bulletPrefix = (colIndex === 1 || colIndex === 3) ? '• ' : '';
+            const textContent = bulletPrefix + line.trim();
+            
+            doc.text(textContent, cellX + 3, lineY, { 
               width: colWidths[colIndex] - 6,
-              height: lineHeight,
-              ellipsis: true
+              height: lineHeight
+              // Removed ellipsis to show full text
             });
             lineY += lineHeight;
           }
