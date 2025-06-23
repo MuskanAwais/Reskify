@@ -6,7 +6,7 @@ import fs from 'fs';
 import path from 'path';
 import Stripe from 'stripe';
 import { storage } from "./storage.js";
-import { generateExactPDF } from "./pdf-generator-exact.js";
+import { generateExactPDF } from "./pdf-generator-figma-exact.js";
 
 // Initialize Stripe
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {

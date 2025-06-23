@@ -118,20 +118,45 @@ export async function generateExactPDF(swmsData: SWMSData): Promise<Buffer> {
         return 200; // Return Y position for content start
       };
 
-      const addRiskBadge = (text: string, color: string, x: number, y: number, width: number = 80) => {
-        // Exact Figma color specifications for risk badges
-        const colors = {
-          'red': '#EF4444',     // Extreme - Figma red-500
-          'orange': '#F97316',  // High - Figma orange-500  
-          'blue': '#3B82F6',    // Medium - Figma blue-500
-          'green': '#10B981'    // Low - Figma emerald-500
-        };
-        
-        // Figma badge styling with rounded corners
-        doc.roundedRect(x, y, width, 24, 4).fill(colors[color as keyof typeof colors] || '#6B7280');
-        doc.fontSize(11).fillColor('#FFFFFF').font('Helvetica-Bold').text(text, x, y + 7, { width: width, align: 'center' });
-        doc.fillColor('#000000').font('Helvetica');
-      };
+      // Two-card layout section - PROJECT INFORMATION and EMERGENCY PROCEDURES
+      let yPos = 100;
+      
+      // Left card - PROJECT INFORMATION (Blue)
+      doc.roundedRect(30, yPos, 250, 170, 8).fillAndStroke('#3B82F6', '#3B82F6');
+      doc.fontSize(14).font('Helvetica-Bold').fillColor('#FFFFFF').text('PROJECT INFORMATION', 40, yPos + 15);
+      
+      // Project info content
+      doc.fontSize(10).fillColor('#FFFFFF').font('Helvetica');
+      doc.text(`Job Name: ${swmsData.title || swmsData.jobName || 'Test Project'}`, 40, yPos + 40);
+      doc.text(`Job Number: ${swmsData.jobNumber || '123-456'}`, 40, yPos + 55);
+      doc.text(`Company: ${swmsData.companyName || 'Test Company'}`, 40, yPos + 70);
+      doc.text(`Manager: ${swmsData.projectManager || 'Project Manager'}`, 40, yPos + 85);
+      doc.text(`Supervisor: ${swmsData.siteSupervisor || 'Site Supervisor'}`, 40, yPos + 100);
+      doc.text(`Start Date: ${swmsData.startDate || '23/06/2025'}`, 40, yPos + 115);
+      doc.text(`Duration: ${swmsData.duration || '8 weeks'}`, 40, yPos + 130);
+      doc.text(`Principal: ${swmsData.principalContractor || 'Principal Contractor'}`, 40, yPos + 145, { width: 200 });
+      
+      // Right card - EMERGENCY PROCEDURES (Red)
+      doc.roundedRect(310, yPos, 250, 170, 8).fillAndStroke('#EF4444', '#EF4444');
+      doc.fontSize(14).font('Helvetica-Bold').fillColor('#FFFFFF').text('EMERGENCY PROCEDURES', 320, yPos + 15);
+      
+      // Emergency info content
+      doc.fontSize(10).fillColor('#FFFFFF').font('Helvetica');
+      doc.text('Emergency Contact:', 320, yPos + 40);
+      doc.text('000', 320, yPos + 55);
+      
+      const emergencyContacts = swmsData.emergencyProcedures?.contacts || [];
+      if (emergencyContacts.length > 0) {
+        emergencyContacts.slice(0, 3).forEach((contact, index) => {
+          doc.text(`${contact.name}: ${contact.phone}`, 320, yPos + 70 + (index * 15), { width: 220 });
+        });
+      } else {
+        doc.text('Site Coordinator: 0412 345 678', 320, yPos + 70);
+        doc.text('Building Management: 0398 765 432', 320, yPos + 85);
+        doc.text('First Aid Officer: 0456 789 123', 320, yPos + 100);
+      }
+      
+      yPos += 190;
 
       // PAGE 1: Project Information - exact Figma layout
       let yPos = addHeader('Safe Work Method Statement');
