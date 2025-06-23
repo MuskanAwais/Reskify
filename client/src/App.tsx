@@ -25,6 +25,7 @@ import Settings from "@/pages/settings";
 import Billing from "@/pages/billing";
 import Payment from "@/pages/payment";
 import SWMSTesting from "@/pages/swms-testing";
+import PDFTest from "@/pages/pdf-test";
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
 import Demo from "@/pages/demo";
@@ -196,6 +197,7 @@ function Router() {
         <Route path="/language-test" component={LanguageTest} />
         <Route path="/language-demo" component={LanguageDemo} />
         <Route path="/legal-disclaimer" component={LegalDisclaimer} />
+        <Route path="/pdf-test" component={PDFTest} />
         
         {/* Innovative Features */}
         <ProtectedRoute path="/smart-risk-predictor" component={SmartRiskPredictor} />
