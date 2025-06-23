@@ -380,9 +380,13 @@ export class DatabaseStorage implements IStorage {
         workActivities: data.workActivities || [],
         riskAssessments: data.workActivities || [],
         safetyMeasures: data.workActivities || [],
+        plantEquipment: data.plantEquipment || [],
+        emergencyProcedures: data.emergencyProcedures || {contacts: [], procedures: []},
+        hrcwCategories: data.hrcwCategories || [],
+        ppeRequirements: data.ppeRequirements || [],
         complianceCodes: ['WHS Act 2011', 'WHS Regulation 2017'],
         responsiblePersons: [{name: 'Site Supervisor', role: 'Supervisor'}],
-        emergencyProcedures: {contacts: [], procedures: []},
+        currentStep: data.currentStep || 1,
         status: data.status || 'draft',
         paidAccess: data.paidAccess === true ? true : false // Only true if explicitly set
       };
