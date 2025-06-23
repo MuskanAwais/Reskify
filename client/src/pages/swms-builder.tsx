@@ -131,11 +131,12 @@ const getSteps = () => [
   { id: 1, title: "Project & Contractor Details", description: "Project information, contractor details, and high-risk work identification" },
   { id: 2, title: "Work Activities & Risk Assessment", description: "Generate tasks and manage comprehensive risk assessments with controls" },
   { id: 3, title: "High-Risk Construction Work", description: "Select applicable HRCW categories from WHS Regulations 2011" },
-  { id: 4, title: "Plant, Equipment & Training", description: "Equipment specifications, training requirements, and permits" },
-  { id: 5, title: "Emergency & Monitoring", description: "Emergency procedures and review/monitoring processes" },
-  { id: 6, title: "Payment & Access", description: "Select payment option to complete SWMS generation" },
-  { id: 7, title: "Legal Disclaimer", description: "Accept terms and liability disclaimer" },
-  { id: 8, title: "Digital Signatures & PDF", description: "Generate complete SWMS document with optional signatures" }
+  { id: 4, title: "Personal Protective Equipment", description: "Select required PPE based on work activities and risks" },
+  { id: 5, title: "Plant, Equipment & Training", description: "Equipment specifications, training requirements, and permits" },
+  { id: 6, title: "Emergency & Monitoring", description: "Emergency procedures and review/monitoring processes" },
+  { id: 7, title: "Payment & Access", description: "Select payment option to complete SWMS generation" },
+  { id: 8, title: "Legal Disclaimer", description: "Accept terms and liability disclaimer" },
+  { id: 9, title: "Digital Signatures & PDF", description: "Generate complete SWMS document with optional signatures" }
 ];
 
 export default function SwmsBuilder() {
@@ -167,7 +168,8 @@ export default function SwmsBuilder() {
     signatures: [],
     emergencyProcedures: [],
     generalRequirements: [],
-    hrcwCategories: [] // Auto-detected High-Risk Construction Work categories
+    hrcwCategories: [], // Auto-detected High-Risk Construction Work categories
+    ppeRequirements: [] // Auto-detected PPE requirements
   });
 
   // Load saved data from localStorage on mount
@@ -219,6 +221,81 @@ export default function SwmsBuilder() {
     return Array.from(detectedCategories);
   };
 
+  // Auto-detect PPE requirements based on activities and HRCW
+  const detectPPERequirements = (activities: any[], hrcwCategories: number[] = []) => {
+    const detectedPPE = new Set<string>();
+    
+    // Always include standard PPE
+    const standardPPE = [
+      'hard-hat', 'hi-vis-vest', 'steel-cap-boots', 'safety-glasses', 
+      'gloves', 'hearing-protection', 'long-pants', 'long-sleeve-shirt'
+    ];
+    standardPPE.forEach(ppe => detectedPPE.add(ppe));
+    
+    // Activity-based detection
+    activities.forEach(activity => {
+      const activityText = `${activity.task || ''} ${activity.hazards?.join(' ') || ''} ${activity.controlMeasures?.join(' ') || ''}`.toLowerCase();
+      
+      // Height work
+      if (activityText.includes('height') || activityText.includes('ladder') || activityText.includes('scaffold') || activityText.includes('roof')) {
+        detectedPPE.add('fall-arrest-harness');
+        detectedPPE.add('safety-harness-lanyard');
+      }
+      
+      // Welding
+      if (activityText.includes('weld') || activityText.includes('cutting') || activityText.includes('torch')) {
+        detectedPPE.add('welding-helmet-gloves');
+        detectedPPE.add('fire-retardant-clothing');
+      }
+      
+      // Electrical
+      if (activityText.includes('electrical') || activityText.includes('power') || activityText.includes('wiring')) {
+        detectedPPE.add('insulated-gloves');
+        detectedPPE.add('anti-static-clothing');
+      }
+      
+      // Chemical/dust
+      if (activityText.includes('dust') || activityText.includes('chemical') || activityText.includes('fume')) {
+        detectedPPE.add('dust-mask');
+        detectedPPE.add('respirator');
+      }
+      
+      // Confined space
+      if (activityText.includes('confined') || activityText.includes('tank') || activityText.includes('vessel')) {
+        detectedPPE.add('confined-space-breathing-apparatus');
+      }
+      
+      // Cutting/glass
+      if (activityText.includes('cut') || activityText.includes('glass') || activityText.includes('sharp')) {
+        detectedPPE.add('cut-resistant-gloves');
+        detectedPPE.add('face-shield');
+      }
+      
+      // Demolition/grinding
+      if (activityText.includes('demolit') || activityText.includes('grind') || activityText.includes('hammer')) {
+        detectedPPE.add('impact-goggles');
+        detectedPPE.add('ear-canal-protectors');
+      }
+      
+      // Wet conditions
+      if (activityText.includes('wet') || activityText.includes('water') || activityText.includes('rain')) {
+        detectedPPE.add('non-slip-footwear');
+      }
+    });
+    
+    // HRCW-based detection
+    if (hrcwCategories.includes(1)) detectedPPE.add('fall-arrest-harness'); // Fall risk
+    if (hrcwCategories.includes(4)) detectedPPE.add('respirator'); // Asbestos
+    if (hrcwCategories.includes(6)) detectedPPE.add('confined-space-breathing-apparatus'); // Confined space
+    if (hrcwCategories.includes(11) || hrcwCategories.includes(18)) {
+      detectedPPE.add('insulated-gloves'); // Electrical
+      detectedPPE.add('anti-static-clothing');
+    }
+    if (hrcwCategories.includes(12)) detectedPPE.add('respirator'); // Contaminated atmosphere
+    
+    return Array.from(detectedPPE);
+  };
+
   // Auto-detect HRCW when activities change
   useEffect(() => {
     if (formData.activities.length > 0) {
@@ -231,6 +308,17 @@ export default function SwmsBuilder() {
       }
     }
   }, [formData.activities]);
+
+  // Auto-detect PPE when activities or HRCW change
+  useEffect(() => {
+    if (formData.activities.length > 0 || formData.hrcwCategories.length > 0) {
+      const detectedPPE = detectPPERequirements(formData.activities, formData.hrcwCategories);
+      setFormData(prev => ({
+        ...prev,
+        ppeRequirements: detectedPPE
+      }));
+    }
+  }, [formData.activities, formData.hrcwCategories]);
 
   // Load draft mutation
   const loadDraftMutation = useMutation({
@@ -433,13 +521,19 @@ export default function SwmsBuilder() {
 
   const validateStep4 = () => {
     const errors: string[] = [];
+    // PPE step validation - optional as it's auto-detected
+    return errors;
+  };
+
+  const validateStep5 = () => {
+    const errors: string[] = [];
     if (!formData.plantEquipment || formData.plantEquipment.length === 0) {
       errors.push("Plant and equipment information is required");
     }
     return errors;
   };
 
-  const validateStep5 = () => {
+  const validateStep6 = () => {
     const errors: string[] = [];
     if (!formData.emergencyProcedures || formData.emergencyProcedures.length === 0) {
       errors.push("Emergency procedures must be defined");
@@ -447,7 +541,7 @@ export default function SwmsBuilder() {
     return errors;
   };
 
-  const validateStep7 = () => {
+  const validateStep8 = () => {
     const errors: string[] = [];
     if (!formData.acceptedDisclaimer) {
       errors.push("Legal disclaimer must be accepted");
@@ -465,12 +559,12 @@ export default function SwmsBuilder() {
       errors = validateStep2();
     } else if (currentStep === 3) {
       errors = validateStep3();
-    } else if (currentStep === 4) {
-      errors = validateStep4();
     } else if (currentStep === 5) {
       errors = validateStep5();
-    } else if (currentStep === 7) {
-      errors = validateStep7();
+    } else if (currentStep === 6) {
+      errors = validateStep6();
+    } else if (currentStep === 8) {
+      errors = validateStep8();
     }
 
     if (errors.length > 0) {

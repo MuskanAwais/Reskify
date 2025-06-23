@@ -58,6 +58,7 @@ export const swmsDocuments = pgTable("swms_documents", {
   whsRegulations: text("whs_regulations").array(),
   highRiskJustification: text("high_risk_justification"),
   hrcwCategories: jsonb("hrcw_categories").$type<number[]>().default([]),
+  ppeRequirements: jsonb("ppe_requirements").$type<string[]>().default([]),
   
   // 3. Work Activity Breakdown
   tradeType: text("trade_type").notNull(),

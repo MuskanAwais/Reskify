@@ -666,6 +666,195 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
       return (
         <div className="space-y-6">
           <div className="text-center">
+            <Shield className="mx-auto h-12 w-12 text-blue-600 mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Personal Protective Equipment (PPE)</h3>
+            <p className="text-gray-600 text-sm">
+              Select required PPE based on your work activities and identified risks
+            </p>
+          </div>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <Shield className="mr-2 h-5 w-5 text-blue-600" />
+                PPE Requirements
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {formData.ppeRequirements && formData.ppeRequirements.length > 0 ? (
+                <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <div className="flex items-center mb-2">
+                    <Info className="h-4 w-4 text-blue-600 mr-2" />
+                    <span className="font-medium text-blue-800">
+                      {formData.ppeRequirements.length} PPE Items Auto-Selected
+                    </span>
+                  </div>
+                  <p className="text-blue-700 text-sm">
+                    PPE has been automatically selected based on your work activities and risk assessment. Review and adjust as needed.
+                  </p>
+                </div>
+              ) : (
+                <div className="mb-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                  <div className="flex items-center mb-2">
+                    <Info className="h-4 w-4 text-gray-600 mr-2" />
+                    <span className="font-medium text-gray-800">Select Required PPE</span>
+                  </div>
+                  <p className="text-gray-700 text-sm">
+                    Select the personal protective equipment required for your work activities.
+                  </p>
+                </div>
+              )}
+
+              <div className="space-y-6">
+                {/* Standard PPE */}
+                <div>
+                  <h4 className="font-medium text-gray-900 mb-3 flex items-center">
+                    <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
+                    Standard PPE Items (General Use)
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {[
+                      { id: 'hard-hat', title: 'Hard Hat', description: 'Head protection from falling objects' },
+                      { id: 'hi-vis-vest', title: 'Hi-Vis Vest/Shirt', description: 'Visibility on site' },
+                      { id: 'steel-cap-boots', title: 'Steel Cap Boots', description: 'Foot protection from impact or puncture' },
+                      { id: 'safety-glasses', title: 'Safety Glasses', description: 'Eye protection' },
+                      { id: 'gloves', title: 'Gloves', description: 'General hand protection' },
+                      { id: 'hearing-protection', title: 'Hearing Protection', description: 'Earplugs or earmuffs' },
+                      { id: 'long-pants', title: 'Long Pants', description: 'Protection from abrasions and minor cuts' },
+                      { id: 'long-sleeve-shirt', title: 'Long Sleeve Shirt', description: 'General body protection' },
+                      { id: 'dust-mask', title: 'Dust Mask', description: 'Basic airborne dust protection' },
+                      { id: 'sun-protection', title: 'Sun Protection', description: 'Hat, sunscreen - UV exposure control' }
+                    ].map((ppe) => {
+                      const isSelected = (formData.ppeRequirements || []).includes(ppe.id);
+                      return (
+                        <div 
+                          key={ppe.id} 
+                          className={`cursor-pointer transition-all duration-200 border-2 rounded-lg p-3 hover:shadow-md ${
+                            isSelected 
+                              ? 'border-green-500 bg-green-50 shadow-md' 
+                              : 'border-gray-200 bg-white hover:border-gray-300'
+                          }`}
+                          onClick={() => {
+                            const currentPPE = formData.ppeRequirements || [];
+                            const updatedPPE = isSelected
+                              ? currentPPE.filter(id => id !== ppe.id)
+                              : [...currentPPE, ppe.id];
+                            updateFormData({ ppeRequirements: updatedPPE });
+                          }}
+                        >
+                          <div className="flex items-start space-x-3">
+                            <div className={`w-5 h-5 rounded border-2 flex items-center justify-center mt-0.5 ${
+                              isSelected 
+                                ? 'bg-green-500 border-green-500' 
+                                : 'border-gray-300'
+                            }`}>
+                              {isSelected && (
+                                <CheckCircle className="h-3 w-3 text-white" />
+                              )}
+                            </div>
+                            <div className="flex-1">
+                              <div className="font-medium text-sm text-gray-900 leading-tight">
+                                {ppe.title}
+                              </div>
+                              <p className="text-xs text-gray-600 mt-1 leading-tight">
+                                {ppe.description}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Task-Specific PPE */}
+                <div>
+                  <h4 className="font-medium text-gray-900 mb-3 flex items-center">
+                    <AlertTriangle className="h-4 w-4 text-yellow-600 mr-2" />
+                    Task-Specific PPE
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {[
+                      { id: 'fall-arrest-harness', title: 'Fall Arrest Harness', description: 'Working at heights' },
+                      { id: 'confined-space-breathing-apparatus', title: 'Confined Space Breathing Apparatus', description: 'Confined spaces or poor air quality' },
+                      { id: 'welding-helmet-gloves', title: 'Welding Helmet & Gloves', description: 'Welding tasks' },
+                      { id: 'cut-resistant-gloves', title: 'Cut-Resistant Gloves', description: 'Blade or glass handling' },
+                      { id: 'face-shield', title: 'Face Shield', description: 'High-impact or chemical splash risk' },
+                      { id: 'respirator', title: 'Respirator (Half/Full Face)', description: 'Hazardous fumes, chemicals, or dust' },
+                      { id: 'chemical-resistant-apron', title: 'Chemical-Resistant Apron', description: 'Handling corrosive substances' },
+                      { id: 'anti-static-clothing', title: 'Anti-Static Clothing', description: 'Electrical or explosive environments' },
+                      { id: 'insulated-gloves', title: 'Insulated Gloves', description: 'Live electrical work' },
+                      { id: 'fire-retardant-clothing', title: 'Fire-Retardant Clothing', description: 'Hot works / fire risk areas' },
+                      { id: 'knee-pads', title: 'Knee Pads', description: 'Prolonged kneeling (e.g. flooring work)' },
+                      { id: 'non-slip-footwear', title: 'Non-slip Footwear', description: 'Wet/slippery environments' },
+                      { id: 'safety-harness-lanyard', title: 'Safety Harness & Lanyard', description: 'Elevated work or boom lift' },
+                      { id: 'ear-canal-protectors', title: 'Ear Canal Protectors', description: 'High-decibel machinery use' },
+                      { id: 'impact-goggles', title: 'Impact Goggles', description: 'Demolition or grinding tasks' }
+                    ].map((ppe) => {
+                      const isSelected = (formData.ppeRequirements || []).includes(ppe.id);
+                      return (
+                        <div 
+                          key={ppe.id} 
+                          className={`cursor-pointer transition-all duration-200 border-2 rounded-lg p-3 hover:shadow-md ${
+                            isSelected 
+                              ? 'border-yellow-500 bg-yellow-50 shadow-md' 
+                              : 'border-gray-200 bg-white hover:border-gray-300'
+                          }`}
+                          onClick={() => {
+                            const currentPPE = formData.ppeRequirements || [];
+                            const updatedPPE = isSelected
+                              ? currentPPE.filter(id => id !== ppe.id)
+                              : [...currentPPE, ppe.id];
+                            updateFormData({ ppeRequirements: updatedPPE });
+                          }}
+                        >
+                          <div className="flex items-start space-x-3">
+                            <div className={`w-5 h-5 rounded border-2 flex items-center justify-center mt-0.5 ${
+                              isSelected 
+                                ? 'bg-yellow-500 border-yellow-500' 
+                                : 'border-gray-300'
+                            }`}>
+                              {isSelected && (
+                                <CheckCircle className="h-3 w-3 text-white" />
+                              )}
+                            </div>
+                            <div className="flex-1">
+                              <div className="font-medium text-sm text-gray-900 leading-tight">
+                                {ppe.title}
+                              </div>
+                              <p className="text-xs text-gray-600 mt-1 leading-tight">
+                                {ppe.description}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+
+              {(formData.ppeRequirements || []).length > 0 && (
+                <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <div className="flex items-center mb-2">
+                    <Info className="h-4 w-4 text-blue-600 mr-2" />
+                    <span className="font-medium text-blue-800">PPE Compliance</span>
+                  </div>
+                  <p className="text-blue-700 text-sm">
+                    Ensure all selected PPE meets Australian Standards and is properly maintained, inspected, and worn correctly. 
+                    Provide appropriate training for specialized PPE equipment.
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      );
+
+    case 5:
+      return (
+        <div className="space-y-6">
+          <div className="text-center">
             <Wrench className="mx-auto h-12 w-12 text-primary mb-4" />
             <h3 className="text-lg font-semibold mb-2">Plant & Equipment (Optional)</h3>
             <p className="text-gray-600 text-sm">
@@ -804,7 +993,7 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
         </div>
       );
 
-    case 6:
+    case 7:
       return (
         <div className="space-y-6">
           <div className="text-center">
@@ -951,7 +1140,7 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
         </div>
       );
 
-    case 8:
+    case 9:
       return (
         <div className="space-y-6">
           <div className="text-center">
