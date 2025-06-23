@@ -311,8 +311,8 @@ export default function SwmsBuilder() {
 
   // Auto-detect PPE when activities or HRCW change
   useEffect(() => {
-    if (formData.activities.length > 0 || formData.hrcwCategories.length > 0) {
-      const detectedPPE = detectPPERequirements(formData.activities, formData.hrcwCategories);
+    if (formData.activities.length > 0 || (formData.hrcwCategories && formData.hrcwCategories.length > 0)) {
+      const detectedPPE = detectPPERequirements(formData.activities, formData.hrcwCategories || []);
       setFormData(prev => ({
         ...prev,
         ppeRequirements: detectedPPE

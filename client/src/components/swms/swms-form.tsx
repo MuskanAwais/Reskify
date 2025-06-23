@@ -876,7 +876,7 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
         </div>
       );
 
-    case 5:
+    case 6:
       return (
         <div className="space-y-6">
           <div className="text-center">
@@ -1085,7 +1085,7 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
         </div>
       );
 
-    case 7:
+    case 8:
       return (
         <div className="space-y-6">
           <div className="text-center">
