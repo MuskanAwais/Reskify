@@ -74,6 +74,9 @@ export default function SwmsEditor() {
 
   const swmsData = (swmsResponse as any)?.document;
 
+  // Check if user has paid access to determine edit restrictions
+  const hasPaidAccess = swmsData?.paidAccess === true;
+
   const [projectInfo, setProjectInfo] = useState({
     title: "",
     projectNumber: "",
@@ -309,44 +312,94 @@ export default function SwmsEditor() {
         </div>
       </div>
 
-      {/* Project Info (Read-only) */}
+      {/* Project Information Section */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center">
-            <Lock className="h-5 w-5 mr-2 text-gray-500" />
-            Project Information (Protected)
+            {hasPaidAccess ? (
+              <Lock className="h-5 w-5 mr-2 text-gray-500" />
+            ) : (
+              <div className="h-5 w-5 mr-2" />
+            )}
+            Project Information
+            {hasPaidAccess && (
+              <Badge variant="secondary" className="ml-2">Protected</Badge>
+            )}
           </CardTitle>
-          <p className="text-sm text-gray-600">
-            Project details are locked to prevent changes after payment. Contact support for modifications.
-          </p>
+          {hasPaidAccess && (
+            <p className="text-sm text-gray-600">
+              Project details are locked to prevent changes after payment. Contact support for modifications.
+            </p>
+          )}
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="text-sm font-medium text-gray-700">Project Name</label>
-              <div className="mt-1 p-3 bg-gray-50 border rounded-md text-gray-900">
-                {projectInfo.title}
+          {!hasPaidAccess ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium text-gray-700">Project Name</label>
+                <Input
+                  value={projectInfo.title}
+                  onChange={(e) => setProjectInfo(prev => ({ ...prev, title: e.target.value }))}
+                  placeholder="Enter project name"
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-700">Job Number</label>
+                <Input
+                  value={projectInfo.projectNumber}
+                  onChange={(e) => setProjectInfo(prev => ({ ...prev, projectNumber: e.target.value }))}
+                  placeholder="Enter job number"
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-700">Project Address</label>
+                <Input
+                  value={projectInfo.projectAddress}
+                  onChange={(e) => setProjectInfo(prev => ({ ...prev, projectAddress: e.target.value }))}
+                  placeholder="Enter project address"
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-700">Principal Contractor</label>
+                <Input
+                  value={projectInfo.principalContractor}
+                  onChange={(e) => setProjectInfo(prev => ({ ...prev, principalContractor: e.target.value }))}
+                  placeholder="Enter principal contractor"
+                  className="mt-1"
+                />
               </div>
             </div>
-            <div>
-              <label className="text-sm font-medium text-gray-700">Job Number</label>
-              <div className="mt-1 p-3 bg-gray-50 border rounded-md text-gray-900">
-                {projectInfo.projectNumber || 'N/A'}
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium text-gray-700">Project Name</label>
+                <div className="mt-1 p-3 bg-gray-50 border rounded-md text-gray-900">
+                  {projectInfo.title}
+                </div>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-700">Job Number</label>
+                <div className="mt-1 p-3 bg-gray-50 border rounded-md text-gray-900">
+                  {projectInfo.projectNumber || 'N/A'}
+                </div>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-700">Project Address</label>
+                <div className="mt-1 p-3 bg-gray-50 border rounded-md text-gray-900">
+                  {projectInfo.projectAddress}
+                </div>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-700">Principal Contractor</label>
+                <div className="mt-1 p-3 bg-gray-50 border rounded-md text-gray-900">
+                  {projectInfo.principalContractor}
+                </div>
               </div>
             </div>
-            <div>
-              <label className="text-sm font-medium text-gray-700">Project Address</label>
-              <div className="mt-1 p-3 bg-gray-50 border rounded-md text-gray-900">
-                {projectInfo.projectAddress}
-              </div>
-            </div>
-            <div>
-              <label className="text-sm font-medium text-gray-700">Principal Contractor</label>
-              <div className="mt-1 p-3 bg-gray-50 border rounded-md text-gray-900">
-                {projectInfo.principalContractor}
-              </div>
-            </div>
-          </div>
+          )}
         </CardContent>
       </Card>
 
