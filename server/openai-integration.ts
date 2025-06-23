@@ -16,7 +16,8 @@ export interface TaskGenerationRequest {
     tradeType: string;
     description?: string;
     siteEnvironment?: string; // Residential, Commercial, Civil, Industrial, Remote, High-rise
-    specialRiskFactors?: string[]; // Confined space, live electrical, structural demolition, height >2m, airside works
+    specialRiskFactors?: string[]; // Legacy field for compatibility
+    hrcwCategories?: number[]; // High-Risk Construction Work categories (1-18)
     state?: string; // NSW, VIC, QLD, etc.
   };
   plainTextDescription?: string; // For Job Mode
@@ -67,6 +68,7 @@ export async function generateSWMSFromTask(request: TaskGenerationRequest): Prom
     const state = request.projectDetails.state || 'NSW';
     const siteEnvironment = request.projectDetails.siteEnvironment || '';
     const specialRiskFactors = request.projectDetails.specialRiskFactors || [];
+    const hrcwCategories = request.projectDetails.hrcwCategories || [];
     
     let prompt = '';
     
@@ -118,8 +120,38 @@ export async function generateSWMSFromTask(request: TaskGenerationRequest): Prom
 MANDATORY: Generate exactly 8 tasks covering: 1)Site setup 2)Main work (4-5 tasks) 3)Safety procedures 4)Cleanup. Each task needs 4-5 hazards with controls. Risk scores: 1-5=Low, 6-10=Medium, 11-15=High, 16-20=Extreme. Australian WHS compliance. JSON only.`
         },
         {
-          role: "user",
-          content: prompt
+          role: "user", 
+          content: `${prompt}
+
+${hrcwCategories.length > 0 ? `
+CRITICAL: The user has identified High-Risk Construction Work (HRCW) categories: ${hrcwCategories.join(', ')}. 
+Ensure your generated tasks include specific activities and enhanced safety measures for these HRCW categories:
+${hrcwCategories.map(id => {
+  const hrcwMap = {
+    1: "Fall risk >2m - Include scaffolding, ladders, height work tasks",
+    2: "Telecommunication tower - Include tower climbing, antenna work",
+    3: "Load-bearing demolition - Include structural assessment, temporary support",
+    4: "Asbestos disturbance - Include containment, licensed removal procedures",
+    5: "Structural alterations - Include temporary support, engineering assessment",
+    6: "Confined spaces - Include entry procedures, atmosphere testing",
+    7: "Excavation >1.5m - Include trenching, shoring, cave-in protection",
+    8: "Explosives - Include blasting procedures, exclusion zones",
+    9: "Pressurised gas - Include isolation, pressure testing procedures",
+    10: "Chemical/fuel lines - Include isolation, spill containment",
+    11: "Live electrical - Include isolation procedures, lockout/tagout",
+    12: "Contaminated atmosphere - Include air monitoring, ventilation",
+    13: "Tilt-up/precast concrete - Include crane operations, lifting procedures",
+    14: "Traffic corridors - Include traffic management, signage",
+    15: "Mobile plant - Include segregation, spotters, communication",
+    16: "Extreme temperatures - Include thermal protection, monitoring",
+    17: "Water/drowning risk - Include rescue equipment, barriers",
+    18: "Live conductors - Include specialized PPE, clearance distances"
+  };
+  return `- Category ${id}: ${hrcwMap[id] || 'High-risk work requiring specialized procedures'}`;
+}).join('\n')}
+` : ''}
+
+Generate tasks that specifically address these high-risk elements with comprehensive control measures.`
         }
       ],
       response_format: { type: "json_object" },
