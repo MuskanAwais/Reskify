@@ -6,6 +6,7 @@ import fs from 'fs';
 import path from 'path';
 import Stripe from 'stripe';
 import { storage } from "./storage.js";
+import { generateExactPDF } from "./pdf-generator-exact.js";
 
 // Initialize Stripe
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
@@ -103,39 +104,11 @@ export async function registerRoutes(app: Express) {
     }
   });
 
-  // Complete SWMS PDF Download endpoint
+  // Complete SWMS PDF Download endpoint using exact layout
   app.post("/api/swms/pdf-download", async (req, res) => {
     try {
       const requestTitle = req.body?.projectName || req.body?.title || 'Unknown project';
       console.log("PDF generation request received:", requestTitle);
-      
-      // Check if this is one of the original watermark discussion files
-      const originalFileMap: Record<string, string> = {
-        'Sydney High-Rise Enhanced SWMS': 'sydney_highrise_swms_enhanced.pdf',
-        'Test Landscape SWMS': 'test_landscape_swms.pdf',
-        'Final Test SWMS': 'final_test.pdf',
-        'Modern App SWMS': 'modern_app_swms.pdf',
-        'Sample Modern SWMS': 'sample_modern_swms.pdf'
-      };
-      
-      const originalFile = originalFileMap[requestTitle];
-      if (originalFile) {
-        // Serve the original PDF file
-        const filePath = path.join(process.cwd(), originalFile);
-        
-        if (fs.existsSync(filePath)) {
-          console.log(`Serving original watermark discussion file: ${originalFile}`);
-          const fileBuffer = fs.readFileSync(filePath);
-          
-          res.setHeader('Content-Type', 'application/pdf');
-          res.setHeader('Content-Disposition', `attachment; filename="${originalFile}"`);
-          res.setHeader('Content-Length', fileBuffer.length.toString());
-          res.send(fileBuffer);
-          return;
-        } else {
-          console.log(`Original file not found: ${filePath}`);
-        }
-      }
       
       const data = req.body;
       
@@ -399,15 +372,13 @@ export async function registerRoutes(app: Express) {
     }
   });
 
-  // PDF Preview endpoint - serves PDF with browser-friendly headers
+  // PDF Preview endpoint - serves PDF with exact layout for browser display
   app.post('/api/swms/pdf-preview', async (req, res) => {
     try {
       const data = req.body;
       
-      // Import fixed PDF generator
-      const { generateFixedSWMSPDF } = await import('./pdf-generator-fixed.js');
-      
-      const pdfBuffer = await generateFixedSWMSPDF(data);
+      // Use exact layout PDF generator
+      const pdfBuffer = await generateExactPDF(data);
       
       // Set headers for browser PDF display
       res.setHeader('Content-Type', 'application/pdf');

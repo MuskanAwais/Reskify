@@ -238,28 +238,17 @@ export async function generateExactPDF(swmsData: SWMSData): Promise<Buffer> {
         doc.fillColor('#000000').font('Helvetica');
       });
 
-      // Add remaining HRCW items if not selected (showing all 18 categories)
-      const allHRCW = HRCW_CATEGORIES.slice(0, 18);
-      allHRCW.forEach((category, index) => {
-        const col = index % gridCols;
-        const row = Math.floor(index / gridCols);
+      // Fill remaining grid positions if needed to match screenshot layout
+      const totalGridPositions = 16; // 4x4 grid shown in screenshot
+      for (let i = selectedHRCW.length; i < totalGridPositions; i++) {
+        const col = i % gridCols;
+        const row = Math.floor(i / gridCols);
         const x = startX + col * (cardWidth + cardMarginX);
         const y = yPos + row * (cardHeight + cardMarginY);
-
-        // Only draw if not already drawn as selected
-        const isSelected = selectedHRCW.some(selected => selected?.id === category.id);
-        if (isSelected) return;
-
-        // Card background for non-selected items
-        doc.rect(x, y, cardWidth, cardHeight).stroke('#CCCCCC');
-        doc.fontSize(9).font('Helvetica-Bold').fillColor('#000000');
-        doc.text(category.title, x + 12, y + 15, { width: cardWidth - 24, align: 'left' });
         
-        if (category.description) {
-          doc.fontSize(8).font('Helvetica').fillColor('#666666');
-          doc.text(category.description, x + 12, y + 45, { width: cardWidth - 24, align: 'left' });
-        }
-      });
+        // Empty cards for layout consistency
+        doc.rect(x, y, cardWidth, cardHeight).stroke('#CCCCCC');
+      }
 
       // PAGE 4: Construction Control Risk Matrix
       doc.addPage();
@@ -416,137 +405,157 @@ export async function generateExactPDF(swmsData: SWMSData): Promise<Buffer> {
         }
       });
 
-      // PAGE 7: Personal Protective Equipment
+      // PAGE 7: Personal Protective Equipment - exact layout matching screenshot
       doc.addPage();
       yPos = addHeader('Personal Protective Equipment');
 
       const selectedPPE = swmsData.ppeRequirements || [];
       
-      // PPE Grid - 5 columns, 4 rows
+      // PPE Grid - exact 5 columns, exact spacing to match screenshot
       const ppeGridCols = 5;
-      const ppeCardWidth = 100;
-      const ppeCardHeight = 60;
+      const ppeCardWidth = 184;
+      const ppeCardHeight = 95;
       const ppeMarginX = 8;
       const ppeMarginY = 8;
+      const ppeStartX = 42;
 
-      selectedPPE.forEach((ppeId, index) => {
-        const ppeItem = PPE_ITEMS[ppeId as keyof typeof PPE_ITEMS];
-        if (!ppeItem) return;
-
-        const col = index % ppeGridCols;
-        const row = Math.floor(index / ppeGridCols);
-        const x = 40 + col * (ppeCardWidth + ppeMarginX);
+      // Show all 20 PPE items in exact 5x4 grid layout
+      const allPPEItems = Object.keys(PPE_ITEMS);
+      for (let i = 0; i < 20; i++) {
+        const col = i % ppeGridCols;
+        const row = Math.floor(i / ppeGridCols);
+        const x = ppeStartX + col * (ppeCardWidth + ppeMarginX);
         const y = yPos + row * (ppeCardHeight + ppeMarginY);
 
-        // PPE Card
-        const isStandard = ['hard-hat', 'hi-vis-vest', 'steel-cap-boots', 'safety-glasses', 'gloves'].includes(ppeId);
+        const ppeId = allPPEItems[i];
+        const ppeItem = ppeId ? PPE_ITEMS[ppeId as keyof typeof PPE_ITEMS] : '';
+        const isSelected = selectedPPE.includes(ppeId);
+
+        // PPE Card styling - exact colors matching screenshot
+        const isStandard = ['hard-hat', 'hi-vis-vest', 'steel-cap-boots', 'safety-glasses', 'gloves', 'hearing-protection', 'long-pants', 'long-sleeve-shirt', 'dust-mask', 'sun-protection'].includes(ppeId);
+        
         if (isStandard) {
-          doc.rect(x, y, ppeCardWidth, ppeCardHeight).stroke();
+          // Standard PPE - white background with black border
+          doc.rect(x, y, ppeCardWidth, ppeCardHeight).stroke('#CCCCCC');
+          doc.fontSize(8).font('Helvetica-Bold').fillColor('#000000');
         } else {
+          // Task-specific PPE - yellow background matching screenshot
           doc.rect(x, y, ppeCardWidth, ppeCardHeight).fillAndStroke('#FEF3C7', '#F59E0B');
+          doc.fontSize(8).font('Helvetica-Bold').fillColor('#000000');
         }
 
-        doc.fontSize(7).font('Helvetica-Bold').fillColor('#000000');
-        doc.text(ppeItem, x + 2, y + 5, { width: ppeCardWidth - 4, align: 'left' });
-      });
+        // PPE text with exact positioning
+        if (ppeItem) {
+          doc.text(ppeItem, x + 8, y + 12, { width: ppeCardWidth - 16, align: 'left' });
+          
+          // Add color coding for specific types
+          if (ppeItem.includes('Hi-Vis') || ppeItem.includes('Safety Glasses') || ppeItem.includes('Cut-Resistant') || ppeItem.includes('Knee Pads')) {
+            doc.fontSize(7).fillColor('#059669'); // Green color for these specific items
+          }
+        }
+        
+        doc.fillColor('#000000').font('Helvetica');
+      }
 
-      // PAGE 8: Plant & Equipment Register
+      // PAGE 8: Plant & Equipment Register - exact layout matching screenshot
       doc.addPage();
       yPos = addHeader('Plant & Equipment Register');
 
-      // Equipment table
+      // Equipment table - exact column widths and positioning
       const equipHeaders = ['Equipment', 'Model', 'Serial Number', 'Risk Level', 'Next Inspection', 'Certification Required'];
-      const equipWidths = [100, 100, 100, 60, 80, 100];
+      const equipWidths = [160, 160, 160, 100, 140, 170];
 
-      tableX = 40;
+      let equipTableX = 30;
       equipHeaders.forEach((header, index) => {
-        doc.rect(tableX, yPos, equipWidths[index], 25).fillAndStroke('#F3F4F6', '#000000');
-        doc.fontSize(8).font('Helvetica-Bold').fillColor('#000000');
-        doc.text(header, tableX + 2, yPos + 8, { width: equipWidths[index] - 4, align: 'center' });
-        tableX += equipWidths[index];
+        doc.rect(equipTableX, yPos, equipWidths[index], 30).fillAndStroke('#F3F4F6', '#CCCCCC');
+        doc.fontSize(9).font('Helvetica-Bold').fillColor('#000000');
+        doc.text(header, equipTableX + 8, yPos + 10, { width: equipWidths[index] - 16, align: 'center' });
+        equipTableX += equipWidths[index];
       });
-      yPos += 25;
+      yPos += 30;
 
-      const equipment = swmsData.plantEquipment || [
-        { name: 'Sample Equipment', model: 'Sample Model Name', serial: 'Sample Serial No', riskLevel: 'High', inspection: '5th May 2025', certification: 'No' },
-        { name: 'Sample Equipment', model: 'Sample Model Name', serial: 'Sample Serial No', riskLevel: 'Low', inspection: '5th May 2025', certification: 'No' },
-        { name: 'Sample Equipment', model: 'Sample Model Name', serial: 'Sample Serial No', riskLevel: 'Medium', inspection: '5th May 2025', certification: 'Yes' },
-        { name: 'Sample Equipment', model: 'Sample Model Name', serial: 'Sample Serial No', riskLevel: 'High', inspection: '5th May 2025', certification: 'No' }
+      // Use authentic equipment data from SWMS builder
+      const equipment = swmsData.plantEquipment?.length > 0 ? swmsData.plantEquipment : [
+        { name: 'Sample Equipment', model: 'Sample Model Name', serial: 'Sample Serial No', riskLevel: 'High', nextInspection: '5th May 2025', certificationRequired: 'No' },
+        { name: 'Sample Equipment', model: 'Sample Model Name', serial: 'Sample Serial No', riskLevel: 'Low', nextInspection: '5th May 2025', certificationRequired: 'No' },
+        { name: 'Sample Equipment', model: 'Sample Model Name', serial: 'Sample Serial No', riskLevel: 'Medium', nextInspection: '5th May 2025', certificationRequired: 'Yes' },
+        { name: 'Sample Equipment', model: 'Sample Model Name', serial: 'Sample Serial No', riskLevel: 'High', nextInspection: '5th May 2025', certificationRequired: 'No' }
       ];
 
       equipment.forEach(equip => {
-        tableX = 40;
-        const rowHeight = 25;
+        equipTableX = 30;
+        const rowHeight = 40;
 
-        // Equipment data
+        // Equipment data columns
         [equip.name, equip.model, equip.serial].forEach((data, index) => {
-          doc.rect(tableX, yPos, equipWidths[index], rowHeight).stroke();
-          doc.fontSize(8).font('Helvetica').fillColor('#000000');
-          doc.text(data, tableX + 2, yPos + 8, { width: equipWidths[index] - 4, align: 'left' });
-          tableX += equipWidths[index];
+          doc.rect(equipTableX, yPos, equipWidths[index], rowHeight).stroke('#CCCCCC');
+          doc.fontSize(9).font('Helvetica').fillColor('#000000');
+          doc.text(data || '', equipTableX + 8, yPos + 15, { width: equipWidths[index] - 16, align: 'left' });
+          equipTableX += equipWidths[index];
         });
 
-        // Risk Level badge
-        doc.rect(tableX, yPos, equipWidths[3], rowHeight).stroke();
+        // Risk Level badge - exact styling
+        doc.rect(equipTableX, yPos, equipWidths[3], rowHeight).stroke('#CCCCCC');
         const riskColor = equip.riskLevel === 'High' ? 'orange' : equip.riskLevel === 'Medium' ? 'blue' : 'green';
-        addRiskBadge(equip.riskLevel, riskColor, tableX + 5, yPos + 4);
-        tableX += equipWidths[3];
+        addRiskBadge(equip.riskLevel, riskColor, equipTableX + 10, yPos + 10, equipWidths[3] - 20);
+        equipTableX += equipWidths[3];
 
         // Next Inspection
-        doc.rect(tableX, yPos, equipWidths[4], rowHeight).stroke();
-        doc.fontSize(8).font('Helvetica').fillColor('#000000');
-        doc.text(equip.inspection, tableX + 2, yPos + 8, { width: equipWidths[4] - 4, align: 'center' });
-        tableX += equipWidths[4];
+        doc.rect(equipTableX, yPos, equipWidths[4], rowHeight).stroke('#CCCCCC');
+        doc.fontSize(9).font('Helvetica').fillColor('#000000');
+        doc.text(equip.nextInspection || '5th May 2025', equipTableX + 8, yPos + 15, { width: equipWidths[4] - 16, align: 'center' });
+        equipTableX += equipWidths[4];
 
-        // Certification Required
-        doc.rect(tableX, yPos, equipWidths[5], rowHeight).stroke();
-        const certColor = equip.certification === 'Yes' ? 'green' : '#6B7280';
-        doc.rect(tableX + 20, yPos + 4, 40, 16).fill(certColor).stroke();
-        doc.fontSize(8).fillColor('#FFFFFF').text(equip.certification, tableX + 22, yPos + 8, { width: 36, align: 'center' });
-        doc.fillColor('#000000');
+        // Certification Required - exact badge styling
+        doc.rect(equipTableX, yPos, equipWidths[5], rowHeight).stroke('#CCCCCC');
+        const certRequired = equip.certificationRequired || 'No';
+        const certColor = certRequired === 'Yes' ? '#059669' : '#6B7280';
+        doc.rect(equipTableX + 50, yPos + 12, 60, 16).fill(certColor);
+        doc.fontSize(9).fillColor('#FFFFFF').font('Helvetica-Bold').text(certRequired, equipTableX + 50, yPos + 16, { width: 60, align: 'center' });
+        doc.fillColor('#000000').font('Helvetica');
 
         yPos += rowHeight;
       });
 
-      // PAGE 9: Sign In Register
+      // PAGE 9: Sign In Register - exact layout matching screenshot
       doc.addPage();
       yPos = addHeader('Sign In Register');
 
-      // Sign in table
+      // Sign in table - exact column widths and positioning
       const signHeaders = ['Name', 'Number', 'Signature', 'Date'];
-      const signWidths = [150, 100, 200, 100];
+      const signWidths = [230, 150, 360, 150];
 
-      tableX = 40;
+      let signTableX = 30;
       signHeaders.forEach((header, index) => {
-        doc.rect(tableX, yPos, signWidths[index], 25).fillAndStroke('#F3F4F6', '#000000');
-        doc.fontSize(8).font('Helvetica-Bold').fillColor('#000000');
-        doc.text(header, tableX + 2, yPos + 8, { width: signWidths[index] - 4, align: 'center' });
-        tableX += signWidths[index];
+        doc.rect(signTableX, yPos, signWidths[index], 30).fillAndStroke('#F3F4F6', '#CCCCCC');
+        doc.fontSize(9).font('Helvetica-Bold').fillColor('#000000');
+        doc.text(header, signTableX + 8, yPos + 10, { width: signWidths[index] - 16, align: 'center' });
+        signTableX += signWidths[index];
       });
-      yPos += 25;
+      yPos += 30;
 
-      // Sign in rows
+      // Sign in rows - exact styling matching screenshot
       for (let i = 0; i < 10; i++) {
-        tableX = 40;
-        const rowHeight = 30;
+        signTableX = 30;
+        const rowHeight = 40;
 
         signWidths.forEach((width, index) => {
-          doc.rect(tableX, yPos, width, rowHeight).stroke();
+          doc.rect(signTableX, yPos, width, rowHeight).stroke('#CCCCCC');
           
           if (index === 0) { // Name
-            doc.fontSize(8).font('Helvetica').fillColor('#000000');
-            doc.text('Sample Name', tableX + 5, yPos + 10);
+            doc.fontSize(9).font('Helvetica').fillColor('#000000');
+            doc.text('Sample Name', signTableX + 8, yPos + 15);
           } else if (index === 1) { // Number
-            doc.text('0499 999 999', tableX + 5, yPos + 10);
+            doc.text('0499 999 999', signTableX + 8, yPos + 15);
           } else if (index === 2) { // Signature
-            doc.fontSize(8).font('Helvetica').fillColor('#999999');
-            doc.text('Signature written here', tableX + 5, yPos + 10, { width: width - 10 });
+            doc.fontSize(9).font('Helvetica').fillColor('#999999');
+            doc.text('Signature written here', signTableX + 8, yPos + 15, { width: width - 16 });
           } else if (index === 3) { // Date
-            doc.fontSize(8).font('Helvetica').fillColor('#000000');
-            doc.text('19/05/2025', tableX + 5, yPos + 10);
+            doc.fontSize(9).font('Helvetica').fillColor('#000000');
+            doc.text('19/05/2025', signTableX + 8, yPos + 15);
           }
           
-          tableX += width;
+          signTableX += width;
         });
         yPos += rowHeight;
       }
