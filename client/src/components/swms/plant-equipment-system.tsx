@@ -211,6 +211,7 @@ export default function PlantEquipmentSystem({ plantEquipment, onUpdate }: Plant
                   <th className="border border-gray-300 p-2 text-left">Model</th>
                   <th className="border border-gray-300 p-2 text-left">Serial Number</th>
                   <th className="border border-gray-300 p-2 text-center">Next Inspection Due</th>
+                  <th className="border border-gray-300 p-2 text-center">Certification Required</th>
                   <th className="border border-gray-300 p-2 text-center">Risk Level</th>
                   <th className="border border-gray-300 p-2 text-center">Actions</th>
                 </tr>
@@ -220,14 +221,16 @@ export default function PlantEquipmentSystem({ plantEquipment, onUpdate }: Plant
                   <tr key={item.id} className="hover:bg-gray-50">
                     <td className="border border-gray-300 p-2">
                       <div className="font-medium">{item.name}</div>
-                      {item.certificationRequired && (
-                        <Badge variant="outline" className="mt-1">Cert Required</Badge>
-                      )}
                     </td>
                     <td className="border border-gray-300 p-2">{item.model || '-'}</td>
                     <td className="border border-gray-300 p-2">{item.serialNumber || '-'}</td>
                     <td className="border border-gray-300 p-2 text-center">
                       {item.nextInspection ? new Date(item.nextInspection).toLocaleDateString() : '-'}
+                    </td>
+                    <td className="border border-gray-300 p-2 text-center">
+                      <Badge variant={item.certificationRequired ? "destructive" : "secondary"}>
+                        {item.certificationRequired ? "Required" : "Not Required"}
+                      </Badge>
                     </td>
                     <td className="border border-gray-300 p-2 text-center">
                       <Badge className={getRiskColor(item.riskLevel)}>
@@ -388,7 +391,7 @@ export default function PlantEquipmentSystem({ plantEquipment, onUpdate }: Plant
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-3 gap-4">
                 <div>
                   <Label htmlFor="edit-inspection-due">Next Inspection Due</Label>
                   <Input
@@ -397,6 +400,21 @@ export default function PlantEquipmentSystem({ plantEquipment, onUpdate }: Plant
                     value={editingEquipment.nextInspection || ''}
                     onChange={(e) => setEditingEquipment({...editingEquipment, nextInspection: e.target.value})}
                   />
+                </div>
+                <div>
+                  <Label htmlFor="edit-certification">Certification Required</Label>
+                  <Select 
+                    value={editingEquipment.certificationRequired ? "true" : "false"}
+                    onValueChange={(value) => setEditingEquipment({...editingEquipment, certificationRequired: value === "true"})}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select certification" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="false">Not Required</SelectItem>
+                      <SelectItem value="true">Required</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div>
                   <Label htmlFor="edit-risk-level">Risk Level</Label>

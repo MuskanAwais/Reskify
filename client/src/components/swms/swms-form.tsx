@@ -428,9 +428,57 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
               description: formData.projectDescription || ''
             }}
             onActivitiesGenerated={(activities: any[], plantEquipment: any[]) => {
+              // Auto-detect PPE based on AI-generated activities
+              const activityTexts = activities.map(activity => 
+                `${activity.name || ''} ${activity.description || ''} ${
+                  activity.hazards?.map((h: any) => `${h.type} ${h.description}`).join(' ') || ''
+                } ${
+                  activity.ppe?.join(' ') || ''
+                }`
+              ).join(' ').toLowerCase();
+              
+              console.log('Activity texts for PPE detection:', activityTexts);
+              
+              const detectedPPE = new Set<string>();
+              
+              // Always include standard PPE
+              ['hard-hat', 'hi-vis-vest', 'steel-cap-boots', 'safety-glasses', 'gloves', 'hearing-protection', 'long-pants', 'long-sleeve-shirt'].forEach(ppe => detectedPPE.add(ppe));
+              
+              // Activity-specific PPE detection with extensive keywords
+              if (activityTexts.includes('height') || activityTexts.includes('ladder') || activityTexts.includes('scaffold') || activityTexts.includes('fall') || activityTexts.includes('elevated')) {
+                detectedPPE.add('safety-harness');
+              }
+              if (activityTexts.includes('dust') || activityTexts.includes('cutting') || activityTexts.includes('grinding') || activityTexts.includes('sanding') || activityTexts.includes('demolition')) {
+                detectedPPE.add('dust-mask');
+                detectedPPE.add('respirator');
+              }
+              if (activityTexts.includes('electrical') || activityTexts.includes('power') || activityTexts.includes('wiring') || activityTexts.includes('live electrical')) {
+                detectedPPE.add('electrical-gloves');
+              }
+              if (activityTexts.includes('welding') || activityTexts.includes('torch') || activityTexts.includes('cutting torch') || activityTexts.includes('hot work')) {
+                detectedPPE.add('welding-helmet');
+              }
+              if (activityTexts.includes('chemical') || activityTexts.includes('paint') || activityTexts.includes('solvent') || activityTexts.includes('adhesive')) {
+                detectedPPE.add('chemical-gloves');
+                detectedPPE.add('respirator');
+              }
+              if (activityTexts.includes('confined') || activityTexts.includes('space') || activityTexts.includes('enclosed')) {
+                detectedPPE.add('confined-space-equipment');
+              }
+              if (activityTexts.includes('cut') || activityTexts.includes('sharp') || activityTexts.includes('blade') || activityTexts.includes('knife')) {
+                detectedPPE.add('cut-resistant-gloves');
+              }
+              if (activityTexts.includes('tile') || activityTexts.includes('tiling') || activityTexts.includes('ceramic') || activityTexts.includes('grout')) {
+                detectedPPE.add('knee-pads');
+                detectedPPE.add('cut-resistant-gloves');
+              }
+              
+              console.log('Detected PPE:', Array.from(detectedPPE));
+              
               updateFormData({ 
                 selectedTasks: activities,
                 plantEquipment: plantEquipment,
+                ppeRequirements: Array.from(detectedPPE),
                 generationMethod: 'gpt'
               });
             }}
