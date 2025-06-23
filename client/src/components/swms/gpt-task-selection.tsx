@@ -781,60 +781,85 @@ export default function GPTTaskSelection({
                   <Label className="text-base font-medium">High-Risk Construction Work Categories</Label>
                   <p className="text-sm text-gray-600">Select applicable HRCW categories to enhance AI generation with targeted safety requirements</p>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[600px] overflow-y-auto border rounded-lg p-2">
-                    {[
-                      { id: 1, title: "Risk of falling more than 2 metres", description: "Work on ladders, scaffolding, roofs" },
-                      { id: 2, title: "Work on telecommunication tower", description: "Telecommunication infrastructure work" },
-                      { id: 3, title: "Demolition of load-bearing elements", description: "Structural demolition work" },
-                      { id: 4, title: "Work involving asbestos disturbance", description: "Asbestos removal or disturbance" },
-                      { id: 5, title: "Structural alterations requiring support", description: "Temporary structural support needed" },
-                      { id: 6, title: "Work in or near confined spaces", description: "Confined space entry or nearby work" },
-                      { id: 7, title: "Work in shafts, trenches or tunnels", description: "Excavation deeper than 1.5m" },
-                      { id: 8, title: "Work involving explosives", description: "Use of explosives for construction" },
-                      { id: 9, title: "Work on pressurised gas systems", description: "Gas distribution mains or piping" },
-                      { id: 10, title: "Work on chemical/fuel/refrigerant lines", description: "Hazardous substance piping" },
-                      { id: 11, title: "Work on energised electrical installations", description: "Live electrical work" },
-                      { id: 12, title: "Work in contaminated/flammable atmospheres", description: "Contaminated or explosive atmospheres" },
-                      { id: 13, title: "Tilt-up or precast concrete work", description: "Tilt-up or precast concrete elements" },
-                      { id: 14, title: "Work adjacent to active traffic corridors", description: "Work near roads/railways in use" },
-                      { id: 15, title: "Work with powered mobile plant", description: "Areas with forklifts, excavators, cranes" },
-                      { id: 16, title: "Work in extreme temperature areas", description: "Cold rooms, furnace areas" },
-                      { id: 17, title: "Work near water with drowning risk", description: "Water work with drowning risk" },
-                      { id: 18, title: "Work on live electrical conductors", description: "Live electrical conductor work" }
-                    ].map((category) => {
-                      const isSelected = specialRiskFactors.includes(category.id.toString());
-                      return (
-                        <div 
-                          key={category.id} 
-                          className={`cursor-pointer transition-all duration-200 border-2 rounded-lg p-3 hover:shadow-md ${
-                            isSelected 
-                              ? 'border-red-500 bg-red-50 shadow-md' 
-                              : 'border-gray-200 bg-white hover:border-gray-300'
-                          }`}
-                          onClick={() => toggleRiskFactor(category.id.toString())}
-                        >
-                          <div className="flex items-start space-x-3">
-                            <div className={`w-5 h-5 rounded border-2 flex items-center justify-center mt-0.5 ${
-                              isSelected 
-                                ? 'bg-red-500 border-red-500' 
-                                : 'border-gray-300'
-                            }`}>
-                              {isSelected && (
-                                <CheckCircle2 className="h-3 w-3 text-white" />
-                              )}
-                            </div>
-                            <div className="flex-1">
-                              <div className="font-medium text-sm text-gray-900 leading-tight">
-                                {category.id}. {category.title}
+                  <div className="relative">
+                    <div className="grid grid-cols-1 gap-3 max-h-none">
+                      {/* All 18 categories in expandable view */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {[
+                          { id: 1, title: "Risk of falling more than 2 metres", description: "Work on ladders, scaffolding, roofs" },
+                          { id: 2, title: "Work on telecommunication tower", description: "Telecommunication infrastructure work" },
+                          { id: 3, title: "Demolition of load-bearing elements", description: "Structural demolition work" },
+                          { id: 4, title: "Work involving asbestos disturbance", description: "Asbestos removal or disturbance" },
+                          { id: 5, title: "Structural alterations requiring support", description: "Temporary structural support needed" },
+                          { id: 6, title: "Work in or near confined spaces", description: "Confined space entry or nearby work" },
+                          { id: 7, title: "Work in shafts, trenches or tunnels", description: "Excavation deeper than 1.5m" },
+                          { id: 8, title: "Work involving explosives", description: "Use of explosives for construction" },
+                          { id: 9, title: "Work on pressurised gas systems", description: "Gas distribution mains or piping" },
+                          ...(!showAllHRCW ? [] : [
+                            { id: 10, title: "Work on chemical/fuel/refrigerant lines", description: "Hazardous substance piping" },
+                            { id: 11, title: "Work on energised electrical installations", description: "Live electrical work" },
+                            { id: 12, title: "Work in contaminated/flammable atmospheres", description: "Contaminated or explosive atmospheres" },
+                            { id: 13, title: "Tilt-up or precast concrete work", description: "Tilt-up or precast concrete elements" },
+                            { id: 14, title: "Work adjacent to active traffic corridors", description: "Work near roads/railways in use" },
+                            { id: 15, title: "Work with powered mobile plant", description: "Areas with forklifts, excavators, cranes" },
+                            { id: 16, title: "Work in extreme temperature areas", description: "Cold rooms, furnace areas" },
+                            { id: 17, title: "Work near water with drowning risk", description: "Water work with drowning risk" },
+                            { id: 18, title: "Work on live electrical conductors", description: "Live electrical conductor work" }
+                          ])
+                        ].map((category) => {
+                          const isSelected = specialRiskFactors.includes(category.id.toString());
+                          return (
+                            <div 
+                              key={category.id} 
+                              className={`cursor-pointer transition-all duration-200 border-2 rounded-lg p-3 hover:shadow-md ${
+                                isSelected 
+                                  ? 'border-red-500 bg-red-50 shadow-md' 
+                                  : 'border-gray-200 bg-white hover:border-gray-300'
+                              }`}
+                              onClick={() => toggleRiskFactor(category.id.toString())}
+                            >
+                              <div className="flex items-start space-x-3">
+                                <div className={`w-5 h-5 rounded border-2 flex items-center justify-center mt-0.5 ${
+                                  isSelected 
+                                    ? 'bg-red-500 border-red-500' 
+                                    : 'border-gray-300'
+                                }`}>
+                                  {isSelected && (
+                                    <CheckCircle2 className="h-3 w-3 text-white" />
+                                  )}
+                                </div>
+                                <div className="flex-1">
+                                  <div className="font-medium text-sm text-gray-900 leading-tight">
+                                    {category.id}. {category.title}
+                                  </div>
+                                  <p className="text-xs text-gray-600 mt-1 leading-tight">
+                                    {category.description}
+                                  </p>
+                                </div>
                               </div>
-                              <p className="text-xs text-gray-600 mt-1 leading-tight">
-                                {category.description}
-                              </p>
                             </div>
-                          </div>
-                        </div>
-                      );
-                    })}
+                          );
+                        })}
+                      </div>
+                      
+                      {/* Show More/Less button */}
+                      <div className="mt-4">
+                        <button
+                          type="button"
+                          onClick={() => setShowAllHRCW(!showAllHRCW)}
+                          className="w-full flex items-center justify-center gap-2 py-2 px-4 bg-gray-50 hover:bg-gray-100 rounded-lg border border-gray-200 transition-colors"
+                        >
+                          <span className="text-sm font-medium text-gray-700">
+                            {showAllHRCW ? 'Show Less Categories' : 'Show More Categories (9 additional)'}
+                          </span>
+                          {showAllHRCW ? (
+                            <ChevronUp className="h-4 w-4 text-gray-500" />
+                          ) : (
+                            <ChevronDown className="h-4 w-4 text-gray-500" />
+                          )}
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
