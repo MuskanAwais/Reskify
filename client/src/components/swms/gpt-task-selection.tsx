@@ -781,7 +781,7 @@ export default function GPTTaskSelection({
                   <Label className="text-base font-medium">High-Risk Construction Work Categories</Label>
                   <p className="text-sm text-gray-600">Select applicable HRCW categories to enhance AI generation with targeted safety requirements</p>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-96 overflow-y-auto">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[600px] overflow-y-auto border rounded-lg p-2">
                     {[
                       { id: 1, title: "Risk of falling more than 2 metres", description: "Work on ladders, scaffolding, roofs" },
                       { id: 2, title: "Work on telecommunication tower", description: "Telecommunication infrastructure work" },
