@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import { Loader2, Search, Bot, Edit, CheckCircle2, AlertCircle, Plus, Trash2, LogIn, ArrowUp, ArrowDown, GripVertical } from "lucide-react";
+import { Loader2, Search, Bot, Edit, CheckCircle2, AlertCircle, Plus, Trash2, LogIn, ArrowUp, ArrowDown, GripVertical, ChevronDown, ChevronUp } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
