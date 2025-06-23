@@ -384,7 +384,7 @@ export class DatabaseStorage implements IStorage {
         responsiblePersons: [{name: 'Site Supervisor', role: 'Supervisor'}],
         emergencyProcedures: {contacts: [], procedures: []},
         status: data.status || 'draft',
-        paidAccess: data.paidAccess || false // Track if payment completed
+        paidAccess: data.paidAccess === true ? true : false // Only true if explicitly set
       };
 
       if (existingDraft) {
