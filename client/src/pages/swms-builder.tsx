@@ -575,15 +575,13 @@ export default function SwmsBuilder() {
       return;
     }
     
-    // Handle payment step (step 5)
-    if (currentStep === 4) {
-      // Always go to payment step next
-      setCurrentStep(5);
-      return;
+    // Handle emergency step (step 5) - no special validation required
+    if (currentStep === 5) {
+      // Emergency procedures are optional - proceed normally
     }
     
-    // Handle proceeding from payment step (step 5) - STRICT VALIDATION
-    if (currentStep === 5) {
+    // Handle proceeding from payment step (step 6) - STRICT VALIDATION
+    if (currentStep === 6) {
       const creditsRemaining = subscription ? (subscription as any).creditsRemaining || 0 : 0;
       const hasProPlan = (subscription as any)?.plan === "Pro" || (subscription as any)?.plan === "Enterprise";
       const isAdminDemo = localStorage.getItem('adminDemoMode') === 'true';
@@ -610,8 +608,8 @@ export default function SwmsBuilder() {
       }
     }
     
-    // Validate legal disclaimer acceptance before proceeding from step 6 (legal disclaimer step)
-    if (currentStep === 6 && !formData.acceptedDisclaimer) {
+    // Validate legal disclaimer acceptance before proceeding from step 7 (legal disclaimer step)
+    if (currentStep === 7 && !formData.acceptedDisclaimer) {
       toast({
         title: "Legal Disclaimer Required",
         description: "You must accept the legal disclaimer to continue.",
@@ -722,6 +720,8 @@ export default function SwmsBuilder() {
       
       setCurrentStep(stepId);
       setLocation(`/swms-builder?step=${stepId}`);
+      // Scroll to top when navigating to any step
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
 

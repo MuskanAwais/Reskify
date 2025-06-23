@@ -301,7 +301,7 @@ export default function PlantEquipmentSystem({ plantEquipment, onUpdate }: Plant
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-3 gap-4">
               <div>
                 <Label htmlFor="equipment-inspection">Next Inspection Due</Label>
                 <Input
@@ -310,6 +310,21 @@ export default function PlantEquipmentSystem({ plantEquipment, onUpdate }: Plant
                   value={newEquipment.nextInspection || ''}
                   onChange={(e) => setNewEquipment({...newEquipment, nextInspection: e.target.value})}
                 />
+              </div>
+              <div>
+                <Label htmlFor="equipment-certification">Certification Required</Label>
+                <Select 
+                  value={newEquipment.certificationRequired ? "true" : "false"}
+                  onValueChange={(value) => setNewEquipment({...newEquipment, certificationRequired: value === "true"})}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select certification" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="false">Not Required</SelectItem>
+                    <SelectItem value="true">Required</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <div>
                 <Label htmlFor="equipment-risk">Risk Level</Label>
@@ -418,56 +433,6 @@ export default function PlantEquipmentSystem({ plantEquipment, onUpdate }: Plant
                 </div>
                 <div>
                   <Label htmlFor="edit-risk-level">Risk Level</Label>
-                  <Select 
-                    value={editingEquipment.type} 
-                    onValueChange={(value) => setEditingEquipment({...editingEquipment, type: value as PlantEquipment['type']})}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Plant">Plant</SelectItem>
-                      <SelectItem value="Equipment">Equipment</SelectItem>
-                      <SelectItem value="Tool">Tool</SelectItem>
-                      <SelectItem value="Vehicle">Vehicle</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="edit-equipment-model">Model</Label>
-                  <Input
-                    id="edit-equipment-model"
-                    value={editingEquipment.model || ''}
-                    onChange={(e) => setEditingEquipment({...editingEquipment, model: e.target.value})}
-                    placeholder="Model number"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="edit-equipment-serial">Serial Number</Label>
-                  <Input
-                    id="edit-equipment-serial"
-                    value={editingEquipment.serialNumber || ''}
-                    onChange={(e) => setEditingEquipment({...editingEquipment, serialNumber: e.target.value})}
-                    placeholder="Serial number"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="edit-equipment-operator">Operator</Label>
-                  <Input
-                    id="edit-equipment-operator"
-                    value={editingEquipment.operator || ''}
-                    onChange={(e) => setEditingEquipment({...editingEquipment, operator: e.target.value})}
-                    placeholder="Operator name"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="edit-equipment-risk">Risk Level</Label>
                   <Select 
                     value={editingEquipment.riskLevel} 
                     onValueChange={(value) => setEditingEquipment({...editingEquipment, riskLevel: value as PlantEquipment['riskLevel']})}
