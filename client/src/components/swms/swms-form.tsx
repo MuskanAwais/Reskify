@@ -449,7 +449,7 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
             <Shield className="mx-auto h-12 w-12 text-red-600 mb-4" />
             <h3 className="text-lg font-semibold mb-2">High-Risk Construction Work (HRCW)</h3>
             <p className="text-gray-600 text-sm">
-              Auto-detected high-risk activities based on WHS Regulations 2011 (Regulation 291). Review and modify selections as needed.
+              Select applicable high-risk construction work categories based on WHS Regulations 2011 (Regulation 291)
             </p>
           </div>
 
@@ -457,7 +457,7 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
             <CardHeader>
               <CardTitle className="flex items-center">
                 <AlertTriangle className="mr-2 h-5 w-5 text-red-600" />
-                HRCW Categories Detected
+                High-Risk Construction Work Categories
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -466,70 +466,182 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
                   <div className="flex items-center mb-2">
                     <Info className="h-4 w-4 text-red-600 mr-2" />
                     <span className="font-medium text-red-800">
-                      {formData.hrcwCategories.length} High-Risk Categories Detected
+                      {formData.hrcwCategories.length} High-Risk Categories Selected
                     </span>
                   </div>
                   <p className="text-red-700 text-sm">
-                    These categories were automatically identified based on your work activities. Review and adjust selections below.
+                    Categories have been auto-detected based on your work activities. Review and adjust selections below.
                   </p>
                 </div>
               ) : (
-                <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+                <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
                   <div className="flex items-center mb-2">
-                    <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
-                    <span className="font-medium text-green-800">No High-Risk Work Detected</span>
+                    <Info className="h-4 w-4 text-blue-600 mr-2" />
+                    <span className="font-medium text-blue-800">Select Applicable Categories</span>
                   </div>
-                  <p className="text-green-700 text-sm">
-                    No high-risk construction work categories were detected. You can manually select any that apply.
+                  <p className="text-blue-700 text-sm">
+                    Click on the boxes below to select any high-risk construction work categories that apply to your project.
                   </p>
                 </div>
               )}
 
               <div className="space-y-4">
-                <h4 className="font-medium text-gray-900">18 Categories of High-Risk Construction Work</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <h4 className="font-medium text-gray-900 text-center">18 Categories of High-Risk Construction Work</h4>
+                <p className="text-sm text-gray-600 mb-6 text-center">Click boxes to select categories that apply to your work activities</p>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {[
-                    { id: 1, title: "Risk of falling more than 2 metres", description: "Work on ladders, scaffolding, roofs" },
-                    { id: 2, title: "Work on telecommunication tower", description: "Telecommunication infrastructure work" },
-                    { id: 3, title: "Demolition of load-bearing elements", description: "Structural demolition work" },
-                    { id: 4, title: "Work involving asbestos disturbance", description: "Asbestos removal or disturbance" },
-                    { id: 5, title: "Structural alterations requiring support", description: "Temporary structural support needed" },
-                    { id: 6, title: "Work in or near confined spaces", description: "Confined space entry or nearby work" },
-                    { id: 7, title: "Work in shafts, trenches or tunnels", description: "Excavation deeper than 1.5m" },
-                    { id: 8, title: "Work involving explosives", description: "Use of explosives for construction" },
-                    { id: 9, title: "Work on pressurised gas systems", description: "Gas distribution mains or piping" },
-                    { id: 10, title: "Work on chemical/fuel/refrigerant lines", description: "Hazardous substance piping" },
-                    { id: 11, title: "Work on energised electrical installations", description: "Live electrical work" },
-                    { id: 12, title: "Work in contaminated/flammable atmospheres", description: "Contaminated or explosive atmospheres" },
-                    { id: 13, title: "Tilt-up or precast concrete work", description: "Tilt-up or precast concrete elements" },
-                    { id: 14, title: "Work adjacent to active traffic corridors", description: "Work near roads/railways in use" },
-                    { id: 15, title: "Work with powered mobile plant", description: "Areas with forklifts, excavators, cranes" },
-                    { id: 16, title: "Work in extreme temperature areas", description: "Cold rooms, furnace areas" },
-                    { id: 17, title: "Work near water with drowning risk", description: "Water work with drowning risk" },
-                    { id: 18, title: "Work on live electrical conductors", description: "Live electrical conductor work" }
-                  ].map((category) => (
-                    <div key={category.id} className="border rounded-lg p-3 hover:bg-gray-50">
-                      <div className="flex items-start space-x-3">
-                        <Checkbox
-                          id={`hrcw-${category.id}`}
-                          checked={(formData.hrcwCategories || []).includes(category.id)}
-                          onCheckedChange={(checked) => {
-                            const currentCategories = formData.hrcwCategories || [];
-                            const updatedCategories = checked
-                              ? [...currentCategories, category.id]
-                              : currentCategories.filter(id => id !== category.id);
-                            updateFormData({ hrcwCategories: updatedCategories });
-                          }}
-                        />
-                        <div className="flex-1">
-                          <label htmlFor={`hrcw-${category.id}`} className="font-medium text-sm cursor-pointer">
-                            {category.id}. {category.title}
-                          </label>
-                          <p className="text-xs text-gray-600 mt-1">{category.description}</p>
+                    { 
+                      id: 1, 
+                      title: "Risk of falling more than 2 metres", 
+                      description: "Work on ladders, scaffolding, roofs, elevated platforms",
+                      examples: "Ladder work, scaffolding, roof work, elevated platforms"
+                    },
+                    { 
+                      id: 2, 
+                      title: "Work on telecommunication tower", 
+                      description: "Telecommunication infrastructure work",
+                      examples: "Mobile towers, antenna work, communication equipment"
+                    },
+                    { 
+                      id: 3, 
+                      title: "Demolition of load-bearing elements", 
+                      description: "Structural demolition affecting building integrity",
+                      examples: "Load-bearing walls, structural beams, foundation work"
+                    },
+                    { 
+                      id: 4, 
+                      title: "Work involving asbestos disturbance", 
+                      description: "Asbestos removal or disturbance work",
+                      examples: "Asbestos removal, fibro work, hazardous material handling"
+                    },
+                    { 
+                      id: 5, 
+                      title: "Structural alterations requiring support", 
+                      description: "Alterations needing temporary structural support",
+                      examples: "Temporary propping, shoring, underpinning work"
+                    },
+                    { 
+                      id: 6, 
+                      title: "Work in or near confined spaces", 
+                      description: "Confined space entry or nearby work",
+                      examples: "Tanks, vessels, pits, sewers, enclosed spaces"
+                    },
+                    { 
+                      id: 7, 
+                      title: "Work in shafts, trenches or tunnels", 
+                      description: "Excavation deeper than 1.5m or tunnel work",
+                      examples: "Deep excavation, tunneling, underground work"
+                    },
+                    { 
+                      id: 8, 
+                      title: "Work involving explosives", 
+                      description: "Use of explosives for construction",
+                      examples: "Blasting, quarry work, explosive demolition"
+                    },
+                    { 
+                      id: 9, 
+                      title: "Work on pressurised gas systems", 
+                      description: "Gas distribution mains or piping work",
+                      examples: "Gas pipelines, distribution mains, pressurised systems"
+                    },
+                    { 
+                      id: 10, 
+                      title: "Work on chemical, fuel or refrigerant lines", 
+                      description: "Hazardous substance piping work",
+                      examples: "Chemical pipes, fuel lines, refrigerant systems"
+                    },
+                    { 
+                      id: 11, 
+                      title: "Work on energised electrical installations", 
+                      description: "Live electrical work and installations",
+                      examples: "Live electrical work, switchboards, high voltage"
+                    },
+                    { 
+                      id: 12, 
+                      title: "Work in contaminated/flammable atmospheres", 
+                      description: "Areas with contaminated or explosive atmospheres",
+                      examples: "Contaminated areas, explosive atmospheres, toxic environments"
+                    },
+                    { 
+                      id: 13, 
+                      title: "Work involving tilt-up or precast concrete", 
+                      description: "Tilt-up or precast concrete element work",
+                      examples: "Tilt-up panels, precast elements, crane lifting"
+                    },
+                    { 
+                      id: 14, 
+                      title: "Work adjacent to active traffic corridors", 
+                      description: "Work near roads, railways in use",
+                      examples: "Roadwork, railway work, active traffic areas"
+                    },
+                    { 
+                      id: 15, 
+                      title: "Work with powered mobile plant", 
+                      description: "Areas with moving machinery and equipment",
+                      examples: "Forklifts, excavators, cranes, mobile machinery"
+                    },
+                    { 
+                      id: 16, 
+                      title: "Work in extreme temperature areas", 
+                      description: "Areas with artificial temperature extremes",
+                      examples: "Cold rooms, furnace areas, extreme heat/cold"
+                    },
+                    { 
+                      id: 17, 
+                      title: "Work near water with drowning risk", 
+                      description: "Water or liquid work with drowning risk",
+                      examples: "River work, dam work, pools, flood areas"
+                    },
+                    { 
+                      id: 18, 
+                      title: "Work on live electrical conductors", 
+                      description: "Live electrical conductor work",
+                      examples: "Overhead powerlines, live conductors, high voltage"
+                    }
+                  ].map((category) => {
+                    const isSelected = (formData.hrcwCategories || []).includes(category.id);
+                    return (
+                      <div 
+                        key={category.id} 
+                        className={`cursor-pointer transition-all duration-200 border-2 rounded-lg p-4 hover:shadow-md ${
+                          isSelected 
+                            ? 'border-red-500 bg-red-50 shadow-md' 
+                            : 'border-gray-200 bg-white hover:border-gray-300'
+                        }`}
+                        onClick={() => {
+                          const currentCategories = formData.hrcwCategories || [];
+                          const updatedCategories = isSelected
+                            ? currentCategories.filter(id => id !== category.id)
+                            : [...currentCategories, category.id];
+                          updateFormData({ hrcwCategories: updatedCategories });
+                        }}
+                      >
+                        <div className="flex items-start space-x-3">
+                          <div className={`w-5 h-5 rounded border-2 flex items-center justify-center mt-0.5 ${
+                            isSelected 
+                              ? 'bg-red-500 border-red-500' 
+                              : 'border-gray-300'
+                          }`}>
+                            {isSelected && (
+                              <CheckCircle className="h-3 w-3 text-white" />
+                            )}
+                          </div>
+                          <div className="flex-1">
+                            <div className="font-medium text-sm text-gray-900 leading-tight">
+                              {category.id}. {category.title}
+                            </div>
+                            <p className="text-xs text-gray-600 mt-1 leading-tight">
+                              {category.description}
+                            </p>
+                            <p className="text-xs text-gray-500 mt-1 italic">
+                              e.g. {category.examples}
+                            </p>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
 

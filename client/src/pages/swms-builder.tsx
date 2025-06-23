@@ -130,7 +130,7 @@ const HRCW_CATEGORIES = [
 const getSteps = () => [
   { id: 1, title: "Project & Contractor Details", description: "Project information, contractor details, and high-risk work identification" },
   { id: 2, title: "Work Activities & Risk Assessment", description: "Generate tasks and manage comprehensive risk assessments with controls" },
-  { id: 3, title: "High-Risk Construction Work", description: "Auto-detected HRCW categories from WHS Regulations 2011" },
+  { id: 3, title: "High-Risk Construction Work", description: "Select applicable HRCW categories from WHS Regulations 2011" },
   { id: 4, title: "Plant, Equipment & Training", description: "Equipment specifications, training requirements, and permits" },
   { id: 5, title: "Emergency & Monitoring", description: "Emergency procedures and review/monitoring processes" },
   { id: 6, title: "Payment & Access", description: "Select payment option to complete SWMS generation" },
