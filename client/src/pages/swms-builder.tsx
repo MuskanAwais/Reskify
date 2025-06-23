@@ -15,14 +15,127 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { translate } from "@/lib/language-direct";
 
+// 18 Categories of High-Risk Construction Work (HRCW) - WHS Regulations 2011 (Regulation 291)
+const HRCW_CATEGORIES = [
+  { 
+    id: 1, 
+    title: "Risk of a person falling more than 2 metres",
+    description: "Work on ladders, scaffolding, roofs, elevated platforms",
+    keywords: ["ladder", "scaffolding", "roof", "height", "elevated", "fall", "working at height", "platform", "tower"]
+  },
+  { 
+    id: 2, 
+    title: "Work on a telecommunication tower",
+    description: "Telecommunication infrastructure work",
+    keywords: ["telecommunication", "tower", "antenna", "communication", "mobile tower", "radio"]
+  },
+  { 
+    id: 3, 
+    title: "Demolition of load-bearing elements",
+    description: "Demolition affecting structural integrity",
+    keywords: ["demolition", "load-bearing", "structural", "wall", "beam", "column", "foundation"]
+  },
+  { 
+    id: 4, 
+    title: "Work involving disturbance of asbestos",
+    description: "Asbestos removal or disturbance work",
+    keywords: ["asbestos", "fibro", "removal", "disturbance", "hazardous material"]
+  },
+  { 
+    id: 5, 
+    title: "Structural alterations requiring temporary support",
+    description: "Alterations needing temporary structural support",
+    keywords: ["structural", "alteration", "temporary support", "propping", "shoring", "underpinning"]
+  },
+  { 
+    id: 6, 
+    title: "Work in or near confined spaces",
+    description: "Confined space entry or work nearby",
+    keywords: ["confined space", "tank", "vessel", "pit", "sewer", "tunnel", "enclosed"]
+  },
+  { 
+    id: 7, 
+    title: "Work in shafts, trenches or tunnels",
+    description: "Excavation deeper than 1.5m or tunnel work",
+    keywords: ["shaft", "trench", "tunnel", "excavation", "deep", "underground", "boring"]
+  },
+  { 
+    id: 8, 
+    title: "Work involving explosives",
+    description: "Use of explosives for construction",
+    keywords: ["explosive", "blasting", "detonation", "quarry", "mining"]
+  },
+  { 
+    id: 9, 
+    title: "Work on pressurised gas systems",
+    description: "Gas distribution mains or piping work",
+    keywords: ["gas", "pressurised", "pipeline", "distribution", "main", "natural gas"]
+  },
+  { 
+    id: 10, 
+    title: "Work on chemical, fuel or refrigerant lines",
+    description: "Hazardous substance piping work",
+    keywords: ["chemical", "fuel", "refrigerant", "pipeline", "hazardous", "toxic"]
+  },
+  { 
+    id: 11, 
+    title: "Work on energised electrical installations",
+    description: "Live electrical work and installations",
+    keywords: ["electrical", "energised", "live", "power", "installation", "switchboard", "high voltage"]
+  },
+  { 
+    id: 12, 
+    title: "Work in contaminated or flammable atmospheres",
+    description: "Areas with contaminated or explosive atmospheres",
+    keywords: ["contaminated", "flammable", "atmosphere", "explosive", "toxic", "hazardous air"]
+  },
+  { 
+    id: 13, 
+    title: "Tilt-up or precast concrete work",
+    description: "Tilt-up or precast concrete element work",
+    keywords: ["tilt-up", "precast", "concrete", "panel", "lifting", "crane"]
+  },
+  { 
+    id: 14, 
+    title: "Work adjacent to active traffic corridors",
+    description: "Work near roads, railways in use",
+    keywords: ["road", "railway", "traffic", "corridor", "highway", "active", "live traffic"]
+  },
+  { 
+    id: 15, 
+    title: "Work with powered mobile plant",
+    description: "Areas with forklifts, excavators, cranes",
+    keywords: ["mobile plant", "forklift", "excavator", "crane", "machinery", "powered equipment"]
+  },
+  { 
+    id: 16, 
+    title: "Work in extreme temperature areas",
+    description: "Cold rooms, furnace areas, extreme temperatures",
+    keywords: ["extreme temperature", "cold room", "furnace", "hot", "cold", "temperature"]
+  },
+  { 
+    id: 17, 
+    title: "Work near water with drowning risk",
+    description: "Water or liquid work with drowning risk",
+    keywords: ["water", "liquid", "drowning", "river", "dam", "pool", "flood"]
+  },
+  { 
+    id: 18, 
+    title: "Work on live electrical conductors",
+    description: "Live electrical conductor work",
+    keywords: ["live electrical", "conductor", "overhead", "powerline", "high voltage"]
+  }
+];
+
 const getSteps = () => [
   { id: 1, title: "Project & Contractor Details", description: "Project information, contractor details, and high-risk work identification" },
   { id: 2, title: "Work Activities & Risk Assessment", description: "Generate tasks and manage comprehensive risk assessments with controls" },
-  { id: 3, title: "Plant, Equipment & Training", description: "Equipment specifications, training requirements, and permits" },
-  { id: 4, title: "Emergency & Monitoring", description: "Emergency procedures and review/monitoring processes" },
-  { id: 5, title: "Payment & Access", description: "Select payment option to complete SWMS generation" },
-  { id: 6, title: "Legal Disclaimer", description: "Accept terms and liability disclaimer" },
-  { id: 7, title: "Digital Signatures & PDF", description: "Generate complete SWMS document with optional signatures" }
+  { id: 3, title: "High-Risk Construction Work", description: "Auto-detected HRCW categories from WHS Regulations 2011" },
+  { id: 4, title: "Plant, Equipment & Training", description: "Equipment specifications, training requirements, and permits" },
+  { id: 5, title: "Emergency & Monitoring", description: "Emergency procedures and review/monitoring processes" },
+  { id: 6, title: "Payment & Access", description: "Select payment option to complete SWMS generation" },
+  { id: 7, title: "Legal Disclaimer", description: "Accept terms and liability disclaimer" },
+  { id: 8, title: "Digital Signatures & PDF", description: "Generate complete SWMS document with optional signatures" }
 ];
 
 export default function SwmsBuilder() {
@@ -53,7 +166,8 @@ export default function SwmsBuilder() {
     plantEquipment: [],
     signatures: [],
     emergencyProcedures: [],
-    generalRequirements: []
+    generalRequirements: [],
+    hrcwCategories: [] // Auto-detected High-Risk Construction Work categories
   });
 
   // Load saved data from localStorage on mount
@@ -83,6 +197,40 @@ export default function SwmsBuilder() {
       setCurrentStep(step);
     }
   }, []);
+
+  // Auto-detect HRCW categories based on activities
+  const detectHRCWCategories = (activities: any[]) => {
+    const detectedCategories = new Set<number>();
+    
+    activities.forEach(activity => {
+      const activityText = `${activity.task || ''} ${activity.hazards?.join(' ') || ''} ${activity.controlMeasures?.join(' ') || ''}`.toLowerCase();
+      
+      HRCW_CATEGORIES.forEach(category => {
+        const hasMatch = category.keywords.some(keyword => 
+          activityText.includes(keyword.toLowerCase())
+        );
+        
+        if (hasMatch) {
+          detectedCategories.add(category.id);
+        }
+      });
+    });
+    
+    return Array.from(detectedCategories);
+  };
+
+  // Auto-detect HRCW when activities change
+  useEffect(() => {
+    if (formData.activities.length > 0) {
+      const detectedCategories = detectHRCWCategories(formData.activities);
+      if (detectedCategories.length > 0) {
+        setFormData(prev => ({
+          ...prev,
+          hrcwCategories: detectedCategories
+        }));
+      }
+    }
+  }, [formData.activities]);
 
   // Load draft mutation
   const loadDraftMutation = useMutation({
@@ -313,8 +461,10 @@ export default function SwmsBuilder() {
       errors = validateStep3();
     } else if (currentStep === 4) {
       errors = validateStep4();
-    } else if (currentStep === 6) {
-      errors = validateStep6();
+    } else if (currentStep === 5) {
+      errors = validateStep5();
+    } else if (currentStep === 7) {
+      errors = validateStep7();
     }
 
     if (errors.length > 0) {
