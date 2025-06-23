@@ -7,6 +7,7 @@ import path from 'path';
 import Stripe from 'stripe';
 import { storage } from "./storage.js";
 import { generateExactPDF } from "./pdf-generator-figma-exact.js";
+import { generatePuppeteerPDF } from "./pdf-generator-puppeteer.js";
 
 // Initialize Stripe
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
@@ -628,6 +629,164 @@ export async function registerRoutes(app: Express) {
         success: false,
         error: error.message || 'Failed to generate SWMS'
       });
+    }
+  });
+
+  // New Puppeteer PDF generation route
+  app.post('/generate-pdf', async (req, res) => {
+    try {
+      console.log('Generating PDF with Puppeteer using Figma template...');
+      const swmsData = req.body;
+      
+      const pdfBuffer = await generatePuppeteerPDF(swmsData);
+      
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `attachment; filename="SWMS-${swmsData.projectName || 'Document'}.pdf"`);
+      res.setHeader('Content-Length', pdfBuffer.length.toString());
+      res.send(pdfBuffer);
+      
+    } catch (error) {
+      console.error('Puppeteer PDF generation error:', error);
+      res.status(500).json({ error: 'Failed to generate PDF with Puppeteer' });
+    }
+  });
+
+  // Test route with sample data
+  app.get('/test-pdf', async (req, res) => {
+    try {
+      const sampleData = {
+        projectName: "Commercial Office Fitout - Melbourne CBD",
+        jobName: "Level 15 Office Renovation Project",
+        jobNumber: "COF-2025-001",
+        projectAddress: "123 Collins Street, Melbourne VIC 3000",
+        companyName: "Melbourne Office Solutions",
+        projectManager: "Sarah Chen",
+        siteSupervisor: "Michael Rodriguez",
+        principalContractor: "Elite Construction Group Pty Ltd",
+        startDate: "15th January 2025",
+        duration: "12 Weeks",
+        emergencyContacts: [
+          { name: "Site Emergency Coordinator", phone: "0412 345 678" },
+          { name: "Building Management", phone: "0398 765 432" },
+          { name: "First Aid Officer", phone: "0456 789 123" }
+        ],
+        assemblyPoint: "Building Lobby - Collins Street Entrance",
+        nearestHospital: "Royal Melbourne Hospital",
+        workActivities: [
+          {
+            task: "Site establishment and safety briefing for all personnel",
+            hazards: [
+              "Inadequate site setup leading to safety incidents",
+              "Personnel unfamiliar with site-specific hazards",
+              "Poor communication of safety procedures"
+            ],
+            initialRiskLevel: "High",
+            initialRiskScore: 12,
+            controlMeasures: [
+              "Conduct comprehensive site induction for all workers",
+              "Establish designated storage and welfare areas",
+              "Install safety signage and barriers around work zones"
+            ],
+            residualRiskLevel: "Medium",
+            residualRiskScore: 6,
+            legislation: ["WHS Act 2011 Section 19", "WHS Regulation 2017 Part 3.1"]
+          },
+          {
+            task: "Demolition of existing office partitions and ceiling tiles",
+            hazards: [
+              "Manual handling injuries from heavy materials",
+              "Cuts and lacerations from sharp edges",
+              "Dust exposure during demolition activities"
+            ],
+            initialRiskLevel: "High",
+            initialRiskScore: 15,
+            controlMeasures: [
+              "Use mechanical aids for lifting heavy materials",
+              "Provide cut-resistant gloves and safety equipment",
+              "Implement dust suppression and respiratory protection"
+            ],
+            residualRiskLevel: "Medium",
+            residualRiskScore: 8,
+            legislation: ["WHS Regulation 2017 Part 4.1", "AS 2601-2001 Demolition"]
+          }
+        ],
+        ppeRequirements: [
+          "hard-hat", "hi-vis-vest", "steel-cap-boots", "safety-glasses", 
+          "gloves", "hearing-protection", "dust-mask", "cut-resistant-gloves"
+        ],
+        plantEquipment: [
+          {
+            name: "Telescopic Handler - Genie GTH-2506",
+            model: "GTH-2506",
+            serial: "GTH25-2024-001",
+            riskLevel: "High",
+            nextInspection: "20th February 2025",
+            certificationRequired: "Yes"
+          },
+          {
+            name: "Reciprocating Saw - Milwaukee",
+            model: "M18 SAWZALL",
+            serial: "MW18-RS-445",
+            riskLevel: "Medium",
+            nextInspection: "15th March 2025",
+            certificationRequired: "No"
+          }
+        ]
+      };
+      
+      const pdfBuffer = await generatePuppeteerPDF(sampleData);
+      
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', 'inline; filename="test-swms.pdf"');
+      res.send(pdfBuffer);
+      
+    } catch (error) {
+      console.error('Test PDF error:', error);
+      res.status(500).json({ error: 'Failed to generate test PDF' });
+    }
+  });
+
+  // Update existing routes to use Puppeteer
+  app.post("/api/swms/pdf-download", async (req, res) => {
+    try {
+      const requestTitle = req.body?.projectName || req.body?.title || 'Unknown project';
+      console.log("PDF generation request received:", requestTitle);
+      
+      const data = req.body;
+      
+      console.log('Generating PDF with Puppeteer using Figma template for:', requestTitle);
+      // Use Puppeteer PDF generator with Figma template
+      const pdfBuffer = await generatePuppeteerPDF(data);
+      
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `attachment; filename="SWMS-${requestTitle.replace(/[^a-zA-Z0-9]/g, '_')}.pdf"`);
+      res.setHeader('Content-Length', pdfBuffer.length.toString());
+      res.send(pdfBuffer);
+      
+    } catch (error) {
+      console.error("PDF generation error:", error);
+      res.status(500).json({ error: "Failed to generate PDF" });
+    }
+  });
+
+  app.post('/api/swms/pdf-preview', async (req, res) => {
+    try {
+      const data = req.body;
+      
+      // Use Puppeteer PDF generator with Figma template
+      const pdfBuffer = await generatePuppeteerPDF(data);
+      
+      // Set headers for browser PDF display
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', 'inline; filename="swms_preview.pdf"');
+      res.setHeader('Content-Length', pdfBuffer.length.toString());
+      res.setHeader('Cache-Control', 'no-cache');
+      res.setHeader('X-Content-Type-Options', 'nosniff');
+      res.send(pdfBuffer);
+      
+    } catch (error) {
+      console.error("PDF preview error:", error);
+      res.status(500).json({ error: "Failed to generate PDF preview" });
     }
   });
 

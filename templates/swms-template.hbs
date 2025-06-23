@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SWMS Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #ffffff;
+            color: #000;
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto;
+            position: relative;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+        
+        /* Figma-style header */
+        .header {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+        
+        .logo-section {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #22C55E;
+            margin-bottom: 5px;
+        }
+        
+        .tagline {
+            font-size: 10px;
+            color: #666;
+        }
+        
+        .title-section {
+            flex: 1;
+            margin-left: 40px;
+        }
+        
+        .main-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #000;
+            margin-bottom: 10px;
+        }
+        
+        .project-info {
+            font-size: 14px;
+            color: #000;
+        }
+        
+        .document-info {
+            text-align: right;
+            font-size: 11px;
+            color: #000;
+        }
+        
+        /* Two-card layout */
+        .card-container {
+            display: flex;
+            gap: 20px;
+            margin: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .info-card {
+            flex: 1;
+            padding: 20px;
+            border-radius: 8px;
+            color: white;
+            font-size: 11px;
+        }
+        
+        .project-card {
+            background: #3B82F6;
+        }
+        
+        .emergency-card {
+            background: #EF4444;
+        }
+        
+        .card-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .card-content p {
+            margin-bottom: 8px;
+        }
+        
+        /* Risk Matrix Section */
+        .risk-matrix-section {
+            margin: 20px;
+        }
+        
+        .risk-matrix-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #6B7280;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .risk-matrix {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .matrix-panel {
+            padding: 15px;
+            border-radius: 8px;
+            color: white;
+            font-size: 10px;
+        }
+        
+        .panel-a { background: #06B6D4; }
+        .panel-b { background: #10B981; }
+        .panel-c { background: #F97316; }
+        .panel-d { background: #EF4444; }
+        
+        .panel-title {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .matrix-item {
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        /* Risk matrix table for panel C */
+        .risk-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 9px;
+        }
+        
+        .risk-table td {
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 4px;
+            text-align: center;
+        }
+        
+        .risk-extreme { background: #DC2626; }
+        .risk-high { background: #EA580C; }
+        .risk-medium { background: #CA8A04; }
+        .risk-low { background: #059669; }
+        
+        /* Activities Table */
+        .activities-section {
+            margin: 30px 20px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #000;
+        }
+        
+        .activities-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .activities-table th {
+            background: #F9FAFB;
+            border: 1px solid #E5E7EB;
+            padding: 12px 8px;
+            text-align: left;
+            font-weight: bold;
+            color: #111827;
+        }
+        
+        .activities-table td {
+            border: 1px solid #E5E7EB;
+            padding: 12px 8px;
+            vertical-align: top;
+        }
+        
+        .risk-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            color: white;
+            font-weight: bold;
+            font-size: 9px;
+        }
+        
+        .risk-extreme-badge { background: #EF4444; }
+        .risk-high-badge { background: #F97316; }
+        .risk-medium-badge { background: #3B82F6; }
+        .risk-low-badge { background: #10B981; }
+        
+        /* PPE Section */
+        .ppe-section {
+            margin: 30px 20px;
+        }
+        
+        .ppe-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .ppe-item {
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            font-size: 11px;
+        }
+        
+        .ppe-required {
+            background: #F0FDF4;
+            border-color: #10B981;
+        }
+        
+        /* Equipment Table */
+        .equipment-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 10px;
+            margin: 20px 0;
+        }
+        
+        .equipment-table th {
+            background: #F9FAFB;
+            border: 1px solid #E5E7EB;
+            padding: 10px 8px;
+            text-align: left;
+            font-weight: bold;
+        }
+        
+        .equipment-table td {
+            border: 1px solid #E5E7EB;
+            padding: 10px 8px;
+        }
+        
+        /* Sign-in Table */
+        .signin-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 10px;
+            margin: 20px 0;
+        }
+        
+        .signin-table th {
+            background: #F9FAFB;
+            border: 1px solid #E5E7EB;
+            padding: 15px 8px;
+            text-align: left;
+            font-weight: bold;
+        }
+        
+        .signin-table td {
+            border: 1px solid #E5E7EB;
+            padding: 15px 8px;
+            height: 40px;
+        }
+        
+        /* Watermark */
+        .watermark {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 120px;
+            font-weight: bold;
+            color: rgba(0, 0, 0, 0.05);
+            z-index: -1;
+            pointer-events: none;
+        }
+        
+        /* Page breaks */
+        .page-break {
+            page-break-before: always;
+        }
+        
+        @media print {
+            body {
+                width: auto;
+                margin: 0;
+            }
+            
+            .page-break {
+                page-break-before: always;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Watermark -->
+    <div class="watermark">RISKIFY</div>
+    
+    <!-- Header -->
+    <div class="header">
+        <div class="logo-section">
+            <div class="logo">Riskify</div>
+            <div class="tagline">AI SWMS Generator</div>
+        </div>
+        
+        <div class="title-section">
+            <div class="main-title">SAFE WORK METHOD STATEMENT</div>
+            <div class="project-info">
+                <div>Project: {{projectName}}</div>
+                <div>Location: {{projectAddress}}</div>
+            </div>
+        </div>
+        
+        <div class="document-info">
+            <div>Document ID: SWMS-{{documentId}}</div>
+            <div>Date: {{currentDate}}</div>
+        </div>
+    </div>
+    
+    <!-- Two-card layout -->
+    <div class="card-container">
+        <div class="info-card project-card">
+            <div class="card-title">PROJECT INFORMATION</div>
+            <div class="card-content">
+                <p>Job Name: {{jobName}}</p>
+                <p>Job Number: {{jobNumber}}</p>
+                <p>Company: {{companyName}}</p>
+                <p>Manager: {{projectManager}}</p>
+                <p>Supervisor: {{siteSupervisor}}</p>
+                <p>Start Date: {{startDate}}</p>
+                <p>Duration: {{duration}}</p>
+                <p>Principal: {{principalContractor}}</p>
+            </div>
+        </div>
+        
+        <div class="info-card emergency-card">
+            <div class="card-title">EMERGENCY PROCEDURES</div>
+            <div class="card-content">
+                <p>Emergency Contact: 000</p>
+                {{#each emergencyContacts}}
+                <p>{{name}}: {{phone}}</p>
+                {{/each}}
+                <p>Assembly Point: {{assemblyPoint}}</p>
+                <p>Nearest Hospital: {{nearestHospital}}</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Risk Matrix -->
+    <div class="risk-matrix-section">
+        <div class="risk-matrix-title">CONSTRUCTION CONTROL RISK MATRIX</div>
+        
+        <div class="risk-matrix">
+            <div class="matrix-panel panel-a">
+                <div class="panel-title">A - QUALITATIVE SCALE</div>
+                <div class="matrix-item">
+                    <span>Extreme</span>
+                    <span>Fatality, significant disability</span>
+                </div>
+                <div class="matrix-item">
+                    <span>High</span>
+                    <span>Minor amputation, permanent disability</span>
+                </div>
+                <div class="matrix-item">
+                    <span>Medium</span>
+                    <span>Minor injury, Lost Time Injury</span>
+                </div>
+                <div class="matrix-item">
+                    <span>Low</span>
+                    <span>First Aid Treatment only</span>
+                </div>
+            </div>
+            
+            <div class="matrix-panel panel-b">
+                <div class="panel-title">B - QUANTITATIVE SCALE</div>
+                <div class="matrix-item">
+                    <span>$50,000+</span>
+                    <span>Likely - Monthly</span>
+                </div>
+                <div class="matrix-item">
+                    <span>$15,000-$50,000</span>
+                    <span>Possible - Yearly</span>
+                </div>
+                <div class="matrix-item">
+                    <span>$1,000-$15,000</span>
+                    <span>Unlikely - 10 years</span>
+                </div>
+                <div class="matrix-item">
+                    <span>$0-$1,000</span>
+                    <span>Very Rarely - Lifetime</span>
+                </div>
+            </div>
+            
+            <div class="matrix-panel panel-c">
+                <div class="panel-title">C - LIKELIHOOD vs CONSEQUENCE</div>
+                <table class="risk-table">
+                    <tr>
+                        <td></td>
+                        <td>Likely</td>
+                        <td>Possible</td>
+                        <td>Unlikely</td>
+                    </tr>
+                    <tr>
+                        <td>Extreme</td>
+                        <td class="risk-extreme">E</td>
+                        <td class="risk-extreme">E</td>
+                        <td class="risk-high">H</td>
+                    </tr>
+                    <tr>
+                        <td>High</td>
+                        <td class="risk-extreme">E</td>
+                        <td class="risk-high">H</td>
+                        <td class="risk-medium">M</td>
+                    </tr>
+                    <tr>
+                        <td>Medium</td>
+                        <td class="risk-high">H</td>
+                        <td class="risk-medium">M</td>
+                        <td class="risk-low">L</td>
+                    </tr>
+                    <tr>
+                        <td>Low</td>
+                        <td class="risk-medium">M</td>
+                        <td class="risk-low">L</td>
+                        <td class="risk-low">L</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <div class="matrix-panel panel-d">
+                <div class="panel-title">D - RISK RATING MATRIX</div>
+                <div class="matrix-item">
+                    <span>16-18 Severe (E)</span>
+                    <span>Action 24hrs</span>
+                </div>
+                <div class="matrix-item">
+                    <span>11-15 High (H)</span>
+                    <span>Action 2hrs</span>
+                </div>
+                <div class="matrix-item">
+                    <span>7-10 Medium (M)</span>
+                    <span>Action 1 week</span>
+                </div>
+                <div class="matrix-item">
+                    <span>1-6 Low (L)</span>
+                    <span>Monitor</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Page Break -->
+    <div class="page-break"></div>
+    
+    <!-- Work Activities Table -->
+    <div class="activities-section">
+        <div class="section-title">Work Activities & Risk Assessment</div>
+        
+        <table class="activities-table">
+            <thead>
+                <tr>
+                    <th style="width: 20%;">Activity</th>
+                    <th style="width: 25%;">Hazards</th>
+                    <th style="width: 12%;">Initial Risk</th>
+                    <th style="width: 25%;">Control Measures</th>
+                    <th style="width: 12%;">Residual Risk</th>
+                    <th style="width: 6%;">Legislation</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each activities}}
+                <tr>
+                    <td>{{task}}</td>
+                    <td>
+                        {{#each hazards}}
+                        • {{this}}<br>
+                        {{/each}}
+                    </td>
+                    <td>
+                        <span class="risk-badge risk-{{toLowerCase initialRiskLevel}}-badge">
+                            {{initialRiskLevel}} - {{initialRiskScore}}
+                        </span>
+                    </td>
+                    <td>
+                        {{#each controlMeasures}}
+                        • {{this}}<br>
+                        {{/each}}
+                    </td>
+                    <td>
+                        <span class="risk-badge risk-{{toLowerCase residualRiskLevel}}-badge">
+                            {{residualRiskLevel}} - {{residualRiskScore}}
+                        </span>
+                    </td>
+                    <td>
+                        {{#each legislation}}
+                        • {{this}}<br>
+                        {{/each}}
+                    </td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- PPE Section -->
+    <div class="ppe-section">
+        <div class="section-title">Personal Protective Equipment (PPE)</div>
+        
+        <div class="ppe-grid">
+            {{#each ppeItems}}
+            <div class="ppe-item {{#if required}}ppe-required{{/if}}">
+                <div style="font-weight: bold;">{{name}}</div>
+                <div style="margin-top: 5px; font-size: 10px;">{{description}}</div>
+                {{#if required}}
+                <div style="margin-top: 5px; color: #10B981; font-weight: bold;">REQUIRED</div>
+                {{/if}}
+            </div>
+            {{/each}}
+        </div>
+    </div>
+    
+    <!-- Page Break -->
+    <div class="page-break"></div>
+    
+    <!-- Plant & Equipment -->
+    <div class="activities-section">
+        <div class="section-title">Plant & Equipment Register</div>
+        
+        <table class="equipment-table">
+            <thead>
+                <tr>
+                    <th>Equipment</th>
+                    <th>Model</th>
+                    <th>Serial Number</th>
+                    <th>Risk Level</th>
+                    <th>Next Inspection</th>
+                    <th>Certification Required</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each equipment}}
+                <tr>
+                    <td>{{name}}</td>
+                    <td>{{model}}</td>
+                    <td>{{serial}}</td>
+                    <td>
+                        <span class="risk-badge risk-{{toLowerCase riskLevel}}-badge">{{riskLevel}}</span>
+                    </td>
+                    <td>{{nextInspection}}</td>
+                    <td>{{certificationRequired}}</td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Sign-in Register -->
+    <div class="activities-section">
+        <div class="section-title">Sign In Register</div>
+        
+        <table class="signin-table">
+            <thead>
+                <tr>
+                    <th style="width: 25%;">Name</th>
+                    <th style="width: 15%;">Number</th>
+                    <th style="width: 45%;">Signature</th>
+                    <th style="width: 15%;">Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#times 10}}
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                {{/times}}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
