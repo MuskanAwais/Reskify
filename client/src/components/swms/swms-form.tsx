@@ -37,7 +37,8 @@ import {
   Plus,
   X,
   Scale,
-  Zap
+  Zap,
+  Package
 } from "lucide-react";
 import { SimplifiedTableEditor } from "./simplified-table-editor";
 import GPTTaskSelection from "./gpt-task-selection";
@@ -893,6 +894,7 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
                         if (onNext) {
                           onNext(); // Allow progression anyway for demo
                         }
+                      }
                     }}
                   >
                     Use Current Credits (1 credit)
