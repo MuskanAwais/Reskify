@@ -427,13 +427,19 @@ export default function SwmsBuilder() {
 
   const validateStep3 = () => {
     const errors: string[] = [];
+    // HRCW step validation - optional as it's auto-detected
+    return errors;
+  };
+
+  const validateStep4 = () => {
+    const errors: string[] = [];
     if (!formData.plantEquipment || formData.plantEquipment.length === 0) {
       errors.push("Plant and equipment information is required");
     }
     return errors;
   };
 
-  const validateStep4 = () => {
+  const validateStep5 = () => {
     const errors: string[] = [];
     if (!formData.emergencyProcedures || formData.emergencyProcedures.length === 0) {
       errors.push("Emergency procedures must be defined");
@@ -441,7 +447,7 @@ export default function SwmsBuilder() {
     return errors;
   };
 
-  const validateStep6 = () => {
+  const validateStep7 = () => {
     const errors: string[] = [];
     if (!formData.acceptedDisclaimer) {
       errors.push("Legal disclaimer must be accepted");

@@ -446,6 +446,114 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
       return (
         <div className="space-y-6">
           <div className="text-center">
+            <Shield className="mx-auto h-12 w-12 text-red-600 mb-4" />
+            <h3 className="text-lg font-semibold mb-2">High-Risk Construction Work (HRCW)</h3>
+            <p className="text-gray-600 text-sm">
+              Auto-detected high-risk activities based on WHS Regulations 2011 (Regulation 291). Review and modify selections as needed.
+            </p>
+          </div>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <AlertTriangle className="mr-2 h-5 w-5 text-red-600" />
+                HRCW Categories Detected
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {formData.hrcwCategories && formData.hrcwCategories.length > 0 ? (
+                <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                  <div className="flex items-center mb-2">
+                    <Info className="h-4 w-4 text-red-600 mr-2" />
+                    <span className="font-medium text-red-800">
+                      {formData.hrcwCategories.length} High-Risk Categories Detected
+                    </span>
+                  </div>
+                  <p className="text-red-700 text-sm">
+                    These categories were automatically identified based on your work activities. Review and adjust selections below.
+                  </p>
+                </div>
+              ) : (
+                <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+                  <div className="flex items-center mb-2">
+                    <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
+                    <span className="font-medium text-green-800">No High-Risk Work Detected</span>
+                  </div>
+                  <p className="text-green-700 text-sm">
+                    No high-risk construction work categories were detected. You can manually select any that apply.
+                  </p>
+                </div>
+              )}
+
+              <div className="space-y-4">
+                <h4 className="font-medium text-gray-900">18 Categories of High-Risk Construction Work</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {[
+                    { id: 1, title: "Risk of falling more than 2 metres", description: "Work on ladders, scaffolding, roofs" },
+                    { id: 2, title: "Work on telecommunication tower", description: "Telecommunication infrastructure work" },
+                    { id: 3, title: "Demolition of load-bearing elements", description: "Structural demolition work" },
+                    { id: 4, title: "Work involving asbestos disturbance", description: "Asbestos removal or disturbance" },
+                    { id: 5, title: "Structural alterations requiring support", description: "Temporary structural support needed" },
+                    { id: 6, title: "Work in or near confined spaces", description: "Confined space entry or nearby work" },
+                    { id: 7, title: "Work in shafts, trenches or tunnels", description: "Excavation deeper than 1.5m" },
+                    { id: 8, title: "Work involving explosives", description: "Use of explosives for construction" },
+                    { id: 9, title: "Work on pressurised gas systems", description: "Gas distribution mains or piping" },
+                    { id: 10, title: "Work on chemical/fuel/refrigerant lines", description: "Hazardous substance piping" },
+                    { id: 11, title: "Work on energised electrical installations", description: "Live electrical work" },
+                    { id: 12, title: "Work in contaminated/flammable atmospheres", description: "Contaminated or explosive atmospheres" },
+                    { id: 13, title: "Tilt-up or precast concrete work", description: "Tilt-up or precast concrete elements" },
+                    { id: 14, title: "Work adjacent to active traffic corridors", description: "Work near roads/railways in use" },
+                    { id: 15, title: "Work with powered mobile plant", description: "Areas with forklifts, excavators, cranes" },
+                    { id: 16, title: "Work in extreme temperature areas", description: "Cold rooms, furnace areas" },
+                    { id: 17, title: "Work near water with drowning risk", description: "Water work with drowning risk" },
+                    { id: 18, title: "Work on live electrical conductors", description: "Live electrical conductor work" }
+                  ].map((category) => (
+                    <div key={category.id} className="border rounded-lg p-3 hover:bg-gray-50">
+                      <div className="flex items-start space-x-3">
+                        <Checkbox
+                          id={`hrcw-${category.id}`}
+                          checked={(formData.hrcwCategories || []).includes(category.id)}
+                          onCheckedChange={(checked) => {
+                            const currentCategories = formData.hrcwCategories || [];
+                            const updatedCategories = checked
+                              ? [...currentCategories, category.id]
+                              : currentCategories.filter(id => id !== category.id);
+                            updateFormData({ hrcwCategories: updatedCategories });
+                          }}
+                        />
+                        <div className="flex-1">
+                          <label htmlFor={`hrcw-${category.id}`} className="font-medium text-sm cursor-pointer">
+                            {category.id}. {category.title}
+                          </label>
+                          <p className="text-xs text-gray-600 mt-1">{category.description}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {(formData.hrcwCategories || []).length > 0 && (
+                <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                  <div className="flex items-center mb-2">
+                    <AlertTriangle className="h-4 w-4 text-yellow-600 mr-2" />
+                    <span className="font-medium text-yellow-800">Additional Requirements</span>
+                  </div>
+                  <p className="text-yellow-700 text-sm">
+                    High-risk construction work may require additional licenses, permits, or qualifications. 
+                    Ensure all regulatory requirements are met before commencing work.
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      );
+
+    case 4:
+      return (
+        <div className="space-y-6">
+          <div className="text-center">
             <Wrench className="mx-auto h-12 w-12 text-primary mb-4" />
             <h3 className="text-lg font-semibold mb-2">Plant & Equipment (Optional)</h3>
             <p className="text-gray-600 text-sm">
@@ -467,7 +575,7 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
         </div>
       );
 
-    case 4:
+    case 5:
       return (
         <div className="space-y-6">
           <div className="text-center">
