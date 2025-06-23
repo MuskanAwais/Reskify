@@ -460,7 +460,7 @@ export default function SwmsBuilder() {
   };
 
   const handleStepClick = async (stepId: number) => {
-    // Can only navigate backward or to completed steps
+    // Allow backward navigation to any completed step
     if (stepId <= currentStep) {
       // Auto-save before step change
       if (formData.title || formData.jobName || formData.tradeType) {
@@ -476,7 +476,7 @@ export default function SwmsBuilder() {
       return;
     }
 
-    // Prevent jumping ahead - show validation message
+    // Prevent jumping ahead - show helpful message
     if (stepId > currentStep) {
       const stepNames = ['Project Details', 'Work Activities', 'Plant & Equipment', 'Emergency & Monitoring', 'Payment', 'Legal Disclaimer', 'Digital Signatures'];
       toast({
@@ -547,6 +547,7 @@ export default function SwmsBuilder() {
                         : 'bg-gray-200 text-gray-400 cursor-not-allowed opacity-60'
                     }`}
                     disabled={step.id > currentStep}
+                    title={step.id > currentStep ? 'Complete current step to unlock' : step.id < currentStep ? 'Click to return to this step' : 'Current step'}
                   >
                     {step.id < currentStep ? (
                       <CheckCircle className="h-4 w-4" />
@@ -555,8 +556,16 @@ export default function SwmsBuilder() {
                     )}
                   </button>
                   <div className="text-center hidden md:block px-2">
-                    <p className="text-xs font-medium text-gray-800 text-center">{step.title}</p>
-                    <p className="text-xs text-gray-500 text-center leading-tight">{step.description}</p>
+                    <p className={`text-xs font-medium text-center ${
+                      step.id === currentStep 
+                        ? 'text-primary' 
+                        : step.id < currentStep
+                        ? 'text-green-600'
+                        : 'text-gray-400'
+                    }`}>{step.title}</p>
+                    <p className={`text-xs text-center leading-tight ${
+                      step.id <= currentStep ? 'text-gray-600' : 'text-gray-400'
+                    }`}>{step.description}</p>
                   </div>
                 </div>
               ))}
