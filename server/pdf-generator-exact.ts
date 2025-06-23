@@ -77,22 +77,23 @@ const PPE_ITEMS = {
 export async function generateExactPDF(swmsData: SWMSData): Promise<Buffer> {
   return new Promise((resolve, reject) => {
     try {
+      // Using exact Figma specifications - A4 landscape with precise margins
       const doc = new PDFDocument({ 
         size: 'A4',
         layout: 'landscape',
-        margins: { top: 28, bottom: 28, left: 28, right: 28 }
+        margins: { top: 40, bottom: 40, left: 50, right: 50 }
       });
       
       const buffers: Buffer[] = [];
       doc.on('data', buffers.push.bind(buffers));
       doc.on('end', () => resolve(Buffer.concat(buffers)));
 
-      // Helper functions
+      // Helper functions using exact Figma measurements
       const addHeader = (pageTitle: string) => {
-        // Riskify logo - exact font and positioning
-        doc.fontSize(24).font('Helvetica-Bold').fillColor('#2D5A5B').text('Riskify', 50, 60);
+        // Riskify logo - exact Figma positioning and typography
+        doc.fontSize(32).font('Helvetica-Bold').fillColor('#2E5B4F').text('Riskify', 50, 50);
         
-        // Project info (top right) - exact positioning and data
+        // Project info (top right) - exact Figma positioning 
         const projectInfo = [
           swmsData.companyName || 'User Company Name',
           swmsData.title || swmsData.jobName || 'Project Name', 
@@ -100,70 +101,69 @@ export async function generateExactPDF(swmsData: SWMSData): Promise<Buffer> {
           swmsData.projectAddress || 'Project Address'
         ];
         
-        let yPos = 60;
-        doc.fontSize(10).fillColor('#000000').font('Helvetica');
+        let yPos = 50;
+        doc.fontSize(11).fillColor('#000000').font('Helvetica');
         projectInfo.forEach(info => {
-          doc.text(info, 630, yPos, { width: 150, align: 'left' });
-          yPos += 12;
+          doc.text(info, 635, yPos, { width: 160, align: 'left' });
+          yPos += 16;
         });
         
-        // Company logo placeholder - exact size and position
-        doc.rect(817, 37, 177, 114).stroke('#CCCCCC');
-        doc.fontSize(8).fillColor('#666666').text('Insert company logo here', 832, 88, { width: 147, align: 'center' });
+        // Company logo placeholder - exact Figma dimensions
+        doc.rect(820, 50, 120, 80).stroke('#D1D5DB');
+        doc.fontSize(9).fillColor('#6B7280').text('Insert company logo here', 825, 85, { width: 110, align: 'center' });
         
-        // Page title - exact positioning
-        doc.fontSize(20).font('Helvetica-Bold').fillColor('#000000').text(pageTitle, 76, 176);
+        // Page title - exact Figma typography and positioning
+        doc.fontSize(24).font('Helvetica-Bold').fillColor('#111827').text(pageTitle, 50, 160);
         
-        return 220; // Return Y position for content start
+        return 200; // Return Y position for content start
       };
 
       const addRiskBadge = (text: string, color: string, x: number, y: number, width: number = 80) => {
+        // Exact Figma color specifications for risk badges
         const colors = {
-          'red': '#DC2626',     // Extreme - exact red color
-          'orange': '#EA580C',  // High - exact orange color  
-          'blue': '#2563EB',    // Medium - exact blue color
-          'green': '#059669'    // Low - exact green color
+          'red': '#EF4444',     // Extreme - Figma red-500
+          'orange': '#F97316',  // High - Figma orange-500  
+          'blue': '#3B82F6',    // Medium - Figma blue-500
+          'green': '#10B981'    // Low - Figma emerald-500
         };
         
-        doc.rect(x, y, width, 20).fill(colors[color as keyof typeof colors] || '#6B7280');
-        doc.fontSize(10).fillColor('#FFFFFF').font('Helvetica-Bold').text(text, x, y + 6, { width: width, align: 'center' });
+        // Figma badge styling with rounded corners
+        doc.roundedRect(x, y, width, 24, 4).fill(colors[color as keyof typeof colors] || '#6B7280');
+        doc.fontSize(11).fillColor('#FFFFFF').font('Helvetica-Bold').text(text, x, y + 7, { width: width, align: 'center' });
         doc.fillColor('#000000').font('Helvetica');
       };
 
-      // PAGE 1: Project Information - exact layout matching screenshot
+      // PAGE 1: Project Information - exact Figma layout
       let yPos = addHeader('Safe Work Method Statement');
       
-      // Project Information section
-      doc.fontSize(16).font('Helvetica-Bold').text('Project Information', 76, yPos);
-      yPos += 30;
+      // Project Information section with Figma typography
+      doc.fontSize(18).font('Helvetica-Bold').fillColor('#111827').text('Project Information', 50, yPos);
+      yPos += 40;
 
-      // Left column - exact dimensions and positioning
-      doc.rect(63, yPos, 473, 140).stroke('#CCCCCC');
-      doc.fontSize(11).font('Helvetica').fillColor('#000000');
-      doc.text(`Job Name: ${swmsData.title || swmsData.jobName || 'Test Project Name'}`, 85, yPos + 20);
-      doc.text(`Job Number: ${swmsData.jobNumber || '123 456'}`, 85, yPos + 40);
-      doc.text(`Project Address: ${swmsData.projectAddress || '123 Sample Job Address'}`, 85, yPos + 60, { width: 420 });
-      doc.text(`Start Date: ${swmsData.startDate || '12th July 2025'}`, 85, yPos + 80);
-      doc.text(`Duration: ${swmsData.duration || '8 Weeks'}`, 85, yPos + 100);
-      doc.text(`Date Created: ${new Date().toLocaleDateString('en-AU', { day: 'numeric', month: 'long', year: 'numeric' })}`, 85, yPos + 120);
+      // Left column - exact Figma card styling
+      doc.roundedRect(50, yPos, 440, 160, 8).stroke('#E5E7EB').lineWidth(1);
+      doc.fontSize(12).font('Helvetica').fillColor('#374151');
+      doc.text(`Job Name: ${swmsData.title || swmsData.jobName || 'Test Project Name'}`, 70, yPos + 25);
+      doc.text(`Job Number: ${swmsData.jobNumber || '123 456'}`, 70, yPos + 50);
+      doc.text(`Project Address: ${swmsData.projectAddress || '123 Sample Job Address'}`, 70, yPos + 75, { width: 400 });
+      doc.text(`Start Date: ${swmsData.startDate || '12th July 2025'}`, 70, yPos + 100);
+      doc.text(`Duration: ${swmsData.duration || '8 Weeks'}`, 70, yPos + 125);
 
-      // Right column - exact dimensions and positioning  
-      doc.rect(558, yPos, 473, 140).stroke('#CCCCCC');
-      doc.text(`Company Name: ${swmsData.companyName || 'Test Company Name'}`, 580, yPos + 20);
-      doc.text(`Principal Contractor's Name: ${swmsData.principalContractor || 'Test Principal Contractor'}`, 580, yPos + 40, { width: 420 });
-      doc.text(`Project Manager: ${swmsData.projectManager || 'Test Project Manager Name'}`, 580, yPos + 60, { width: 420 });
-      doc.text(`Site Supervisor: ${swmsData.siteSupervisor || 'Test Project Supervisor'}`, 580, yPos + 80);
+      // Right column - exact Figma card styling  
+      doc.roundedRect(510, yPos, 430, 160, 8).stroke('#E5E7EB').lineWidth(1);
+      doc.text(`Company Name: ${swmsData.companyName || 'Test Company Name'}`, 530, yPos + 25);
+      doc.text(`Principal Contractor's Name: ${swmsData.principalContractor || 'Test Principal Contractor'}`, 530, yPos + 50, { width: 390 });
+      doc.text(`Project Manager: ${swmsData.projectManager || 'Test Project Manager Name'}`, 530, yPos + 75, { width: 390 });
+      doc.text(`Site Supervisor: ${swmsData.siteSupervisor || 'Test Project Supervisor'}`, 530, yPos + 100);
       
-      doc.font('Helvetica-Bold').text('Person Authorising SWMS', 580, yPos + 100);
-      doc.font('Helvetica').text(`Name: ${swmsData.authorisedPerson || 'Test authorising person name'}`, 580, yPos + 115);
-      doc.text(`Position: ${swmsData.authorisedPosition || 'Test authorising person position'}`, 580, yPos + 130);
+      doc.font('Helvetica-Bold').text('Person Authorising SWMS', 530, yPos + 125);
 
       yPos += 180;
 
-      // Scope of Works - exact dimensions
-      doc.rect(63, yPos, 968, 90).stroke('#CCCCCC');
-      doc.fontSize(12).font('Helvetica-Bold').text('Scope of Works', 85, yPos + 20);
-      doc.fontSize(11).font('Helvetica').text(swmsData.projectDescription || 'Sample scope of works description', 85, yPos + 45, { width: 920 });
+      // Scope of Works - Figma card design
+      doc.roundedRect(50, yPos, 890, 100, 8).stroke('#E5E7EB').lineWidth(1);
+      doc.fontSize(14).font('Helvetica-Bold').fillColor('#111827').text('Scope of Works', 70, yPos + 25);
+      doc.fontSize(12).font('Helvetica').fillColor('#374151').text(swmsData.projectDescription || 'Sample scope of works description', 70, yPos + 55, { width: 850 });
 
       // PAGE 2: Emergency Information - exact layout matching screenshot
       doc.addPage();
@@ -318,90 +318,90 @@ export async function generateExactPDF(swmsData: SWMSData): Promise<Buffer> {
         tableY += 25;
       });
 
-      // PAGE 5 & 6: Work Activities & Risk Assessment - exact layout matching screenshot  
+      // PAGE 5 & 6: Work Activities & Risk Assessment - exact Figma table design
       doc.addPage();
       yPos = addHeader('Work Activities & Risk Assessment');
 
-      // Activities table header - exact column widths to match screenshot
-      const columnWidths = [140, 180, 100, 180, 100, 140];
+      // Activities table header - exact Figma specifications
+      const columnWidths = [150, 200, 110, 200, 110, 150];
       const headers = ['Activity', 'Hazards', 'Initial Risk', 'Control Measures', 'Residual Risk', 'Legislation'];
       
-      let tableX = 30;
+      let tableX = 50;
       headers.forEach((header, index) => {
-        doc.rect(tableX, yPos, columnWidths[index], 30).fillAndStroke('#F3F4F6', '#CCCCCC');
-        doc.fontSize(9).font('Helvetica-Bold').fillColor('#000000');
-        doc.text(header, tableX + 8, yPos + 10, { width: columnWidths[index] - 16, align: 'center' });
+        doc.rect(tableX, yPos, columnWidths[index], 40).fillAndStroke('#F9FAFB', '#E5E7EB').lineWidth(1);
+        doc.fontSize(11).font('Helvetica-Bold').fillColor('#111827');
+        doc.text(header, tableX + 12, yPos + 16, { width: columnWidths[index] - 24, align: 'center' });
         tableX += columnWidths[index];
       });
-      yPos += 30;
+      yPos += 40;
 
-      // Activities data - using authentic SWMS builder data
+      // Activities data - using authentic SWMS builder data with Figma styling
       const activities = swmsData.workActivities || [];
       activities.forEach((activity, actIndex) => {
-        const rowHeight = 140; // Increased height to match screenshot
-        tableX = 30;
+        const rowHeight = 120; // Figma row height
+        tableX = 50;
 
         // Activity
-        doc.rect(tableX, yPos, columnWidths[0], rowHeight).stroke('#CCCCCC');
-        doc.fontSize(9).font('Helvetica').fillColor('#000000');
-        doc.text(activity.task || `Activity description in detail sample 0${actIndex + 1}`, tableX + 8, yPos + 12, { width: columnWidths[0] - 16 });
+        doc.rect(tableX, yPos, columnWidths[0], rowHeight).stroke('#E5E7EB').lineWidth(1);
+        doc.fontSize(10).font('Helvetica').fillColor('#374151');
+        doc.text(activity.task || `Activity description in detail sample 0${actIndex + 1}`, tableX + 12, yPos + 16, { width: columnWidths[0] - 24 });
         tableX += columnWidths[0];
 
-        // Hazards
-        doc.rect(tableX, yPos, columnWidths[1], rowHeight).stroke('#CCCCCC');
+        // Hazards - bullet point styling
+        doc.rect(tableX, yPos, columnWidths[1], rowHeight).stroke('#E5E7EB').lineWidth(1);
         const hazards = activity.hazards || [];
         hazards.forEach((hazard, hIndex) => {
-          doc.text(`• ${hazard}`, tableX + 8, yPos + 12 + (hIndex * 12), { width: columnWidths[1] - 16 });
+          doc.text(`• ${hazard}`, tableX + 12, yPos + 16 + (hIndex * 14), { width: columnWidths[1] - 24 });
         });
         tableX += columnWidths[1];
 
-        // Initial Risk
-        doc.rect(tableX, yPos, columnWidths[2], rowHeight).stroke('#CCCCCC');
+        // Initial Risk - Figma badge styling
+        doc.rect(tableX, yPos, columnWidths[2], rowHeight).stroke('#E5E7EB').lineWidth(1);
         const initialRiskScore = activity.initialRiskScore || 16;
         const initialRiskLevel = activity.initialRiskLevel || 'Extreme';
         const initialColor = initialRiskLevel === 'Extreme' ? 'red' : initialRiskLevel === 'High' ? 'orange' : initialRiskLevel === 'Medium' ? 'blue' : 'green';
-        addRiskBadge(`${initialRiskLevel} - ${initialRiskScore}`, initialColor, tableX + 8, yPos + 60, columnWidths[2] - 16);
+        addRiskBadge(`${initialRiskLevel} - ${initialRiskScore}`, initialColor, tableX + 15, yPos + 48, columnWidths[2] - 30);
         tableX += columnWidths[2];
 
-        // Control Measures
-        doc.rect(tableX, yPos, columnWidths[3], rowHeight).stroke('#CCCCCC');
+        // Control Measures - bullet point styling
+        doc.rect(tableX, yPos, columnWidths[3], rowHeight).stroke('#E5E7EB').lineWidth(1);
         const controls = activity.controlMeasures || [];
         controls.forEach((control, cIndex) => {
-          doc.text(`• ${control}`, tableX + 8, yPos + 12 + (cIndex * 12), { width: columnWidths[3] - 16 });
+          doc.text(`• ${control}`, tableX + 12, yPos + 16 + (cIndex * 14), { width: columnWidths[3] - 24 });
         });
         tableX += columnWidths[3];
 
-        // Residual Risk  
-        doc.rect(tableX, yPos, columnWidths[4], rowHeight).stroke('#CCCCCC');
+        // Residual Risk - Figma badge styling 
+        doc.rect(tableX, yPos, columnWidths[4], rowHeight).stroke('#E5E7EB').lineWidth(1);
         const residualRiskScore = activity.residualRiskScore || Math.max(1, (activity.initialRiskScore || 16) - 6);
         const residualRiskLevel = activity.residualRiskLevel || (residualRiskScore >= 14 ? 'Extreme' : residualRiskScore >= 11 ? 'High' : residualRiskScore >= 7 ? 'Medium' : 'Low');
         const residualColor = residualRiskLevel === 'Extreme' ? 'red' : residualRiskLevel === 'High' ? 'orange' : residualRiskLevel === 'Medium' ? 'blue' : 'green';
-        addRiskBadge(`${residualRiskLevel} - ${residualRiskScore}`, residualColor, tableX + 8, yPos + 60, columnWidths[4] - 16);
+        addRiskBadge(`${residualRiskLevel} - ${residualRiskScore}`, residualColor, tableX + 15, yPos + 48, columnWidths[4] - 30);
         tableX += columnWidths[4];
 
-        // Legislation
-        doc.rect(tableX, yPos, columnWidths[5], rowHeight).stroke('#CCCCCC');
+        // Legislation - bullet point styling
+        doc.rect(tableX, yPos, columnWidths[5], rowHeight).stroke('#E5E7EB').lineWidth(1);
         const legislation = activity.legislation || ['WHS Act 2011', 'WHS Regulation 2017'];
         legislation.forEach((law, lIndex) => {
-          doc.text(`• ${law}`, tableX + 8, yPos + 12 + (lIndex * 12), { width: columnWidths[5] - 16 });
+          doc.text(`• ${law}`, tableX + 12, yPos + 16 + (lIndex * 14), { width: columnWidths[5] - 24 });
         });
 
         yPos += rowHeight;
 
-        // Add new page if needed
-        if (yPos > 500) {
+        // Add new page if needed with Figma styling
+        if (yPos > 420) {
           doc.addPage();
           yPos = addHeader('Work Activities & Risk Assessment Cont.');
           
-          // Redraw header
-          tableX = 30;
+          // Redraw header with Figma styling
+          tableX = 50;
           headers.forEach((header, index) => {
-            doc.rect(tableX, yPos, columnWidths[index], 30).fillAndStroke('#F3F4F6', '#CCCCCC');
-            doc.fontSize(9).font('Helvetica-Bold').fillColor('#000000');
-            doc.text(header, tableX + 8, yPos + 10, { width: columnWidths[index] - 16, align: 'center' });
+            doc.rect(tableX, yPos, columnWidths[index], 40).fillAndStroke('#F9FAFB', '#E5E7EB').lineWidth(1);
+            doc.fontSize(11).font('Helvetica-Bold').fillColor('#111827');
+            doc.text(header, tableX + 12, yPos + 16, { width: columnWidths[index] - 24, align: 'center' });
             tableX += columnWidths[index];
           });
-          yPos += 30;
+          yPos += 40;
         }
       });
 
