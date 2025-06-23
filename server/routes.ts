@@ -255,7 +255,35 @@ export async function registerRoutes(app: Express) {
     }
   });
 
-  // Save SWMS draft
+  // Save SWMS draft - unified endpoint for auto-save and manual save
+  app.post("/api/swms/draft", async (req, res) => {
+    try {
+      // Handle both session-based and direct userId
+      const userId = req.session?.userId || req.body.userId || 999;
+      const swmsData = req.body;
+      
+      console.log('Saving SWMS draft for user:', userId, 'Project:', swmsData.projectName || 'Untitled');
+      
+      // If no project name but has jobName or tradeType, use those
+      const title = swmsData.projectName || swmsData.jobName || swmsData.tradeType || 'Draft SWMS';
+      
+      const savedDraft = await storage.saveSWMSDraft({
+        ...swmsData,
+        projectName: title,
+        userId,
+        status: 'draft',
+        updatedAt: new Date()
+      });
+      
+      console.log('SWMS draft saved successfully with ID:', savedDraft.id);
+      res.json({ success: true, id: savedDraft.id, message: 'Draft saved successfully' });
+    } catch (error) {
+      console.error("Save draft error:", error);
+      res.status(500).json({ error: "Failed to save draft" });
+    }
+  });
+
+  // Legacy save-draft endpoint for compatibility
   app.post("/api/swms/save-draft", async (req, res) => {
     try {
       // Handle both session-based and direct userId
