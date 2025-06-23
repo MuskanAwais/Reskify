@@ -83,6 +83,22 @@ export async function generatePuppeteerPDF(swmsData: SWMSData): Promise<Buffer> 
   let browser;
   
   try {
+    // Check if we can use Puppeteer, otherwise fallback to original generator
+    let usePuppeteer = true;
+    try {
+      // Test if Chrome/Chromium is available
+      browser = await puppeteer.launch({ headless: true });
+      await browser.close();
+    } catch (error) {
+      console.log('Puppeteer not available, falling back to PDFKit generator');
+      usePuppeteer = false;
+    }
+    
+    if (!usePuppeteer) {
+      // Fallback to original PDF generator
+      const { generateExactPDF } = await import('./pdf-generator-figma-exact.js');
+      return await generateExactPDF(swmsData);
+    }
     // Read the Handlebars template
     const templatePath = path.join(process.cwd(), 'templates', 'swms-template.hbs');
     const templateSource = fs.readFileSync(templatePath, 'utf8');
@@ -130,9 +146,9 @@ export async function generatePuppeteerPDF(swmsData: SWMSData): Promise<Buffer> 
     // Generate HTML from template
     const html = template(templateData);
     
-    // Launch Puppeteer
+    // Launch Puppeteer with Replit-compatible settings
     browser = await puppeteer.launch({
-      headless: true,
+      headless: 'new',
       args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',
@@ -140,8 +156,14 @@ export async function generatePuppeteerPDF(swmsData: SWMSData): Promise<Buffer> 
         '--disable-accelerated-2d-canvas',
         '--no-first-run',
         '--no-zygote',
-        '--disable-gpu'
-      ]
+        '--disable-gpu',
+        '--disable-web-security',
+        '--disable-features=VizDisplayCompositor',
+        '--disable-background-timer-throttling',
+        '--disable-backgrounding-occluded-windows',
+        '--disable-renderer-backgrounding'
+      ],
+      executablePath: process.env.CHROME_BIN || process.env.CHROMIUM_PATH || '/usr/bin/chromium-browser'
     });
     
     const page = await browser.newPage();
