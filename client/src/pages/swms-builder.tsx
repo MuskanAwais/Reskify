@@ -502,6 +502,21 @@ export default function SwmsBuilder() {
     if (!formData.tradeType?.trim()) {
       errors.push("Trade Type is required");
     }
+    if (!formData.swmsCreatorName?.trim()) {
+      errors.push("SWMS Creator Name is required");
+    }
+    if (!formData.swmsCreatorPosition?.trim()) {
+      errors.push("SWMS Creator Position is required");
+    }
+    if (!formData.principalContractor?.trim()) {
+      errors.push("Principal Contractor is required");
+    }
+    if (!formData.projectManager?.trim()) {
+      errors.push("Project Manager is required");
+    }
+    if (!formData.siteSupervisor?.trim()) {
+      errors.push("Site Supervisor is required");
+    }
     
     return errors;
   };

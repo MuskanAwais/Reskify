@@ -44,6 +44,8 @@ export const swmsDocuments = pgTable("swms_documents", {
   projectLocation: text("project_location").notNull(),
   projectDescription: text("project_description"),
   principalContractor: text("principal_contractor").notNull(),
+  swmsCreatorName: text("swms_creator_name"),
+  swmsCreatorPosition: text("swms_creator_position"),
   subcontractor: text("subcontractor"),
   principalContractorAbn: text("principal_contractor_abn"),
   subcontractorAbn: text("subcontractor_abn"),

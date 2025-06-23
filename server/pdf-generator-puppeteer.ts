@@ -101,6 +101,8 @@ export async function generatePuppeteerPDF(swmsData: SWMSData): Promise<Buffer> 
       jobName: swmsData.jobName || 'Project Name',
       jobNumber: swmsData.jobNumber || 'Job Number',
       companyName: swmsData.companyName || 'Company Name',
+      swmsCreatorName: swmsData.swmsCreatorName || 'SWMS Creator',
+      swmsCreatorPosition: swmsData.swmsCreatorPosition || 'Position',
       projectManager: swmsData.projectManager || 'Project Manager',
       siteSupervisor: swmsData.siteSupervisor || 'Site Supervisor',
       startDate: swmsData.startDate || new Date().toLocaleDateString('en-AU'),
