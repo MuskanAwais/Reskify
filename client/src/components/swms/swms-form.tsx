@@ -445,7 +445,7 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
 
 
 
-    case 4:
+    case 3:
       return (
         <div className="space-y-6">
           <div className="text-center">
