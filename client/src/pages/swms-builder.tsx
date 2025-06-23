@@ -268,18 +268,62 @@ export default function SwmsBuilder() {
     return errors;
   };
 
+  // Enhanced validation functions for each step
+  const validateStep2 = () => {
+    const errors: string[] = [];
+    if (!formData.selectedTasks || formData.selectedTasks.length === 0) {
+      errors.push("At least one work activity must be selected");
+    }
+    return errors;
+  };
+
+  const validateStep3 = () => {
+    const errors: string[] = [];
+    if (!formData.plantEquipment || formData.plantEquipment.length === 0) {
+      errors.push("Plant and equipment information is required");
+    }
+    return errors;
+  };
+
+  const validateStep4 = () => {
+    const errors: string[] = [];
+    if (!formData.emergencyProcedures || formData.emergencyProcedures.length === 0) {
+      errors.push("Emergency procedures must be defined");
+    }
+    return errors;
+  };
+
+  const validateStep6 = () => {
+    const errors: string[] = [];
+    if (!formData.acceptedDisclaimer) {
+      errors.push("Legal disclaimer must be accepted");
+    }
+    return errors;
+  };
+
   const handleNext = async () => {
-    // Validate step 1 before proceeding
+    // Validate current step before proceeding
+    let errors: string[] = [];
+    
     if (currentStep === 1) {
-      const errors = validateStep1();
-      if (errors.length > 0) {
-        toast({
-          title: "Missing Required Information",
-          description: "Please fill in all mandatory fields: " + errors.join(", "),
-          variant: "destructive",
-        });
-        return;
-      }
+      errors = validateStep1();
+    } else if (currentStep === 2) {
+      errors = validateStep2();
+    } else if (currentStep === 3) {
+      errors = validateStep3();
+    } else if (currentStep === 4) {
+      errors = validateStep4();
+    } else if (currentStep === 6) {
+      errors = validateStep6();
+    }
+
+    if (errors.length > 0) {
+      toast({
+        title: "Missing Required Information",
+        description: "Please complete all required fields: " + errors.join(", "),
+        variant: "destructive",
+      });
+      return;
     }
     
     // Handle payment step (step 5)
@@ -289,12 +333,22 @@ export default function SwmsBuilder() {
       return;
     }
     
-    // Handle proceeding from payment step (step 5)
+    // Handle proceeding from payment step (step 5) - STRICT VALIDATION
     if (currentStep === 5) {
       const creditsRemaining = subscription ? (subscription as any).creditsRemaining || 0 : 0;
       const hasProPlan = (subscription as any)?.plan === "Pro" || (subscription as any)?.plan === "Enterprise";
       const isAdminDemo = localStorage.getItem('adminDemoMode') === 'true';
       const isAppAdmin = localStorage.getItem('isAppAdmin') === 'true';
+      
+      // STRICT: Only allow if user has credits, pro plan, or admin demo mode
+      if (!((isAppAdmin && isAdminDemo) || creditsRemaining > 0 || hasProPlan)) {
+        toast({
+          title: "Payment Required",
+          description: "Please complete payment or use available credits to proceed.",
+          variant: "destructive",
+        });
+        return;
+      }
       
       // Allow admin to bypass payment in demo mode OR if user has credits
       if ((isAppAdmin && isAdminDemo) || creditsRemaining > 0 || hasProPlan) {
@@ -406,8 +460,8 @@ export default function SwmsBuilder() {
   };
 
   const handleStepClick = async (stepId: number) => {
-    // Can navigate backward freely, or one step forward if form is valid
-    if (stepId <= currentStep || stepId === currentStep + 1) {
+    // Can only navigate backward or to completed steps
+    if (stepId <= currentStep) {
       // Auto-save before step change
       if (formData.title || formData.jobName || formData.tradeType) {
         try {
@@ -419,6 +473,18 @@ export default function SwmsBuilder() {
       
       setCurrentStep(stepId);
       setLocation(`/swms-builder?step=${stepId}`);
+      return;
+    }
+
+    // Prevent jumping ahead - show validation message
+    if (stepId > currentStep) {
+      const stepNames = ['Project Details', 'Work Activities', 'Plant & Equipment', 'Emergency & Monitoring', 'Payment', 'Legal Disclaimer', 'Digital Signatures'];
+      toast({
+        title: "Complete Current Step First",
+        description: `Please complete "${stepNames[currentStep - 1]}" before proceeding to "${stepNames[stepId - 1]}".`,
+        variant: "destructive",
+      });
+      return;
     }
   };
 
@@ -473,14 +539,14 @@ export default function SwmsBuilder() {
                 <div key={step.id} className="flex flex-col items-center space-y-2 flex-1">
                   <button
                     onClick={() => handleStepClick(step.id)}
-                    className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-all hover:scale-110 ${
+                    className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-all ${
                       step.id === currentStep 
-                        ? 'bg-primary text-white ring-2 ring-primary ring-offset-2' 
+                        ? 'bg-primary text-white ring-2 ring-primary ring-offset-2 hover:scale-110' 
                         : step.id < currentStep
-                        ? 'bg-green-500 text-white hover:bg-green-600 shadow-md'
-                        : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                        ? 'bg-green-500 text-white hover:bg-green-600 shadow-md hover:scale-110 cursor-pointer'
+                        : 'bg-gray-200 text-gray-400 cursor-not-allowed opacity-60'
                     }`}
-                    disabled={step.id > currentStep + 1} // Can only go one step ahead
+                    disabled={step.id > currentStep}
                   >
                     {step.id < currentStep ? (
                       <CheckCircle className="h-4 w-4" />
