@@ -8,6 +8,7 @@ import Stripe from 'stripe';
 import { storage } from "./storage.js";
 import { generateExactPDF } from "./pdf-generator-figma-exact.js";
 import { generatePuppeteerPDF } from "./pdf-generator-puppeteer.js";
+import { generateSimplePDF } from "./pdf-generator-simple.js";
 
 // Initialize Stripe
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
@@ -651,6 +652,68 @@ export async function registerRoutes(app: Express) {
     }
   });
 
+  // HTML preview route
+  app.get('/test-html', async (req, res) => {
+    try {
+      const sampleData = {
+        projectName: "Commercial Office Fitout - Melbourne CBD",
+        jobName: "Level 15 Office Renovation Project",
+        jobNumber: "COF-2025-001",
+        projectAddress: "123 Collins Street, Melbourne VIC 3000",
+        companyName: "Melbourne Office Solutions",
+        projectManager: "Sarah Chen",
+        siteSupervisor: "Michael Rodriguez",
+        principalContractor: "Elite Construction Group Pty Ltd",
+        startDate: "15th January 2025",
+        duration: "12 Weeks",
+        emergencyContacts: [
+          { name: "Site Emergency Coordinator", phone: "0412 345 678" },
+          { name: "Building Management", phone: "0398 765 432" },
+          { name: "First Aid Officer", phone: "0456 789 123" }
+        ],
+        workActivities: [
+          {
+            task: "Site establishment and safety briefing for all personnel",
+            hazards: [
+              "Inadequate site setup leading to safety incidents",
+              "Personnel unfamiliar with site-specific hazards"
+            ],
+            initialRiskLevel: "High",
+            initialRiskScore: 12,
+            controlMeasures: [
+              "Conduct comprehensive site induction for all workers",
+              "Establish designated storage and welfare areas"
+            ],
+            residualRiskLevel: "Medium",
+            residualRiskScore: 6,
+            legislation: ["WHS Act 2011 Section 19", "WHS Regulation 2017 Part 3.1"]
+          }
+        ],
+        ppeRequirements: [
+          "hard-hat", "hi-vis-vest", "steel-cap-boots", "safety-glasses"
+        ],
+        plantEquipment: [
+          {
+            name: "Telescopic Handler",
+            model: "GTH-2506",
+            serial: "GTH25-2024-001",
+            riskLevel: "High",
+            nextInspection: "20th February 2025",
+            certificationRequired: "Yes"
+          }
+        ]
+      };
+      
+      const html = await generateSimplePDF(sampleData);
+      res.setHeader('Content-Type', 'text/html');
+      res.send(html);
+      
+    } catch (error) {
+      console.error('HTML preview error:', error);
+      res.status(500).json({ error: 'Failed to generate HTML preview' });
+    }
+  });
+
   // Test route with sample data
   app.get('/test-pdf', async (req, res) => {
     try {
@@ -754,9 +817,9 @@ export async function registerRoutes(app: Express) {
       
       const data = req.body;
       
-      console.log('Generating PDF with Puppeteer using Figma template for:', requestTitle);
-      // Use Puppeteer PDF generator with Figma template
-      const pdfBuffer = await generatePuppeteerPDF(data);
+      console.log('Generating PDF with Figma template for:', requestTitle);
+      // Force use the original exact PDF generator that matches Figma
+      const pdfBuffer = await generateExactPDF(data);
       
       res.setHeader('Content-Type', 'application/pdf');
       res.setHeader('Content-Disposition', `attachment; filename="SWMS-${requestTitle.replace(/[^a-zA-Z0-9]/g, '_')}.pdf"`);
@@ -773,8 +836,8 @@ export async function registerRoutes(app: Express) {
     try {
       const data = req.body;
       
-      // Use Puppeteer PDF generator with Figma template
-      const pdfBuffer = await generatePuppeteerPDF(data);
+      // Use exact Figma PDF generator 
+      const pdfBuffer = await generateExactPDF(data);
       
       // Set headers for browser PDF display
       res.setHeader('Content-Type', 'application/pdf');

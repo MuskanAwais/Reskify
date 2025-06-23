@@ -1,4 +1,3 @@
-import puppeteer from 'puppeteer';
 import handlebars from 'handlebars';
 import fs from 'fs';
 import path from 'path';
@@ -17,7 +16,6 @@ handlebars.registerHelper('times', function(n: number, block: any) {
 });
 
 interface SWMSData {
-  // Project Information
   projectName?: string;
   jobName?: string;
   jobNumber?: string;
@@ -28,16 +26,9 @@ interface SWMSData {
   principalContractor?: string;
   startDate?: string;
   duration?: string;
-  
-  // Emergency Information
-  emergencyContacts?: Array<{
-    name: string;
-    phone: string;
-  }>;
-  assemblyPoint?: string;
-  nearestHospital?: string;
-  
-  // Work Activities
+  emergencyProcedures?: {
+    contacts?: Array<{ name: string; phone: string }>;
+  };
   workActivities?: Array<{
     task: string;
     hazards: string[];
@@ -48,11 +39,7 @@ interface SWMSData {
     residualRiskScore: number;
     legislation: string[];
   }>;
-  
-  // PPE Requirements
   ppeRequirements?: string[];
-  
-  // Plant & Equipment
   plantEquipment?: Array<{
     name: string;
     model: string;
@@ -63,7 +50,6 @@ interface SWMSData {
   }>;
 }
 
-// PPE mapping with descriptions
 const PPE_ITEMS = {
   'hard-hat': { name: 'Hard Hat', description: 'Impact protection for head' },
   'hi-vis-vest': { name: 'Hi-Vis Vest', description: 'High visibility clothing' },
@@ -79,11 +65,8 @@ const PPE_ITEMS = {
   'fire-retardant-clothing': { name: 'Fire Retardant Clothing', description: 'Heat protection' }
 };
 
-export async function generatePuppeteerPDF(swmsData: SWMSData): Promise<Buffer> {
-  let browser;
-  
+export async function generateSimplePDF(swmsData: SWMSData): Promise<string> {
   try {
-    // Skip the test launch and go straight to PDF generation
     // Read the Handlebars template
     const templatePath = path.join(process.cwd(), 'templates', 'swms-template.hbs');
     const templateSource = fs.readFileSync(templatePath, 'utf8');
@@ -108,12 +91,13 @@ export async function generatePuppeteerPDF(swmsData: SWMSData): Promise<Buffer> 
       principalContractor: swmsData.principalContractor || 'Principal Contractor',
       
       // Emergency information
-      emergencyContacts: swmsData.emergencyContacts || [
+      emergencyContacts: swmsData.emergencyProcedures?.contacts || [
         { name: 'Site Coordinator', phone: '0412 345 678' },
+        { name: 'Building Management', phone: '0398 765 432' },
         { name: 'First Aid Officer', phone: '0456 789 123' }
       ],
-      assemblyPoint: swmsData.assemblyPoint || 'Main Entrance',
-      nearestHospital: swmsData.nearestHospital || 'Local Hospital',
+      assemblyPoint: 'Main Entrance',
+      nearestHospital: 'Local Hospital',
       
       // Work activities
       activities: swmsData.workActivities || [],
@@ -130,59 +114,10 @@ export async function generatePuppeteerPDF(swmsData: SWMSData): Promise<Buffer> 
     
     // Generate HTML from template
     const html = template(templateData);
-    
-    // Try Puppeteer first, then fallback if needed
-    try {
-      browser = await puppeteer.launch({
-        headless: 'new',
-        args: [
-          '--no-sandbox',
-          '--disable-setuid-sandbox',
-          '--disable-dev-shm-usage',
-          '--disable-accelerated-2d-canvas',
-          '--no-first-run',
-          '--no-zygote',
-          '--disable-gpu',
-          '--disable-web-security',
-          '--disable-features=VizDisplayCompositor',
-          '--disable-background-timer-throttling',
-          '--disable-backgrounding-occluded-windows',
-          '--disable-renderer-backgrounding'
-        ],
-        executablePath: '/nix/store/zi4f80l169xlmivz8vja8wlphq74qqk0-chromium-125.0.6422.141/bin/chromium'
-      });
-    } catch (puppeteerError) {
-      console.log('Puppeteer launch failed, using PDFKit fallback');
-      const { generateExactPDF } = await import('./pdf-generator-figma-exact.js');
-      return await generateExactPDF(swmsData);
-    }
-    
-    const page = await browser.newPage();
-    
-    // Set page content
-    await page.setContent(html, { waitUntil: 'networkidle0' });
-    
-    // Generate PDF with exact A4 settings
-    const pdfBuffer = await page.pdf({
-      format: 'A4',
-      printBackground: true,
-      margin: {
-        top: '0mm',
-        right: '0mm',
-        bottom: '0mm',
-        left: '0mm'
-      },
-      preferCSSPageSize: true
-    });
-    
-    return Buffer.from(pdfBuffer);
+    return html;
     
   } catch (error) {
-    console.error('PDF generation error:', error);
+    console.error('HTML generation error:', error);
     throw error;
-  } finally {
-    if (browser) {
-      await browser.close();
-    }
   }
 }
