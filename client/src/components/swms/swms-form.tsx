@@ -447,41 +447,41 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
       return (
         <div className="space-y-6">
           <div className="text-center">
-            <Shield className="mx-auto h-12 w-12 text-red-600 mb-4" />
-            <h3 className="text-lg font-semibold mb-2">High-Risk Construction Work (HRCW)</h3>
+            <Shield className="mx-auto h-12 w-12 text-primary mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Personal Protective Equipment (PPE)</h3>
             <p className="text-gray-600 text-sm">
-              Select applicable high-risk construction work categories based on WHS Regulations 2011 (Regulation 291)
+              Select required PPE based on work activities and risk assessments
             </p>
           </div>
 
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center">
-                <AlertTriangle className="mr-2 h-5 w-5 text-red-600" />
-                High-Risk Construction Work Categories
+                <Shield className="mr-2 h-5 w-5 text-blue-600" />
+                PPE Requirements
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {formData.hrcwCategories && formData.hrcwCategories.length > 0 ? (
-                <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-                  <div className="flex items-center mb-2">
-                    <Info className="h-4 w-4 text-red-600 mr-2" />
-                    <span className="font-medium text-red-800">
-                      {formData.hrcwCategories.length} High-Risk Categories Selected
-                    </span>
-                  </div>
-                  <p className="text-red-700 text-sm">
-                    Categories have been auto-detected based on your work activities. Review and adjust selections below.
-                  </p>
-                </div>
-              ) : (
+              {formData.ppeRequirements && formData.ppeRequirements.length > 0 ? (
                 <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
                   <div className="flex items-center mb-2">
                     <Info className="h-4 w-4 text-blue-600 mr-2" />
-                    <span className="font-medium text-blue-800">Select Applicable Categories</span>
+                    <span className="font-medium text-blue-800">
+                      {formData.ppeRequirements.length} PPE Items Auto-Selected
+                    </span>
                   </div>
                   <p className="text-blue-700 text-sm">
-                    Click on the boxes below to select any high-risk construction work categories that apply to your project.
+                    PPE has been automatically selected based on your work activities and risk assessment. Review and adjust as needed.
+                  </p>
+                </div>
+              ) : (
+                <div className="mb-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                  <div className="flex items-center mb-2">
+                    <Info className="h-4 w-4 text-gray-600 mr-2" />
+                    <span className="font-medium text-gray-800">Select Required PPE</span>
+                  </div>
+                  <p className="text-gray-700 text-sm">
+                    Select the personal protective equipment required for your work activities.
                   </p>
                 </div>
               )}
@@ -852,7 +852,7 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
         </div>
       );
 
-    case 5:
+    case 4:
       return (
         <div className="space-y-6">
           <div className="text-center">
@@ -877,7 +877,7 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
         </div>
       );
 
-    case 6:
+    case 5:
       return (
         <div className="space-y-6">
           <div className="text-center">
@@ -994,7 +994,7 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
         </div>
       );
 
-    case 7:
+    case 6:
       return (
         <div className="space-y-6">
           <div className="text-center">
@@ -1086,7 +1086,7 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
         </div>
       );
 
-    case 8:
+    case 7:
       return (
         <div className="space-y-6">
           <div className="text-center">
@@ -1141,7 +1141,7 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
         </div>
       );
 
-    case 9:
+    case 8:
       return (
         <div className="space-y-6">
           <div className="text-center">
