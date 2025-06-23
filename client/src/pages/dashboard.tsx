@@ -68,24 +68,24 @@ export default function Dashboard() {
 
       {/* Stats Cards - Unified order: Create New SWMS & Credits first */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Create New SWMS</p>
-                <p className="text-2xl font-bold text-gray-800">+</p>
-                <p className="text-xs text-gray-500 mt-1">Start building documentation</p>
-              </div>
-              <Link href="/swms-builder">
-                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center cursor-pointer hover:bg-primary/20 transition-colors">
+        <Link href="/swms-builder">
+          <Card className="cursor-pointer hover:shadow-md transition-all duration-200 hover:border-primary/50">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600 mb-1">Create New SWMS</p>
+                  <p className="text-2xl font-bold text-gray-800">+</p>
+                  <p className="text-xs text-gray-500 mt-1">Start building documentation</p>
+                </div>
+                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
                   <FileText className="text-primary text-xl" />
                 </div>
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
 
-        <Card>
+        <Card className="hover:shadow-md transition-all duration-200">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
@@ -100,35 +100,39 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">{translate('draftSwms')}</p>
-                <p className="text-2xl font-bold text-gray-800">{(stats as any).draftSwms || 0}</p>
-                <p className="text-xs text-gray-500 mt-1">{translate('saveCompleteLater')}</p>
+        <Link href="/my-swms?filter=draft">
+          <Card className="cursor-pointer hover:shadow-md transition-all duration-200 hover:border-orange-300">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600 mb-1">{translate('draftSwms')}</p>
+                  <p className="text-2xl font-bold text-gray-800">{(stats as any).draftSwms || 0}</p>
+                  <p className="text-xs text-gray-500 mt-1">{translate('saveCompleteLater')}</p>
+                </div>
+                <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                  <FileText className="text-orange-600 text-xl" />
+                </div>
               </div>
-              <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
-                <FileText className="text-orange-600 text-xl" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </Link>
 
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">{translate('completedSwms')}</p>
-                <p className="text-2xl font-bold text-gray-800">{(stats as any).completedSwms || 0}</p>
-                <p className="text-xs text-gray-500 mt-1">{translate('projectSpecificDocumentation')}</p>
+        <Link href="/my-swms?filter=completed">
+          <Card className="cursor-pointer hover:shadow-md transition-all duration-200 hover:border-green-300">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600 mb-1">{translate('completedSwms')}</p>
+                  <p className="text-2xl font-bold text-gray-800">{(stats as any).completedSwms || 0}</p>
+                  <p className="text-xs text-gray-500 mt-1">{translate('projectSpecificDocumentation')}</p>
+                </div>
+                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                  <FileText className="text-green-600 text-xl" />
+                </div>
               </div>
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                <FileText className="text-green-600 text-xl" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </Link>
       </div>
 
       {/* Recent SWMS Documents - Full Width */}
