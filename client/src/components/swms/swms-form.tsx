@@ -855,10 +855,42 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
                   <Button 
                     size="lg"
                     className="w-full bg-green-600 hover:bg-green-700"
-                    onClick={() => {
-                      updateFormData({ paymentMethod: 'credits', paid: true });
-                      // Move to next step (Legal Disclaimer)
-                      window.location.href = '/swms-builder?step=6';
+                    onClick={async () => {
+                      try {
+                        // Call the credit usage API with admin demo headers
+                        const response = await fetch('/api/user/use-credit', {
+                          method: 'POST',
+                          headers: {
+                            'Content-Type': 'application/json',
+                            'x-admin-demo': localStorage.getItem('adminDemoMode') || 'false',
+                            'x-app-admin': localStorage.getItem('isAppAdmin') || 'false',
+                          },
+                          credentials: 'include',
+                        });
+
+                        if (response.ok) {
+                          const result = await response.json();
+                          console.log('Credit used successfully:', result);
+                          
+                          // Update form data to indicate payment is complete
+                          updateFormData({ 
+                            paymentMethod: 'credits', 
+                            paid: true,
+                            creditsUsed: true 
+                          });
+                          
+                          // Trigger next step via the parent component
+                          if (onNext) {
+                            onNext();
+                          }
+                        } else {
+                          console.error('Failed to use credit:', response.statusText);
+                          alert('Failed to process credit usage. Please try again.');
+                        }
+                      } catch (error) {
+                        console.error('Error using credit:', error);
+                        alert('Error processing credit usage. Please try again.');
+                      }
                     }}
                   >
                     Use Current Credits (1 credit)
