@@ -362,6 +362,34 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
               {/* Project Personnel Details */}
               <div className="border-t pt-6">
                 <h3 className="text-lg font-semibold mb-4">Project Personnel</h3>
+                
+                {/* Person creating and authorising SWMS */}
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                  <h4 className="text-md font-medium text-blue-900 mb-3">Person Creating and Authorising SWMS</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="swmsCreatorName">Name *</Label>
+                      <Input
+                        id="swmsCreatorName"
+                        value={formData.swmsCreatorName || ""}
+                        onChange={(e) => updateFormData({ swmsCreatorName: e.target.value })}
+                        placeholder="Full name of person creating SWMS"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="swmsCreatorPosition">Position *</Label>
+                      <Input
+                        id="swmsCreatorPosition"
+                        value={formData.swmsCreatorPosition || ""}
+                        onChange={(e) => updateFormData({ swmsCreatorPosition: e.target.value })}
+                        placeholder="Job title/position"
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
                     <Label htmlFor="principalContractor">Principal Contractor *</Label>

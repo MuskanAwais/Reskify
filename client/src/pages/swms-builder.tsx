@@ -155,6 +155,8 @@ export default function SwmsBuilder() {
     projectLocation: "",
     startDate: "",
     tradeType: "",
+    swmsCreatorName: "", // Person creating and authorising SWMS
+    swmsCreatorPosition: "", // Position of person creating SWMS
     activities: [],
     hazards: [],
     riskAssessments: [],
@@ -674,6 +676,8 @@ export default function SwmsBuilder() {
         projectLocation: "",
         tradeType: "",
         startDate: "",
+        swmsCreatorName: "",
+        swmsCreatorPosition: "",
         workDescription: "",
         activities: [],
         hazards: [],
