@@ -226,6 +226,7 @@ export default function GPTTaskSelection({
   const [siteEnvironment, setSiteEnvironment] = useState("");
   const [specialRiskFactors, setSpecialRiskFactors] = useState<string[]>([]);
   const [selectedState, setSelectedState] = useState("NSW");
+  const [showAllHRCW, setShowAllHRCW] = useState(false);
   const [generationProgress, setGenerationProgress] = useState(0);
   const [progressStatus, setProgressStatus] = useState("");
   const [generatedTasks, setGeneratedTasks] = useState<any[]>([]);

@@ -129,14 +129,13 @@ const HRCW_CATEGORIES = [
 
 const getSteps = () => [
   { id: 1, title: "Project & Contractor Details", description: "Project information, contractor details, and high-risk work identification" },
-  { id: 2, title: "Work Activities & Risk Assessment", description: "Generate tasks and manage comprehensive risk assessments with controls" },
-  { id: 3, title: "High-Risk Construction Work", description: "Select applicable HRCW categories from WHS Regulations 2011" },
-  { id: 4, title: "Personal Protective Equipment", description: "Select required PPE based on work activities and risks" },
-  { id: 5, title: "Plant, Equipment & Training", description: "Equipment specifications, training requirements, and permits" },
-  { id: 6, title: "Emergency & Monitoring", description: "Emergency procedures and review/monitoring processes" },
-  { id: 7, title: "Payment & Access", description: "Select payment option to complete SWMS generation" },
-  { id: 8, title: "Legal Disclaimer", description: "Accept terms and liability disclaimer" },
-  { id: 9, title: "Digital Signatures & PDF", description: "Generate complete SWMS document with optional signatures" }
+  { id: 2, title: "Work Activities & Risk Assessment", description: "Generate tasks with HRCW selection and manage comprehensive risk assessments" },
+  { id: 3, title: "Personal Protective Equipment", description: "Select required PPE based on work activities and risks" },
+  { id: 4, title: "Plant, Equipment & Training", description: "Equipment specifications, training requirements, and permits" },
+  { id: 5, title: "Emergency & Monitoring", description: "Emergency procedures and review/monitoring processes" },
+  { id: 6, title: "Payment & Access", description: "Select payment option to complete SWMS generation" },
+  { id: 7, title: "Legal Disclaimer", description: "Accept terms and liability disclaimer" },
+  { id: 8, title: "Digital Signatures & PDF", description: "Generate complete SWMS document with optional signatures" }
 ];
 
 export default function SwmsBuilder() {
