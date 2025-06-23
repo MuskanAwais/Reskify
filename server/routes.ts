@@ -4,7 +4,13 @@ import PDFDocument from 'pdfkit';
 import bcryptjs from 'bcryptjs';
 import fs from 'fs';
 import path from 'path';
+import Stripe from 'stripe';
 import { storage } from "./storage.js";
+
+// Initialize Stripe
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
+  apiVersion: '2024-06-20',
+});
 
 interface SessionData {
   userId?: number;
@@ -580,22 +586,9 @@ export async function registerRoutes(app: Express) {
   // Credit usage endpoint
   app.post('/api/user/use-credit', async (req, res) => {
     try {
-      // Check admin demo mode headers
-      const isAdminDemo = req.headers['x-admin-demo'] === 'true';
-      const isAppAdmin = req.headers['x-app-admin'] === 'true';
+      console.log('Credit usage request received');
       
-      // Allow demo mode access
-      if (isAdminDemo || isAppAdmin) {
-        console.log('Demo mode credit usage allowed');
-        return res.json({ 
-          success: true, 
-          message: 'Credit used successfully (demo mode)',
-          creditsRemaining: 9 
-        });
-      }
-
-      // For demo purposes, allow credit usage without strict authentication
-      console.log('Credit usage allowed for demo');
+      // Always allow credit usage in demo mode
       return res.json({ 
         success: true, 
         message: 'Credit used successfully',
@@ -604,6 +597,36 @@ export async function registerRoutes(app: Express) {
     } catch (error) {
       console.error('Error using credit:', error);
       res.status(500).json({ error: 'Failed to use credit' });
+    }
+  });
+
+  // Stripe payment intent endpoint
+  app.post('/api/create-payment-intent', async (req, res) => {
+    try {
+      const { amount, type } = req.body;
+      
+      console.log('Creating payment intent for:', { amount, type });
+      
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: Math.round(amount * 100), // Convert to cents
+        currency: 'usd',
+        metadata: {
+          type: type || 'one-off',
+          userId: req.session?.userId || '999'
+        }
+      });
+
+      res.json({ 
+        clientSecret: paymentIntent.client_secret,
+        amount: amount,
+        type: type
+      });
+    } catch (error: any) {
+      console.error('Payment intent creation error:', error);
+      res.status(500).json({ 
+        error: 'Failed to create payment intent',
+        message: error.message 
+      });
     }
   });
 

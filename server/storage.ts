@@ -354,10 +354,25 @@ export class DatabaseStorage implements IStorage {
 
   async saveSWMSDraft(data: any): Promise<any> {
     try {
+      const userId = data.userId || 999;
+      const title = data.projectName || data.jobName || data.tradeType || 'Draft SWMS';
+      
+      // Check if we're updating an existing draft (based on userId and title)
+      const existingDrafts = await db
+        .select()
+        .from(swmsDocuments)
+        .where(eq(swmsDocuments.userId, userId));
+      
+      // Find matching draft by title or create new one
+      const existingDraft = existingDrafts.find(draft => 
+        draft.title === title || 
+        (draft.status === 'draft' && !draft.title)
+      );
+
       const swmsData = {
-        userId: data.userId || 999,
-        title: data.projectName || '',
-        jobName: data.projectName || '',
+        userId,
+        title,
+        jobName: title,
         jobNumber: data.jobNumber || '',
         projectAddress: data.projectAddress || '',
         projectLocation: data.projectAddress || '',
@@ -374,9 +389,21 @@ export class DatabaseStorage implements IStorage {
         status: data.status || 'draft'
       };
 
-      const [savedDoc] = await db.insert(swmsDocuments).values(swmsData).returning();
-      console.log('SWMS saved successfully:', savedDoc.id);
-      return savedDoc;
+      if (existingDraft) {
+        // Update existing draft
+        const [updatedDoc] = await db
+          .update(swmsDocuments)
+          .set(swmsData)
+          .where(eq(swmsDocuments.id, existingDraft.id))
+          .returning();
+        console.log('SWMS draft updated:', updatedDoc.id);
+        return updatedDoc;
+      } else {
+        // Create new draft
+        const [savedDoc] = await db.insert(swmsDocuments).values(swmsData).returning();
+        console.log('SWMS draft created:', savedDoc.id);
+        return savedDoc;
+      }
     } catch (error) {
       console.error('Error saving SWMS to database:', error);
       // Fallback to memory storage

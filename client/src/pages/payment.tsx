@@ -179,25 +179,34 @@ export default function Payment() {
   const handlePurchase = (planType: string) => {
     setSelectedPlan(planType);
     
-    let amount = 0;
-    switch (planType) {
-      case 'one-off':
-        amount = 15;
-        break;
-      case 'credits':
-        amount = 65;
-        break;
-      case 'subscription':
-        amount = 49;
-        break;
+    let paymentAmount = amount; // Use URL parameter if available
+    if (!paymentAmount) {
+      switch (planType) {
+        case 'one-off':
+          paymentAmount = 15;
+          break;
+        case 'credits':
+          paymentAmount = 65;
+          break;
+        case 'subscription':
+          paymentAmount = 49;
+          break;
+      }
     }
     
-    createPaymentIntent.mutate({ amount, type: planType });
+    createPaymentIntent.mutate({ amount: paymentAmount, type: planType });
   };
 
   const handleGoBack = () => {
-    setLocation("/swms-builder?step=4");
+    setLocation("/swms-builder?step=6");
   };
+
+  // Auto-initiate payment if coming from SWMS builder
+  useEffect(() => {
+    if (paymentType && amount > 0) {
+      handlePurchase(paymentType);
+    }
+  }, [paymentType, amount]);
 
   const handleContinue = () => {
     // Only allow continue if user has actual credits (no bypass allowed)
