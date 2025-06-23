@@ -28,6 +28,7 @@ import {
   FileText,
   Wrench,
   Eye,
+  Info,
   Heart,
   Save,
   CheckCircle,

@@ -556,6 +556,7 @@ export default function GPTTaskSelection({
           ...projectDetails,
           siteEnvironment,
           specialRiskFactors,
+          hrcwCategories: specialRiskFactors.map(f => parseInt(f)).filter(n => !isNaN(n)),
           state: selectedState
         }
       };
