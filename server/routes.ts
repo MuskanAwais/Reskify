@@ -588,11 +588,18 @@ export async function registerRoutes(app: Express) {
     try {
       console.log('Credit usage request received');
       
+      // Mark payment as completed for the user's draft
+      const userId = req.session?.userId || 999;
+      
+      // Update existing draft to mark as paid
+      await storage.updateSWMSPaidAccess(userId, true);
+      
       // Always allow credit usage in demo mode
       return res.json({ 
         success: true, 
         message: 'Credit used successfully',
-        creditsRemaining: 9 
+        creditsRemaining: 9,
+        paidAccess: true
       });
     } catch (error) {
       console.error('Error using credit:', error);

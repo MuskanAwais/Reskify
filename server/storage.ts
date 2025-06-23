@@ -357,17 +357,14 @@ export class DatabaseStorage implements IStorage {
       const userId = data.userId || 999;
       const title = data.projectName || data.jobName || data.tradeType || 'Draft SWMS';
       
-      // Check if we're updating an existing draft (based on userId and title)
+      // Always look for existing draft for this user (only one draft per user)
       const existingDrafts = await db
         .select()
         .from(swmsDocuments)
-        .where(eq(swmsDocuments.userId, userId));
+        .where(eq(swmsDocuments.userId, userId))
+        .where(eq(swmsDocuments.status, 'draft'));
       
-      // Find matching draft by title or create new one
-      const existingDraft = existingDrafts.find(draft => 
-        draft.title === title || 
-        (draft.status === 'draft' && !draft.title)
-      );
+      const existingDraft = existingDrafts[0]; // Get the first (and should be only) draft
 
       const swmsData = {
         userId,
@@ -386,11 +383,12 @@ export class DatabaseStorage implements IStorage {
         complianceCodes: ['WHS Act 2011', 'WHS Regulation 2017'],
         responsiblePersons: [{name: 'Site Supervisor', role: 'Supervisor'}],
         emergencyProcedures: {contacts: [], procedures: []},
-        status: data.status || 'draft'
+        status: data.status || 'draft',
+        paidAccess: data.paidAccess || false // Track if payment completed
       };
 
       if (existingDraft) {
-        // Update existing draft
+        // Update the single existing draft
         const [updatedDoc] = await db
           .update(swmsDocuments)
           .set(swmsData)
@@ -399,7 +397,7 @@ export class DatabaseStorage implements IStorage {
         console.log('SWMS draft updated:', updatedDoc.id);
         return updatedDoc;
       } else {
-        // Create new draft
+        // Create new draft (first time for this user)
         const [savedDoc] = await db.insert(swmsDocuments).values(swmsData).returning();
         console.log('SWMS draft created:', savedDoc.id);
         return savedDoc;

@@ -158,6 +158,7 @@ export default function SwmsBuilder() {
     activities: [],
     hazards: [],
     riskAssessments: [],
+    paidAccess: false, // Track if payment completed
     safetyMeasures: [],
     complianceCodes: [],
     acceptedDisclaimer: false,

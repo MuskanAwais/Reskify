@@ -1062,7 +1062,7 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
   }
 };
 
-export default function SWMSForm({ step, data = {}, onNext, onDataChange }: SWMSFormProps) {
+export default function SWMSForm({ step, data = {}, onNext, onDataChange, isPaidAccess = false }: SWMSFormProps) {
   const [formData, setFormData] = useState(data);
 
   const updateFormData = (updates: any) => {
