@@ -163,7 +163,7 @@ export async function generatePuppeteerPDF(swmsData: SWMSData): Promise<Buffer> 
         '--disable-backgrounding-occluded-windows',
         '--disable-renderer-backgrounding'
       ],
-      executablePath: process.env.CHROME_BIN || process.env.CHROMIUM_PATH || '/usr/bin/chromium-browser'
+      executablePath: '/nix/store/zi4f80l169xlmivz8vja8wlphq74qqk0-chromium-125.0.6422.141/bin/chromium-browser'
     });
     
     const page = await browser.newPage();
