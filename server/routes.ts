@@ -549,6 +549,29 @@ export async function registerRoutes(app: Express) {
     }
   });
 
+  // SWMS Generation endpoint
+  app.post("/api/generate-swms", async (req, res) => {
+    try {
+      const { generateSWMSFromTask } = await import('./openai-integration.js');
+      
+      console.log('SWMS generation request received:', req.body);
+      
+      const result = await generateSWMSFromTask(req.body);
+      
+      res.json({
+        success: true,
+        data: result
+      });
+      
+    } catch (error: any) {
+      console.error('Generate SWMS error:', error);
+      res.status(500).json({
+        success: false,
+        error: error.message || 'Failed to generate SWMS'
+      });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
