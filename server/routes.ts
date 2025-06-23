@@ -818,8 +818,8 @@ export async function registerRoutes(app: Express) {
       const data = req.body;
       
       console.log('Generating PDF with Figma template for:', requestTitle);
-      // Force use the original exact PDF generator that matches Figma
-      const pdfBuffer = await generateExactPDF(data);
+      // Use Puppeteer with HTML template for exact Figma match
+      const pdfBuffer = await generatePuppeteerPDF(data);
       
       res.setHeader('Content-Type', 'application/pdf');
       res.setHeader('Content-Disposition', `attachment; filename="SWMS-${requestTitle.replace(/[^a-zA-Z0-9]/g, '_')}.pdf"`);
@@ -836,8 +836,8 @@ export async function registerRoutes(app: Express) {
     try {
       const data = req.body;
       
-      // Use exact Figma PDF generator 
-      const pdfBuffer = await generateExactPDF(data);
+      // Use Puppeteer with HTML template for exact Figma match
+      const pdfBuffer = await generatePuppeteerPDF(data);
       
       // Set headers for browser PDF display
       res.setHeader('Content-Type', 'application/pdf');
