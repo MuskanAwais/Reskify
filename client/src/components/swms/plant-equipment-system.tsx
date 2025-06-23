@@ -208,10 +208,10 @@ export default function PlantEquipmentSystem({ plantEquipment, onUpdate }: Plant
               <thead>
                 <tr className="bg-gray-100">
                   <th className="border border-gray-300 p-2 text-left">Equipment</th>
-                  <th className="border border-gray-300 p-2 text-left">Type</th>
+                  <th className="border border-gray-300 p-2 text-left">Model</th>
+                  <th className="border border-gray-300 p-2 text-left">Serial Number</th>
+                  <th className="border border-gray-300 p-2 text-center">Next Inspection Due</th>
                   <th className="border border-gray-300 p-2 text-center">Risk Level</th>
-                  <th className="border border-gray-300 p-2 text-center">Inspection Status</th>
-                  <th className="border border-gray-300 p-2 text-left">Operator</th>
                   <th className="border border-gray-300 p-2 text-center">Actions</th>
                 </tr>
               </thead>
@@ -219,31 +219,21 @@ export default function PlantEquipmentSystem({ plantEquipment, onUpdate }: Plant
                 {equipment.map((item) => (
                   <tr key={item.id} className="hover:bg-gray-50">
                     <td className="border border-gray-300 p-2">
-                      <div>
-                        <div className="font-medium">{item.name}</div>
-                        <div className="text-xs text-gray-500">{item.model} - {item.serialNumber}</div>
-                        {item.certificationRequired && (
-                          <Badge variant="outline" className="mt-1">Cert Required</Badge>
-                        )}
-                      </div>
+                      <div className="font-medium">{item.name}</div>
+                      {item.certificationRequired && (
+                        <Badge variant="outline" className="mt-1">Cert Required</Badge>
+                      )}
                     </td>
-                    <td className="border border-gray-300 p-2">
-                      <Badge variant="secondary">{item.type}</Badge>
+                    <td className="border border-gray-300 p-2">{item.model || '-'}</td>
+                    <td className="border border-gray-300 p-2">{item.serialNumber || '-'}</td>
+                    <td className="border border-gray-300 p-2 text-center">
+                      {item.nextInspection ? new Date(item.nextInspection).toLocaleDateString() : '-'}
                     </td>
                     <td className="border border-gray-300 p-2 text-center">
                       <Badge className={getRiskColor(item.riskLevel)}>
                         {item.riskLevel}
                       </Badge>
                     </td>
-                    <td className="border border-gray-300 p-2 text-center">
-                      <Badge className={getInspectionColor(item.inspectionStatus)}>
-                        {item.inspectionStatus}
-                      </Badge>
-                      <div className="text-xs text-gray-500 mt-1">
-                        Next: {new Date(item.nextInspection).toLocaleDateString()}
-                      </div>
-                    </td>
-                    <td className="border border-gray-300 p-2">{item.operator}</td>
                     <td className="border border-gray-300 p-2 text-center">
                       <div className="flex justify-center gap-1">
                         <Button
@@ -277,33 +267,14 @@ export default function PlantEquipmentSystem({ plantEquipment, onUpdate }: Plant
             <DialogTitle>Add Plant & Equipment</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="equipment-name">Equipment Name</Label>
-                <Input
-                  id="equipment-name"
-                  value={newEquipment.name || ''}
-                  onChange={(e) => setNewEquipment({...newEquipment, name: e.target.value})}
-                  placeholder="Enter equipment name"
-                />
-              </div>
-              <div>
-                <Label htmlFor="equipment-type">Type</Label>
-                <Select 
-                  value={newEquipment.type} 
-                  onValueChange={(value) => setNewEquipment({...newEquipment, type: value as PlantEquipment['type']})}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Plant">Plant</SelectItem>
-                    <SelectItem value="Equipment">Equipment</SelectItem>
-                    <SelectItem value="Tool">Tool</SelectItem>
-                    <SelectItem value="Vehicle">Vehicle</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+            <div>
+              <Label htmlFor="equipment-name">Equipment Name</Label>
+              <Input
+                id="equipment-name"
+                value={newEquipment.name || ''}
+                onChange={(e) => setNewEquipment({...newEquipment, name: e.target.value})}
+                placeholder="Enter equipment name"
+              />
             </div>
             
             <div className="grid grid-cols-2 gap-4">
@@ -329,12 +300,12 @@ export default function PlantEquipmentSystem({ plantEquipment, onUpdate }: Plant
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="equipment-operator">Operator</Label>
+                <Label htmlFor="equipment-inspection">Next Inspection Due</Label>
                 <Input
-                  id="equipment-operator"
-                  value={newEquipment.operator || ''}
-                  onChange={(e) => setNewEquipment({...newEquipment, operator: e.target.value})}
-                  placeholder="Operator name"
+                  id="equipment-inspection"
+                  type="date"
+                  value={newEquipment.nextInspection || ''}
+                  onChange={(e) => setNewEquipment({...newEquipment, nextInspection: e.target.value})}
                 />
               </div>
               <div>
@@ -386,18 +357,49 @@ export default function PlantEquipmentSystem({ plantEquipment, onUpdate }: Plant
           </DialogHeader>
           {editingEquipment && (
             <div className="space-y-4">
+              <div>
+                <Label htmlFor="edit-equipment-name">Equipment Name</Label>
+                <Input
+                  id="edit-equipment-name"
+                  value={editingEquipment.name || ''}
+                  onChange={(e) => setEditingEquipment({...editingEquipment, name: e.target.value})}
+                  placeholder="Enter equipment name"
+                />
+              </div>
+              
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="edit-equipment-name">Equipment Name</Label>
+                  <Label htmlFor="edit-equipment-model">Model</Label>
                   <Input
-                    id="edit-equipment-name"
-                    value={editingEquipment.name || ''}
-                    onChange={(e) => setEditingEquipment({...editingEquipment, name: e.target.value})}
-                    placeholder="Enter equipment name"
+                    id="edit-equipment-model"
+                    value={editingEquipment.model || ''}
+                    onChange={(e) => setEditingEquipment({...editingEquipment, model: e.target.value})}
+                    placeholder="Model number"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="edit-equipment-type">Type</Label>
+                  <Label htmlFor="edit-equipment-serial">Serial Number</Label>
+                  <Input
+                    id="edit-equipment-serial"
+                    value={editingEquipment.serialNumber || ''}
+                    onChange={(e) => setEditingEquipment({...editingEquipment, serialNumber: e.target.value})}
+                    placeholder="Serial number"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="edit-inspection-due">Next Inspection Due</Label>
+                  <Input
+                    id="edit-inspection-due"
+                    type="date"
+                    value={editingEquipment.nextInspection || ''}
+                    onChange={(e) => setEditingEquipment({...editingEquipment, nextInspection: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-risk-level">Risk Level</Label>
                   <Select 
                     value={editingEquipment.type} 
                     onValueChange={(value) => setEditingEquipment({...editingEquipment, type: value as PlantEquipment['type']})}
