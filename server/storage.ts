@@ -30,6 +30,7 @@ export interface IStorage {
   getCompletedCount(userId: number): Promise<number>;
   getUserSwms(userId: number): Promise<any[]>;
   getUserSWMS(userId: number): Promise<any[]>;
+  getAllSWMS(): Promise<any[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -446,6 +447,20 @@ export class DatabaseStorage implements IStorage {
   async getUserSWMS(userId: number): Promise<any[]> {
     // Alias method for backward compatibility
     return this.getUserSwms(userId);
+  }
+
+  async getAllSWMS(): Promise<any[]> {
+    try {
+      const allSwms = await db
+        .select()
+        .from(swmsDocuments)
+        .orderBy(desc(swmsDocuments.createdAt));
+      
+      return allSwms || [];
+    } catch (error) {
+      console.error('Error getting all SWMS:', error);
+      return [...this.swmsDrafts, ...this.swmsDocuments];
+    }
   }
 
 }

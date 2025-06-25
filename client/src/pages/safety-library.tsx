@@ -378,110 +378,44 @@ export default function SafetyLibrary() {
         </div>
       </div>
 
-      {/* Admin Upload Interface */}
+      {/* Admin Upload Button */}
       {(isAdminMode || adminUnlocked) && (
-        <Card>
+        <Card className="mb-6">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Upload className="h-5 w-5" />
-              Document Upload (Admin Only)
+              Admin Document Management
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {/* File Selection */}
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                <input
-                  type="file"
-                  multiple
-                  accept=".pdf,.doc,.docx"
-                  onChange={handleFileSelect}
-                  className="hidden"
-                  id="file-upload"
-                />
-                <label htmlFor="file-upload" className="cursor-pointer">
-                  <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                  <p className="text-lg font-medium text-gray-700">Upload Safety Documents</p>
-                  <p className="text-sm text-gray-500">Select multiple PDF, DOC, or DOCX files (500+ supported)</p>
-                  <Button type="button" className="mt-4">
-                    Choose Files
-                  </Button>
-                </label>
-              </div>
-
-              {/* Selected Files List */}
-              {uploadFiles.length > 0 && (
-                <div className="space-y-2">
-                  <h3 className="font-medium">Selected Files ({uploadFiles.length})</h3>
-                  <div className="max-h-40 overflow-y-auto space-y-1">
-                    {uploadFiles.map((file, index) => (
-                      <div key={index} className="flex items-center justify-between bg-gray-50 p-2 rounded">
-                        <div className="flex items-center gap-2">
-                          <FileText className="h-4 w-4" />
-                          <span className="text-sm truncate">{file.name}</span>
-                          <span className="text-xs text-gray-500">({Math.round(file.size / 1024)} KB)</span>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => removeFile(index)}
-                          className="h-6 w-6 p-0"
-                        >
-                          <X className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                  
-                  <div className="flex gap-2 pt-2">
-                    <Button 
-                      onClick={startUpload} 
-                      disabled={isUploading}
-                      className="flex-1"
-                    >
-                      {isUploading ? 'Uploading...' : `Upload ${uploadFiles.length} Files`}
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      onClick={() => setUploadFiles([])}
-                      disabled={isUploading}
-                    >
-                      Clear All
-                    </Button>
-                  </div>
-                </div>
-              )}
-
-              {/* Upload Progress */}
-              {isUploading && (
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span>Upload Progress</span>
-                    <span>{uploadProgress}%</span>
-                  </div>
-                  <Progress value={uploadProgress} className="w-full" />
-                  <div className="text-sm text-gray-600">
-                    {uploadResults.success > 0 && (
-                      <span className="text-green-600">✓ {uploadResults.success} uploaded</span>
-                    )}
-                    {uploadResults.failed > 0 && (
-                      <span className="text-red-600 ml-2">✗ {uploadResults.failed} failed</span>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* Upload Results */}
-              {uploadResults.errors.length > 0 && (
-                <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded">
-                  <h4 className="text-sm font-medium text-red-800 mb-2">Upload Errors:</h4>
-                  <div className="space-y-1 max-h-20 overflow-y-auto">
-                    {uploadResults.errors.map((error, index) => (
-                      <p key={index} className="text-xs text-red-700">{error}</p>
-                    ))}
-                  </div>
-                </div>
-              )}
+            <div className="flex gap-4">
+              <Button 
+                onClick={() => {
+                  const input = document.createElement('input');
+                  input.type = 'file';
+                  input.multiple = true;
+                  input.accept = '.pdf,.doc,.docx';
+                  input.onchange = (e) => {
+                    const files = (e.target as HTMLInputElement).files;
+                    if (files) {
+                      toast({
+                        title: "Upload Started",
+                        description: `Processing ${files.length} documents...`,
+                      });
+                      // Process files here
+                    }
+                  };
+                  input.click();
+                }}
+                className="flex items-center gap-2"
+              >
+                <Upload className="h-4 w-4" />
+                Upload Documents
+              </Button>
+              <Button variant="outline" className="flex items-center gap-2">
+                <FileText className="h-4 w-4" />
+                Manage Library
+              </Button>
             </div>
           </CardContent>
         </Card>

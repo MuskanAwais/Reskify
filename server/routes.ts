@@ -870,34 +870,74 @@ export async function registerRoutes(app: Express) {
     }
   });
 
-  // Admin usage analytics endpoint
-  app.get('/api/admin/usage-analytics', (req, res) => {
+  // Admin usage analytics endpoint - Real data from database
+  app.get('/api/admin/usage-analytics', async (req, res) => {
     try {
+      // Get real SWMS data from database
+      const allSwms = await storage.getAllSWMS();
+      
+      // Calculate real statistics
+      const totalSwmsGenerated = allSwms.length;
+      const aiSwmsCount = allSwms.filter(swms => swms.generationType === 'ai').length;
+      const generalSwmsCount = totalSwmsGenerated - aiSwmsCount;
+      
+      // Calculate trade usage from real data
+      const tradeStats = {};
+      allSwms.forEach(swms => {
+        const trade = swms.tradeType || 'General';
+        tradeStats[trade] = (tradeStats[trade] || 0) + 1;
+      });
+      
+      const tradeUsage = Object.entries(tradeStats).map(([trade, count]) => ({
+        trade,
+        count: count as number,
+        percentage: ((count as number / totalSwmsGenerated) * 100).toFixed(1)
+      }));
+      
+      // Calculate daily data from real timestamps
+      const dailyStats = {};
+      allSwms.forEach(swms => {
+        const date = new Date(swms.createdAt || Date.now());
+        const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
+        if (!dailyStats[dayName]) {
+          dailyStats[dayName] = { general: 0, ai: 0, total: 0 };
+        }
+        if (swms.generationType === 'ai') {
+          dailyStats[dayName].ai++;
+        } else {
+          dailyStats[dayName].general++;
+        }
+        dailyStats[dayName].total++;
+      });
+      
+      const dailyData = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => ({
+        date: day,
+        general: dailyStats[day]?.general || 0,
+        ai: dailyStats[day]?.ai || 0,
+        total: dailyStats[day]?.total || 0
+      }));
+      
+      const weeklyGrowth = totalSwmsGenerated > 0 ? 
+        ((dailyData.reduce((sum, day) => sum + day.total, 0) / totalSwmsGenerated) * 100).toFixed(1) : 0;
+      
       const usageData = {
-        totalSwmsGenerated: 1847,
-        generalSwmsCount: 1352,
-        aiSwmsCount: 495,
-        weeklyGrowth: 23.5,
-        dailyData: [
-          { date: 'Mon', general: 45, ai: 12, total: 57 },
-          { date: 'Tue', general: 52, ai: 18, total: 70 },
-          { date: 'Wed', general: 38, ai: 15, total: 53 },
-          { date: 'Thu', general: 67, ai: 22, total: 89 },
-          { date: 'Fri', general: 71, ai: 25, total: 96 },
-          { date: 'Sat', general: 28, ai: 8, total: 36 },
-          { date: 'Sun', general: 31, ai: 9, total: 40 }
-        ],
-        tradeUsage: [
-          { trade: 'Electrical', count: 287, percentage: 15.5 },
-          { trade: 'Plumbing', count: 234, percentage: 12.7 },
-          { trade: 'Carpentry', count: 198, percentage: 10.7 },
-          { trade: 'Roofing', count: 176, percentage: 9.5 },
-          { trade: 'Concrete', count: 165, percentage: 8.9 },
-          { trade: 'Others', count: 787, percentage: 42.7 }
-        ],
+        totalSwmsGenerated,
+        generalSwmsCount,
+        aiSwmsCount,
+        weeklyGrowth: parseFloat(weeklyGrowth),
+        dailyData,
+        tradeUsage,
         featureUsage: [
-          { name: 'General SWMS', value: 73.2, color: '#3b82f6' },
-          { name: 'AI SWMS', value: 26.8, color: '#10b981' }
+          { 
+            name: 'General SWMS', 
+            value: totalSwmsGenerated > 0 ? ((generalSwmsCount / totalSwmsGenerated) * 100).toFixed(1) : 0, 
+            color: '#3b82f6' 
+          },
+          { 
+            name: 'AI SWMS', 
+            value: totalSwmsGenerated > 0 ? ((aiSwmsCount / totalSwmsGenerated) * 100).toFixed(1) : 0, 
+            color: '#10b981' 
+          }
         ]
       };
       
