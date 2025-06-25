@@ -817,9 +817,9 @@ export async function registerRoutes(app: Express) {
       
       const data = req.body;
       
-      console.log('Generating PDF with RiskTemplateBuilder for:', requestTitle);
+      console.log('Generating PDF with RiskTemplateBuilder (EXCLUSIVE) for:', requestTitle);
       
-      // Use RiskTemplateBuilder integration
+      // ONLY use RiskTemplateBuilder integration - no fallback
       const { generatePDFWithRiskTemplate } = await import('./risk-template-integration.js');
       const pdfBuffer = await generatePDFWithRiskTemplate(data);
       
@@ -838,9 +838,9 @@ export async function registerRoutes(app: Express) {
     try {
       const data = req.body;
       
-      console.log('Generating PDF preview with RiskTemplateBuilder');
+      console.log('Generating PDF preview with RiskTemplateBuilder (EXCLUSIVE)');
       
-      // Use RiskTemplateBuilder integration
+      // ONLY use RiskTemplateBuilder integration - no fallback
       const { generatePDFWithRiskTemplate } = await import('./risk-template-integration.js');
       const pdfBuffer = await generatePDFWithRiskTemplate(data);
       
