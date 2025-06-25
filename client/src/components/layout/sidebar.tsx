@@ -254,7 +254,8 @@ export default function Sidebar() {
     { icon: Database, label: "Data Management", href: "/admin/data" },
     { icon: Archive, label: "All SWMS", href: "/admin/all-swms" },
     { icon: Shield, label: "Security Monitoring", href: "/admin/security" },
-    { icon: Activity, label: "System Health", href: "/admin/health" }
+    { icon: Activity, label: "System Health", href: "/admin/health" },
+    { icon: Settings, label: "System Testing", href: "/admin/system-testing" }
   ];
 
   return (

@@ -45,6 +45,7 @@ import DataManagement from "@/pages/admin/data-management";
 import ContactLists from "@/pages/admin/contact-lists";
 import SystemHealth from "@/pages/admin/system-health";
 import SecurityMonitoring from "@/pages/admin/security-monitoring";
+import SystemTesting from "@/pages/admin/system-testing";
 
 // Innovative features
 import SmartRiskPredictor from "@/pages/smart-risk-predictor";
@@ -216,6 +217,7 @@ function Router() {
         <ProtectedRoute path="/admin/data" component={DataManagement} />
         <ProtectedRoute path="/admin/security" component={SecurityMonitoring} />
         <ProtectedRoute path="/admin/health" component={SystemHealth} />
+        <ProtectedRoute path="/admin/system-testing" component={SystemTesting} />
         
         <Route component={NotFound} />
       </Switch>
