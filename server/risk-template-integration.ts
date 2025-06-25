@@ -341,15 +341,13 @@ export async function generatePDFWithRiskTemplate(swmsData: any): Promise<Buffer
     // Connect to RiskTemplateBuilder with comprehensive data mapping
     const riskTemplateUrl = 'https://risktemplatebuilder.replit.app';
     
-    // Try primary endpoints for your RiskTemplateBuilder
+    // Use correct API endpoints based on your app structure
     const endpoints = [
-      `${riskTemplateUrl}/api/generate-swms`,
-      `${riskTemplateUrl}/generate-swms`, 
+      `${riskTemplateUrl}/api/swms`,
+      `${riskTemplateUrl}/api/generate-pdf`,
       `${riskTemplateUrl}/api/create-pdf`,
-      `${riskTemplateUrl}/create-pdf`,
-      `${riskTemplateUrl}/api/pdf`,
-      `${riskTemplateUrl}/pdf`,
-      `${riskTemplateUrl}/`
+      `${riskTemplateUrl}/api/health`,
+      `${riskTemplateUrl}/api/status`
     ];
     
     let response: Response | null = null;
