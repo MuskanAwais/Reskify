@@ -2,8 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { Loader2, Eye, RefreshCw, FileText, Image, AlertCircle, ZoomIn, ZoomOut, Maximize2, ExternalLink } from 'lucide-react';
+import { Loader2, Eye, RefreshCw, ZoomIn, ZoomOut, Maximize2, ExternalLink } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface VisualPDFPreviewerProps {
@@ -31,101 +30,99 @@ export default function VisualPDFPreviewer({
   // RiskTemplateBuilder app URL
   const PDF_GENERATOR_URL = 'https://risktemplatebuilder.replit.app';
 
-  // Debounced update function to avoid excessive API calls
   useEffect(() => {
-    if (!isVisible || !formData) return;
-
-    // Clear existing timeout
     if (updateTimeoutRef.current) {
       clearTimeout(updateTimeoutRef.current);
     }
 
-    // Set new timeout for debounced update
     updateTimeoutRef.current = setTimeout(() => {
       updatePreview();
-    }, 1000); // 1 second delay
+    }, 500); // 500ms debounce for real-time updates
 
     return () => {
       if (updateTimeoutRef.current) {
         clearTimeout(updateTimeoutRef.current);
       }
     };
-  }, [formData, isVisible]);
+  }, [formData]);
+
+  const transformFormDataForAPI = (data: any) => {
+    return {
+      // Project Information
+      jobName: data.jobName || '',
+      jobNumber: data.jobNumber || '',
+      projectAddress: data.projectAddress || '',
+      projectLocation: data.projectLocation || '',
+      startDate: data.startDate || '',
+      tradeType: data.tradeType || '',
+      
+      // SWMS Creator fields
+      swmsCreatorName: data.swmsCreatorName || '',
+      swmsCreatorPosition: data.swmsCreatorPosition || '',
+      
+      // Personnel
+      principalContractor: data.principalContractor || '',
+      projectManager: data.projectManager || '',
+      siteSupervisor: data.siteSupervisor || '',
+      
+      // Company branding
+      companyLogo: data.companyLogo || null,
+      
+      // Activities and risk assessment
+      selectedActivities: data.selectedActivities || [],
+      
+      // High-Risk Construction Work
+      selectedHRCW: data.selectedHRCW || [],
+      hrcwCategories: data.hrcwCategories || [],
+      
+      // PPE Requirements
+      selectedPPE: data.selectedPPE || [],
+      ppeRequirements: data.ppeRequirements || [],
+      
+      // Plant & Equipment
+      equipment: data.equipment || [],
+      
+      // Emergency procedures
+      emergencyProcedures: data.emergencyProcedures || [],
+      
+      // Legal and compliance
+      legalDisclaimer: data.legalDisclaimer || false,
+      
+      // Payment status
+      paidAccess: data.paidAccess || false,
+      
+      // Metadata
+      preview: true // Flag to indicate this is for preview
+    };
+  };
 
   const updatePreview = async () => {
-    if (!formData || Object.keys(formData).length === 0) return;
+    if (!formData || Object.keys(formData).length === 0 || !isIframeLoaded) {
+      return;
+    }
 
     setIsLoading(true);
     setError(null);
 
     try {
-      // Transform form data to match RiskTemplateBuilder expected format
-      const templateData = transformFormDataForPreview(formData);
+      // Send form data to the iframe PDF generator
+      const transformedData = transformFormDataForAPI(formData);
       
-      // Try to send data to RiskTemplateBuilder for visual preview
-      try {
-        const response = await fetch('https://risktemplatebuilder.replit.app/api/preview', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          },
-          body: JSON.stringify(templateData)
-        });
-
-        if (response.ok) {
-          const previewResult = await response.json();
-          setPreviewData(previewResult);
-          setLastUpdate(Date.now());
-        } else {
-          throw new Error('RiskTemplateBuilder preview not available');
-        }
-      } catch (previewError) {
-        // Fallback to local preview generation
-        setPreviewData(generateLocalPreview(formData));
-        setLastUpdate(Date.now());
-        setError('Using local preview (RiskTemplateBuilder preview unavailable)');
+      if (iframeRef.current && iframeRef.current.contentWindow) {
+        // Post message to the iframe with form data
+        iframeRef.current.contentWindow.postMessage({
+          type: 'FORM_DATA_UPDATE',
+          data: transformedData
+        }, PDF_GENERATOR_URL);
       }
-    } catch (error) {
-      console.error('Preview update error:', error);
-      // Generate local preview as fallback
-      setPreviewData(generateLocalPreview(formData));
-      setError('Connected to local preview (RiskTemplateBuilder unavailable)');
+      
       setLastUpdate(Date.now());
+    } catch (err) {
+      console.error('Preview update error:', err);
+      setError('Failed to update preview');
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const transformFormDataForPreview = (data: any) => {
-    return {
-      projectName: data.jobName || 'Untitled Project',
-      jobNumber: data.jobNumber || 'JOB-001',
-      projectAddress: data.projectAddress || 'Project Location',
-      swmsCreatorName: data.swmsCreatorName || 'SWMS Creator',
-      swmsCreatorPosition: data.swmsCreatorPosition || 'Position',
-      principalContractor: data.principalContractor || 'Principal Contractor',
-      projectManager: data.projectManager || 'Project Manager',
-      siteSupervisor: data.siteSupervisor || 'Site Supervisor',
-      startDate: data.startDate || new Date().toISOString().split('T')[0],
-      tradeType: data.tradeType || 'General Construction',
-      companyLogo: data.companyLogo || null,
-      companyLogoFilename: data.companyLogoFilename || null,
-      activities: data.selectedActivities || [],
-      riskAssessments: data.selectedActivities?.map((activity: any, index: number) => ({
-        activity: activity.name || activity.activity || `Activity ${index + 1}`,
-        hazards: activity.hazards || [],
-        initialRisk: activity.initialRisk || 'Medium',
-        controlMeasures: activity.controlMeasures || [],
-        residualRisk: activity.residualRisk || 'Low',
-        legislation: activity.legislation || 'WHS Act 2011'
-      })) || [],
-      plantEquipment: data.equipment || [],
-      ppeRequirements: data.selectedPPE || [],
-      hrcwCategories: data.selectedHRCW || [],
-      emergencyProcedures: data.emergencyProcedures || [],
-      preview: true // Flag to indicate this is for preview
-    };
   };
 
   const handleIframeLoad = () => {
@@ -137,17 +134,6 @@ export default function VisualPDFPreviewer({
   const handleIframeError = () => {
     setError('Failed to load PDF generator preview');
     setIsIframeLoaded(false);
-  };
-
-  const calculateCompleteness = (data: any) => {
-    const requiredFields = [
-      'jobName', 'jobNumber', 'projectAddress', 'swmsCreatorName', 
-      'swmsCreatorPosition', 'principalContractor', 'projectManager', 
-      'siteSupervisor', 'startDate', 'tradeType'
-    ];
-    
-    const filledFields = requiredFields.filter(field => data[field] && data[field].trim() !== '');
-    return Math.round((filledFields.length / requiredFields.length) * 100);
   };
 
   const handleRefresh = () => {
@@ -252,7 +238,7 @@ export default function VisualPDFPreviewer({
         <CardContent className={`${isFullscreen ? 'h-full overflow-auto' : ''}`}>
           {error && (
             <div className="flex items-center gap-2 p-2 bg-yellow-100 border border-yellow-300 rounded text-yellow-800 text-sm mb-4">
-              <AlertCircle className="h-4 w-4" />
+              <Eye className="h-4 w-4" />
               {error}
             </div>
           )}
