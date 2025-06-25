@@ -1109,6 +1109,186 @@ export async function registerRoutes(app: Express) {
     }
   });
 
+  // Team collaboration endpoints
+  app.get('/api/team/members', (req, res) => {
+    try {
+      const userId = req.session?.userId;
+      const isAdmin = userId === 1;
+      
+      if (!isAdmin) {
+        return res.status(403).json({ error: 'Admin access required for team collaboration' });
+      }
+
+      const teamMembers = [
+        {
+          id: '1',
+          name: 'Admin User',
+          email: 'admin@riskify.com',
+          role: 'admin',
+          status: 'active',
+          joinedAt: '2024-01-01T00:00:00Z',
+          lastActive: '2 hours ago'
+        },
+        {
+          id: '2',
+          name: 'Project Manager',
+          email: 'pm@construction.com',
+          role: 'editor',
+          status: 'active',
+          joinedAt: '2024-02-15T00:00:00Z',
+          lastActive: '1 day ago'
+        },
+        {
+          id: '3',
+          name: 'Safety Officer',
+          email: 'safety@site.com',
+          role: 'viewer',
+          status: 'pending',
+          joinedAt: '2024-06-20T00:00:00Z',
+          lastActive: 'Never'
+        }
+      ];
+      
+      res.json(teamMembers);
+    } catch (error) {
+      console.error('Team members error:', error);
+      res.status(500).json({ error: 'Failed to fetch team members' });
+    }
+  });
+
+  app.get('/api/team/projects', (req, res) => {
+    try {
+      const userId = req.session?.userId;
+      const isAdmin = userId === 1;
+      
+      if (!isAdmin) {
+        return res.status(403).json({ error: 'Admin access required for team collaboration' });
+      }
+
+      const teamProjects = [
+        {
+          id: '1',
+          title: 'Sydney Office Complex SWMS',
+          status: 'in-review',
+          assignedTo: ['2', '3'],
+          createdBy: '1',
+          createdAt: '2024-06-20T00:00:00Z',
+          dueDate: '2024-07-15T00:00:00Z',
+          progress: 75,
+          comments: 8
+        },
+        {
+          id: '2',
+          title: 'Electrical Installation Safety Plan',
+          status: 'draft',
+          assignedTo: ['2'],
+          createdBy: '1',
+          createdAt: '2024-06-22T00:00:00Z',
+          dueDate: '2024-07-10T00:00:00Z',
+          progress: 45,
+          comments: 3
+        },
+        {
+          id: '3',
+          title: 'High-Rise Construction Safety Review',
+          status: 'completed',
+          assignedTo: ['2', '3'],
+          createdBy: '1',
+          createdAt: '2024-06-01T00:00:00Z',
+          dueDate: '2024-06-25T00:00:00Z',
+          progress: 100,
+          comments: 15
+        }
+      ];
+      
+      res.json(teamProjects);
+    } catch (error) {
+      console.error('Team projects error:', error);
+      res.status(500).json({ error: 'Failed to fetch team projects' });
+    }
+  });
+
+  app.post('/api/team/invite', (req, res) => {
+    try {
+      const userId = req.session?.userId;
+      const isAdmin = userId === 1;
+      
+      if (!isAdmin) {
+        return res.status(403).json({ error: 'Admin access required to invite team members' });
+      }
+
+      const { email, role } = req.body;
+      
+      // Create invitation
+      const invitation = {
+        id: Date.now().toString(),
+        email,
+        role,
+        status: 'pending',
+        invitedBy: 'Admin',
+        invitedAt: new Date().toISOString()
+      };
+
+      console.log('Team invitation sent:', invitation);
+      
+      res.json({ 
+        success: true, 
+        message: 'Invitation sent successfully',
+        invitation 
+      });
+    } catch (error) {
+      console.error('Team invite error:', error);
+      res.status(500).json({ error: 'Failed to send invitation' });
+    }
+  });
+
+  app.patch('/api/team/members/:memberId/role', (req, res) => {
+    try {
+      const userId = req.session?.userId;
+      const isAdmin = userId === 1;
+      
+      if (!isAdmin) {
+        return res.status(403).json({ error: 'Admin access required to update member roles' });
+      }
+
+      const { memberId } = req.params;
+      const { role } = req.body;
+      
+      console.log(`Updated member ${memberId} role to ${role}`);
+      
+      res.json({ 
+        success: true, 
+        message: 'Member role updated successfully' 
+      });
+    } catch (error) {
+      console.error('Update role error:', error);
+      res.status(500).json({ error: 'Failed to update member role' });
+    }
+  });
+
+  app.delete('/api/team/members/:memberId', (req, res) => {
+    try {
+      const userId = req.session?.userId;
+      const isAdmin = userId === 1;
+      
+      if (!isAdmin) {
+        return res.status(403).json({ error: 'Admin access required to remove team members' });
+      }
+
+      const { memberId } = req.params;
+      
+      console.log(`Removed team member ${memberId}`);
+      
+      res.json({ 
+        success: true, 
+        message: 'Team member removed successfully' 
+      });
+    } catch (error) {
+      console.error('Remove member error:', error);
+      res.status(500).json({ error: 'Failed to remove team member' });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

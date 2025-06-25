@@ -29,6 +29,7 @@ import {
   Settings
 } from "lucide-react";
 import { useLocation } from "wouter";
+import { useAdmin } from "@/App";
 
 interface TeamMember {
   id: string;
@@ -60,14 +61,15 @@ export default function TeamCollaboration() {
   const [newMemberEmail, setNewMemberEmail] = useState("");
   const [newMemberRole, setNewMemberRole] = useState<"admin" | "editor" | "viewer">("editor");
   const [showInviteForm, setShowInviteForm] = useState(false);
+  const { isAdminMode } = useAdmin();
 
   // Check user subscription
   const { data: subscription } = useQuery<{ plan: string; subscriptionType: string }>({
     queryKey: ["/api/user/subscription"],
   });
 
-  // Check for subscription - only subscription plan gives access to team features
-  const hasTeamAccess = subscription?.plan === "subscription";
+  // Check for subscription or admin access - admins get full team collaboration access
+  const hasTeamAccess = subscription?.plan === "subscription" || isAdminMode;
 
   // Team members and projects queries
   const { data: teamMembers = [], isLoading: membersLoading } = useQuery<TeamMember[]>({
