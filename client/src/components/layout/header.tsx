@@ -7,6 +7,7 @@ import CreditCounter from "@/components/ui/credit-counter";
 import VoiceAssistant from "@/components/ui/voice-assistant";
 import SimpleLanguageSwitcher from "@/components/ui/simple-language-switcher";
 import ContactForm from "@/components/ui/contact-form";
+import AccessibilityMenu from "@/components/accessibility/accessibility-menu";
 import logoImage from "@assets/Untitled design-2.png";
 
 import {
@@ -57,6 +58,11 @@ export default function Header() {
             {/* Language Switcher */}
             <div data-tour="language-switcher">
               <SimpleLanguageSwitcher />
+            </div>
+            
+            {/* Accessibility Menu */}
+            <div data-tour="accessibility-menu">
+              <AccessibilityMenu />
             </div>
 
 

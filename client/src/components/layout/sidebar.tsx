@@ -371,10 +371,7 @@ export default function Sidebar() {
           </>
         )}
 
-        {/* Accessibility Menu */}
-        <div className="mt-auto pt-4 border-t">
-          <AccessibilityMenu />
-        </div>
+
 
       </div>
 
