@@ -7,7 +7,7 @@ import SwmsForm from "@/components/swms/swms-form";
 import DocumentPreview from "@/components/swms/document-preview";
 import { SimplifiedTableEditor } from "@/components/swms/simplified-table-editor";
 import CreditCounter from "@/components/ui/credit-counter";
-import LiveSWMSPreviewer from "@/components/swms/live-swms-previewer";
+import VisualPDFPreviewer from "@/components/swms/visual-pdf-previewer";
 import { ArrowLeft, ArrowRight, FileText, Shield, CheckCircle, Save, X } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";

@@ -46,7 +46,7 @@ import { translate } from "@/lib/language-direct";
 import SmartTooltip from "@/components/ui/smart-tooltip";
 import QuickActionTooltip, { presetTooltips } from "@/components/ui/quick-action-tooltip";
 import AustralianAddressAutocomplete from "@/components/ui/australian-address-autocomplete";
-import LiveSWMSPreviewer from "./live-swms-previewer";
+import VisualPDFPreviewer from "./visual-pdf-previewer";
 import { RiskAssessmentMatrix } from "./risk-assessment-matrix";
 
 const TOTAL_STEPS = 7;
