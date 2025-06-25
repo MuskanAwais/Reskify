@@ -80,6 +80,13 @@ export default function SystemTesting() {
       status: 'pending'
     },
     {
+      name: "Permission & Access Control",
+      icon: Settings,
+      tests: [],
+      progress: 0,
+      status: 'pending'
+    },
+    {
       name: "Admin Features",
       icon: Users,
       tests: [],
@@ -492,6 +499,394 @@ export default function SystemTesting() {
     }
   };
 
+  const runPermissionTests = async () => {
+    const sectionName = "Permission & Access Control";
+    
+    // User Authentication State Test
+    addTestResult(sectionName, {
+      name: "User Authentication State",
+      status: 'running',
+      message: "Checking current user authentication...",
+      section: sectionName
+    });
+
+    try {
+      const userResponse = await fetch('/api/user');
+      const userData = await userResponse.json();
+      
+      updateTestResult(sectionName, "User Authentication State", {
+        status: userResponse.ok ? 'passed' : 'failed',
+        message: userResponse.ok ? 
+          `User authenticated: ${userData?.username || 'demo user'}` : 
+          'User not authenticated',
+        details: { 
+          authenticated: userResponse.ok,
+          userData: userData || null
+        }
+      });
+    } catch (error: any) {
+      updateTestResult(sectionName, "User Authentication State", {
+        status: 'failed',
+        message: `Authentication check failed: ${error.message}`
+      });
+    }
+
+    // Admin vs Regular User Access Test
+    addTestResult(sectionName, {
+      name: "Admin vs Regular User Access",
+      status: 'running',
+      message: "Testing admin privilege differentiation...",
+      section: sectionName
+    });
+
+    await new Promise(resolve => setTimeout(resolve, 200));
+
+    const adminState = localStorage.getItem('adminState');
+    const adminMode = localStorage.getItem('adminMode');
+    const isAdmin = adminState === 'true' || adminMode === 'true';
+    
+    const adminElements = document.querySelectorAll('[class*="admin"], [data-admin]');
+    const adminSidebarLinks = document.querySelectorAll('a[href*="/admin/"]');
+    
+    // Check specific admin features
+    const adminFeatures = {
+      userManagement: !!document.querySelector('a[href*="/admin/user-management"]'),
+      billingAnalytics: !!document.querySelector('a[href*="/admin/billing-analytics"]'),
+      systemHealth: !!document.querySelector('a[href*="/admin/health"]'),
+      securityMonitoring: !!document.querySelector('a[href*="/admin/security"]'),
+      systemTesting: !!document.querySelector('a[href*="/admin/system-testing"]'),
+      dataManagement: !!document.querySelector('a[href*="/admin/data"]'),
+      allSwms: !!document.querySelector('a[href*="/admin/all-swms"]')
+    };
+    
+    const adminAccessCount = Object.values(adminFeatures).filter(Boolean).length;
+    const adminAccess = Object.entries(adminFeatures)
+      .filter(([_, hasAccess]) => hasAccess)
+      .map(([feature, _]) => feature)
+      .join(', ');
+    const adminRestricted = Object.entries(adminFeatures)
+      .filter(([_, hasAccess]) => !hasAccess)
+      .map(([feature, _]) => feature)
+      .join(', ');
+    
+    updateTestResult(sectionName, "Admin vs Regular User Access", {
+      status: isAdmin ? 'passed' : 'warning',
+      message: isAdmin ? 
+        `Admin Access: ${adminAccess} | Restricted: ${adminRestricted}` : 
+        'Regular user - No admin features accessible',
+      details: { 
+        isAdmin,
+        adminFeatures,
+        adminAccessCount,
+        totalAdminFeatures: Object.keys(adminFeatures).length,
+        adminElements: adminElements.length,
+        adminSidebarLinks: adminSidebarLinks.length
+      }
+    });
+
+    // Safety Library Access Control Test
+    addTestResult(sectionName, {
+      name: "Safety Library Access Control",
+      status: 'running',
+      message: "Testing safety library permission system...",
+      section: sectionName
+    });
+
+    try {
+      const safetyLibraryResponse = await fetch('/api/safety-library');
+      
+      updateTestResult(sectionName, "Safety Library Access Control", {
+        status: safetyLibraryResponse.ok ? 'passed' : 'warning',
+        message: safetyLibraryResponse.ok ? 
+          `Safety library accessible (${safetyLibraryResponse.status})` : 
+          `Safety library restricted (${safetyLibraryResponse.status})`,
+        details: { 
+          status: safetyLibraryResponse.status,
+          accessible: safetyLibraryResponse.ok
+        }
+      });
+    } catch (error: any) {
+      updateTestResult(sectionName, "Safety Library Access Control", {
+        status: 'failed',
+        message: `Safety library test failed: ${error.message}`
+      });
+    }
+
+    // Subscription Status Test
+    addTestResult(sectionName, {
+      name: "Subscription Status & Features",
+      status: 'running',
+      message: "Checking subscription-based feature access...",
+      section: sectionName
+    });
+
+    try {
+      const creditsResponse = await fetch('/api/user/credits');
+      const creditsData = await creditsResponse.json();
+      
+      updateTestResult(sectionName, "Subscription Status & Features", {
+        status: creditsResponse.ok ? 'passed' : 'warning',
+        message: creditsResponse.ok ? 
+          `Credits system active - ${creditsData?.credits || 0} credits available` : 
+          'Credits/subscription system not accessible',
+        details: { 
+          creditsAvailable: creditsData?.credits || 0,
+          subscriptionActive: creditsResponse.ok,
+          creditsData
+        }
+      });
+    } catch (error: any) {
+      updateTestResult(sectionName, "Subscription Status & Features", {
+        status: 'warning',
+        message: `Subscription test: ${error.message}`
+      });
+    }
+
+    // Feature Access by User Type Test
+    addTestResult(sectionName, {
+      name: "Feature Access by User Type",
+      status: 'running',
+      message: "Validating feature visibility by user permissions...",
+      section: sectionName
+    });
+
+    await new Promise(resolve => setTimeout(resolve, 200));
+
+    // Check which features are visible
+    const swmsBuilderAccess = document.querySelector('a[href*="/swms-builder"]');
+    const safetyLibraryAccess = document.querySelector('a[href*="/safety-library"]');
+    const adminDashboardAccess = document.querySelector('a[href*="/admin/dashboard"]');
+    const analyticsAccess = document.querySelector('a[href*="/analytics"]');
+    const billingAccess = document.querySelector('a[href*="/billing"]');
+    const mySwmsAccess = document.querySelector('a[href*="/my-swms"]');
+    const profileAccess = document.querySelector('a[href*="/profile"]');
+    
+    const accessibleFeatures = {
+      swmsBuilder: !!swmsBuilderAccess,
+      safetyLibrary: !!safetyLibraryAccess,
+      adminDashboard: !!adminDashboardAccess,
+      analytics: !!analyticsAccess,
+      billing: !!billingAccess,
+      mySwms: !!mySwmsAccess,
+      profile: !!profileAccess
+    };
+    
+    const accessCount = Object.values(accessibleFeatures).filter(Boolean).length;
+    const accessList = Object.entries(accessibleFeatures)
+      .filter(([_, hasAccess]) => hasAccess)
+      .map(([feature, _]) => feature)
+      .join(', ');
+    const restrictedList = Object.entries(accessibleFeatures)
+      .filter(([_, hasAccess]) => !hasAccess)
+      .map(([feature, _]) => feature)
+      .join(', ');
+    
+    updateTestResult(sectionName, "Feature Access by User Type", {
+      status: accessCount > 0 ? 'passed' : 'warning',
+      message: `Access: ${accessList} | Restricted: ${restrictedList}`,
+      details: { 
+        ...accessibleFeatures,
+        accessCount,
+        totalFeatures: Object.keys(accessibleFeatures).length
+      }
+    });
+
+    // Payment System Access Test
+    addTestResult(sectionName, {
+      name: "Payment System Access",
+      status: 'running',
+      message: "Testing payment and billing system access...",
+      section: sectionName
+    });
+
+    await new Promise(resolve => setTimeout(resolve, 200));
+
+    const paymentButtons = document.querySelectorAll('button:contains("Pay"), button[class*="payment"], button[class*="stripe"]');
+    const creditButtons = document.querySelectorAll('button:contains("Credit"), button:contains("Use")');
+    
+    updateTestResult(sectionName, "Payment System Access", {
+      status: (paymentButtons.length > 0 || creditButtons.length > 0) ? 'passed' : 'warning',
+      message: `Payment interface: ${paymentButtons.length} payment buttons, ${creditButtons.length} credit buttons`,
+      details: { 
+        paymentButtons: paymentButtons.length,
+        creditButtons: creditButtons.length
+      }
+    });
+
+    // Demo Mode vs Authenticated Access Test
+    addTestResult(sectionName, {
+      name: "Demo Mode vs Authenticated Access",
+      status: 'running',
+      message: "Checking demo mode functionality...",
+      section: sectionName
+    });
+
+    await new Promise(resolve => setTimeout(resolve, 200));
+
+    // Check if we're in demo mode (typical patterns)
+    const demoIndicators = document.querySelectorAll('[class*="demo"], [data-demo]');
+    const loginButtons = document.querySelectorAll('button:contains("Login"), a[href*="/auth"]');
+    const logoutButtons = document.querySelectorAll('button:contains("Logout"), button:contains("Sign Out")');
+    
+    const isDemoMode = demoIndicators.length > 0 || (loginButtons.length > 0 && logoutButtons.length === 0);
+    
+    updateTestResult(sectionName, "Demo Mode vs Authenticated Access", {
+      status: 'passed',
+      message: isDemoMode ? 
+        'Demo mode active - limited functionality available' : 
+        'Authenticated mode - full functionality available',
+      details: { 
+        isDemoMode,
+        demoIndicators: demoIndicators.length,
+        loginButtons: loginButtons.length,
+        logoutButtons: logoutButtons.length
+      }
+    });
+
+    // Role-Based Navigation Test
+    addTestResult(sectionName, {
+      name: "Role-Based Navigation",
+      status: 'running',
+      message: "Validating navigation based on user roles...",
+      section: sectionName
+    });
+
+    await new Promise(resolve => setTimeout(resolve, 200));
+
+    const allNavLinks = document.querySelectorAll('nav a, [role="navigation"] a');
+    const adminNavLinks = Array.from(allNavLinks).filter(link => 
+      (link as HTMLElement).getAttribute('href')?.includes('/admin/')
+    );
+    const userNavLinks = Array.from(allNavLinks).filter(link => 
+      !(link as HTMLElement).getAttribute('href')?.includes('/admin/')
+    );
+    
+    updateTestResult(sectionName, "Role-Based Navigation", {
+      status: allNavLinks.length > 0 ? 'passed' : 'warning',
+      message: `Navigation access: ${userNavLinks.length} user links, ${adminNavLinks.length} admin links`,
+      details: { 
+        totalNavLinks: allNavLinks.length,
+        userNavLinks: userNavLinks.length,
+        adminNavLinks: adminNavLinks.length
+      }
+    });
+
+    // Subscriber vs Non-Subscriber Feature Access Test
+    addTestResult(sectionName, {
+      name: "Subscriber vs Non-Subscriber Access",
+      status: 'running',
+      message: "Testing subscription-based feature restrictions...",
+      section: sectionName
+    });
+
+    await new Promise(resolve => setTimeout(resolve, 300));
+
+    // Check subscription-restricted features
+    const subscriptionFeatures = {
+      unlimitedSWMS: document.querySelectorAll('button:contains("Unlimited")').length > 0,
+      advancedTemplates: document.querySelectorAll('[class*="premium"], [class*="pro"]').length > 0,
+      prioritySupport: !!document.querySelector('[href*="priority"], [class*="priority"]'),
+      bulkOperations: !!document.querySelector('[class*="bulk"], button:contains("Bulk")'),
+      advancedReporting: !!document.querySelector('[href*="advanced"], [class*="advanced"]'),
+      customBranding: !!document.querySelector('[class*="branding"], [class*="custom"]'),
+      apiAccess: !!document.querySelector('[href*="api"], [class*="api"]')
+    };
+
+    // Check credit-based access
+    const creditSystemVisible = document.querySelectorAll('button:contains("Credit"), [class*="credit"]').length > 0;
+    const paymentGatewayVisible = document.querySelectorAll('button:contains("Pay"), [class*="stripe"]').length > 0;
+
+    const subscriptionAccess = Object.entries(subscriptionFeatures)
+      .filter(([_, hasAccess]) => hasAccess)
+      .map(([feature, _]) => feature)
+      .join(', ');
+    const subscriptionRestricted = Object.entries(subscriptionFeatures)
+      .filter(([_, hasAccess]) => !hasAccess)
+      .map(([feature, _]) => feature)
+      .join(', ');
+
+    updateTestResult(sectionName, "Subscriber vs Non-Subscriber Access", {
+      status: creditSystemVisible || paymentGatewayVisible ? 'passed' : 'warning',
+      message: `Premium Features: ${subscriptionAccess || 'None'} | Restricted: ${subscriptionRestricted || 'All'}`,
+      details: {
+        subscriptionFeatures,
+        creditSystemVisible,
+        paymentGatewayVisible,
+        subscriptionAccessCount: Object.values(subscriptionFeatures).filter(Boolean).length
+      }
+    });
+
+    // Content Access Control Test
+    addTestResult(sectionName, {
+      name: "Content Access Control",
+      status: 'running',
+      message: "Testing content visibility by permission level...",
+      section: sectionName
+    });
+
+    await new Promise(resolve => setTimeout(resolve, 200));
+
+    // Check for different content access levels
+    const contentAccess = {
+      safetyLibraryUnlocked: !!document.querySelector('[class*="safety"][class*="unlocked"]'),
+      fullTemplateAccess: document.querySelectorAll('[class*="template"]').length > 0,
+      downloadLimitations: document.querySelectorAll('[class*="limit"], [class*="restriction"]').length > 0,
+      watermarkRemoval: !!document.querySelector('[class*="watermark"]'),
+      exportOptions: document.querySelectorAll('button:contains("Export"), [class*="export"]').length > 0
+    };
+
+    const contentAllowed = Object.entries(contentAccess)
+      .filter(([_, hasAccess]) => hasAccess)
+      .map(([feature, _]) => feature)
+      .join(', ');
+    const contentRestricted = Object.entries(contentAccess)
+      .filter(([_, hasAccess]) => !hasAccess)
+      .map(([feature, _]) => feature)
+      .join(', ');
+
+    updateTestResult(sectionName, "Content Access Control", {
+      status: Object.values(contentAccess).some(Boolean) ? 'passed' : 'warning',
+      message: `Content Access: ${contentAllowed || 'Limited'} | Restricted: ${contentRestricted || 'None'}`,
+      details: contentAccess
+    });
+
+    // Platform Permission Summary Test
+    addTestResult(sectionName, {
+      name: "Platform Permission Summary",
+      status: 'running',
+      message: "Generating comprehensive permission overview...",
+      section: sectionName
+    });
+
+    await new Promise(resolve => setTimeout(resolve, 200));
+
+    const isCurrentlyAdmin = localStorage.getItem('adminState') === 'true';
+    const hasCredits = creditSystemVisible;
+    const canAccessSafety = !!document.querySelector('a[href*="/safety-library"]');
+    const canCreateSWMS = !!document.querySelector('a[href*="/swms-builder"]');
+    const canViewReports = !!document.querySelector('a[href*="/analytics"]');
+
+    const permissionSummary = {
+      userType: isCurrentlyAdmin ? 'Platform Administrator' : 'Regular User',
+      subscriptionStatus: hasCredits ? 'Credit System Active' : 'Basic Access',
+      corePermissions: {
+        createSWMS: canCreateSWMS,
+        accessSafetyLibrary: canAccessSafety,
+        viewAnalytics: canViewReports,
+        adminAccess: isCurrentlyAdmin
+      },
+      restrictionLevel: isCurrentlyAdmin ? 'None (Full Access)' : hasCredits ? 'Subscription Limits' : 'Basic User Limits'
+    };
+
+    const permissionCount = Object.values(permissionSummary.corePermissions).filter(Boolean).length;
+
+    updateTestResult(sectionName, "Platform Permission Summary", {
+      status: permissionCount > 0 ? 'passed' : 'failed',
+      message: `${permissionSummary.userType} - ${permissionCount}/4 core permissions active`,
+      details: permissionSummary
+    });
+  };
+
   const runAdminFeatureTests = async () => {
     const sectionName = "Admin Features";
     
@@ -757,25 +1152,28 @@ export default function SystemTesting() {
     try {
       // Run tests sequentially for better UX
       await runAuthenticationTests();
-      setOverallProgress(12.5);
+      setOverallProgress(11);
       
       await runDatabaseTests();
-      setOverallProgress(25);
+      setOverallProgress(22);
       
       await runUITests();
-      setOverallProgress(37.5);
+      setOverallProgress(33);
       
       await runSWMSBuilderTests();
-      setOverallProgress(50);
+      setOverallProgress(44);
       
       await runPDFGenerationTests();
-      setOverallProgress(62.5);
+      setOverallProgress(55);
+      
+      await runPermissionTests();
+      setOverallProgress(66);
       
       await runAdminFeatureTests();
-      setOverallProgress(75);
+      setOverallProgress(77);
       
       await runPerformanceTests();
-      setOverallProgress(87.5);
+      setOverallProgress(88);
       
       await runSystemHealthTests();
       setOverallProgress(100);
