@@ -88,18 +88,48 @@ export async function generatePDFWithRiskTemplate(swmsData: any): Promise<Buffer
       equipmentCount: templateData.plantEquipment.length
     });
     
-    // Send request to RiskTemplateBuilder
-    const response = await fetch('https://risktemplatebuilder.replit.app/api/generate-pdf', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/pdf',
-      },
-      body: JSON.stringify(templateData)
-    });
+    // Try multiple possible RiskTemplateBuilder endpoints
+    const endpoints = [
+      'https://risktemplatebuilder.replit.app/api/generate-pdf',
+      'https://risktemplatebuilder.replit.app/generate-pdf',
+      'https://risktemplatebuilder.replit.app/pdf',
+      'https://risktemplatebuilder.replit.app/api/pdf',
+      'https://risktemplatebuilder.replit.app/'
+    ];
     
-    if (!response.ok) {
-      console.error('RiskTemplateBuilder response error:', response.status, response.statusText);
+    let response: Response | null = null;
+    let lastError: string = '';
+    
+    for (const endpoint of endpoints) {
+      try {
+        console.log(`Trying RiskTemplateBuilder endpoint: ${endpoint}`);
+        
+        response = await fetch(endpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/pdf',
+          },
+          body: JSON.stringify(templateData),
+          timeout: 10000 // 10 second timeout
+        });
+        
+        if (response.ok) {
+          console.log(`Successfully connected to RiskTemplateBuilder at: ${endpoint}`);
+          break;
+        } else {
+          lastError = `${response.status} ${response.statusText}`;
+          console.log(`Endpoint ${endpoint} failed: ${lastError}`);
+        }
+      } catch (error) {
+        lastError = (error as Error).message;
+        console.log(`Endpoint ${endpoint} error: ${lastError}`);
+        continue;
+      }
+    }
+    
+    if (!response || !response.ok) {
+      console.error('All RiskTemplateBuilder endpoints failed. Last error:', lastError);
       
       // Fallback to local PDF generation if external service fails
       console.log('Falling back to local PDF generation...');
@@ -162,13 +192,32 @@ export async function sendToRiskTemplate(swmsData: any): Promise<{ success: bool
       }))
     };
     
-    const response = await fetch('https://risktemplatebuilder.replit.app/api/create-template', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(templateData)
-    });
+    // Try multiple possible endpoints for template creation
+    const endpoints = [
+      'https://risktemplatebuilder.replit.app/api/create-template',
+      'https://risktemplatebuilder.replit.app/create-template',
+      'https://risktemplatebuilder.replit.app/template',
+      'https://risktemplatebuilder.replit.app/api/template'
+    ];
+    
+    let response: Response | null = null;
+    
+    for (const endpoint of endpoints) {
+      try {
+        response = await fetch(endpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(templateData),
+          timeout: 10000
+        });
+        
+        if (response.ok) break;
+      } catch (error) {
+        continue;
+      }
+    }
     
     if (!response.ok) {
       return { success: false, error: `RiskTemplateBuilder error: ${response.status}` };
