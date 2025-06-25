@@ -6,6 +6,7 @@ import { Link, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import { translate } from "@/lib/language-direct";
+import AccessibilityMenu from "@/components/accessibility/accessibility-menu";
 import { 
   FileText, 
   Search, 
@@ -370,6 +371,10 @@ export default function Sidebar() {
           </>
         )}
 
+        {/* Accessibility Menu */}
+        <div className="mt-auto pt-4 border-t">
+          <AccessibilityMenu />
+        </div>
 
       </div>
 
