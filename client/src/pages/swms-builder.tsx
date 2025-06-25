@@ -889,9 +889,9 @@ export default function SwmsBuilder() {
         
         {/* Live SWMS Previewer positioned below step content with spacing */}
         <div className="mt-8">
-          <LiveSWMSPreviewer 
+          <VisualPDFPreviewer 
             formData={formData}
-            currentStep={currentStep}
+            isVisible={true}
           />
         </div>
       </div>
