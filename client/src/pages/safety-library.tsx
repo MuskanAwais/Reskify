@@ -35,6 +35,10 @@ export default function SafetyLibrary() {
     queryKey: ['/api/user/subscription']
   });
 
+  const { data: user } = useQuery({
+    queryKey: ['/api/user']
+  });
+
   // Get safety library data
   const { data: safetyLibrary } = useQuery({
     queryKey: ['/api/safety-library']
@@ -115,10 +119,17 @@ export default function SafetyLibrary() {
     }
   };
 
-  const hasAccess = isAdminMode || adminUnlocked || 
-    (subscription as any)?.plan === "pro" || 
+  // Check if user has access to Safety Library
+  const hasSubscription = (subscription as any)?.plan === "pro" || 
     (subscription as any)?.plan === "enterprise" ||
-    (subscription as any)?.plan === "Pro Plan";
+    (subscription as any)?.plan === "Pro Plan" ||
+    (subscription as any)?.subscription?.status === 'active';
+  
+  const isAdmin = isAdminMode || 
+    (user as any)?.isAdmin || 
+    localStorage.getItem('adminState') === 'true';
+  
+  const hasAccess = isAdmin || hasSubscription || adminUnlocked;
 
   if (!hasAccess) {
     return (
