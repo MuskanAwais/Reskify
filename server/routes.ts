@@ -809,17 +809,19 @@ export async function registerRoutes(app: Express) {
     }
   });
 
-  // Update existing routes to use Puppeteer
+  // Update existing routes to use RiskTemplateBuilder
   app.post("/api/swms/pdf-download", async (req, res) => {
     try {
-      const requestTitle = req.body?.projectName || req.body?.title || 'Unknown project';
+      const requestTitle = req.body?.projectName || req.body?.jobName || req.body?.title || 'Unknown project';
       console.log("PDF generation request received:", requestTitle);
       
       const data = req.body;
       
-      console.log('Generating PDF with Figma template for:', requestTitle);
-      // Use Puppeteer with HTML template for exact Figma match
-      const pdfBuffer = await generatePuppeteerPDF(data);
+      console.log('Generating PDF with RiskTemplateBuilder for:', requestTitle);
+      
+      // Use RiskTemplateBuilder integration
+      const { generatePDFWithRiskTemplate } = await import('./risk-template-integration.js');
+      const pdfBuffer = await generatePDFWithRiskTemplate(data);
       
       res.setHeader('Content-Type', 'application/pdf');
       res.setHeader('Content-Disposition', `attachment; filename="SWMS-${requestTitle.replace(/[^a-zA-Z0-9]/g, '_')}.pdf"`);
@@ -836,8 +838,11 @@ export async function registerRoutes(app: Express) {
     try {
       const data = req.body;
       
-      // Use Puppeteer with HTML template for exact Figma match
-      const pdfBuffer = await generatePuppeteerPDF(data);
+      console.log('Generating PDF preview with RiskTemplateBuilder');
+      
+      // Use RiskTemplateBuilder integration
+      const { generatePDFWithRiskTemplate } = await import('./risk-template-integration.js');
+      const pdfBuffer = await generatePDFWithRiskTemplate(data);
       
       // Set headers for browser PDF display
       res.setHeader('Content-Type', 'application/pdf');
@@ -850,6 +855,18 @@ export async function registerRoutes(app: Express) {
     } catch (error) {
       console.error("PDF preview error:", error);
       res.status(500).json({ error: "Failed to generate PDF preview" });
+    }
+  });
+
+  // Add new endpoint for sending data to RiskTemplateBuilder
+  app.post('/api/risk-template/send', async (req, res) => {
+    try {
+      const { sendToRiskTemplate } = await import('./risk-template-integration.js');
+      const result = await sendToRiskTemplate(req.body);
+      res.json(result);
+    } catch (error) {
+      console.error('Risk template send error:', error);
+      res.status(500).json({ error: 'Failed to send to RiskTemplateBuilder' });
     }
   });
 
