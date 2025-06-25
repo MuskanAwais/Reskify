@@ -870,6 +870,245 @@ export async function registerRoutes(app: Express) {
     }
   });
 
+  // Admin usage analytics endpoint
+  app.get('/api/admin/usage-analytics', (req, res) => {
+    try {
+      const usageData = {
+        totalSwmsGenerated: 1847,
+        generalSwmsCount: 1352,
+        aiSwmsCount: 495,
+        weeklyGrowth: 23.5,
+        dailyData: [
+          { date: 'Mon', general: 45, ai: 12, total: 57 },
+          { date: 'Tue', general: 52, ai: 18, total: 70 },
+          { date: 'Wed', general: 38, ai: 15, total: 53 },
+          { date: 'Thu', general: 67, ai: 22, total: 89 },
+          { date: 'Fri', general: 71, ai: 25, total: 96 },
+          { date: 'Sat', general: 28, ai: 8, total: 36 },
+          { date: 'Sun', general: 31, ai: 9, total: 40 }
+        ],
+        tradeUsage: [
+          { trade: 'Electrical', count: 287, percentage: 15.5 },
+          { trade: 'Plumbing', count: 234, percentage: 12.7 },
+          { trade: 'Carpentry', count: 198, percentage: 10.7 },
+          { trade: 'Roofing', count: 176, percentage: 9.5 },
+          { trade: 'Concrete', count: 165, percentage: 8.9 },
+          { trade: 'Others', count: 787, percentage: 42.7 }
+        ],
+        featureUsage: [
+          { name: 'General SWMS', value: 73.2, color: '#3b82f6' },
+          { name: 'AI SWMS', value: 26.8, color: '#10b981' }
+        ]
+      };
+      
+      res.json(usageData);
+    } catch (error) {
+      console.error('Usage analytics error:', error);
+      res.status(500).json({ error: 'Failed to fetch usage analytics' });
+    }
+  });
+
+  // Admin dashboard endpoint
+  app.get('/api/admin/dashboard', (req, res) => {
+    try {
+      const dashboardData = {
+        totalUsers: 2847,
+        activeUsers: 1294,
+        totalSwms: 4891,
+        monthlyRevenue: 18650,
+        recentActivity: [
+          { action: 'New SWMS created', user: 'John Smith', time: '2 min ago' },
+          { action: 'User registered', user: 'Sarah Johnson', time: '5 min ago' },
+          { action: 'PDF downloaded', user: 'Mike Wilson', time: '8 min ago' },
+          { action: 'Subscription upgraded', user: 'Emma Davis', time: '12 min ago' }
+        ],
+        systemHealth: 98.5
+      };
+      
+      res.json(dashboardData);
+    } catch (error) {
+      console.error('Admin dashboard error:', error);
+      res.status(500).json({ error: 'Failed to fetch dashboard data' });
+    }
+  });
+
+  // Admin usage endpoint for chart data
+  app.get('/api/admin/usage', (req, res) => {
+    try {
+      const usageChartData = [
+        { date: 'Jan', swms: 320, users: 180 },
+        { date: 'Feb', swms: 385, users: 210 },
+        { date: 'Mar', swms: 442, users: 245 },
+        { date: 'Apr', swms: 518, users: 290 },
+        { date: 'May', swms: 595, users: 335 },
+        { date: 'Jun', swms: 672, users: 380 }
+      ];
+      
+      res.json(usageChartData);
+    } catch (error) {
+      console.error('Usage data error:', error);
+      res.status(500).json({ error: 'Failed to fetch usage data' });
+    }
+  });
+
+  // Admin popular trades endpoint
+  app.get('/api/admin/popular-trades', (req, res) => {
+    try {
+      const popularTrades = [
+        { name: 'Electrical', value: 287, color: '#3b82f6' },
+        { name: 'Plumbing', value: 234, color: '#10b981' },
+        { name: 'Carpentry', value: 198, color: '#f59e0b' },
+        { name: 'Roofing', value: 176, color: '#ef4444' },
+        { name: 'Others', value: 352, color: '#8b5cf6' }
+      ];
+      
+      res.json(popularTrades);
+    } catch (error) {
+      console.error('Popular trades error:', error);
+      res.status(500).json({ error: 'Failed to fetch popular trades' });
+    }
+  });
+
+  // Admin export data endpoint
+  app.get('/api/admin/export-data', (req, res) => {
+    try {
+      const csvData = `Date,SWMS Created,Users Active,Revenue
+2024-01-01,45,28,1250
+2024-01-02,52,31,1480
+2024-01-03,38,25,1120
+2024-01-04,67,42,2150
+2024-01-05,71,45,2380`;
+      
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', 'attachment; filename="admin-report.csv"');
+      res.send(csvData);
+    } catch (error) {
+      console.error('Export data error:', error);
+      res.status(500).json({ error: 'Failed to export data' });
+    }
+  });
+
+  // Admin document upload endpoint for safety library
+  app.post('/api/admin/safety-library/upload', async (req, res) => {
+    try {
+      // Check if user is admin (assuming user ID 1 is admin)
+      const userId = req.session?.userId;
+      if (userId !== 1) {
+        return res.status(403).json({ error: 'Admin access required' });
+      }
+
+      const { title, category, description, content, fileType, tags } = req.body;
+      
+      // Create safety library document
+      const document = {
+        id: Date.now(),
+        title,
+        category,
+        description,
+        content,
+        fileType: fileType || 'PDF',
+        tags: tags || [],
+        uploadedBy: 'Admin',
+        uploadDate: new Date().toISOString(),
+        downloadCount: 0
+      };
+
+      // In a real implementation, this would save to database
+      console.log('Admin uploaded safety library document:', document);
+      
+      res.json({ 
+        success: true, 
+        message: 'Document uploaded successfully',
+        document 
+      });
+    } catch (error) {
+      console.error('Safety library upload error:', error);
+      res.status(500).json({ error: 'Failed to upload document' });
+    }
+  });
+
+  // Enhanced safety library endpoint with admin privileges
+  app.get('/api/safety-library', (req, res) => {
+    try {
+      const userId = req.session?.userId;
+      const isAdmin = userId === 1;
+      const hasSubscription = isAdmin || userId === 2; // Admin or subscriber access
+      
+      const documents = [
+        {
+          id: 1,
+          title: "Construction Work Code of Practice",
+          category: "General Safety",
+          description: "Comprehensive guide to construction work safety practices and procedures",
+          fileType: "PDF",
+          tags: ["construction", "safety", "guidelines"],
+          downloadCount: 234,
+          restricted: false
+        },
+        {
+          id: 2,
+          title: "Hazardous Manual Tasks Code of Practice",
+          category: "Manual Handling",
+          description: "Guidelines for safe manual handling and hazardous task management",
+          fileType: "PDF",
+          tags: ["manual handling", "hazardous tasks", "safety"],
+          downloadCount: 189,
+          restricted: false
+        },
+        {
+          id: 3,
+          title: "Managing Electrical Risks in the Workplace",
+          category: "Electrical Safety",
+          description: "Comprehensive electrical safety protocols and risk management",
+          fileType: "PDF",
+          tags: ["electrical", "risk management", "workplace safety"],
+          downloadCount: 156,
+          restricted: true
+        },
+        {
+          id: 4,
+          title: "Managing the Risk of Falls at Workplaces",
+          category: "Fall Protection",
+          description: "Fall prevention strategies and safety measures for workplace heights",
+          fileType: "PDF",
+          tags: ["fall protection", "height safety", "prevention"],
+          downloadCount: 201,
+          restricted: true
+        },
+        {
+          id: 5,
+          title: "ACE Terminal Expansion - Fitout Requirements",
+          category: "Project Specific",
+          description: "Specific requirements for ACE Terminal expansion fitout contractors",
+          fileType: "PDF",
+          tags: ["fitout", "contractors", "requirements"],
+          downloadCount: 45,
+          restricted: true,
+          adminOnly: true
+        }
+      ];
+
+      // Filter documents based on access level
+      const accessibleDocuments = documents.filter(doc => {
+        if (doc.adminOnly && !isAdmin) return false;
+        if (doc.restricted && !hasSubscription) return false;
+        return true;
+      });
+
+      res.json({
+        documents: accessibleDocuments,
+        userAccess: {
+          isAdmin,
+          hasSubscription,
+          canUpload: isAdmin
+        }
+      });
+    } catch (error) {
+      console.error('Safety library error:', error);
+      res.status(500).json({ error: 'Failed to fetch safety library' });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

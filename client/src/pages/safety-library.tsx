@@ -9,8 +9,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { Lock, Crown, Unlock, Search, ExternalLink, Filter, Shield, Upload, FileText, X, CheckCircle, AlertCircle, Eye } from "lucide-react";
+import { Lock, Crown, Unlock, Search, ExternalLink, Filter, Shield, Upload, FileText, X, CheckCircle, AlertCircle, Eye, Plus } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 
 export default function SafetyLibrary() {
   const { isAdminMode } = useAdmin();
@@ -29,6 +31,15 @@ export default function SafetyLibrary() {
   });
   const [selectedPdf, setSelectedPdf] = useState<string | null>(null);
   const [pdfViewerOpen, setPdfViewerOpen] = useState(false);
+  const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
+  const [uploadForm, setUploadForm] = useState({
+    title: '',
+    category: '',
+    description: '',
+    content: '',
+    fileType: 'PDF',
+    tags: ''
+  });
 
   // Check if user has access to Safety Library
   const { data: subscription } = useQuery({
@@ -54,6 +65,40 @@ export default function SafetyLibrary() {
     setUploadFiles(prev => prev.filter((_, i) => i !== index));
   }, []);
 
+  // Admin document upload mutation
+  const adminUploadMutation = useMutation({
+    mutationFn: async (documentData: typeof uploadForm) => {
+      const response = await apiRequest('POST', '/api/admin/safety-library/upload', {
+        ...documentData,
+        tags: documentData.tags.split(',').map(tag => tag.trim())
+      });
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Document Uploaded",
+        description: "Safety library document has been uploaded successfully.",
+      });
+      setUploadForm({
+        title: '',
+        category: '',
+        description: '',
+        content: '',
+        fileType: 'PDF',
+        tags: ''
+      });
+      setUploadDialogOpen(false);
+      queryClient.invalidateQueries({ queryKey: ['/api/safety-library'] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Upload Failed",
+        description: error.message || "Failed to upload document",
+        variant: "destructive",
+      });
+    }
+  });
+
   const uploadMutation = useMutation({
     mutationFn: async (files: File[]) => {
       setIsUploading(true);
@@ -75,7 +120,7 @@ export default function SafetyLibrary() {
                           file.name.toLowerCase().includes('stevedoring') ? 'Stevedoring' :
                           'General Safety');
 
-          await apiRequest('POST', '/api/safety-library/upload', formData);
+          await apiRequest('POST', '/api/admin/safety-library/upload', formData);
           results.success++;
         } catch (error) {
           results.failed++;
@@ -217,11 +262,120 @@ export default function SafetyLibrary() {
           </p>
         </div>
         
-        {adminUnlocked && (
-          <Badge variant="outline" className="bg-orange-50 text-orange-600 border-orange-200">
-            Admin Mode Active
-          </Badge>
-        )}
+        <div className="flex items-center gap-3">
+          {adminUnlocked && (
+            <Badge variant="outline" className="bg-orange-50 text-orange-600 border-orange-200">
+              Admin Mode Active
+            </Badge>
+          )}
+          
+          {/* Admin Add Document Button */}
+          {(isAdminMode || adminUnlocked) && (
+            <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
+              <DialogTrigger asChild>
+                <Button className="flex items-center gap-2">
+                  <Plus className="h-4 w-4" />
+                  Add Document
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-2xl">
+                <DialogHeader>
+                  <DialogTitle>Upload Safety Library Document</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="title">Document Title</Label>
+                      <Input
+                        id="title"
+                        value={uploadForm.title}
+                        onChange={(e) => setUploadForm(prev => ({ ...prev, title: e.target.value }))}
+                        placeholder="Enter document title"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="category">Category</Label>
+                      <Select value={uploadForm.category} onValueChange={(value) => setUploadForm(prev => ({ ...prev, category: value }))}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select category" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="General Safety">General Safety</SelectItem>
+                          <SelectItem value="Electrical Safety">Electrical Safety</SelectItem>
+                          <SelectItem value="Manual Handling">Manual Handling</SelectItem>
+                          <SelectItem value="Fall Protection">Fall Protection</SelectItem>
+                          <SelectItem value="Project Specific">Project Specific</SelectItem>
+                          <SelectItem value="Construction">Construction</SelectItem>
+                          <SelectItem value="Plant & Equipment">Plant & Equipment</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="description">Description</Label>
+                    <Textarea
+                      id="description"
+                      value={uploadForm.description}
+                      onChange={(e) => setUploadForm(prev => ({ ...prev, description: e.target.value }))}
+                      placeholder="Enter document description"
+                      rows={3}
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="content">Content/URL</Label>
+                    <Input
+                      id="content"
+                      value={uploadForm.content}
+                      onChange={(e) => setUploadForm(prev => ({ ...prev, content: e.target.value }))}
+                      placeholder="Document URL or content reference"
+                    />
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="fileType">File Type</Label>
+                      <Select value={uploadForm.fileType} onValueChange={(value) => setUploadForm(prev => ({ ...prev, fileType: value }))}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="PDF">PDF</SelectItem>
+                          <SelectItem value="DOC">DOC</SelectItem>
+                          <SelectItem value="DOCX">DOCX</SelectItem>
+                          <SelectItem value="PPT">PPT</SelectItem>
+                          <SelectItem value="PPTX">PPTX</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label htmlFor="tags">Tags (comma separated)</Label>
+                      <Input
+                        id="tags"
+                        value={uploadForm.tags}
+                        onChange={(e) => setUploadForm(prev => ({ ...prev, tags: e.target.value }))}
+                        placeholder="safety, construction, guidelines"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="flex justify-end gap-2 pt-4">
+                    <Button variant="outline" onClick={() => setUploadDialogOpen(false)}>
+                      Cancel
+                    </Button>
+                    <Button 
+                      onClick={() => adminUploadMutation.mutate(uploadForm)}
+                      disabled={adminUploadMutation.isPending || !uploadForm.title || !uploadForm.category}
+                    >
+                      {adminUploadMutation.isPending ? 'Uploading...' : 'Upload Document'}
+                    </Button>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
+          )}
+        </div>
       </div>
 
       {/* Admin Upload Interface */}
