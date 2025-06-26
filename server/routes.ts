@@ -992,6 +992,19 @@ export async function registerRoutes(app: Express) {
       
       const data = req.body;
       
+      // Get user's company logo if authenticated
+      if (req.session?.userId) {
+        try {
+          const user = await storage.getUser(req.session.userId);
+          if (user?.companyLogo) {
+            data.companyLogo = user.companyLogo;
+            console.log('Including user company logo in PDF generation');
+          }
+        } catch (error) {
+          console.log('Could not fetch user logo:', error);
+        }
+      }
+      
       console.log('Generating PDF with RiskTemplateBuilder (EXCLUSIVE) for:', requestTitle);
       
       // ONLY use RiskTemplateBuilder integration - no fallback
