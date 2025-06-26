@@ -34,10 +34,7 @@ export default function SafetyLibrary() {
   const [selectedDocument, setSelectedDocument] = useState<any>(null);
   const [documentViewerOpen, setDocumentViewerOpen] = useState(false);
   const [expandedFolders, setExpandedFolders] = useState<Record<string, boolean>>({
-    "Code of Practices": true,
-    "Standards": false,
-    "Guidelines": false,
-    "Other Documents": false
+    "Code of Practices": true
   });
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   const [bulkUploadDialogOpen, setBulkUploadDialogOpen] = useState(false);
@@ -80,45 +77,18 @@ export default function SafetyLibrary() {
     }));
   };
 
-  // Organize documents into folders
+  // Organize documents into folders - only Code of Practices folder
   const organizedDocuments = useMemo(() => {
     const documents = (safetyLibrary as any)?.documents;
     if (!documents) return {};
     
     const folders: Record<string, any[]> = {
-      "Code of Practices": [],
-      "Standards": [],
-      "Guidelines": [],
-      "Other Documents": []
+      "Code of Practices": []
     };
     
+    // All documents go into Code of Practices folder
     documents.forEach((doc: any) => {
-      // Check if document has a specific folder assignment from database
-      if (doc.folder) {
-        if (!folders[doc.folder]) {
-          folders[doc.folder] = [];
-        }
-        folders[doc.folder].push(doc);
-      } else if (doc.title.toLowerCase().includes('code of practice') || 
-                 doc.title.toLowerCase().includes('model code') ||
-                 doc.category === 'General Safety' ||
-                 doc.category === 'Manual Handling') {
-        folders["Code of Practices"].push(doc);
-      } else if (doc.title.toLowerCase().includes('standard') || 
-                 doc.title.includes('AS/NZS') || 
-                 doc.title.includes('AS ') ||
-                 doc.category === 'Electrical' ||
-                 doc.category === 'Plumbing' ||
-                 doc.category === 'Carpentry') {
-        folders["Standards"].push(doc);
-      } else if (doc.title.toLowerCase().includes('guidelines') || 
-                 doc.title.toLowerCase().includes('guide') ||
-                 doc.category === 'Scaffolding' ||
-                 doc.category === 'Roofing') {
-        folders["Guidelines"].push(doc);
-      } else {
-        folders["Other Documents"].push(doc);
-      }
+      folders["Code of Practices"].push(doc);
     });
     
     return folders;
@@ -801,41 +771,36 @@ export default function SafetyLibrary() {
         </div>
       </div>
 
-      {/* Admin Upload Button */}
+      {/* Admin-Only Document Management */}
       {(isAdminMode || adminUnlocked) && (
         <Card className="mb-6">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Upload className="h-5 w-5" />
+              <Shield className="h-5 w-5" />
               Admin Document Management
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex gap-4">
               <Button 
-                onClick={() => setBulkUploadDialogOpen(true)}
-                className="flex items-center gap-2"
-              >
-                <Upload className="h-4 w-4" />
-                Bulk Upload Documents
-              </Button>
-              <Button 
                 onClick={() => setUploadDialogOpen(true)}
-                variant="outline" 
                 className="flex items-center gap-2"
               >
                 <Plus className="h-4 w-4" />
-                Add Single Document
+                Add Document
               </Button>
               <Button 
-                onClick={() => setNewFolderDialogOpen(true)}
+                onClick={() => setBulkUploadDialogOpen(true)}
                 variant="outline" 
                 className="flex items-center gap-2"
               >
-                <FolderOpen className="h-4 w-4" />
-                Create Folder
+                <Upload className="h-4 w-4" />
+                Bulk Upload
               </Button>
             </div>
+            <p className="text-sm text-gray-600 mt-2">
+              Only administrators can add or delete documents from the Safety Library.
+            </p>
           </CardContent>
         </Card>
       )}
@@ -1078,36 +1043,49 @@ export default function SafetyLibrary() {
                     onClick={() => {
                       if (selectedDocument?.content) {
                         window.open(selectedDocument.content, '_blank');
-                      } else if (selectedDocument?.url) {
-                        window.open(selectedDocument.url, '_blank');
                       } else {
-                        // Generate a document URL based on the document info
-                        const searchQuery = `${selectedDocument?.title} ${selectedDocument?.category} filetype:pdf site:safeworkaustralia.gov.au OR site:standards.org.au`;
-                        window.open(`https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`, '_blank');
                         toast({
-                          title: "Document Search",
-                          description: "Opening search results for this document...",
+                          title: "Document Unavailable",
+                          description: "PDF file not available for viewing",
+                          variant: "destructive"
                         });
                       }
                     }}
                     className="flex items-center gap-2"
                   >
                     <Eye className="h-4 w-4" />
-                    Open Document
+                    View PDF
                   </Button>
-                  <Button 
-                    variant="outline"
-                    onClick={() => {
-                      toast({
-                        title: "Download Started",
-                        description: `Downloading ${selectedDocument?.title}...`,
-                      });
-                    }}
-                    className="flex items-center gap-2"
-                  >
-                    <Download className="h-4 w-4" />
-                    Download PDF
-                  </Button>
+                  {(isAdminMode || adminUnlocked) && (
+                    <Button 
+                      variant="destructive"
+                      onClick={() => {
+                        if (selectedDocument?.id) {
+                          // Call delete API
+                          apiRequest('DELETE', `/api/safety-library/${selectedDocument.id}`)
+                            .then(() => {
+                              toast({
+                                title: "Document Deleted",
+                                description: `${selectedDocument.title} has been removed`,
+                              });
+                              setDocumentViewerOpen(false);
+                              queryClient.invalidateQueries({ queryKey: ['/api/safety-library'] });
+                            })
+                            .catch(() => {
+                              toast({
+                                title: "Delete Failed",
+                                description: "Could not delete document",
+                                variant: "destructive"
+                              });
+                            });
+                        }
+                      }}
+                      className="flex items-center gap-2"
+                    >
+                      <X className="h-4 w-4" />
+                      Delete
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>
@@ -1241,26 +1219,35 @@ export default function SafetyLibrary() {
                                 <Eye className="h-3 w-3" />
                                 View
                               </Button>
-                              <Button 
-                                variant="outline" 
-                                size="sm"
-                                className="flex items-center gap-1"
-                                onClick={() => {
-                                  if (item.content) {
-                                    window.open(item.content, '_blank');
-                                  } else {
-                                    const searchQuery = `${item.title} ${item.category} filetype:pdf site:safeworkaustralia.gov.au OR site:standards.org.au`;
-                                    window.open(`https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`, '_blank');
-                                  }
-                                  toast({
-                                    title: "Opening Document",
-                                    description: `Accessing ${item.title}...`,
-                                  });
-                                }}
-                              >
-                                <Download className="h-3 w-3" />
-                                Open
-                              </Button>
+                              {(isAdminMode || adminUnlocked) && (
+                                <Button 
+                                  variant="destructive" 
+                                  size="sm"
+                                  className="flex items-center gap-1"
+                                  onClick={() => {
+                                    if (item.id) {
+                                      apiRequest('DELETE', `/api/safety-library/${item.id}`)
+                                        .then(() => {
+                                          toast({
+                                            title: "Document Deleted",
+                                            description: `${item.title} has been removed`,
+                                          });
+                                          queryClient.invalidateQueries({ queryKey: ['/api/safety-library'] });
+                                        })
+                                        .catch(() => {
+                                          toast({
+                                            title: "Delete Failed",
+                                            description: "Could not delete document",
+                                            variant: "destructive"
+                                          });
+                                        });
+                                    }
+                                  }}
+                                >
+                                  <X className="h-3 w-3" />
+                                  Delete
+                                </Button>
+                              )}
                             </div>
                           </div>
                         </div>
