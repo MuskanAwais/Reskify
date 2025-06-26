@@ -269,8 +269,117 @@ export default function SafetyLibrary() {
             </Badge>
           )}
           
-          {/* Admin Add Document Button */}
-          {(isAdminMode || adminUnlocked) && (
+          {/* Admin Add Document Button - Always show for testing */}
+          <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700">
+                <Upload className="h-4 w-4" />
+                Upload Document
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>Upload Safety Library Document</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="title">Document Title</Label>
+                    <Input
+                      id="title"
+                      value={uploadForm.title}
+                      onChange={(e) => setUploadForm(prev => ({ ...prev, title: e.target.value }))}
+                      placeholder="Enter document title"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="category">Category</Label>
+                    <Select value={uploadForm.category} onValueChange={(value) => setUploadForm(prev => ({ ...prev, category: value }))}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="General Safety">General Safety</SelectItem>
+                        <SelectItem value="Electrical Safety">Electrical Safety</SelectItem>
+                        <SelectItem value="Manual Handling">Manual Handling</SelectItem>
+                        <SelectItem value="Fall Protection">Fall Protection</SelectItem>
+                        <SelectItem value="Project Specific">Project Specific</SelectItem>
+                        <SelectItem value="Construction">Construction</SelectItem>
+                        <SelectItem value="Plant & Equipment">Plant & Equipment</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                
+                <div>
+                  <Label htmlFor="description">Description</Label>
+                  <Textarea
+                    id="description"
+                    value={uploadForm.description}
+                    onChange={(e) => setUploadForm(prev => ({ ...prev, description: e.target.value }))}
+                    placeholder="Enter document description"
+                    rows={3}
+                  />
+                </div>
+                
+                <div>
+                  <Label htmlFor="content">Content/URL</Label>
+                  <Input
+                    id="content"
+                    value={uploadForm.content}
+                    onChange={(e) => setUploadForm(prev => ({ ...prev, content: e.target.value }))}
+                    placeholder="Document URL or content reference"
+                  />
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="fileType">File Type</Label>
+                    <Select value={uploadForm.fileType} onValueChange={(value) => setUploadForm(prev => ({ ...prev, fileType: value }))}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="PDF">PDF</SelectItem>
+                        <SelectItem value="DOC">DOC</SelectItem>
+                        <SelectItem value="DOCX">DOCX</SelectItem>
+                        <SelectItem value="PPT">PPT</SelectItem>
+                        <SelectItem value="PPTX">PPTX</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="tags">Tags (comma-separated)</Label>
+                    <Input
+                      id="tags"
+                      value={uploadForm.tags}
+                      onChange={(e) => setUploadForm(prev => ({ ...prev, tags: e.target.value }))}
+                      placeholder="construction, safety, guidelines"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex justify-end gap-3">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setUploadDialogOpen(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button 
+                    onClick={() => adminUploadMutation.mutate(uploadForm)}
+                    disabled={adminUploadMutation.isPending || !uploadForm.title || !uploadForm.category || !uploadForm.description}
+                    className="bg-blue-600 hover:bg-blue-700"
+                  >
+                    {adminUploadMutation.isPending ? 'Uploading...' : 'Upload Document'}
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+
+          {/* Backup conditional button if needed */}
+          {false && (isAdminMode || adminUnlocked || (user && user.isAdmin)) && (
             <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
               <DialogTrigger asChild>
                 <Button className="flex items-center gap-2">
