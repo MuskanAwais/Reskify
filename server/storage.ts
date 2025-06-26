@@ -103,24 +103,10 @@ export class DatabaseStorage implements IStorage {
       .where(eq(users.id, userId));
   }
 
-  async updateUserPassword(userId: number, hashedPassword: string): Promise<void> {
-    await db
-      .update(users)
-      .set({ password: hashedPassword })
-      .where(eq(users.id, userId));
-  }
-
   async updateUserAdminStatus(userId: number, isAdmin: boolean): Promise<void> {
     await db
       .update(users)
       .set({ isAdmin })
-      .where(eq(users.id, userId));
-  }
-
-  async updateUserPassword(userId: number, hashedPassword: string): Promise<void> {
-    await db
-      .update(users)
-      .set({ password: hashedPassword })
       .where(eq(users.id, userId));
   }
 

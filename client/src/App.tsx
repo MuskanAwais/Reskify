@@ -16,6 +16,7 @@ import Watermark from "@/components/ui/watermark";
 import Dashboard from "@/pages/dashboard";
 import SwmsBuilder from "@/pages/swms-builder";
 import Profile from "@/pages/profile";
+import ProfileSettings from "@/pages/profile-settings";
 import SafetyLibrary from "@/pages/safety-library";
 import MySwms from "@/pages/my-swms";
 import SwmsEditor from "@/pages/swms-editor";
