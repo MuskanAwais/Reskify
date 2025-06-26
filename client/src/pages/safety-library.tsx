@@ -171,17 +171,24 @@ export default function SafetyLibrary() {
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         try {
-          const formData = new FormData();
-          formData.append('file', file);
-          formData.append('category', file.name.toLowerCase().includes('construction') ? 'Construction' :
-                          file.name.toLowerCase().includes('electrical') ? 'Electrical' :
-                          file.name.toLowerCase().includes('manual') ? 'Manual Handling' :
-                          file.name.toLowerCase().includes('noise') ? 'Noise Control' :
-                          file.name.toLowerCase().includes('plant') ? 'Plant & Equipment' :
-                          file.name.toLowerCase().includes('stevedoring') ? 'Stevedoring' :
-                          'General Safety');
+          // Auto-generate document metadata from filename
+          const autoTitle = generateTitle(file.name);
+          const autoCategory = detectCategory(file.name);
+          const fileExtension = file.name.split('.').pop()?.toUpperCase() || 'PDF';
+          
+          // Create document data with auto-detected fields
+          const documentData = {
+            title: autoTitle,
+            category: autoCategory,
+            description: `Auto-uploaded safety document: ${autoTitle}`,
+            content: `Uploaded file: ${file.name}`,
+            fileType: fileExtension,
+            tags: [autoCategory.toLowerCase().replace(/\s+/g, '-'), 'auto-uploaded', fileExtension.toLowerCase()],
+            fileName: file.name,
+            fileSize: file.size
+          };
 
-          await apiRequest('POST', '/api/admin/safety-library/upload', formData);
+          await apiRequest('POST', '/api/admin/safety-library/bulk-upload', documentData);
           results.success++;
         } catch (error) {
           results.failed++;
@@ -190,8 +197,14 @@ export default function SafetyLibrary() {
         
         setUploadProgress(Math.round(((i + 1) / files.length) * 100));
         setUploadResults({ ...results });
+        
+        // Small delay to prevent overwhelming the server
+        if (i < files.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, 50));
+        }
       }
 
+      setIsUploading(false);
       return results;
     },
     onSuccess: (results) => {
