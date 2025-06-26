@@ -46,20 +46,6 @@ export default function UserManagement() {
     },
   });
 
-  const updateAdminMutation = useMutation({
-    mutationFn: async ({ userId, isAdmin }: { userId: number, isAdmin: boolean }) => {
-      const response = await apiRequest("PATCH", `/api/admin/users/${userId}/admin`, { isAdmin });
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/users'] });
-      toast({
-        title: "Admin Status Updated",
-        description: "User admin permissions have been updated successfully.",
-      });
-    },
-  });
-
   const updateCreditsMutation = useMutation({
     mutationFn: async ({ userId, credits }: { userId: number, credits: number }) => {
       const response = await apiRequest("PATCH", `/api/admin/users/${userId}/credits`, { credits });
@@ -74,6 +60,49 @@ export default function UserManagement() {
       });
     },
   });
+
+  const updateAdminMutation = useMutation({
+    mutationFn: async ({ userId, isAdmin }: { userId: number, isAdmin: boolean }) => {
+      const response = await apiRequest("PATCH", `/api/admin/users/${userId}/admin`, { isAdmin });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/users'] });
+      toast({
+        title: "Admin Status Updated",
+        description: "User admin permissions have been updated successfully.",
+      });
+    },
+  });
+
+  const handleResetPassword = (userId: number) => {
+    if (newPassword.length < 6) {
+      toast({
+        title: "Invalid Password",
+        description: "Password must be at least 6 characters long.",
+        variant: "destructive",
+      });
+      return;
+    }
+    resetPasswordMutation.mutate({ userId, password: newPassword });
+  };
+
+  const handleUpdateCredits = (userId: number) => {
+    const credits = parseInt(newCredits);
+    if (isNaN(credits) || credits < 0) {
+      toast({
+        title: "Invalid Credits",
+        description: "Credits must be a valid positive number.",
+        variant: "destructive",
+      });
+      return;
+    }
+    updateCreditsMutation.mutate({ userId, credits });
+  };
+
+  const handleToggleAdmin = (userId: number, currentStatus: boolean) => {
+    updateAdminMutation.mutate({ userId, isAdmin: !currentStatus });
+  };
 
   if (usersLoading || contactsLoading) {
     return (
