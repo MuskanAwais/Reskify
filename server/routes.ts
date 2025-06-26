@@ -1277,6 +1277,51 @@ export async function registerRoutes(app: Express) {
     }
   });
 
+  // Bulk upload endpoint for safety library with auto-categorization
+  app.post('/api/admin/safety-library/bulk-upload', async (req, res) => {
+    try {
+      // Check if user is admin
+      const userId = req.session?.userId;
+      if (userId !== 1) {
+        return res.status(403).json({ error: 'Admin access required' });
+      }
+
+      const { title, category, description, content, fileType, tags, fileName, fileSize } = req.body;
+      
+      // Create safety library document with auto-generated data
+      const document = {
+        id: Date.now() + Math.random(), // Ensure uniqueness for bulk uploads
+        title,
+        category,
+        description,
+        content,
+        fileType: fileType || 'PDF',
+        tags: Array.isArray(tags) ? tags : [],
+        fileName,
+        fileSize,
+        uploadedBy: 'Admin (Bulk)',
+        uploadDate: new Date().toISOString(),
+        downloadCount: 0,
+        bulkUpload: true
+      };
+
+      console.log('Bulk uploaded safety library document:', {
+        title: document.title,
+        category: document.category,
+        fileName: document.fileName
+      });
+      
+      res.json({ 
+        success: true, 
+        message: 'Document bulk uploaded successfully',
+        document 
+      });
+    } catch (error) {
+      console.error('Safety library bulk upload error:', error);
+      res.status(500).json({ error: 'Failed to bulk upload document' });
+    }
+  });
+
   // Enhanced safety library endpoint with admin privileges
   app.get('/api/safety-library', (req, res) => {
     try {

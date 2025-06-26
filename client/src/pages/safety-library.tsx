@@ -55,11 +55,72 @@ export default function SafetyLibrary() {
     queryKey: ['/api/safety-library']
   });
 
-  // File upload handlers
+  // Auto-detect category from filename
+  const detectCategory = useCallback((filename: string) => {
+    const name = filename.toLowerCase();
+    
+    // Construction-specific patterns
+    if (name.includes('construction') || name.includes('building') || name.includes('structural')) {
+      return 'Construction';
+    }
+    if (name.includes('electrical') || name.includes('wiring') || name.includes('power') || name.includes('voltage')) {
+      return 'Electrical Safety';
+    }
+    if (name.includes('manual') || name.includes('handling') || name.includes('lifting') || name.includes('ergonomic')) {
+      return 'Manual Handling';
+    }
+    if (name.includes('fall') || name.includes('height') || name.includes('scaffold') || name.includes('harness')) {
+      return 'Fall Protection';
+    }
+    if (name.includes('plant') || name.includes('equipment') || name.includes('machinery') || name.includes('tool')) {
+      return 'Plant & Equipment';
+    }
+    if (name.includes('noise') || name.includes('hearing') || name.includes('sound') || name.includes('acoustic')) {
+      return 'Noise Control';
+    }
+    if (name.includes('chemical') || name.includes('hazardous') || name.includes('substance') || name.includes('material')) {
+      return 'Chemical Safety';
+    }
+    if (name.includes('fire') || name.includes('emergency') || name.includes('evacuation') || name.includes('safety plan')) {
+      return 'Emergency Procedures';
+    }
+    if (name.includes('confined') || name.includes('space') || name.includes('entry') || name.includes('permit')) {
+      return 'Confined Spaces';
+    }
+    if (name.includes('traffic') || name.includes('vehicle') || name.includes('transport') || name.includes('mobile')) {
+      return 'Traffic Management';
+    }
+    
+    return 'General Safety';
+  }, []);
+
+  // Generate document title from filename
+  const generateTitle = useCallback((filename: string) => {
+    const nameWithoutExt = filename.replace(/\.[^/.]+$/, "");
+    // Convert underscores/hyphens to spaces and capitalize words
+    return nameWithoutExt
+      .replace(/[_-]/g, ' ')
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+  }, []);
+
+  // Enhanced file upload handlers
   const handleFileSelect = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
+    
+    // Limit to 500 files as mentioned in UI
+    if (uploadFiles.length + files.length > 500) {
+      toast({
+        title: "Too Many Files",
+        description: "Maximum 500 files per upload. Please select fewer files.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     setUploadFiles(prev => [...prev, ...files]);
-  }, []);
+  }, [uploadFiles.length, toast]);
 
   const removeFile = useCallback((index: number) => {
     setUploadFiles(prev => prev.filter((_, i) => i !== index));
@@ -269,14 +330,158 @@ export default function SafetyLibrary() {
             </Badge>
           )}
           
-          {/* Admin Add Document Button - Always show for testing */}
+          {/* Admin Upload Buttons */}
+          <div className="flex items-center gap-2">
+            <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
+              <DialogTrigger asChild>
+                <Button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700">
+                  <Upload className="h-4 w-4" />
+                  Upload Document
+                </Button>
+              </DialogTrigger>
+            </Dialog>
+            
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline" className="flex items-center gap-2">
+                  <FileText className="h-4 w-4" />
+                  Bulk Upload
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle>Bulk Upload Safety Documents</DialogTitle>
+                  <p className="text-sm text-muted-foreground">
+                    Upload multiple documents at once. File names will be automatically analyzed for categorization.
+                  </p>
+                </DialogHeader>
+                
+                <div className="space-y-6">
+                  {/* File Drop Zone */}
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+                    <div className="space-y-4">
+                      <div className="mx-auto w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center">
+                        <Upload className="h-6 w-6 text-blue-600" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-medium">Drop files here or click to browse</h3>
+                        <p className="text-sm text-gray-500">
+                          Supports PDF, DOC, DOCX, PPT, PPTX files. Maximum 500 files per upload.
+                        </p>
+                      </div>
+                      <input
+                        type="file"
+                        multiple
+                        accept=".pdf,.doc,.docx,.ppt,.pptx"
+                        onChange={handleFileSelect}
+                        className="hidden"
+                        id="bulk-file-input"
+                      />
+                      <label htmlFor="bulk-file-input">
+                        <Button variant="outline" className="cursor-pointer" asChild>
+                          <span>Select Files</span>
+                        </Button>
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* Selected Files List */}
+                  {uploadFiles.length > 0 && (
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <h4 className="font-medium">Selected Files ({uploadFiles.length})</h4>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => setUploadFiles([])}
+                        >
+                          Clear All
+                        </Button>
+                      </div>
+                      
+                      <div className="max-h-60 overflow-y-auto border rounded-lg">
+                        <div className="grid gap-2 p-4">
+                          {uploadFiles.map((file, index) => (
+                            <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                              <div className="flex items-center gap-3">
+                                <FileText className="h-4 w-4 text-blue-600" />
+                                <div>
+                                  <p className="font-medium text-sm">{file.name}</p>
+                                  <p className="text-xs text-gray-500">
+                                    {(file.size / 1024 / 1024).toFixed(2)} MB • {detectCategory(file.name)}
+                                  </p>
+                                </div>
+                              </div>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => removeFile(index)}
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Upload Progress */}
+                  {isUploading && (
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <span className="font-medium">Uploading files...</span>
+                        <span className="text-sm text-gray-500">{uploadProgress}%</span>
+                      </div>
+                      <Progress value={uploadProgress} className="w-full" />
+                      
+                      {uploadResults.success > 0 || uploadResults.failed > 0 ? (
+                        <div className="grid grid-cols-2 gap-4 text-sm">
+                          <div className="flex items-center gap-2 text-green-600">
+                            <CheckCircle className="h-4 w-4" />
+                            {uploadResults.success} successful
+                          </div>
+                          <div className="flex items-center gap-2 text-red-600">
+                            <AlertCircle className="h-4 w-4" />
+                            {uploadResults.failed} failed
+                          </div>
+                        </div>
+                      ) : null}
+                    </div>
+                  )}
+
+                  {/* Upload Results */}
+                  {uploadResults.errors.length > 0 && (
+                    <div className="space-y-2">
+                      <h4 className="font-medium text-red-600">Upload Errors</h4>
+                      <div className="max-h-32 overflow-y-auto text-sm text-red-600 bg-red-50 p-3 rounded">
+                        {uploadResults.errors.map((error, index) => (
+                          <div key={index}>{error}</div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Actions */}
+                  <div className="flex justify-end gap-3">
+                    <Button variant="outline" disabled={isUploading}>
+                      Cancel
+                    </Button>
+                    <Button 
+                      onClick={() => uploadFiles.length > 0 && uploadMutation.mutate(uploadFiles)}
+                      disabled={uploadFiles.length === 0 || isUploading}
+                      className="bg-blue-600 hover:bg-blue-700"
+                    >
+                      {isUploading ? `Uploading ${uploadProgress}%` : `Upload ${uploadFiles.length} Files`}
+                    </Button>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
+
+          {/* Single Document Upload Dialog */}
           <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700">
-                <Upload className="h-4 w-4" />
-                Upload Document
-              </Button>
-            </DialogTrigger>
             <DialogContent className="max-w-2xl">
               <DialogHeader>
                 <DialogTitle>Upload Safety Library Document</DialogTitle>
