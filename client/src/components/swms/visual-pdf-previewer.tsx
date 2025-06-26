@@ -27,8 +27,8 @@ export default function VisualPDFPreviewer({
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const previewRef = useRef<HTMLDivElement>(null);
 
-  // RiskTemplateBuilder app URL
-  const PDF_GENERATOR_URL = 'https://risktemplatebuilder.replit.app';
+  // RiskTemplateBuilder app URL - Updated to working endpoint
+  const PDF_GENERATOR_URL = 'https://risktemplatebuilder--3000.prod1a.defang.dev';
 
   useEffect(() => {
     if (updateTimeoutRef.current) {
@@ -132,7 +132,8 @@ export default function VisualPDFPreviewer({
   };
 
   const handleIframeError = () => {
-    setError('Failed to load PDF generator preview');
+    console.log('PDF generator iframe failed to load, trying alternative approach');
+    setError('PDF generator temporarily unavailable. Click "Open Full" to access the generator directly.');
     setIsIframeLoaded(false);
   };
 
@@ -158,6 +159,33 @@ export default function VisualPDFPreviewer({
 
   const openPDFGeneratorInNewTab = () => {
     window.open(PDF_GENERATOR_URL, '_blank');
+  };
+
+  // Fallback to local PDF preview if external service fails
+  const showLocalPreview = async () => {
+    try {
+      const transformedData = transformFormDataForAPI(formData);
+      const response = await fetch('/api/swms/pdf-preview', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(transformedData),
+      });
+      
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        window.open(url, '_blank');
+      }
+    } catch (err) {
+      console.error('Local preview error:', err);
+      toast({
+        title: "Preview Unavailable",
+        description: "Both live and local preview are temporarily unavailable.",
+        variant: "destructive",
+      });
+    }
   };
 
   if (!isVisible) return null;
@@ -237,9 +265,19 @@ export default function VisualPDFPreviewer({
         </CardHeader>
         <CardContent className={`${isFullscreen ? 'h-full overflow-auto' : ''}`}>
           {error && (
-            <div className="flex items-center gap-2 p-2 bg-yellow-100 border border-yellow-300 rounded text-yellow-800 text-sm mb-4">
-              <Eye className="h-4 w-4" />
-              {error}
+            <div className="flex items-center justify-between p-3 bg-yellow-100 border border-yellow-300 rounded text-yellow-800 text-sm mb-4">
+              <div className="flex items-center gap-2">
+                <Eye className="h-4 w-4" />
+                {error}
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={showLocalPreview}
+                className="text-xs bg-white hover:bg-gray-50"
+              >
+                Try Local Preview
+              </Button>
             </div>
           )}
 
