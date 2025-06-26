@@ -4,11 +4,20 @@ import PDFDocument from 'pdfkit';
 import bcryptjs from 'bcryptjs';
 import fs from 'fs';
 import path from 'path';
+import multer from 'multer';
 import Stripe from 'stripe';
 import { storage } from "./storage.js";
 import { generateExactPDF } from "./pdf-generator-figma-exact.js";
 import { generatePuppeteerPDF } from "./pdf-generator-puppeteer.js";
 import { generateSimplePDF } from "./pdf-generator-simple.js";
+
+// Initialize Multer for file uploads
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB limit
+  },
+});
 
 // Initialize Stripe
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
@@ -1402,6 +1411,116 @@ export async function registerRoutes(app: Express) {
     } catch (error) {
       console.error('Safety library error:', error);
       res.status(500).json({ error: 'Failed to fetch safety library' });
+    }
+  });
+
+  // Admin user management endpoints
+  app.patch('/api/admin/users/:userId/password', async (req, res) => {
+    try {
+      const userId = req.session?.userId;
+      const isAdmin = userId === 1;
+      
+      if (!isAdmin) {
+        return res.status(403).json({ error: 'Admin access required' });
+      }
+
+      const { userId: targetUserId } = req.params;
+      const { password } = req.body;
+
+      if (!password || password.length < 6) {
+        return res.status(400).json({ error: 'Password must be at least 6 characters' });
+      }
+
+      const hashedPassword = await bcryptjs.hash(password, 10);
+      await storage.updateUserPassword(parseInt(targetUserId), hashedPassword);
+
+      res.json({ success: true, message: 'Password updated successfully' });
+    } catch (error) {
+      console.error('Password update error:', error);
+      res.status(500).json({ error: 'Failed to update password' });
+    }
+  });
+
+  app.patch('/api/admin/users/:userId/credits', async (req, res) => {
+    try {
+      const userId = req.session?.userId;
+      const isAdmin = userId === 1;
+      
+      if (!isAdmin) {
+        return res.status(403).json({ error: 'Admin access required' });
+      }
+
+      const { userId: targetUserId } = req.params;
+      const { credits } = req.body;
+
+      if (typeof credits !== 'number' || credits < 0) {
+        return res.status(400).json({ error: 'Credits must be a valid positive number' });
+      }
+
+      await storage.updateUserCredits(parseInt(targetUserId), credits);
+
+      res.json({ success: true, message: 'Credits updated successfully' });
+    } catch (error) {
+      console.error('Credits update error:', error);
+      res.status(500).json({ error: 'Failed to update credits' });
+    }
+  });
+
+  app.patch('/api/admin/users/:userId/admin', async (req, res) => {
+    try {
+      const userId = req.session?.userId;
+      const isAdmin = userId === 1;
+      
+      if (!isAdmin) {
+        return res.status(403).json({ error: 'Admin access required' });
+      }
+
+      const { userId: targetUserId } = req.params;
+      const { isAdmin: newAdminStatus } = req.body;
+
+      if (typeof newAdminStatus !== 'boolean') {
+        return res.status(400).json({ error: 'Admin status must be a boolean' });
+      }
+
+      await storage.updateUserAdminStatus(parseInt(targetUserId), newAdminStatus);
+
+      res.json({ success: true, message: 'Admin status updated successfully' });
+    } catch (error) {
+      console.error('Admin status update error:', error);
+      res.status(500).json({ error: 'Failed to update admin status' });
+    }
+  });
+
+  // Company logo upload endpoint
+  app.post('/api/user/logo', upload.single('logo'), async (req, res) => {
+    try {
+      const userId = req.session?.userId || 999; // Demo mode support
+      
+      if (!req.file) {
+        return res.status(400).json({ error: 'No logo file provided' });
+      }
+
+      // Validate file type
+      if (!req.file.mimetype.startsWith('image/')) {
+        return res.status(400).json({ error: 'File must be an image' });
+      }
+
+      // Validate file size (5MB limit)
+      if (req.file.size > 5 * 1024 * 1024) {
+        return res.status(400).json({ error: 'File size must be less than 5MB' });
+      }
+
+      // Convert to base64
+      const logoBase64 = req.file.buffer.toString('base64');
+      const logoUrl = `data:${req.file.mimetype};base64,${logoBase64}`;
+
+      // Update user logo
+      await storage.updateUserLogo(userId, logoUrl);
+
+      res.json({ success: true, logoUrl });
+    } catch (error) {
+      console.error('Logo upload error:', error);
+      res.status(500).json({ error: 'Failed to upload logo' });
     }
   });
 

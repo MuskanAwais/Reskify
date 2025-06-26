@@ -12,6 +12,7 @@ export interface IStorage {
   updateUserLastActive(userId: number): Promise<void>;
   updateUserPassword(userId: number, hashedPassword: string): Promise<void>;
   updateUserAdminStatus(userId: number, isAdmin: boolean): Promise<void>;
+  updateUserLogo(userId: number, logoUrl: string): Promise<void>;
   logCreditUsage(userId: number, usage: any): Promise<void>;
   getUserSwms(userId: number): Promise<any[]>;
   getSwmsById(id: number): Promise<any | undefined>;
@@ -113,6 +114,20 @@ export class DatabaseStorage implements IStorage {
     await db
       .update(users)
       .set({ isAdmin })
+      .where(eq(users.id, userId));
+  }
+
+  async updateUserPassword(userId: number, hashedPassword: string): Promise<void> {
+    await db
+      .update(users)
+      .set({ password: hashedPassword })
+      .where(eq(users.id, userId));
+  }
+
+  async updateUserLogo(userId: number, logoUrl: string): Promise<void> {
+    await db
+      .update(users)
+      .set({ companyLogo: logoUrl })
       .where(eq(users.id, userId));
   }
 

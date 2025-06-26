@@ -10,6 +10,7 @@ export const users = pgTable("users", {
   name: text("name"),
   profileImage: text("profile_image"),
   companyName: text("company_name"),
+  companyLogo: text("company_logo"),
   abn: text("abn"),
   phone: text("phone"),
   address: text("address"),
