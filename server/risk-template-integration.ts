@@ -141,6 +141,7 @@ export interface SWMSDataForTemplate {
   duration?: string;
   tradeType: string;
   companyName?: string;
+  companyLogo?: string;
   
   // Additional project details for complete form filling
   clientName?: string;
@@ -249,6 +250,7 @@ export async function generatePDFWithRiskTemplate(swmsData: any): Promise<Buffer
       duration: swmsData.duration || calculateDuration(swmsData.startDate, swmsData.endDate),
       tradeType: swmsData.tradeType || 'General Construction',
       companyName: swmsData.companyName || swmsData.principalContractor || 'Company Name',
+      companyLogo: swmsData.companyLogo || null,
       
       // Extended project details
       clientName: swmsData.clientName || 'Client Name',
@@ -409,6 +411,7 @@ export async function sendToRiskTemplate(swmsData: any): Promise<{ success: bool
       projectName: swmsData.jobName || 'Untitled Project',
       jobNumber: swmsData.jobNumber || 'JOB-001',
       projectAddress: swmsData.projectAddress || 'Project Location',
+      projectLocation: swmsData.projectLocation || swmsData.projectAddress || 'Project Location',
       swmsCreatorName: swmsData.swmsCreatorName || 'SWMS Creator',
       swmsCreatorPosition: swmsData.swmsCreatorPosition || 'Position',
       principalContractor: swmsData.principalContractor || 'Principal Contractor',
@@ -416,6 +419,8 @@ export async function sendToRiskTemplate(swmsData: any): Promise<{ success: bool
       siteSupervisor: swmsData.siteSupervisor || 'Site Supervisor',
       startDate: swmsData.startDate || new Date().toISOString().split('T')[0],
       tradeType: swmsData.tradeType || 'General Construction',
+      companyName: swmsData.companyName || swmsData.principalContractor || 'Company Name',
+      companyLogo: swmsData.companyLogo || null,
       
       activities: (swmsData.riskAssessments || []).map((risk: any) => ({
         activity: risk.activity || 'Work Activity',
