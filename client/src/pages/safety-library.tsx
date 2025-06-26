@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAdmin } from "@/App";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -55,6 +55,32 @@ export default function SafetyLibrary() {
   const { data: safetyLibrary } = useQuery({
     queryKey: ['/api/safety-library']
   });
+
+  // Organize documents into folders
+  const organizedDocuments = useMemo(() => {
+    if (!safetyLibrary?.documents) return {};
+    
+    const folders = {
+      "Code of Practices": [],
+      "Standards": [],
+      "Guidelines": [],
+      "Other Documents": []
+    };
+    
+    safetyLibrary.documents.forEach(doc => {
+      if (doc.title.toLowerCase().includes('code of practice') || doc.title.toLowerCase().includes('model code')) {
+        folders["Code of Practices"].push(doc);
+      } else if (doc.title.toLowerCase().includes('standard') || doc.title.includes('AS/NZS') || doc.title.includes('AS ')) {
+        folders["Standards"].push(doc);
+      } else if (doc.title.toLowerCase().includes('guidelines') || doc.title.toLowerCase().includes('guide')) {
+        folders["Guidelines"].push(doc);
+      } else {
+        folders["Other Documents"].push(doc);
+      }
+    });
+    
+    return folders;
+  }, [safetyLibrary]);
 
   // Auto-detect category from filename
   const detectCategory = useCallback((filename: string) => {
