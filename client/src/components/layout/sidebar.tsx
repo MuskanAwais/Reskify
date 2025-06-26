@@ -222,14 +222,6 @@ export default function Sidebar() {
     { icon: Home, labelKey: "nav.dashboard", href: "/dashboard", tourId: "dashboard-link" },
     { icon: FileText, labelKey: "nav.my-swms", href: "/my-swms", tourId: "my-swms-link" },
     { 
-      icon: Book, 
-      labelKey: "nav.safety-library", 
-      href: "/safety-library",
-      requiresAccess: true,
-      hasAccess: mockSubscription?.features?.safetyLibrary || isAdmin,
-      tourId: "safety-library-link"
-    },
-    { 
       icon: Users, 
       labelKey: "nav.team", 
       href: "/team-collaboration",

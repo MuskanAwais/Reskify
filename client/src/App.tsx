@@ -190,7 +190,6 @@ function Router() {
         <ProtectedRoute path="/analytics" component={Analytics} />
         <ProtectedRoute path="/ai-assistant" component={AiAssistant} />
         <ProtectedRoute path="/profile" component={Profile} />
-        <ProtectedRoute path="/safety-library" component={SafetyLibrary} />
 
         <ProtectedRoute path="/billing" component={Billing} />
         <ProtectedRoute path="/payment" component={Payment} />
@@ -218,6 +217,7 @@ function Router() {
         <ProtectedRoute path="/admin/security" component={SecurityMonitoring} />
         <ProtectedRoute path="/admin/health" component={SystemHealth} />
         <ProtectedRoute path="/admin/system-testing" component={SystemTesting} />
+        <ProtectedRoute path="/admin/safety-library" component={SafetyLibrary} />
         
         <Route component={NotFound} />
       </Switch>
