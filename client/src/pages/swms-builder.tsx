@@ -7,7 +7,7 @@ import SwmsForm from "@/components/swms/swms-form";
 import DocumentPreview from "@/components/swms/document-preview";
 import { SimplifiedTableEditor } from "@/components/swms/simplified-table-editor";
 import CreditCounter from "@/components/ui/credit-counter";
-import VisualPDFPreviewer from "@/components/swms/visual-pdf-previewer";
+
 import { ArrowLeft, ArrowRight, FileText, Shield, CheckCircle, Save, X } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -402,21 +402,28 @@ export default function SwmsBuilder() {
     mutationFn: async (data: any) => {
       const response = await apiRequest("POST", "/api/swms/draft", {
         ...data,
+        userId: 999, // Demo user ID
         draftId: draftId, // Include existing draft ID to update instead of create new
         status: "draft",
         currentStep,
-        title: data.title || data.jobName || "Untitled SWMS",
+        projectName: data.jobName || data.title || "Untitled SWMS",
+        title: data.jobName || data.title || "Untitled SWMS",
         createdAt: new Date().toISOString(),
         lastModified: new Date().toISOString()
       });
-      return response;
+      if (!response.ok) {
+        throw new Error('Failed to auto-save draft');
+      }
+      return response.json();
     },
     onSuccess: (data: any) => {
-      if (data?.draftId && !draftId) {
-        setDraftId(data.draftId);
+      if (data?.id && !draftId) {
+        setDraftId(data.id);
         setIsDraft(true);
       }
-      queryClient.invalidateQueries({ queryKey: ["/api/swms/my-documents"] });
+      // Invalidate both possible query keys to ensure refresh
+      queryClient.invalidateQueries({ queryKey: ["/api/swms"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/swms/my-swms"] });
     },
     onError: (error) => {
       console.error('Auto-save failed:', error);
@@ -428,23 +435,31 @@ export default function SwmsBuilder() {
     mutationFn: async (data: any) => {
       const response = await apiRequest("POST", "/api/swms/draft", {
         ...data,
+        userId: 999, // Demo user ID
         status: "draft",
         currentStep,
-        title: data.title || data.jobName || "Untitled SWMS",
+        projectName: data.jobName || data.title || "Untitled SWMS",
+        title: data.jobName || data.title || "Untitled SWMS",
         createdAt: new Date().toISOString(),
         lastModified: new Date().toISOString()
       });
-      return response;
+      if (!response.ok) {
+        throw new Error('Failed to save draft');
+      }
+      return response.json();
     },
     onSuccess: (data: any) => {
-      if (data?.draftId) {
-        setDraftId(data.draftId);
+      if (data?.id) {
+        setDraftId(data.id);
         setIsDraft(true);
       }
       toast({
         title: "Draft Saved",
         description: "Your SWMS has been saved as a draft.",
       });
+      // Invalidate both possible query keys to ensure refresh
+      queryClient.invalidateQueries({ queryKey: ["/api/swms"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/swms/my-swms"] });
       queryClient.invalidateQueries({ queryKey: ["/api/swms/my-documents"] });
     },
     onError: (error) => {
@@ -653,7 +668,7 @@ export default function SwmsBuilder() {
   const handleSaveAndClose = () => {
     saveDraftMutation.mutate(formData);
     setTimeout(() => {
-      setLocation("/dashboard");
+      setLocation("/my-swms");
     }, 1000);
   };
 
@@ -887,13 +902,7 @@ export default function SwmsBuilder() {
           </CardContent>
         </Card>
         
-        {/* Live SWMS Previewer positioned below step content with spacing */}
-        <div className="mt-8">
-          <VisualPDFPreviewer 
-            formData={formData}
-            isVisible={true}
-          />
-        </div>
+
       </div>
     </div>
   );
