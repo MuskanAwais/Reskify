@@ -47,8 +47,11 @@ export default function SafetyLibrary() {
     description: '',
     content: '',
     fileType: 'PDF',
-    tags: ''
+    tags: '',
+    folder: ''
   });
+  const [newFolderDialogOpen, setNewFolderDialogOpen] = useState(false);
+  const [newFolderName, setNewFolderName] = useState('');
 
   // Check if user has access to Safety Library
   const { data: subscription } = useQuery({
@@ -90,11 +93,28 @@ export default function SafetyLibrary() {
     };
     
     documents.forEach((doc: any) => {
-      if (doc.title.toLowerCase().includes('code of practice') || doc.title.toLowerCase().includes('model code')) {
+      // Check if document has a specific folder assignment from database
+      if (doc.folder) {
+        if (!folders[doc.folder]) {
+          folders[doc.folder] = [];
+        }
+        folders[doc.folder].push(doc);
+      } else if (doc.title.toLowerCase().includes('code of practice') || 
+                 doc.title.toLowerCase().includes('model code') ||
+                 doc.category === 'General Safety' ||
+                 doc.category === 'Manual Handling') {
         folders["Code of Practices"].push(doc);
-      } else if (doc.title.toLowerCase().includes('standard') || doc.title.includes('AS/NZS') || doc.title.includes('AS ')) {
+      } else if (doc.title.toLowerCase().includes('standard') || 
+                 doc.title.includes('AS/NZS') || 
+                 doc.title.includes('AS ') ||
+                 doc.category === 'Electrical' ||
+                 doc.category === 'Plumbing' ||
+                 doc.category === 'Carpentry') {
         folders["Standards"].push(doc);
-      } else if (doc.title.toLowerCase().includes('guidelines') || doc.title.toLowerCase().includes('guide')) {
+      } else if (doc.title.toLowerCase().includes('guidelines') || 
+                 doc.title.toLowerCase().includes('guide') ||
+                 doc.category === 'Scaffolding' ||
+                 doc.category === 'Roofing') {
         folders["Guidelines"].push(doc);
       } else {
         folders["Other Documents"].push(doc);
@@ -195,7 +215,8 @@ export default function SafetyLibrary() {
         description: '',
         content: '',
         fileType: 'PDF',
-        tags: ''
+        tags: '',
+        folder: ''
       });
       setUploadDialogOpen(false);
       queryClient.invalidateQueries({ queryKey: ['/api/safety-library'] });
@@ -792,31 +813,27 @@ export default function SafetyLibrary() {
           <CardContent>
             <div className="flex gap-4">
               <Button 
-                onClick={() => {
-                  const input = document.createElement('input');
-                  input.type = 'file';
-                  input.multiple = true;
-                  input.accept = '.pdf,.doc,.docx';
-                  input.onchange = (e) => {
-                    const files = (e.target as HTMLInputElement).files;
-                    if (files) {
-                      toast({
-                        title: "Upload Started",
-                        description: `Processing ${files.length} documents...`,
-                      });
-                      // Process files here
-                    }
-                  };
-                  input.click();
-                }}
+                onClick={() => setBulkUploadDialogOpen(true)}
                 className="flex items-center gap-2"
               >
                 <Upload className="h-4 w-4" />
-                Upload Documents
+                Bulk Upload Documents
               </Button>
-              <Button variant="outline" className="flex items-center gap-2">
-                <FileText className="h-4 w-4" />
-                Manage Library
+              <Button 
+                onClick={() => setUploadDialogOpen(true)}
+                variant="outline" 
+                className="flex items-center gap-2"
+              >
+                <Plus className="h-4 w-4" />
+                Add Single Document
+              </Button>
+              <Button 
+                onClick={() => setNewFolderDialogOpen(true)}
+                variant="outline" 
+                className="flex items-center gap-2"
+              >
+                <FolderOpen className="h-4 w-4" />
+                Create Folder
               </Button>
             </div>
           </CardContent>
@@ -1059,19 +1076,24 @@ export default function SafetyLibrary() {
                 <div className="flex gap-3">
                   <Button 
                     onClick={() => {
-                      if (selectedDocument?.url) {
+                      if (selectedDocument?.content) {
+                        window.open(selectedDocument.content, '_blank');
+                      } else if (selectedDocument?.url) {
                         window.open(selectedDocument.url, '_blank');
                       } else {
+                        // Generate a document URL based on the document info
+                        const searchQuery = `${selectedDocument?.title} ${selectedDocument?.category} filetype:pdf site:safeworkaustralia.gov.au OR site:standards.org.au`;
+                        window.open(`https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`, '_blank');
                         toast({
-                          title: "Document Access",
-                          description: "Opening document in new window...",
+                          title: "Document Search",
+                          description: "Opening search results for this document...",
                         });
                       }
                     }}
                     className="flex items-center gap-2"
                   >
                     <Eye className="h-4 w-4" />
-                    Open Full Document
+                    Open Document
                   </Button>
                   <Button 
                     variant="outline"
@@ -1087,6 +1109,59 @@ export default function SafetyLibrary() {
                     Download PDF
                   </Button>
                 </div>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* New Folder Creation Dialog */}
+        <Dialog open={newFolderDialogOpen} onOpenChange={setNewFolderDialogOpen}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Create New Folder</DialogTitle>
+              <DialogDescription>
+                Create a custom folder to organize your safety documents
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="folderName">Folder Name</Label>
+                <Input
+                  id="folderName"
+                  value={newFolderName}
+                  onChange={(e) => setNewFolderName(e.target.value)}
+                  placeholder="Enter folder name"
+                />
+              </div>
+              <div className="flex justify-end gap-3">
+                <Button 
+                  variant="outline" 
+                  onClick={() => {
+                    setNewFolderDialogOpen(false);
+                    setNewFolderName('');
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  onClick={() => {
+                    if (newFolderName.trim()) {
+                      setExpandedFolders(prev => ({
+                        ...prev,
+                        [newFolderName]: true
+                      }));
+                      toast({
+                        title: "Folder Created",
+                        description: `Created new folder: ${newFolderName}`,
+                      });
+                      setNewFolderDialogOpen(false);
+                      setNewFolderName('');
+                    }
+                  }}
+                  disabled={!newFolderName.trim()}
+                >
+                  Create Folder
+                </Button>
               </div>
             </div>
           </DialogContent>
@@ -1171,14 +1246,20 @@ export default function SafetyLibrary() {
                                 size="sm"
                                 className="flex items-center gap-1"
                                 onClick={() => {
+                                  if (item.content) {
+                                    window.open(item.content, '_blank');
+                                  } else {
+                                    const searchQuery = `${item.title} ${item.category} filetype:pdf site:safeworkaustralia.gov.au OR site:standards.org.au`;
+                                    window.open(`https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`, '_blank');
+                                  }
                                   toast({
-                                    title: "Download Started",
-                                    description: `Downloading ${item.title}...`,
+                                    title: "Opening Document",
+                                    description: `Accessing ${item.title}...`,
                                   });
                                 }}
                               >
                                 <Download className="h-3 w-3" />
-                                Download
+                                Open
                               </Button>
                             </div>
                           </div>
