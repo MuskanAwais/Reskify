@@ -33,6 +33,7 @@ export interface IStorage {
   getAllSWMS(): Promise<any[]>;
   getSafetyLibraryDocuments(): Promise<SafetyLibraryItem[]>;
   createSafetyLibraryDocument(data: InsertSafetyLibraryItem): Promise<SafetyLibraryItem>;
+  deleteSafetyLibraryDocument(id: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -489,6 +490,19 @@ export class DatabaseStorage implements IStorage {
       return document;
     } catch (error) {
       console.error('Error creating safety library document:', error);
+      throw error;
+    }
+  }
+
+  async deleteSafetyLibraryDocument(id: number): Promise<void> {
+    try {
+      await db
+        .delete(safetyLibrary)
+        .where(eq(safetyLibrary.id, id));
+      
+      console.log(`Deleted safety library document with ID: ${id}`);
+    } catch (error) {
+      console.error('Error deleting safety library document:', error);
       throw error;
     }
   }

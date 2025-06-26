@@ -1585,6 +1585,38 @@ export async function registerRoutes(app: Express) {
     }
   });
 
+  // Admin-only delete safety library document endpoint
+  app.delete('/api/safety-library/:id', async (req, res) => {
+    try {
+      const userId = req.session?.userId;
+      const isDemoMode = !userId; // Demo mode when no session
+      const isAdmin = userId === 1; // User ID 1 is admin
+      
+      // Only allow admin access for deletion
+      if (!isDemoMode && !isAdmin) {
+        return res.status(403).json({ error: 'Admin access required for deletion' });
+      }
+      
+      const documentId = parseInt(req.params.id);
+      if (!documentId) {
+        return res.status(400).json({ error: 'Invalid document ID' });
+      }
+      
+      // Delete document from database
+      await storage.deleteSafetyLibraryDocument(documentId);
+      
+      console.log(`Admin deleted safety library document ID: ${documentId}`);
+      
+      res.json({ 
+        success: true, 
+        message: 'Document deleted successfully' 
+      });
+    } catch (error) {
+      console.error('Safety library document deletion error:', error);
+      res.status(500).json({ error: 'Failed to delete document' });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
