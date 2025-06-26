@@ -1,4 +1,4 @@
-import { users, swmsDocuments, type User, type InsertUser } from "@shared/schema";
+import { users, swmsDocuments, safetyLibrary, type User, type InsertUser, type SafetyLibraryItem, type InsertSafetyLibraryItem } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc } from "drizzle-orm";
 
@@ -31,6 +31,8 @@ export interface IStorage {
   getUserSwms(userId: number): Promise<any[]>;
   getUserSWMS(userId: number): Promise<any[]>;
   getAllSWMS(): Promise<any[]>;
+  getSafetyLibraryDocuments(): Promise<SafetyLibraryItem[]>;
+  createSafetyLibraryDocument(data: InsertSafetyLibraryItem): Promise<SafetyLibraryItem>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -460,6 +462,34 @@ export class DatabaseStorage implements IStorage {
     } catch (error) {
       console.error('Error getting all SWMS:', error);
       return [...this.swmsDrafts, ...this.swmsDocuments];
+    }
+  }
+
+  async getSafetyLibraryDocuments(): Promise<SafetyLibraryItem[]> {
+    try {
+      const documents = await db
+        .select()
+        .from(safetyLibrary)
+        .orderBy(desc(safetyLibrary.id));
+      
+      return documents || [];
+    } catch (error) {
+      console.error('Error getting safety library documents:', error);
+      return [];
+    }
+  }
+
+  async createSafetyLibraryDocument(data: InsertSafetyLibraryItem): Promise<SafetyLibraryItem> {
+    try {
+      const [document] = await db
+        .insert(safetyLibrary)
+        .values(data)
+        .returning();
+      
+      return document;
+    } catch (error) {
+      console.error('Error creating safety library document:', error);
+      throw error;
     }
   }
 

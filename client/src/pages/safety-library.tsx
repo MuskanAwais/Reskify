@@ -216,7 +216,17 @@ export default function SafetyLibrary() {
       });
       
       if (results.success > 0) {
+        // Force immediate cache invalidation and refetch
         queryClient.invalidateQueries({ queryKey: ['/api/safety-library'] });
+        queryClient.refetchQueries({ queryKey: ['/api/safety-library'] });
+        
+        // Also clear any related caches
+        queryClient.removeQueries({ queryKey: ['/api/safety-library'] });
+        
+        // Force a complete page refresh of the safety library data
+        setTimeout(() => {
+          queryClient.invalidateQueries({ queryKey: ['/api/safety-library'] });
+        }, 500);
       }
       
       // Reset all upload states
