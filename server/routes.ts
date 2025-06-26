@@ -1294,33 +1294,29 @@ export async function registerRoutes(app: Express) {
 
       const { title, category, description, content, fileType, tags, fileName, fileSize } = req.body;
       
-      // Create safety library document with auto-generated data
-      const document = {
-        id: Date.now() + Math.random(), // Ensure uniqueness for bulk uploads
+      // Create safety library document in database
+      const safetyDoc = {
+        code: `BULK_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         title,
+        description: description || `Safety document: ${title}`,
         category,
-        description,
-        content,
-        fileType: fileType || 'PDF',
-        tags: Array.isArray(tags) ? tags : [],
-        fileName,
-        fileSize,
-        uploadedBy: 'Admin (Bulk)',
-        uploadDate: new Date().toISOString(),
-        downloadCount: 0,
-        bulkUpload: true
+        authority: 'Safe Work Australia',
+        tags: Array.isArray(tags) ? tags : [category.toLowerCase().replace(' ', '_')]
       };
 
+      // Save to database using storage
+      const savedDocument = await storage.createSafetyLibraryDocument(safetyDoc);
+      
       console.log('Bulk uploaded safety library document:', {
-        title: document.title,
-        category: document.category,
-        fileName: document.fileName
+        title: savedDocument.title,
+        category: savedDocument.category,
+        fileName: fileName
       });
       
       res.json({ 
         success: true, 
         message: 'Document bulk uploaded successfully',
-        document 
+        document: savedDocument 
       });
     } catch (error) {
       console.error('Safety library bulk upload error:', error);
@@ -1328,16 +1324,20 @@ export async function registerRoutes(app: Express) {
     }
   });
 
-  // Enhanced safety library endpoint with admin privileges
-  app.get('/api/safety-library', (req, res) => {
+  // Enhanced safety library endpoint with real database data
+  app.get('/api/safety-library', async (req, res) => {
     try {
       const userId = req.session?.userId;
       const isAdmin = userId === 1;
       const hasSubscription = isAdmin || userId === 2; // Admin or subscriber access
       
-      const documents = [
+      // Get documents from database
+      const dbDocuments = await storage.getSafetyLibraryDocuments();
+      
+      // Include some default documents for better user experience
+      const staticDocuments = [
         {
-          id: 1,
+          id: 1001,
           title: "Construction Work Code of Practice",
           category: "General Safety",
           description: "Comprehensive guide to construction work safety practices and procedures",
@@ -1347,7 +1347,7 @@ export async function registerRoutes(app: Express) {
           restricted: false
         },
         {
-          id: 2,
+          id: 1002,
           title: "Hazardous Manual Tasks Code of Practice",
           category: "Manual Handling",
           description: "Guidelines for safe manual handling and hazardous task management",
@@ -1357,7 +1357,7 @@ export async function registerRoutes(app: Express) {
           restricted: false
         },
         {
-          id: 3,
+          id: 1003,
           title: "Managing Electrical Risks in the Workplace",
           category: "Electrical Safety",
           description: "Comprehensive electrical safety protocols and risk management",
@@ -1365,32 +1365,27 @@ export async function registerRoutes(app: Express) {
           tags: ["electrical", "risk management", "workplace safety"],
           downloadCount: 156,
           restricted: true
-        },
-        {
-          id: 4,
-          title: "Managing the Risk of Falls at Workplaces",
-          category: "Fall Protection",
-          description: "Fall prevention strategies and safety measures for workplace heights",
-          fileType: "PDF",
-          tags: ["fall protection", "height safety", "prevention"],
-          downloadCount: 201,
-          restricted: true
-        },
-        {
-          id: 5,
-          title: "ACE Terminal Expansion - Fitout Requirements",
-          category: "Project Specific",
-          description: "Specific requirements for ACE Terminal expansion fitout contractors",
-          fileType: "PDF",
-          tags: ["fitout", "contractors", "requirements"],
-          downloadCount: 45,
-          restricted: true,
-          adminOnly: true
         }
+      ];
+      
+      // Combine database documents with static ones
+      const allDocuments = [
+        ...dbDocuments.map(doc => ({
+          id: doc.id,
+          title: doc.title,
+          category: doc.category,
+          description: doc.description,
+          fileType: 'PDF',
+          tags: doc.tags || [],
+          downloadCount: 0,
+          restricted: false,
+          bulkUpload: true
+        })),
+        ...staticDocuments
       ];
 
       // Filter documents based on access level
-      const accessibleDocuments = documents.filter(doc => {
+      const accessibleDocuments = allDocuments.filter(doc => {
         if (doc.adminOnly && !isAdmin) return false;
         if (doc.restricted && !hasSubscription) return false;
         return true;
