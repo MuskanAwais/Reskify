@@ -31,6 +31,14 @@ export default function SafetyLibrary() {
   });
   const [selectedPdf, setSelectedPdf] = useState<string | null>(null);
   const [pdfViewerOpen, setPdfViewerOpen] = useState(false);
+  const [selectedDocument, setSelectedDocument] = useState<any>(null);
+  const [documentViewerOpen, setDocumentViewerOpen] = useState(false);
+  const [expandedFolders, setExpandedFolders] = useState<Record<string, boolean>>({
+    "Code of Practices": true,
+    "Standards": false,
+    "Guidelines": false,
+    "Other Documents": false
+  });
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   const [bulkUploadDialogOpen, setBulkUploadDialogOpen] = useState(false);
   const [uploadForm, setUploadForm] = useState({
@@ -56,18 +64,32 @@ export default function SafetyLibrary() {
     queryKey: ['/api/safety-library']
   });
 
+  // Functions for document viewing
+  const openDocumentViewer = (document: any) => {
+    setSelectedDocument(document);
+    setDocumentViewerOpen(true);
+  };
+
+  const toggleFolder = (folderName: string) => {
+    setExpandedFolders(prev => ({
+      ...prev,
+      [folderName]: !prev[folderName]
+    }));
+  };
+
   // Organize documents into folders
   const organizedDocuments = useMemo(() => {
-    if (!safetyLibrary?.documents) return {};
+    const documents = (safetyLibrary as any)?.documents;
+    if (!documents) return {};
     
-    const folders = {
+    const folders: Record<string, any[]> = {
       "Code of Practices": [],
       "Standards": [],
       "Guidelines": [],
       "Other Documents": []
     };
     
-    safetyLibrary.documents.forEach(doc => {
+    documents.forEach((doc: any) => {
       if (doc.title.toLowerCase().includes('code of practice') || doc.title.toLowerCase().includes('model code')) {
         folders["Code of Practices"].push(doc);
       } else if (doc.title.toLowerCase().includes('standard') || doc.title.includes('AS/NZS') || doc.title.includes('AS ')) {
@@ -987,6 +1009,188 @@ export default function SafetyLibrary() {
             </Card>
           ))
         )}
+
+        {/* Document Viewer Dialog */}
+        <Dialog open={documentViewerOpen} onOpenChange={setDocumentViewerOpen}>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <FileText className="h-5 w-5" />
+                {selectedDocument?.title}
+              </DialogTitle>
+              <DialogDescription>
+                {selectedDocument?.category} - {selectedDocument?.description}
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="space-y-4">
+              {/* Document Details */}
+              <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
+                <div>
+                  <h4 className="font-medium text-sm text-gray-700">Category</h4>
+                  <p className="text-sm">{selectedDocument?.category}</p>
+                </div>
+                <div>
+                  <h4 className="font-medium text-sm text-gray-700">Authority</h4>
+                  <p className="text-sm">{selectedDocument?.authority || 'Safe Work Australia'}</p>
+                </div>
+                {selectedDocument?.tags && selectedDocument.tags.length > 0 && (
+                  <div className="col-span-2">
+                    <h4 className="font-medium text-sm text-gray-700 mb-2">Tags</h4>
+                    <div className="flex flex-wrap gap-1">
+                      {selectedDocument.tags.map((tag: string, index: number) => (
+                        <Badge key={index} variant="outline" className="text-xs">
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Document Preview Area */}
+              <div className="border rounded-lg p-8 bg-white min-h-[400px] flex flex-col items-center justify-center">
+                <FileText className="h-16 w-16 text-gray-400 mb-4" />
+                <h3 className="text-lg font-medium text-gray-700 mb-2">Document Preview</h3>
+                <p className="text-gray-500 text-center mb-6">
+                  {selectedDocument?.description}
+                </p>
+                
+                <div className="flex gap-3">
+                  <Button 
+                    onClick={() => {
+                      if (selectedDocument?.url) {
+                        window.open(selectedDocument.url, '_blank');
+                      } else {
+                        toast({
+                          title: "Document Access",
+                          description: "Opening document in new window...",
+                        });
+                      }
+                    }}
+                    className="flex items-center gap-2"
+                  >
+                    <Eye className="h-4 w-4" />
+                    Open Full Document
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    onClick={() => {
+                      toast({
+                        title: "Download Started",
+                        description: `Downloading ${selectedDocument?.title}...`,
+                      });
+                    }}
+                    className="flex items-center gap-2"
+                  >
+                    <Download className="h-4 w-4" />
+                    Download PDF
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Organized Document Folders */}
+        <div className="space-y-4">
+          {Object.entries(organizedDocuments).map(([folderName, documents]) => (
+            documents.length > 0 && (
+              <Card key={folderName} className="overflow-hidden">
+                <CardHeader 
+                  className="cursor-pointer hover:bg-gray-50 transition-colors py-4"
+                  onClick={() => toggleFolder(folderName)}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      {expandedFolders[folderName] ? (
+                        <FolderOpen className="h-5 w-5 text-blue-600" />
+                      ) : (
+                        <FolderOpen className="h-5 w-5 text-gray-500" />
+                      )}
+                      <CardTitle className="text-lg">{folderName}</CardTitle>
+                      <Badge variant="secondary" className="ml-2">
+                        {documents.length} documents
+                      </Badge>
+                    </div>
+                    <ChevronDown 
+                      className={`h-5 w-5 text-gray-500 transition-transform ${
+                        expandedFolders[folderName] ? 'rotate-180' : ''
+                      }`}
+                    />
+                  </div>
+                </CardHeader>
+                
+                {expandedFolders[folderName] && (
+                  <CardContent className="p-0">
+                    <div className="divide-y divide-gray-100">
+                      {documents.map((item: any) => (
+                        <div key={item.id} className="p-4 hover:bg-gray-50 transition-colors">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-2">
+                                <FileText className="h-4 w-4 text-gray-400" />
+                                <h4 className="font-medium text-gray-900">{item.title}</h4>
+                                <Badge variant="outline" className="text-xs">
+                                  {item.category}
+                                </Badge>
+                              </div>
+                              
+                              <p className="text-sm text-gray-600 mb-2">
+                                {item.description}
+                              </p>
+                              
+                              {item.tags && item.tags.length > 0 && (
+                                <div className="flex flex-wrap gap-1">
+                                  {item.tags.slice(0, 3).map((tag: string, index: number) => (
+                                    <Badge key={index} variant="outline" className="text-xs">
+                                      {tag}
+                                    </Badge>
+                                  ))}
+                                  {item.tags.length > 3 && (
+                                    <Badge variant="outline" className="text-xs">
+                                      +{item.tags.length - 3} more
+                                    </Badge>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                            
+                            <div className="flex gap-2 ml-4">
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                className="flex items-center gap-1"
+                                onClick={() => openDocumentViewer(item)}
+                              >
+                                <Eye className="h-3 w-3" />
+                                View
+                              </Button>
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                className="flex items-center gap-1"
+                                onClick={() => {
+                                  toast({
+                                    title: "Download Started",
+                                    description: `Downloading ${item.title}...`,
+                                  });
+                                }}
+                              >
+                                <Download className="h-3 w-3" />
+                                Download
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                )}
+              </Card>
+            )
+          ))}
+        </div>
       </div>
     </div>
   );
