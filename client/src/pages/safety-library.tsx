@@ -9,8 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { Lock, Crown, Unlock, Search, ExternalLink, Filter, Shield, Upload, FileText, X, CheckCircle, AlertCircle, Eye, Plus } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Lock, Crown, Unlock, Search, ExternalLink, Filter, Shield, Upload, FileText, X, CheckCircle, AlertCircle, Eye, Plus, Download, FolderOpen, ChevronDown } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 
@@ -672,7 +672,7 @@ export default function SafetyLibrary() {
           </Dialog>
 
           {/* Backup conditional button if needed */}
-          {false && (isAdminMode || adminUnlocked || (user && user.isAdmin)) && (
+          {false && (isAdminMode || adminUnlocked) && (
             <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
               <DialogTrigger asChild>
                 <Button className="flex items-center gap-2">
