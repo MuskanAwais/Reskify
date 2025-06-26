@@ -32,6 +32,7 @@ export default function SafetyLibrary() {
   const [selectedPdf, setSelectedPdf] = useState<string | null>(null);
   const [pdfViewerOpen, setPdfViewerOpen] = useState(false);
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
+  const [bulkUploadDialogOpen, setBulkUploadDialogOpen] = useState(false);
   const [uploadForm, setUploadForm] = useState({
     title: '',
     category: '',
@@ -209,7 +210,7 @@ export default function SafetyLibrary() {
     },
     onSuccess: (results) => {
       toast({
-        title: "Upload Complete",
+        title: "Bulk Upload Complete",
         description: `${results.success} files uploaded successfully${results.failed > 0 ? `, ${results.failed} failed` : ''}`,
         variant: results.failed > 0 ? "destructive" : "default"
       });
@@ -218,9 +219,16 @@ export default function SafetyLibrary() {
         queryClient.invalidateQueries({ queryKey: ['/api/safety-library'] });
       }
       
+      // Reset all upload states
       setUploadFiles([]);
       setIsUploading(false);
       setUploadProgress(0);
+      setUploadResults({ success: 0, failed: 0, errors: [] });
+      
+      // Close the bulk upload dialog after a brief delay
+      setTimeout(() => {
+        setBulkUploadDialogOpen(false);
+      }, 1500);
     },
     onError: (error) => {
       toast({
@@ -354,7 +362,7 @@ export default function SafetyLibrary() {
               </DialogTrigger>
             </Dialog>
             
-            <Dialog>
+            <Dialog open={bulkUploadDialogOpen} onOpenChange={setBulkUploadDialogOpen}>
               <DialogTrigger asChild>
                 <Button variant="outline" className="flex items-center gap-2">
                   <FileText className="h-4 w-4" />
@@ -477,7 +485,16 @@ export default function SafetyLibrary() {
 
                   {/* Actions */}
                   <div className="flex justify-end gap-3">
-                    <Button variant="outline" disabled={isUploading}>
+                    <Button 
+                      variant="outline" 
+                      disabled={isUploading}
+                      onClick={() => {
+                        setBulkUploadDialogOpen(false);
+                        setUploadFiles([]);
+                        setUploadProgress(0);
+                        setUploadResults({ success: 0, failed: 0, errors: [] });
+                      }}
+                    >
                       Cancel
                     </Button>
                     <Button 
