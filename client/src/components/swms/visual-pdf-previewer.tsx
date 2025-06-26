@@ -27,8 +27,8 @@ export default function VisualPDFPreviewer({
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const previewRef = useRef<HTMLDivElement>(null);
 
-  // RiskTemplateBuilder app URL - Updated to working endpoint
-  const PDF_GENERATOR_URL = 'https://risktemplatebuilder--3000.prod1a.defang.dev';
+  // Local PDF generation endpoint - using our own server
+  const PDF_GENERATOR_URL = `/api/swms/pdf-preview-embed`;
 
   useEffect(() => {
     if (updateTimeoutRef.current) {
@@ -113,13 +113,16 @@ export default function VisualPDFPreviewer({
         iframeRef.current.contentWindow.postMessage({
           type: 'FORM_DATA_UPDATE',
           data: transformedData
-        }, PDF_GENERATOR_URL);
+        }, window.location.origin);
       }
       
       setLastUpdate(Date.now());
     } catch (err) {
       console.error('Preview update error:', err);
-      setError('Failed to update preview');
+      // Don't show error for postMessage issues - iframe might still be loading
+      if (isIframeLoaded) {
+        setError('Failed to update preview');
+      }
     } finally {
       setIsLoading(false);
     }

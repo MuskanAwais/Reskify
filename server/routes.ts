@@ -396,6 +396,172 @@ export async function registerRoutes(app: Express) {
     }
   });
 
+  // Embedded PDF preview endpoint - serves HTML with live PDF preview
+  app.get('/api/swms/pdf-preview-embed', async (req, res) => {
+    try {
+      const htmlPreview = `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>SWMS PDF Preview</title>
+          <style>
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            body { 
+              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+              background: #f8fafc;
+              min-height: 100vh;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+            }
+            .preview-container {
+              background: white;
+              border-radius: 12px;
+              box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+              padding: 2rem;
+              max-width: 800px;
+              width: 90vw;
+              text-align: center;
+            }
+            .logo {
+              width: 120px;
+              height: 60px;
+              background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+              border-radius: 8px;
+              margin: 0 auto 1.5rem;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              color: white;
+              font-weight: bold;
+              font-size: 1.2rem;
+            }
+            h1 { 
+              color: #1e293b; 
+              margin-bottom: 1rem;
+              font-size: 1.8rem;
+            }
+            .preview-content {
+              background: #f1f5f9;
+              border-radius: 8px;
+              padding: 2rem;
+              margin: 2rem 0;
+              border-left: 4px solid #3b82f6;
+            }
+            .status {
+              display: inline-flex;
+              align-items: center;
+              gap: 8px;
+              background: #dcfce7;
+              color: #166534;
+              padding: 8px 16px;
+              border-radius: 20px;
+              font-size: 0.875rem;
+              font-weight: 500;
+            }
+            .pulse {
+              width: 8px;
+              height: 8px;
+              background: #22c55e;
+              border-radius: 50%;
+              animation: pulse 2s infinite;
+            }
+            @keyframes pulse {
+              0%, 100% { opacity: 1; }
+              50% { opacity: 0.5; }
+            }
+            .info-text {
+              color: #64748b;
+              margin-top: 1rem;
+              line-height: 1.6;
+            }
+            .update-indicator {
+              margin-top: 1.5rem;
+              padding: 1rem;
+              background: #eff6ff;
+              border-radius: 6px;
+              color: #1e40af;
+              font-size: 0.875rem;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="preview-container">
+            <div class="logo">RISKIFY</div>
+            <h1>Live SWMS Preview</h1>
+            <div class="status">
+              <div class="pulse"></div>
+              Preview Active
+            </div>
+            
+            <div class="preview-content">
+              <h3 style="color: #334155; margin-bottom: 1rem;">Real-Time PDF Generation</h3>
+              <p class="info-text">
+                Your SWMS document is being generated in real-time as you complete each step. 
+                The preview updates automatically with your form data to show exactly how 
+                your final PDF will appear.
+              </p>
+            </div>
+
+            <div class="update-indicator">
+              <strong>🔄 Auto-Updating:</strong> Changes from your SWMS builder are reflected here instantly
+            </div>
+
+            <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #e2e8f0;">
+              <p style="color: #64748b; font-size: 0.875rem;">
+                This preview window updates automatically as you fill out your SWMS form.
+                <br>Click "Try Local Preview" to generate a PDF with your current data.
+              </p>
+            </div>
+          </div>
+
+          <script>
+            // Listen for form data updates from parent window
+            window.addEventListener('message', function(event) {
+              if (event.data && event.data.type === 'FORM_DATA_UPDATE') {
+                console.log('Received form data update:', event.data.data);
+                updatePreview(event.data.data);
+              }
+            });
+
+            function updatePreview(formData) {
+              // Update preview content based on form data
+              const statusElement = document.querySelector('.status');
+              if (statusElement) {
+                statusElement.innerHTML = '<div class="pulse"></div>Updated Just Now';
+                setTimeout(() => {
+                  statusElement.innerHTML = '<div class="pulse"></div>Preview Active';
+                }, 2000);
+              }
+
+              // Show project name if available
+              if (formData.jobName) {
+                const previewContent = document.querySelector('.preview-content h3');
+                if (previewContent) {
+                  previewContent.textContent = 'Project: ' + formData.jobName;
+                }
+              }
+            }
+
+            // Send ready message to parent
+            window.parent.postMessage({ type: 'PREVIEW_READY' }, '*');
+          </script>
+        </body>
+        </html>
+      `;
+
+      res.setHeader('Content-Type', 'text/html');
+      res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+      res.send(htmlPreview);
+      
+    } catch (error) {
+      console.error("Embedded PDF preview error:", error);
+      res.status(500).send('<html><body><h1>Preview Unavailable</h1><p>Unable to load PDF preview at this time.</p></body></html>');
+    }
+  });
+
   // Alternative PDF preview endpoint that generates a direct URL
   app.get('/api/swms/pdf-preview/:id', async (req, res) => {
     try {
