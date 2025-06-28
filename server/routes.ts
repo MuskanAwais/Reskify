@@ -1942,8 +1942,13 @@ export async function registerRoutes(app: Express) {
 
   // User credit usage endpoint
   app.post("/api/user/use-credit", (req, res) => {
-    // Demo mode - always return success
-    res.json({ success: true, remainingCredits: 9 });
+    try {
+      // Demo mode - always return success
+      res.json({ success: true, remainingCredits: 9 });
+    } catch (error) {
+      console.error('Credit usage error:', error);
+      res.status(500).json({ error: 'Failed to use credit' });
+    }
   });
 
   const httpServer = createServer(app);
