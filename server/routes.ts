@@ -1926,6 +1926,26 @@ export async function registerRoutes(app: Express) {
     }
   });
 
+  // User endpoint for demo access
+  app.get("/api/user", (req, res) => {
+    // Demo mode - always return user 999
+    res.json({
+      id: 999,
+      username: "demo@riskify.com.au", 
+      name: "Demo User",
+      email: "demo@riskify.com.au",
+      isAdmin: true,
+      subscriptionType: "trial",
+      swmsCredits: 10
+    });
+  });
+
+  // User credit usage endpoint
+  app.post("/api/user/use-credit", (req, res) => {
+    // Demo mode - always return success
+    res.json({ success: true, remainingCredits: 9 });
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
