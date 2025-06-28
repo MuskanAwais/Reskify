@@ -330,21 +330,26 @@ export default function SwmsBuilder() {
     },
     onSuccess: (data: any) => {
       if (data) {
-        console.log('Draft data loaded:', data);
+        console.log('Draft data loaded for editing:', data);
         
-        // Map database fields to form structure
+        // Check if this document has already been paid for
+        const hasPaidAccess = data.paidAccess === true;
+        
+        // Map database fields to form structure, but blank out step 1 fields for editing
         const mappedData = {
           ...formData, // Keep existing form structure
           id: data.id,
-          title: data.title || data.jobName || '',
-          jobName: data.jobName || data.title || '',
-          jobNumber: data.jobNumber || '',
-          projectAddress: data.projectAddress || '',
-          projectLocation: data.projectLocation || data.projectAddress || '',
-          startDate: data.startDate || '',
+          // BLANK OUT STEP 1 FIELDS AS REQUESTED - User wants to re-enter project details
+          title: '',
+          jobName: '',
+          jobNumber: '',
+          projectAddress: '',
+          projectLocation: '',
+          startDate: '',
+          principalContractor: '',
+          // Keep other data from the saved draft
           tradeType: data.tradeType || '',
           customTradeType: data.customTradeType || '',
-          principalContractor: data.principalContractor || '',
           responsiblePersons: data.responsiblePersons || [],
           activities: data.activities || data.workActivities || [],
           selectedTasks: data.activities || data.workActivities || [],
@@ -357,21 +362,25 @@ export default function SwmsBuilder() {
           generalRequirements: data.generalRequirements || [],
           acceptedDisclaimer: data.acceptedDisclaimer || false,
           signatures: data.signatures || [],
-          draftId: data.id
+          draftId: data.id,
+          paidAccess: hasPaidAccess,
+          hrcwCategories: data.hrcwCategories || [],
+          ppeRequirements: data.ppeRequirements || []
         };
         
-        console.log('Mapped form data:', mappedData);
+        console.log('Mapped form data for editing (Step 1 blanked):', mappedData);
         setFormData(mappedData);
         setDraftId(data.id);
         setIsDraft(true);
         
-        if (data.currentStep) {
-          setCurrentStep(data.currentStep);
-        }
+        // Set current step - start at step 1 to re-enter project details
+        setCurrentStep(1);
         
         toast({
-          title: "Draft Loaded",
-          description: `Successfully loaded "${data.title || 'Untitled SWMS'}" draft.`,
+          title: "Draft Loaded for Editing",
+          description: hasPaidAccess 
+            ? `Editing "${data.title || 'SWMS Document'}" - Payment step will be skipped.`
+            : `Editing "${data.title || 'SWMS Document'}" - Please re-enter project details.`,
         });
       }
     },
@@ -615,6 +624,14 @@ export default function SwmsBuilder() {
     
     // Handle proceeding from payment step (step 6) - STRICT VALIDATION
     if (currentStep === 6) {
+      // If this document already has paid access, skip payment step entirely
+      if (formData.paidAccess === true) {
+        console.log('Payment step skipped - document already has paid access');
+        // Skip to step 7 (Legal Disclaimer)
+        setCurrentStep(7);
+        return;
+      }
+      
       const creditsRemaining = subscription ? (subscription as any).creditsRemaining || 0 : 0;
       const hasProPlan = (subscription as any)?.plan === "Pro" || (subscription as any)?.plan === "Enterprise";
       const isAdminDemo = localStorage.getItem('adminDemoMode') === 'true';
@@ -661,7 +678,15 @@ export default function SwmsBuilder() {
     }
     
     if (currentStep < STEPS.length) {
-      setCurrentStep(currentStep + 1);
+      const nextStep = currentStep + 1;
+      
+      // Skip payment step (step 6) if document already has paid access
+      if (nextStep === 6 && formData.paidAccess === true) {
+        console.log('Skipping payment step - document already has paid access');
+        setCurrentStep(7); // Go directly to Legal Disclaimer
+      } else {
+        setCurrentStep(nextStep);
+      }
     }
   };
 
