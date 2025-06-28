@@ -300,6 +300,26 @@ export async function registerRoutes(app: Express) {
     }
   });
 
+  // Get specific draft for editing
+  app.get("/api/swms/draft/:id", async (req, res) => {
+    try {
+      const draftId = parseInt(req.params.id);
+      console.log('Loading draft for editing:', draftId);
+      
+      const draft = await storage.getSwmsDocumentById(draftId);
+      if (draft) {
+        console.log('Draft found:', draft.title || 'Untitled');
+        res.json(draft);
+      } else {
+        console.log('Draft not found');
+        res.status(404).json({ error: "Draft not found" });
+      }
+    } catch (error) {
+      console.error("Get draft error:", error);
+      res.status(500).json({ error: "Failed to load draft" });
+    }
+  });
+
   // Get user SWMS documents
   app.get("/api/swms/my-swms", async (req, res) => {
     try {
