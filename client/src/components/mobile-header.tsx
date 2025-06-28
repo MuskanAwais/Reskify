@@ -32,8 +32,6 @@ export function MobileHeader() {
     { href: "/dashboard", label: "Dashboard", icon: Home },
     { href: "/swms-builder", label: "SWMS Builder", icon: FileText },
     { href: "/my-swms", label: "My SWMS", icon: FileText },
-    { href: "/safety-library", label: "Safety Library", icon: Library },
-    { href: "/team-collaboration", label: "Team", icon: Users },
     { href: "/analytics", label: "Analytics", icon: BarChart3 },
     { href: "/profile", label: "Account", icon: User },
   ];
@@ -44,6 +42,8 @@ export function MobileHeader() {
     { href: "/admin/billing-analytics", label: "Billing Analytics", icon: DollarSign },
     { href: "/admin/usage-analytics", label: "Usage Analytics", icon: BarChart3 },
     { href: "/admin/data", label: "Data Management", icon: Settings },
+    { href: "/admin/safety-library", label: "Safety Library", icon: Library },
+    { href: "/admin/team-collaboration", label: "Team Management", icon: Users },
   ];
 
   const isActiveRoute = (href: string) => {

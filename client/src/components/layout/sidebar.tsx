@@ -221,15 +221,6 @@ export default function Sidebar() {
   const navigationItems = [
     { icon: Home, labelKey: "nav.dashboard", href: "/dashboard", tourId: "dashboard-link" },
     { icon: FileText, labelKey: "nav.my-swms", href: "/my-swms", tourId: "my-swms-link" },
-    { 
-      icon: Users, 
-      labelKey: "nav.team", 
-      href: "/team-collaboration",
-      requiresAccess: true,
-      hasAccess: mockSubscription?.plan === "Enterprise" || isAdmin || enterpriseMode,
-      badge: mockSubscription?.plan === "Enterprise" || enterpriseMode ? "Enterprise" : null,
-      tourId: "team-tab"
-    },
     { icon: BarChart3, labelKey: "nav.analytics", href: "/analytics", tourId: "analytics-link" },
     { icon: User, labelKey: "nav.account", href: "/billing", tourId: "account-link" }
   ];
@@ -247,6 +238,7 @@ export default function Sidebar() {
     { icon: Database, label: "Data Management", href: "/admin/data" },
     { icon: Archive, label: "All SWMS", href: "/admin/all-swms" },
     { icon: Book, label: "Safety Library", href: "/admin/safety-library" },
+    { icon: Users, label: "Team Management", href: "/admin/team-collaboration" },
     { icon: Shield, label: "Security Monitoring", href: "/admin/security" },
     { icon: Activity, label: "System Health", href: "/admin/health" },
     { icon: Settings, label: "System Testing", href: "/admin/system-testing" }
