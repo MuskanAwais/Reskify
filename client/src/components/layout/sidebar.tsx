@@ -309,12 +309,12 @@ export default function Sidebar() {
                 >
                   <Icon className="mr-3 h-4 w-4" />
                   {translate(item.labelKey)}
-                  {item.badge && (
+                  {(item as any).badge && (
                     <Badge variant="secondary" className="ml-auto text-xs bg-purple-100 text-purple-800">
-                      {item.badge}
+                      {(item as any).badge}
                     </Badge>
                   )}
-                  {item.requiresAccess && !item.hasAccess && (
+                  {(item as any).requiresAccess && !(item as any).hasAccess && (
                     <Lock className="ml-auto h-3 w-3 text-gray-400" />
                   )}
                 </Button>
