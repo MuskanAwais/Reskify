@@ -1459,15 +1459,36 @@ export default function SystemTesting() {
           </p>
         </div>
         
-        <Button 
-          onClick={runFullSystemTest}
-          disabled={isRunning}
-          size="lg"
-          className="bg-orange-600 hover:bg-orange-700"
-        >
-          <Activity className="h-4 w-4 mr-2" />
-          {isRunning ? 'Testing...' : 'Run Full System Test'}
-        </Button>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="autofix"
+              checked={autoFixEnabled}
+              onChange={(e) => setAutoFixEnabled(e.target.checked)}
+              className="rounded"
+            />
+            <label htmlFor="autofix" className="text-sm font-medium">
+              Auto-fix enabled
+            </label>
+          </div>
+          
+          <Button 
+            onClick={runFullSystemTest}
+            disabled={isRunning}
+            size="lg"
+            className="bg-orange-600 hover:bg-orange-700"
+          >
+            <Activity className="h-4 w-4 mr-2" />
+            {isRunning ? 'Testing...' : 'Run Full System Test'}
+          </Button>
+          
+          {fixedIssues.length > 0 && (
+            <Badge variant="default" className="bg-green-600">
+              {fixedIssues.length} issues fixed
+            </Badge>
+          )}
+        </div>
       </div>
 
       {/* Overall Progress */}
