@@ -1762,6 +1762,150 @@ export async function registerRoutes(app: Express) {
     }
   });
 
+  // General analytics endpoint - Real data from database
+  app.get('/api/analytics', async (req, res) => {
+    try {
+      // Get all SWMS documents from database
+      const allSwms = await storage.getAllSWMS();
+      const { timeRange } = req.query;
+      
+      // Filter by time range if specified
+      let filteredSwms = allSwms;
+      if (timeRange) {
+        const now = new Date();
+        let cutoffDate = new Date();
+        
+        switch (timeRange) {
+          case '7d':
+            cutoffDate.setDate(now.getDate() - 7);
+            break;
+          case '30d':
+            cutoffDate.setDate(now.getDate() - 30);
+            break;
+          case '90d':
+            cutoffDate.setDate(now.getDate() - 90);
+            break;
+          case '1y':
+            cutoffDate.setFullYear(now.getFullYear() - 1);
+            break;
+        }
+        
+        filteredSwms = allSwms.filter((swms: any) => 
+          new Date(swms.createdAt || Date.now()) >= cutoffDate
+        );
+      }
+
+      // Calculate real statistics
+      const totalDocuments = filteredSwms.length;
+      const activeDocuments = filteredSwms.filter((swms: any) => swms.status === 'completed').length;
+      
+      // Calculate trade distribution
+      const tradeStats: Record<string, number> = {};
+      filteredSwms.forEach((swms: any) => {
+        const trade = swms.tradeType || 'General Construction';
+        tradeStats[trade] = (tradeStats[trade] || 0) + 1;
+      });
+      
+      const documentsByTrade = Object.entries(tradeStats).map(([trade, count]) => ({
+        trade,
+        count: count as number
+      }));
+
+      // Calculate risk levels from actual documents
+      const riskStats: Record<string, number> = {};
+      filteredSwms.forEach((swms: any) => {
+        if (swms.workActivities && Array.isArray(swms.workActivities)) {
+          swms.workActivities.forEach((activity: any) => {
+            const riskLevel = activity.residualRisk || activity.initialRisk || 'Medium';
+            riskStats[riskLevel] = (riskStats[riskLevel] || 0) + 1;
+          });
+        }
+      });
+
+      const riskLevels = [
+        { level: 'Low', count: riskStats['Low'] || 0, color: '#10b981' },
+        { level: 'Medium', count: riskStats['Medium'] || 0, color: '#f59e0b' },
+        { level: 'High', count: riskStats['High'] || 0, color: '#ef4444' },
+        { level: 'Extreme', count: riskStats['Extreme'] || 0, color: '#dc2626' }
+      ];
+
+      // Generate compliance scores based on document completeness
+      const complianceScores = [];
+      for (let i = 5; i >= 0; i--) {
+        const date = new Date();
+        date.setMonth(date.getMonth() - i);
+        const monthName = date.toLocaleDateString('en-US', { month: 'short' });
+        
+        // Calculate score based on documents completed that month
+        const monthDocs = filteredSwms.filter((swms: any) => {
+          const docDate = new Date(swms.createdAt || Date.now());
+          return docDate.getMonth() === date.getMonth() && docDate.getFullYear() === date.getFullYear();
+        });
+        
+        const completedDocs = monthDocs.filter((swms: any) => swms.status === 'completed').length;
+        const score = monthDocs.length > 0 ? (completedDocs / monthDocs.length) * 100 : 85;
+        
+        complianceScores.push({
+          month: monthName,
+          score: Math.round(score)
+        });
+      }
+
+      // Recent activity from actual documents
+      const recentActivity = filteredSwms
+        .sort((a: any, b: any) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime())
+        .slice(0, 10)
+        .map((swms: any, index: number) => ({
+          id: swms.id || index,
+          eventType: swms.status === 'completed' ? 'SWMS Completed' : 'SWMS Created',
+          documentTitle: swms.projectName || `SWMS Document ${swms.id}`,
+          timestamp: new Date(swms.createdAt || Date.now()).toLocaleString()
+        }));
+
+      // Top risks from activities
+      const riskFrequency: Record<string, number> = {};
+      filteredSwms.forEach((swms: any) => {
+        if (swms.workActivities && Array.isArray(swms.workActivities)) {
+          swms.workActivities.forEach((activity: any) => {
+            if (activity.hazards && Array.isArray(activity.hazards)) {
+              activity.hazards.forEach((hazard: string) => {
+                const cleanHazard = hazard.trim();
+                if (cleanHazard) {
+                  riskFrequency[cleanHazard] = (riskFrequency[cleanHazard] || 0) + 1;
+                }
+              });
+            }
+          });
+        }
+      });
+
+      const topRisks = Object.entries(riskFrequency)
+        .sort(([,a], [,b]) => b - a)
+        .slice(0, 10)
+        .map(([risk, frequency]) => ({ risk, frequency }));
+
+      const averageComplianceScore = complianceScores.length > 0 
+        ? Math.round(complianceScores.reduce((sum, item) => sum + item.score, 0) / complianceScores.length)
+        : 85;
+
+      const analyticsData = {
+        totalDocuments,
+        activeDocuments,
+        averageComplianceScore,
+        documentsByTrade,
+        complianceScores,
+        riskLevels,
+        recentActivity,
+        topRisks
+      };
+
+      res.json(analyticsData);
+    } catch (error) {
+      console.error('Analytics error:', error);
+      res.status(500).json({ error: 'Failed to fetch analytics data' });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

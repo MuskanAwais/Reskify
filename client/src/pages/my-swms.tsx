@@ -487,7 +487,7 @@ export default function MySwms() {
                         variant="outline"
                       />
                       
-                      <Link href={`/swms-editor/${document.id}`}>
+                      <Link href={`/swms-builder?edit=${document.id}`}>
                         <Button variant="outline" size="sm">
                           <Edit className="h-4 w-4 mr-1" />
                           Edit
