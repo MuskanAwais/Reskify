@@ -35,6 +35,8 @@ export interface IStorage {
   getSafetyLibraryDocuments(): Promise<SafetyLibraryItem[]>;
   createSafetyLibraryDocument(data: InsertSafetyLibraryItem): Promise<SafetyLibraryItem>;
   deleteSafetyLibraryDocument(id: number): Promise<void>;
+  getAllUsersForAdmin(): Promise<User[]>;
+  getAllSWMSForAdmin(): Promise<any[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -114,6 +116,13 @@ export class DatabaseStorage implements IStorage {
     await db
       .update(users)
       .set({ companyLogo: logoUrl })
+      .where(eq(users.id, userId));
+  }
+
+  async updateUserPassword(userId: number, hashedPassword: string): Promise<void> {
+    await db
+      .update(users)
+      .set({ password: hashedPassword })
       .where(eq(users.id, userId));
   }
 
@@ -505,6 +514,24 @@ export class DatabaseStorage implements IStorage {
     } catch (error) {
       console.error('Error deleting safety library document:', error);
       throw error;
+    }
+  }
+
+  async getAllUsersForAdmin(): Promise<User[]> {
+    try {
+      return await db.select().from(users);
+    } catch (error) {
+      console.error('Error fetching all users for admin:', error);
+      return [];
+    }
+  }
+
+  async getAllSWMSForAdmin(): Promise<any[]> {
+    try {
+      return await db.select().from(swmsDocuments);
+    } catch (error) {
+      console.error('Error fetching all SWMS for admin:', error);
+      return [];
     }
   }
 
