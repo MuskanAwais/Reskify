@@ -172,20 +172,7 @@ export default function Sidebar() {
       position: 'right' as const,
       spotlight: true
     },
-    {
-      target: '[data-tour="safety-library-link"]',
-      title: 'Safety Library',
-      content: 'Access comprehensive safety resources, regulations, and templates. Available with Pro and Enterprise plans.',
-      position: 'right' as const,
-      spotlight: true
-    },
-    {
-      target: '[data-tour="team-tab"]',
-      title: 'Team Collaboration',
-      content: 'Enterprise feature for managing team members and collaborative SWMS projects. Includes real-time editing and approval workflows.',
-      position: 'right' as const,
-      spotlight: true
-    },
+
     {
       target: '[data-tour="analytics-link"]',
       title: 'Analytics & Reports',

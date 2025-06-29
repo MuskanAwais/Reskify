@@ -17,7 +17,7 @@ import Dashboard from "@/pages/dashboard";
 import SwmsBuilder from "@/pages/swms-builder";
 import Profile from "@/pages/profile";
 import ProfileSettings from "@/pages/profile-settings";
-import SafetyLibrary from "@/pages/safety-library";
+
 import MySwms from "@/pages/my-swms";
 import SwmsEditor from "@/pages/swms-editor";
 import Analytics from "@/pages/analytics";
@@ -54,7 +54,7 @@ import SmartRiskPredictor from "@/pages/smart-risk-predictor";
 import DigitalTwinDashboard from "@/pages/digital-twin-dashboard";
 import LiveCollaboration from "@/pages/live-collaboration";
 import AISwmsGenerator from "@/pages/ai-swms-generator";
-import TeamCollaboration from "@/pages/team-collaboration";
+
 
 
 // User context for demo purposes
@@ -207,7 +207,7 @@ function Router() {
         <ProtectedRoute path="/live-collaboration" component={LiveCollaboration} />
         <ProtectedRoute path="/ai-swms-generator" component={AISwmsGenerator} />
 
-        <ProtectedRoute path="/team-collaboration" component={TeamCollaboration} />
+
         
         {/* Admin Routes */}
         <ProtectedRoute path="/admin/dashboard" component={AdminDashboard} />
