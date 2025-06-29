@@ -535,6 +535,20 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
+  async updateSWMSPaidAccess(id: number, paidAccess: boolean): Promise<any> {
+    try {
+      const [updatedDocument] = await db
+        .update(swmsDocuments)
+        .set({ paidAccess })
+        .where(eq(swmsDocuments.id, id))
+        .returning();
+      return updatedDocument;
+    } catch (error) {
+      console.error('Error updating SWMS paid access:', error);
+      throw error;
+    }
+  }
+
 }
 
 export const storage = new DatabaseStorage();
