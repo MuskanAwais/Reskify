@@ -1537,8 +1537,29 @@ export async function registerRoutes(app: Express) {
     }
   });
 
-  // Live Usage Analytics API
-  app.get("/api/admin/usage-analytics", async (req, res) => {
+  // Admin Middleware - CHECK ADMIN PERMISSIONS FIRST
+  const requireAdmin = async (req: any, res: any, next: any) => {
+    try {
+      // Check if user is authenticated and is admin
+      const userId = req.session?.userId;
+      if (!userId) {
+        return res.status(401).json({ error: 'Authentication required' });
+      }
+      
+      const user = await storage.getUser(userId);
+      if (!user || !user.isAdmin) {
+        return res.status(403).json({ error: 'Admin access required' });
+      }
+      
+      next();
+    } catch (error) {
+      console.error('Admin authentication error:', error);
+      res.status(500).json({ error: 'Authentication failed' });
+    }
+  };
+
+  // Live Usage Analytics API - PROTECTED
+  app.get("/api/admin/usage-analytics", requireAdmin, async (req, res) => {
     try {
       const users = await storage.getAllUsersForAdmin();
       const swmsDocuments = await storage.getAllSWMSForAdmin();
@@ -1591,8 +1612,8 @@ export async function registerRoutes(app: Express) {
     }
   });
 
-  // Live Billing Analytics API
-  app.get("/api/admin/billing-analytics", async (req, res) => {
+  // Live Billing Analytics API - PROTECTED
+  app.get("/api/admin/billing-analytics", requireAdmin, async (req, res) => {
     try {
       const users = await storage.getAllUsersForAdmin();
       
@@ -1624,8 +1645,8 @@ export async function registerRoutes(app: Express) {
     }
   });
 
-  // Live Security Monitoring API
-  app.get("/api/admin/security-monitoring", async (req, res) => {
+  // Live Security Monitoring API - PROTECTED
+  app.get("/api/admin/security-monitoring", requireAdmin, async (req, res) => {
     try {
       const users = await storage.getAllUsersForAdmin();
       const swmsDocuments = await storage.getAllSWMSForAdmin();
