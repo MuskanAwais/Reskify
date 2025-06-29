@@ -840,7 +840,22 @@ export async function registerRoutes(app: Express) {
       
       console.log('SWMS generation request received:', req.body);
       
-      const result = await generateSWMSFromTask(req.body);
+      // Transform the request to match the expected format
+      const transformedRequest = {
+        projectDetails: {
+          projectName: req.body.projectName || 'Generated SWMS',
+          location: req.body.location || 'Project Site',
+          tradeType: req.body.tradeType || 'General',
+          description: req.body.jobDescription || req.body.description || '',
+          siteEnvironment: req.body.siteEnvironment || 'Commercial',
+          hrcwCategories: req.body.hrcwCategories || [],
+          state: req.body.state || 'NSW'
+        },
+        plainTextDescription: req.body.jobDescription || req.body.description || '',
+        mode: req.body.mode || 'job'
+      };
+      
+      const result = await generateSWMSFromTask(transformedRequest);
       
       res.json({
         success: true,
