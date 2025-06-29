@@ -64,8 +64,34 @@ export default function Sidebar() {
     retry: false,
   });
 
-  // Check if current user has admin access from database
-  const isAdmin = (user as any)?.isAdmin === true || localStorage.getItem('isAdmin') === 'true';
+  // Force admin state to be properly recognized
+  const [isAdminState, setIsAdminState] = useState(false);
+  
+  useEffect(() => {
+    const checkAdminStatus = () => {
+      // Check multiple sources for admin status
+      const userIsAdmin = (user as any)?.isAdmin === true;
+      const localStorageAdmin = localStorage.getItem('isAdmin') === 'true';
+      const forceAdmin = window.location.pathname.startsWith('/admin');
+      
+      const finalAdminStatus = userIsAdmin || localStorageAdmin || forceAdmin;
+      
+      console.log('Admin state saved to localStorage:', userIsAdmin);
+      if (userIsAdmin) {
+        localStorage.setItem('isAdmin', 'true');
+      }
+      
+      setIsAdminState(finalAdminStatus);
+      
+      if (!user) {
+        console.log('No active session');
+      }
+    };
+    
+    checkAdminStatus();
+  }, [user]);
+  
+  const isAdmin = isAdminState;
 
   const [demoMode, setDemoMode] = useState(() => {
     try {
