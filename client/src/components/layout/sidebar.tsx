@@ -232,13 +232,11 @@ export default function Sidebar() {
   ];
 
   const adminNavigationItems = [
-    { icon: Users, label: "User Management", href: "/admin/user-management" },
+    { icon: Contact, label: "All Contacts", href: "/admin/all-contacts" },
+    { icon: Archive, label: "All SWMS", href: "/admin/all-swms" },
     { icon: DollarSign, label: "Billing Analytics", href: "/admin/billing-analytics" },
     { icon: TrendingUp, label: "Usage Analytics", href: "/admin/usage-analytics" },
     { icon: Database, label: "Data Management", href: "/admin/data" },
-    { icon: Archive, label: "All SWMS", href: "/admin/all-swms" },
-    { icon: Book, label: "Safety Library", href: "/admin/safety-library" },
-    { icon: Users, label: "Team Management", href: "/admin/team-collaboration" },
     { icon: Shield, label: "Security Monitoring", href: "/admin/security" },
     { icon: Activity, label: "System Health", href: "/admin/health" },
     { icon: Settings, label: "System Testing", href: "/admin/system-testing" }

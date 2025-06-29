@@ -38,6 +38,7 @@ import LanguageDemo from "@/pages/language-demo";
 
 // Admin pages
 import AdminDashboard from "@/pages/admin/admin-dashboard";
+import AllContacts from "@/pages/admin/all-contacts";
 import UserManagement from "@/pages/admin/user-management";
 import BillingAnalytics from "@/pages/admin/billing-analytics";
 import UsageAnalytics from "@/pages/admin/usage-analytics";
@@ -47,7 +48,6 @@ import ContactLists from "@/pages/admin/contact-lists";
 import SystemHealth from "@/pages/admin/system-health";
 import SecurityMonitoring from "@/pages/admin/security-monitoring";
 import SystemTesting from "@/pages/admin/system-testing";
-import AdminSafetyLibrary from "@/pages/admin/safety-library";
 
 // Innovative features
 import SmartRiskPredictor from "@/pages/smart-risk-predictor";
@@ -211,6 +211,7 @@ function Router() {
         
         {/* Admin Routes */}
         <ProtectedRoute path="/admin/dashboard" component={AdminDashboard} />
+        <ProtectedRoute path="/admin/all-contacts" component={AllContacts} />
         <ProtectedRoute path="/admin/user-management" component={UserManagement} />
         <ProtectedRoute path="/admin/billing-analytics" component={BillingAnalytics} />
         <ProtectedRoute path="/admin/usage-analytics" component={UsageAnalytics} />
@@ -219,7 +220,6 @@ function Router() {
         <ProtectedRoute path="/admin/security" component={SecurityMonitoring} />
         <ProtectedRoute path="/admin/health" component={SystemHealth} />
         <ProtectedRoute path="/admin/system-testing" component={SystemTesting} />
-        <ProtectedRoute path="/admin/safety-library" component={AdminSafetyLibrary} />
         
         <Route component={NotFound} />
       </Switch>
