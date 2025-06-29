@@ -780,8 +780,15 @@ export async function registerRoutes(app: Express) {
       // Mark payment as completed for the user's draft
       const userId = req.session?.userId || 999;
       
-      // Update existing draft to mark as paid
-      await storage.updateSWMSPaidAccess(userId, true);
+      // Find user's latest draft to mark as paid
+      const userDrafts = await storage.getSwmsDocumentsByUserId(userId);
+      const latestDraft = userDrafts.find(doc => doc.status === 'draft');
+      
+      if (latestDraft) {
+        await storage.updateSwmsDocument(latestDraft.id, { 
+          status: 'completed'
+        });
+      }
       
       // Always allow credit usage in demo mode
       return res.json({ 

@@ -1,6 +1,6 @@
 import { users, swmsDocuments, safetyLibrary, type User, type InsertUser, type SafetyLibraryItem, type InsertSafetyLibraryItem } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, and } from "drizzle-orm";
 
 export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
@@ -375,8 +375,7 @@ export class DatabaseStorage implements IStorage {
       const existingDrafts = await db
         .select()
         .from(swmsDocuments)
-        .where(eq(swmsDocuments.userId, userId))
-        .where(eq(swmsDocuments.status, 'draft'));
+        .where(and(eq(swmsDocuments.userId, userId), eq(swmsDocuments.status, 'draft')));
       
       const existingDraft = existingDrafts[0]; // Get the first (and should be only) draft
 
@@ -535,19 +534,7 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async updateSWMSPaidAccess(id: number, paidAccess: boolean): Promise<any> {
-    try {
-      const [updatedDocument] = await db
-        .update(swmsDocuments)
-        .set({ paidAccess })
-        .where(eq(swmsDocuments.id, id))
-        .returning();
-      return updatedDocument;
-    } catch (error) {
-      console.error('Error updating SWMS paid access:', error);
-      throw error;
-    }
-  }
+
 
 }
 
