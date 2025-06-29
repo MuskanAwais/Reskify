@@ -383,14 +383,16 @@ export default function AllContacts() {
                                   </Select>
                                 </div>
                               </div>
-                              <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-2 p-3 border rounded-lg bg-amber-50">
                                 <input
                                   type="checkbox"
                                   id="admin"
                                   checked={editingUser.isAdmin}
                                   onChange={(e) => setEditingUser({...editingUser, isAdmin: e.target.checked})}
+                                  className="h-4 w-4"
                                 />
-                                <Label htmlFor="admin">Administrator Access</Label>
+                                <Label htmlFor="admin" className="font-medium">Administrator Access</Label>
+                                <Shield className="h-4 w-4 text-amber-600" />
                               </div>
                               <div className="flex gap-2">
                                 <Button 

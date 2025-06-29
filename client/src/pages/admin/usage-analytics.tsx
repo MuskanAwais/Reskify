@@ -1,235 +1,185 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { useQuery } from "@tanstack/react-query";
-import { FileText, Brain, TrendingUp, Activity } from "lucide-react";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from "recharts";
+import { Users, FileText, TrendingUp, Activity, BarChart3, PieChart } from "lucide-react";
+import { PieChart as RechartsPieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, LineChart, Line } from "recharts";
+
+const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4'];
 
 export default function UsageAnalytics() {
-  const { data: usageData, isLoading } = useQuery({
-    queryKey: ['/api/admin/usage-analytics'],
+  const { data: analytics, isLoading } = useQuery({
+    queryKey: ["/api/admin/usage-analytics"],
+    refetchInterval: 30000, // Refresh every 30 seconds for live data
   });
 
   if (isLoading) {
     return (
       <div className="p-6">
-        <div className="animate-pulse space-y-4">
+        <div className="animate-pulse space-y-6">
           <div className="h-8 bg-gray-200 rounded w-1/3"></div>
-          <div className="grid grid-cols-4 gap-4">
-            {[1,2,3,4].map(i => <div key={i} className="h-24 bg-gray-200 rounded"></div>)}
+          <div className="grid grid-cols-4 gap-6">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="h-32 bg-gray-200 rounded"></div>
+            ))}
           </div>
         </div>
       </div>
     );
   }
 
-  const mockUsageData = {
-    totalSwmsGenerated: 1847,
-    generalSwmsCount: 1352,
-    aiSwmsCount: 495,
-    weeklyGrowth: 23.5,
-    dailyData: [
-      { date: 'Mon', general: 45, ai: 12, total: 57 },
-      { date: 'Tue', general: 52, ai: 18, total: 70 },
-      { date: 'Wed', general: 38, ai: 15, total: 53 },
-      { date: 'Thu', general: 67, ai: 22, total: 89 },
-      { date: 'Fri', general: 71, ai: 25, total: 96 },
-      { date: 'Sat', general: 28, ai: 8, total: 36 },
-      { date: 'Sun', general: 31, ai: 9, total: 40 }
-    ],
-    tradeUsage: [
-      { trade: 'Electrical', count: 287, percentage: 15.5 },
-      { trade: 'Plumbing', count: 234, percentage: 12.7 },
-      { trade: 'Carpentry', count: 198, percentage: 10.7 },
-      { trade: 'Roofing', count: 176, percentage: 9.5 },
-      { trade: 'Concrete', count: 165, percentage: 8.9 },
-      { trade: 'Others', count: 787, percentage: 42.7 }
-    ],
-    featureUsage: [
-      { name: 'General SWMS', value: 73.2, color: '#3b82f6' },
-      { name: 'AI SWMS', value: 26.8, color: '#10b981' }
-    ]
-  };
+  const { overview, tradeDistribution, monthlyTrends } = analytics || {};
 
-  const data = usageData || mockUsageData;
+  // Transform trade distribution for pie chart
+  const tradeChartData = Object.entries(tradeDistribution || {}).map(([trade, count]) => ({
+    name: trade,
+    value: count as number
+  }));
 
   return (
     <div className="p-6 space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Usage Analytics</h1>
-        <p className="text-gray-600">SWMS generation and feature usage insights</p>
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold">Usage Analytics</h1>
+        <Badge variant="outline" className="bg-green-50 text-green-600">
+          <Activity className="h-3 w-3 mr-1" />
+          Live Data
+        </Badge>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      {/* Overview Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Total SWMS</p>
-                <p className="text-2xl font-bold">{data?.totalSwmsGenerated?.toLocaleString() || '0'}</p>
-              </div>
-              <FileText className="h-8 w-8 text-primary" />
-            </div>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Users</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{overview?.totalUsers || 0}</div>
+            <p className="text-xs text-muted-foreground">
+              Registered accounts
+            </p>
           </CardContent>
         </Card>
+
         <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">General SWMS</p>
-                <p className="text-2xl font-bold">{data?.generalSwmsCount?.toLocaleString() || '0'}</p>
-              </div>
-              <Activity className="h-8 w-8 text-green-500" />
-            </div>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Active Users (30d)</CardTitle>
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{overview?.activeUsers || 0}</div>
+            <p className="text-xs text-muted-foreground">
+              {overview?.totalUsers ? Math.round(((overview?.activeUsers || 0) / overview.totalUsers) * 100) : 0}% of total users
+            </p>
           </CardContent>
         </Card>
+
         <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">AI SWMS</p>
-                <p className="text-2xl font-bold">{data?.aiSwmsCount?.toLocaleString() || '0'}</p>
-              </div>
-              <Brain className="h-8 w-8 text-purple-500" />
-            </div>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Documents</CardTitle>
+            <FileText className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{overview?.totalDocuments || 0}</div>
+            <p className="text-xs text-muted-foreground">
+              SWMS documents created
+            </p>
           </CardContent>
         </Card>
+
         <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Weekly Growth</p>
-                <p className="text-2xl font-bold">+{data?.weeklyGrowth || 0}%</p>
-              </div>
-              <TrendingUp className="h-8 w-8 text-orange-500" />
-            </div>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">This Month</CardTitle>
+            <BarChart3 className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{overview?.documentsThisMonth || 0}</div>
+            <p className="text-xs text-muted-foreground">
+              Documents created this month
+            </p>
           </CardContent>
         </Card>
       </div>
 
+      {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Trade Distribution */}
         <Card>
           <CardHeader>
-            <CardTitle>Daily SWMS Generation</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <PieChart className="h-5 w-5" />
+              Trade Type Distribution
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={data.dailyData || []}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="general" fill="#3b82f6" name="General SWMS" />
-                <Bar dataKey="ai" fill="#10b981" name="AI SWMS" />
-              </BarChart>
-            </ResponsiveContainer>
+            <div className="h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <RechartsPieChart>
+                  <Pie
+                    data={tradeChartData}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="value"
+                  >
+                    {tradeChartData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </RechartsPieChart>
+              </ResponsiveContainer>
+            </div>
           </CardContent>
         </Card>
 
+        {/* Monthly Trends */}
         <Card>
           <CardHeader>
-            <CardTitle>Feature Usage Distribution</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <TrendingUp className="h-5 w-5" />
+              Document Creation Trends
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie
-                  data={data.featureUsage || []}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={120}
-                  dataKey="value"
-                  label={({ name, value }) => `${name}: ${value}%`}
-                >
-                  {(data.featureUsage || []).map((entry: any, index: number) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip formatter={(value) => [`${value}%`, '']} />
-              </PieChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Weekly Trend</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={data.dailyData || []}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" />
-                <YAxis />
-                <Tooltip />
-                <Line type="monotone" dataKey="total" stroke="#3b82f6" strokeWidth={2} name="Total SWMS" />
-                <Line type="monotone" dataKey="ai" stroke="#10b981" strokeWidth={2} name="AI SWMS" />
-              </LineChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Trade Usage Breakdown</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {(data.tradeUsage || []).map((trade: any) => (
-                <div key={trade.trade} className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <div className="font-medium">{trade.trade}</div>
-                    <div className="text-sm text-gray-500">{trade.count} documents</div>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-24 bg-gray-200 rounded-full h-2">
-                      <div 
-                        className="bg-blue-500 h-2 rounded-full" 
-                        style={{ width: `${trade.percentage}%` }}
-                      ></div>
-                    </div>
-                    <span className="text-sm font-medium">{trade.percentage}%</span>
-                  </div>
-                </div>
-              ))}
+            <div className="h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={monthlyTrends}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="month" />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="documents" fill="#3B82F6" />
+                </BarChart>
+              </ResponsiveContainer>
             </div>
           </CardContent>
         </Card>
       </div>
 
+      {/* Trade Breakdown Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Daily Performance Metrics</CardTitle>
+          <CardTitle>Detailed Trade Breakdown</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b">
-                  <th className="text-left p-3">Day</th>
-                  <th className="text-left p-3">General SWMS</th>
-                  <th className="text-left p-3">AI SWMS</th>
-                  <th className="text-left p-3">Total</th>
-                  <th className="text-left p-3">AI Usage %</th>
-                </tr>
-              </thead>
-              <tbody>
-                {(data.dailyData || []).map((day: any) => (
-                  <tr key={day.date} className="border-b hover:bg-gray-50">
-                    <td className="p-3 font-medium">{day.date}</td>
-                    <td className="p-3">{day.general}</td>
-                    <td className="p-3">{day.ai}</td>
-                    <td className="p-3 font-medium">{day.total}</td>
-                    <td className="p-3">
-                      <span className="px-2 py-1 bg-purple-100 text-purple-800 rounded-full text-xs">
-                        {((day.ai / day.total) * 100).toFixed(1)}%
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="space-y-4">
+            {Object.entries(tradeDistribution || {}).map(([trade, count]) => (
+              <div key={trade} className="flex items-center justify-between p-3 border rounded-lg">
+                <div className="flex items-center gap-3">
+                  <div className="w-4 h-4 rounded-full bg-blue-500"></div>
+                  <span className="font-medium">{trade}</span>
+                </div>
+                <div className="flex items-center gap-4">
+                  <span className="text-sm text-muted-foreground">{count} documents</span>
+                  <Badge variant="secondary">
+                    {overview?.totalDocuments ? Math.round(((count as number) / overview.totalDocuments) * 100) : 0}%
+                  </Badge>
+                </div>
+              </div>
+            ))}
           </div>
         </CardContent>
       </Card>

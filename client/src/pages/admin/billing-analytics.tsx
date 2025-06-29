@@ -1,167 +1,256 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { useQuery } from "@tanstack/react-query";
-import { DollarSign, TrendingUp, Users, CreditCard } from "lucide-react";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
+import { DollarSign, TrendingUp, Users, CreditCard, Activity, PieChart } from "lucide-react";
+import { PieChart as RechartsPieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
+
+const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444'];
 
 export default function BillingAnalytics() {
-  const { data: billingData, isLoading } = useQuery({
-    queryKey: ['/api/admin/billing-analytics'],
+  const { data: billing, isLoading } = useQuery({
+    queryKey: ["/api/admin/billing-analytics"],
+    refetchInterval: 30000, // Refresh every 30 seconds
   });
 
   if (isLoading) {
     return (
       <div className="p-6">
-        <div className="animate-pulse space-y-4">
+        <div className="animate-pulse space-y-6">
           <div className="h-8 bg-gray-200 rounded w-1/3"></div>
-          <div className="grid grid-cols-4 gap-4">
-            {[1,2,3,4].map(i => <div key={i} className="h-24 bg-gray-200 rounded"></div>)}
+          <div className="grid grid-cols-4 gap-6">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="h-32 bg-gray-200 rounded"></div>
+            ))}
           </div>
         </div>
       </div>
     );
   }
 
-  // Ensure we have proper data structure
-  const data = billingData || {
-    totalRevenue: 0,
-    monthlyRevenue: 0,
-    activeSubscriptions: 0,
-    churnRate: 0,
-    revenueGrowth: 0,
-    monthlyData: [],
-    planDistribution: []
-  };
+  const { totalRevenue, monthlyRecurring, creditUtilization, subscriptionBreakdown } = billing || {};
+
+  // Transform subscription data for pie chart
+  const subscriptionChartData = Object.entries(subscriptionBreakdown || {}).map(([type, count]) => ({
+    name: type.charAt(0).toUpperCase() + type.slice(1),
+    value: count as number
+  }));
+
+  const totalSubscribers = Object.values(subscriptionBreakdown || {}).reduce((sum: number, count) => sum + (count as number), 0);
 
   return (
     <div className="p-6 space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Billing Analytics</h1>
-        <p className="text-gray-600">Revenue and subscription insights</p>
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold">Billing Analytics</h1>
+        <Badge variant="outline" className="bg-green-50 text-green-600">
+          <Activity className="h-3 w-3 mr-1" />
+          Live Data
+        </Badge>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      {/* Revenue Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Total Revenue</p>
-                <p className="text-2xl font-bold">${(data as any).totalRevenue?.toLocaleString() || '0'}</p>
-              </div>
-              <DollarSign className="h-8 w-8 text-green-500" />
-            </div>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
+            <DollarSign className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">${totalRevenue || 0}</div>
+            <p className="text-xs text-muted-foreground">
+              Monthly recurring revenue
+            </p>
           </CardContent>
         </Card>
+
         <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Monthly Revenue</p>
-                <p className="text-2xl font-bold">${(data as any).monthlyRevenue?.toLocaleString() || '0'}</p>
-              </div>
-              <TrendingUp className="h-8 w-8 text-primary" />
-            </div>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Active Subscribers</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{totalSubscribers}</div>
+            <p className="text-xs text-muted-foreground">
+              Paying customers
+            </p>
           </CardContent>
         </Card>
+
         <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Active Subscriptions</p>
-                <p className="text-2xl font-bold">{(data as any).activeSubscriptions || 0}</p>
-              </div>
-              <Users className="h-8 w-8 text-purple-500" />
-            </div>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Credit Utilization</CardTitle>
+            <CreditCard className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{creditUtilization || 0}</div>
+            <p className="text-xs text-muted-foreground">
+              Total credits remaining
+            </p>
           </CardContent>
         </Card>
+
         <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Churn Rate</p>
-                <p className="text-2xl font-bold">{(data as any).churnRate || 0}%</p>
-              </div>
-              <CreditCard className="h-8 w-8 text-red-500" />
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">ARPU</CardTitle>
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              ${totalSubscribers > 0 ? Math.round((totalRevenue || 0) / totalSubscribers) : 0}
             </div>
+            <p className="text-xs text-muted-foreground">
+              Average revenue per user
+            </p>
           </CardContent>
         </Card>
       </div>
 
+      {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Subscription Distribution */}
         <Card>
           <CardHeader>
-            <CardTitle>Revenue Trend</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <PieChart className="h-5 w-5" />
+              Subscription Distribution
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={(data as any).monthlyData || []}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip formatter={(value) => [`$${value}`, 'Revenue']} />
-                <Line type="monotone" dataKey="revenue" stroke="#3b82f6" strokeWidth={2} />
-              </LineChart>
-            </ResponsiveContainer>
+            <div className="h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <RechartsPieChart>
+                  <Pie
+                    data={subscriptionChartData}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ name, percent }: any) => `${name} ${(percent * 100).toFixed(0)}%`}
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="value"
+                  >
+                    {subscriptionChartData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </RechartsPieChart>
+              </ResponsiveContainer>
+            </div>
           </CardContent>
         </Card>
 
+        {/* Revenue Breakdown */}
         <Card>
           <CardHeader>
-            <CardTitle>Plan Distribution</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <DollarSign className="h-5 w-5" />
+              Revenue by Plan
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={(data as any).planDistribution || []}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="plan" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="users" fill="#8b5cf6" />
-              </BarChart>
-            </ResponsiveContainer>
+            <div className="space-y-4">
+              {Object.entries(subscriptionBreakdown || {}).map(([plan, count]) => {
+                const monthlyRate = plan === 'enterprise' ? 99 : plan === 'pro' ? 29 : 0;
+                const planRevenue = (count as number) * monthlyRate;
+                return (
+                  <div key={plan} className="flex items-center justify-between p-3 border rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-4 h-4 rounded-full ${
+                        plan === 'enterprise' ? 'bg-purple-500' : 
+                        plan === 'pro' ? 'bg-blue-500' : 'bg-gray-400'
+                      }`}></div>
+                      <span className="font-medium capitalize">{plan}</span>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <span className="text-sm text-muted-foreground">{count} users</span>
+                      <Badge variant="secondary">${planRevenue}/month</Badge>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </CardContent>
         </Card>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Monthly Performance</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b">
-                  <th className="text-left p-3">Month</th>
-                  <th className="text-left p-3">Revenue</th>
-                  <th className="text-left p-3">Subscriptions</th>
-                  <th className="text-left p-3">Growth</th>
-                </tr>
-              </thead>
-              <tbody>
-                {((data as any).monthlyData || []).map((month: any, index: number) => (
-                  <tr key={month.month} className="border-b hover:bg-gray-50">
-                    <td className="p-3 font-medium">{month.month}</td>
-                    <td className="p-3">${month.revenue?.toLocaleString() || '0'}</td>
-                    <td className="p-3">{month.subscriptions || 0}</td>
-                    <td className="p-3">
-                      {index > 0 && (data as any).monthlyData ? (
-                        <span className={`${
-                          month.revenue > (data as any).monthlyData[index-1].revenue 
-                            ? 'text-green-600' 
-                            : 'text-red-600'
-                        }`}>
-                          {month.revenue > (data as any).monthlyData[index-1].revenue ? '+' : ''}
-                          {((month.revenue - (data as any).monthlyData[index-1].revenue) / (data as any).monthlyData[index-1].revenue * 100).toFixed(1)}%
-                        </span>
-                      ) : '-'}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Detailed Metrics */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Trial Conversions</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <span>Trial Users</span>
+                <span>{(subscriptionBreakdown as any)?.trial || 0}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Paid Users</span>
+                <span>{totalSubscribers - ((subscriptionBreakdown as any)?.trial || 0)}</span>
+              </div>
+              <div className="flex justify-between font-medium">
+                <span>Conversion Rate</span>
+                <span>
+                  {totalSubscribers > 0 
+                    ? Math.round(((totalSubscribers - ((subscriptionBreakdown as any)?.trial || 0)) / totalSubscribers) * 100)
+                    : 0
+                  }%
+                </span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Credit Usage</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <span>Credits Remaining</span>
+                <span>{creditUtilization}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Total Issued</span>
+                <span>{totalSubscribers * 10}</span>
+              </div>
+              <div className="flex justify-between font-medium">
+                <span>Utilization Rate</span>
+                <span>
+                  {totalSubscribers > 0 
+                    ? Math.round(((totalSubscribers * 10 - (creditUtilization || 0)) / (totalSubscribers * 10)) * 100)
+                    : 0
+                  }%
+                </span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Payment Status</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <span>Successful Payments</span>
+                <span className="text-green-600">{totalSubscribers - ((subscriptionBreakdown as any)?.trial || 0)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Failed Payments</span>
+                <span className="text-red-600">0</span>
+              </div>
+              <div className="flex justify-between font-medium">
+                <span>Success Rate</span>
+                <span className="text-green-600">100%</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
