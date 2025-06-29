@@ -42,8 +42,7 @@ export function MobileHeader() {
     { href: "/admin/billing-analytics", label: "Billing Analytics", icon: DollarSign },
     { href: "/admin/usage-analytics", label: "Usage Analytics", icon: BarChart3 },
     { href: "/admin/data", label: "Data Management", icon: Settings },
-    { href: "/admin/safety-library", label: "Safety Library", icon: Library },
-    { href: "/admin/team-collaboration", label: "Team Management", icon: Users },
+
   ];
 
   const isActiveRoute = (href: string) => {

@@ -27,9 +27,7 @@ export default function Dashboard() {
     enabled: true, // Always enabled, use fallback user ID
   });
 
-  const { data: safetyLibrary } = useQuery({
-    queryKey: ["/api/safety-library"],
-  });
+
 
   if (isLoading) {
     return (
@@ -56,7 +54,7 @@ export default function Dashboard() {
     recentDocuments: []
   };
 
-  const topSafetyCodes = (Array.isArray(safetyLibrary) ? safetyLibrary : (safetyLibrary as any)?.documents || []).slice(0, 3);
+
 
   return (
     <div className="space-y-6">

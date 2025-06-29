@@ -50,9 +50,7 @@ export default function Sidebar() {
   const mockSubscription = {
     plan: "Pro",
     features: {
-      safetyLibrary: true,
-      aiGeneration: true,
-      teamCollaboration: false
+      aiGeneration: true
     },
     creditsUsed: 45,
     creditsTotal: 100
