@@ -42,6 +42,27 @@ async function verifyPassword(password: string, hash: string) {
 
 export async function registerRoutes(app: Express) {
   
+  // ADMIN MIDDLEWARE - Define early for use in all admin routes
+  const requireAdmin = async (req: any, res: any, next: any) => {
+    try {
+      // Check if user is authenticated and is admin
+      const userId = req.session?.userId;
+      if (!userId) {
+        return res.status(401).json({ error: 'Authentication required' });
+      }
+      
+      const user = await storage.getUser(userId);
+      if (!user || !user.isAdmin) {
+        return res.status(403).json({ error: 'Admin access required' });
+      }
+      
+      next();
+    } catch (error) {
+      console.error('Admin authentication error:', error);
+      res.status(500).json({ error: 'Authentication failed' });
+    }
+  };
+  
   // Test PDF endpoint
   app.get("/api/test-pdf", (req, res) => {
     const doc = new PDFDocument();
@@ -1537,27 +1558,6 @@ export async function registerRoutes(app: Express) {
     }
   });
 
-  // Admin Middleware - CHECK ADMIN PERMISSIONS FIRST
-  const requireAdmin = async (req: any, res: any, next: any) => {
-    try {
-      // Check if user is authenticated and is admin
-      const userId = req.session?.userId;
-      if (!userId) {
-        return res.status(401).json({ error: 'Authentication required' });
-      }
-      
-      const user = await storage.getUser(userId);
-      if (!user || !user.isAdmin) {
-        return res.status(403).json({ error: 'Admin access required' });
-      }
-      
-      next();
-    } catch (error) {
-      console.error('Admin authentication error:', error);
-      res.status(500).json({ error: 'Authentication failed' });
-    }
-  };
-
   // Live Usage Analytics API - PROTECTED
   app.get("/api/admin/usage-analytics", requireAdmin, async (req, res) => {
     try {
@@ -1677,8 +1677,8 @@ export async function registerRoutes(app: Express) {
     }
   });
 
-  // System Health Monitoring API
-  app.get("/api/admin/system-health", async (req, res) => {
+  // System Health Monitoring API - PROTECTED
+  app.get("/api/admin/system-health", requireAdmin, async (req, res) => {
     try {
       const uptime = process.uptime();
       const memoryUsage = process.memoryUsage();
@@ -2114,11 +2114,11 @@ export async function registerRoutes(app: Express) {
   });
 
   // ===========================================
-  // COMPREHENSIVE ADMIN API ROUTES
+  // COMPREHENSIVE ADMIN API ROUTES - ALL PROTECTED
   // ===========================================
   
-  // Admin: Get all users with comprehensive details
-  app.get("/api/admin/users", async (req, res) => {
+  // Admin: Get all users with comprehensive details - PROTECTED
+  app.get("/api/admin/users", requireAdmin, async (req, res) => {
     try {
       // Generate comprehensive user data for admin management
       const users = [
