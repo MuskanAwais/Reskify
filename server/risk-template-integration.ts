@@ -133,6 +133,9 @@ export interface SWMSDataForTemplate {
   projectLocation: string;
   swmsCreatorName: string;
   swmsCreatorPosition: string;
+  signatureMethod?: string;
+  signatureImage?: string;
+  signatureText?: string;
   principalContractor: string;
   projectManager: string;
   siteSupervisor: string;
@@ -242,6 +245,9 @@ export async function generatePDFWithRiskTemplate(swmsData: any): Promise<Buffer
       projectLocation: swmsData.projectLocation || swmsData.projectAddress || 'Project Location Required',
       swmsCreatorName: swmsData.swmsCreatorName || 'SWMS Creator Name Required',
       swmsCreatorPosition: swmsData.swmsCreatorPosition || 'SWMS Creator Position Required',
+      signatureMethod: swmsData.signatureMethod || null,
+      signatureImage: swmsData.signatureImage || null,
+      signatureText: swmsData.signatureText || null,
       principalContractor: swmsData.principalContractor || 'Principal Contractor Required',
       projectManager: swmsData.projectManager || 'Project Manager Required',
       siteSupervisor: swmsData.siteSupervisor || 'Site Supervisor Required',

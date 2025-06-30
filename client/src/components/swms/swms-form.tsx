@@ -366,7 +366,7 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
                 {/* Person creating and authorising SWMS */}
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
                   <h4 className="text-md font-medium text-blue-900 mb-3">Person Creating and Authorising SWMS</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
                       <Label htmlFor="swmsCreatorName">Name *</Label>
                       <Input
@@ -386,6 +386,119 @@ const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
                         placeholder="Job title/position"
                         required
                       />
+                    </div>
+                  </div>
+                  
+                  {/* Signature Section */}
+                  <div className="border-t border-blue-200 pt-4">
+                    <Label className="text-blue-900 font-medium mb-3 block">Authorising Signature</Label>
+                    <div className="space-y-4">
+                      {/* Signature Method Selection */}
+                      <div className="flex flex-wrap gap-2">
+                        <button
+                          type="button"
+                          onClick={() => updateFormData({ signatureMethod: 'upload' })}
+                          className={`px-3 py-2 text-sm rounded-lg border ${
+                            formData.signatureMethod === 'upload'
+                              ? 'bg-blue-600 text-white border-blue-600'
+                              : 'bg-white text-blue-600 border-blue-300 hover:bg-blue-50'
+                          }`}
+                        >
+                          Upload Signature
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => updateFormData({ signatureMethod: 'type' })}
+                          className={`px-3 py-2 text-sm rounded-lg border ${
+                            formData.signatureMethod === 'type'
+                              ? 'bg-blue-600 text-white border-blue-600'
+                              : 'bg-white text-blue-600 border-blue-300 hover:bg-blue-50'
+                          }`}
+                        >
+                          Type Name
+                        </button>
+                      </div>
+
+                      {/* Upload Signature Option */}
+                      {formData.signatureMethod === 'upload' && (
+                        <div>
+                          <Label htmlFor="signatureUpload" className="text-sm text-gray-700">
+                            Upload signature image (PNG, JPG, GIF - Max 2MB)
+                          </Label>
+                          <input
+                            id="signatureUpload"
+                            type="file"
+                            accept="image/png,image/jpg,image/jpeg,image/gif"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                if (file.size > 2 * 1024 * 1024) {
+                                  alert('File size must be less than 2MB');
+                                  return;
+                                }
+                                const reader = new FileReader();
+                                reader.onload = (event) => {
+                                  updateFormData({ 
+                                    signatureImage: event.target?.result as string,
+                                    signatureText: null
+                                  });
+                                };
+                                reader.readAsDataURL(file);
+                              }
+                            }}
+                            className="mt-2 block w-full text-sm text-gray-500 
+                              file:mr-4 file:py-2 file:px-4 
+                              file:rounded-lg file:border-0 
+                              file:text-sm file:font-medium 
+                              file:bg-blue-50 file:text-blue-700 
+                              hover:file:bg-blue-100"
+                          />
+                          {formData.signatureImage && (
+                            <div className="mt-3 p-3 bg-white border border-blue-200 rounded-lg">
+                              <p className="text-sm text-green-600 mb-2">✓ Signature uploaded successfully</p>
+                              <img 
+                                src={formData.signatureImage} 
+                                alt="Uploaded signature" 
+                                className="max-h-16 border border-gray-200 rounded"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => updateFormData({ signatureImage: null })}
+                                className="mt-2 text-xs text-red-600 hover:text-red-800"
+                              >
+                                Remove signature
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Type Name Option */}
+                      {formData.signatureMethod === 'type' && (
+                        <div>
+                          <Label htmlFor="signatureText" className="text-sm text-gray-700">
+                            Type your full name as signature
+                          </Label>
+                          <Input
+                            id="signatureText"
+                            value={formData.signatureText || ""}
+                            onChange={(e) => updateFormData({ 
+                              signatureText: e.target.value,
+                              signatureImage: null
+                            })}
+                            placeholder="Enter your full name"
+                            className="mt-2 font-serif text-lg italic"
+                          />
+                          {formData.signatureText && (
+                            <div className="mt-2 p-3 bg-white border border-blue-200 rounded-lg">
+                              <p className="text-sm text-gray-600 mb-1">Signature preview:</p>
+                              <div className="font-serif text-xl italic text-blue-900 border-b border-gray-300 pb-1 inline-block">
+                                {formData.signatureText}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>

@@ -47,6 +47,9 @@ export const swmsDocuments = pgTable("swms_documents", {
   principalContractor: text("principal_contractor").notNull(),
   swmsCreatorName: text("swms_creator_name"),
   swmsCreatorPosition: text("swms_creator_position"),
+  signatureMethod: text("signature_method"), // 'upload' or 'type'
+  signatureImage: text("signature_image"), // Base64 encoded image
+  signatureText: text("signature_text"), // Typed name signature
   subcontractor: text("subcontractor"),
   principalContractorAbn: text("principal_contractor_abn"),
   subcontractorAbn: text("subcontractor_abn"),
