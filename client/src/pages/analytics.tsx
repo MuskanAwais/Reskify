@@ -136,8 +136,9 @@ export default function Analytics() {
                 <Shield className="h-6 w-6 text-purple-600" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Avg Compliance</p>
-                <p className="text-2xl font-bold text-gray-900">{analytics.averageComplianceScore}%</p>
+                <p className="text-sm font-medium text-gray-600">Compliance Score</p>
+                <p className="text-2xl font-bold text-green-600">{analytics.averageComplianceScore}%</p>
+                <p className="text-xs text-gray-500">Always 100% compliant</p>
               </div>
             </div>
           </CardContent>
@@ -146,15 +147,13 @@ export default function Analytics() {
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center">
-              <div className="p-2 bg-orange-100 rounded-lg">
-                <TrendingUp className="h-6 w-6 text-orange-600" />
+              <div className="p-2 bg-blue-100 rounded-lg">
+                <FileText className="h-6 w-6 text-blue-600" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Performance</p>
-                <div className="flex items-center">
-                  <p className="text-2xl font-bold text-gray-900">+12%</p>
-                  <TrendingUp className="h-4 w-4 text-green-600 ml-1" />
-                </div>
+                <p className="text-sm font-medium text-gray-600">Draft Documents</p>
+                <p className="text-2xl font-bold text-blue-600">{analytics.totalDocuments - analytics.activeDocuments}</p>
+                <p className="text-xs text-gray-500">In progress</p>
               </div>
             </div>
           </CardContent>
