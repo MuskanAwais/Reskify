@@ -110,6 +110,64 @@ export function generateAppMatchPDF(swmsData: any) {
     projectRowY += 14;
   }
 
+  // SWMS Creator fields
+  if (swmsData.swmsCreatorName) {
+    doc.font('Helvetica-Bold').fontSize(7).fillColor(colors.text);
+    doc.text('SWMS Creator:', 40, projectRowY);
+    doc.font('Helvetica').text(swmsData.swmsCreatorName, 150, projectRowY, { width: 240 });
+    projectRowY += 14;
+  }
+
+  if (swmsData.swmsCreatorPosition) {
+    doc.font('Helvetica-Bold').fontSize(7).fillColor(colors.text);
+    doc.text('Position:', 40, projectRowY);
+    doc.font('Helvetica').text(swmsData.swmsCreatorPosition, 150, projectRowY, { width: 240 });
+    projectRowY += 14;
+  }
+
+  // Signature section - Add signature display if provided
+  if (swmsData.signatureImage || swmsData.signatureText) {
+    // Add some spacing before signature
+    projectRowY += 10;
+    
+    doc.font('Helvetica-Bold').fontSize(7).fillColor(colors.text);
+    doc.text('Authorising Signature:', 40, projectRowY);
+    projectRowY += 12;
+    
+    if (swmsData.signatureImage) {
+      try {
+        // If it's a base64 image, extract the data part
+        const imageData = swmsData.signatureImage.includes(',') 
+          ? swmsData.signatureImage.split(',')[1] 
+          : swmsData.signatureImage;
+        const imageBuffer = Buffer.from(imageData, 'base64');
+        
+        // Display the signature image
+        doc.image(imageBuffer, 40, projectRowY, { 
+          width: 120, 
+          height: 30,
+          fit: [120, 30]
+        });
+        projectRowY += 35;
+      } catch (error) {
+        console.warn('Failed to display signature image:', error);
+        // Fallback to text if image fails
+        doc.font('Helvetica-Oblique').fontSize(8).fillColor(colors.text);
+        doc.text('Signature image error', 40, projectRowY);
+        projectRowY += 15;
+      }
+    } else if (swmsData.signatureText) {
+      // Display typed signature in italic style
+      doc.font('Helvetica-Oblique').fontSize(12).fillColor(colors.text);
+      doc.text(swmsData.signatureText, 40, projectRowY, { width: 200 });
+      
+      // Add underline for signature
+      doc.strokeColor(colors.text).lineWidth(0.5);
+      doc.moveTo(40, projectRowY + 20).lineTo(200, projectRowY + 20).stroke();
+      projectRowY += 25;
+    }
+  }
+
   // Emergency info from real data
   let emergencyRowY = emergencyY;
   const emergencyContacts = swmsData.emergencyContacts || [];

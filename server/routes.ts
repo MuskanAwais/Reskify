@@ -248,21 +248,46 @@ export async function registerRoutes(app: Express) {
     }
   });
 
-  // Dashboard data
+  // Dashboard data with live recent SWMS
   app.get("/api/dashboard", async (req, res) => {
     try {
-      const drafts = await storage.getDraftCount(req.session.userId || 999);
-      const completed = await storage.getCompletedCount(req.session.userId || 999);
+      const userId = req.session?.userId || 999;
+      const userSwms = await storage.getUserSwms(userId);
+      
+      // Count drafts and completed
+      const drafts = userSwms.filter(doc => doc.status === 'draft').length;
+      const completed = userSwms.filter(doc => doc.status === 'completed' || doc.status === 'active').length;
+      
+      // Get recent SWMS documents (last 5)
+      const recentSwms = userSwms
+        .sort((a, b) => new Date(b.updatedAt || b.createdAt).getTime() - new Date(a.updatedAt || a.createdAt).getTime())
+        .slice(0, 5)
+        .map(doc => ({
+          id: doc.id,
+          title: doc.title || doc.jobName || 'Untitled SWMS',
+          tradeType: doc.tradeType || doc.trade_type || 'General',
+          status: doc.status || 'draft',
+          updatedAt: doc.updatedAt || doc.createdAt,
+          location: doc.projectLocation || doc.project_location || doc.projectAddress
+        }));
       
       res.json({
-        drafts: drafts || 2,
-        completed: completed || 3,
+        drafts,
+        completed,
         credits: 10,
-        subscription: 'trial'
+        subscription: 'trial',
+        recentSwms
       });
     } catch (error) {
       console.error("Dashboard error:", error);
-      res.json({ drafts: 2, completed: 3, credits: 10, subscription: 'trial' });
+      // Fallback with some sample data
+      res.json({ 
+        drafts: 2, 
+        completed: 3, 
+        credits: 10, 
+        subscription: 'trial',
+        recentSwms: []
+      });
     }
   });
 
