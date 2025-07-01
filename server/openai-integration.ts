@@ -80,25 +80,38 @@ export async function generateSWMSFromTask(request: TaskGenerationRequest): Prom
     } else {
       // Job Mode: Generate SWMS tasks from job description
       const jobDescription = request.plainTextDescription || request.projectDetails.description || request.taskName || 'General construction work';
-      prompt = `Generate SWMS tasks ONLY for a ${tradeName} performing this specific job: "${jobDescription}". 
+      prompt = `YOU ARE GENERATING TASKS FOR A ${tradeName} TRADESPERSON ONLY. NO OTHER TRADES ALLOWED.
 
-CRITICAL RESTRICTIONS - FOLLOW THESE RULES EXACTLY:
-1. ONLY generate tasks that fall within the specific trade's licensed scope of practice
-2. NEVER include tasks that would require different trade licenses or qualifications
-3. NEVER include tasks that other trades would typically perform
-4. NEVER include general construction activities outside the specific trade's expertise
-5. Focus exclusively on tasks using the trade's specific tools, materials, and techniques
+JOB: "${jobDescription}"
 
-UNIVERSAL TRADE BOUNDARY RULES:
-- Each trade has specific materials, tools, and techniques - stay within these boundaries
-- If a task requires specialized equipment or licenses that the specified trade doesn't typically have, exclude it
-- Focus on the trade's core competencies and standard work practices
-- Include only preparation, installation, testing, and completion tasks specific to that trade
+ABSOLUTE FORBIDDEN TASKS (NEVER INCLUDE THESE):
+- Framing, structural work, or construction assembly
+- Concrete mixing, pouring, or concrete work of any kind  
+- Temporary fencing, barriers, or site setup
+- Excavation, earthworks, or ground preparation
+- Steel work, welding, or metal fabrication
+- General construction or site preparation
+- Heavy machinery operation
+- Civil engineering tasks
 
-SCOPE VALIDATION TEST:
-Ask yourself: "Would a ${tradeName} tradesperson with standard tools and training personally perform this task as part of their normal work?" If NO, exclude the task.
+FOR ${tradeName} TRADE ONLY - GENERATE THESE TYPES OF TASKS:
+${tradeName === 'Tiling & Waterproofing' ? `
+- Surface preparation (cleaning, priming existing surfaces)
+- Waterproofing membrane application
+- Tile measurement and cutting
+- Tile adhesive application
+- Tile installation and laying
+- Grouting and sealing
+- Quality checks and touch-ups
+- Cleanup of tiling materials` : `
+- Trade-specific preparation work
+- Material installation using trade tools
+- Testing and quality checks
+- Trade-specific cleanup`}
 
-Generate 6-8 specific tasks that ONLY a ${tradeName} would perform for "${jobDescription}". Each task must be trade-specific work that falls within the tradesperson's scope of practice.`;
+VALIDATION: Every task must use ${tradeName} materials, tools, and techniques only. If a task requires different trade skills, DELETE IT.
+
+Generate 6-8 tasks that ONLY a ${tradeName} would do for "${jobDescription}".`;
     }
 
     // Create promise with timeout
@@ -107,15 +120,26 @@ Generate 6-8 specific tasks that ONLY a ${tradeName} would perform for "${jobDes
       messages: [
         {
           role: "system",
-          content: `You are Riskify, an expert Australian construction safety consultant specializing in trade-specific work. Generate ONLY tasks that fall within the specific tradesperson's licensed scope of practice and standard work boundaries.
+          content: `You are Riskify, an Australian construction safety expert. YOU MUST ONLY GENERATE TASKS FOR THE SPECIFIED TRADE.
 
-ABSOLUTE RESTRICTIONS:
-- NEVER generate tasks that require different trade licenses, qualifications, or specialized training
-- NEVER include work that other trades would typically perform or be responsible for
-- NEVER cross trade boundaries - each trade has specific materials, tools, techniques, and work scope
-- ONLY include tasks that the specified tradesperson would personally perform with their standard trade tools and skills
+CRITICAL: If you generate ANY tasks outside the specified trade's scope, you are FAILING your job.
 
-Return structured JSON format:
+TRADE BOUNDARY ENFORCEMENT:
+- Tiling & Waterproofing: ONLY tile work, waterproofing, surface prep, grouting, sealing
+- Electrical: ONLY electrical installation, wiring, testing, compliance  
+- Plumbing: ONLY pipe work, fixtures, pressure testing, commissioning
+- Carpentry: ONLY timber work, fixing, finishing, hardware
+
+ABSOLUTELY FORBIDDEN FOR ALL TRADES:
+- Concrete work (unless you're a Concreter)
+- Framing/structural work (unless you're a Carpenter doing timber framing)
+- Site preparation (unless specifically part of the trade's prep work)
+- Heavy machinery (unless the trade specifically operates it)
+- Fencing installation (unless you're a Fencing contractor)
+
+VALIDATION: Before including ANY task, ask "Does this specific trade personally do this work with their standard tools?" If NO, DELETE the task.
+
+Return structured JSON format:`
 
 {
   "activities": [
@@ -179,7 +203,14 @@ ${hrcwCategories.map(id => {
 
 FINAL REMINDER: Generate tasks that specifically address these high-risk elements with comprehensive control measures.
 
-ABSOLUTE REQUIREMENT: Every single task must be something that ONLY a ${tradeName} tradesperson would perform within their licensed scope of practice. If you include ANY tasks that would require different trade qualifications, licenses, or that other trades would typically perform, you are failing this requirement. Focus exclusively on the specific trade's standard work scope and core competencies.`
+FINAL VALIDATION CHECK: Before submitting your response, review EVERY SINGLE TASK and ask:
+1. "Does a ${tradeName} personally do this with their standard tools?" 
+2. "Would this task require a different trade license or skills?"
+3. "Is this concrete, framing, fencing, or general construction work?"
+
+If ANY task fails these checks, DELETE IT IMMEDIATELY. 
+
+ABSOLUTE REQUIREMENT: Generate ONLY ${tradeName === 'Tiling & Waterproofing' ? 'tiling, waterproofing, surface preparation, grouting, and sealing' : 'trade-specific'} tasks. NO exceptions. NO general construction. NO other trades.`
         }
       ],
       response_format: { type: "json_object" },
