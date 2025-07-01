@@ -329,6 +329,9 @@ export default function GPTTaskSelection({
           selected: true
         }));
 
+        console.log('Raw AI activities:', data.data.activities);
+        console.log('Converted activities:', convertedActivities);
+
         const convertedPlantEquipment = data.data.plantEquipment?.map((equipment: any, index: number) => ({
           id: `equipment-${index + 1}`,
           ...equipment
