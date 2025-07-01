@@ -1841,11 +1841,14 @@ export async function registerRoutes(app: Express) {
     }
   });
 
-  // General analytics endpoint - Real data from database
+  // General analytics endpoint - User-specific data from database
   app.get('/api/analytics', async (req, res) => {
     try {
-      // Get all SWMS documents from database
-      const allSwms = await storage.getAllSWMS();
+      // Get user-specific SWMS documents to match My SWMS data
+      const userId = req.session?.userId || 999; // Demo mode support
+      console.log(`Analytics: Getting SWMS for user ${userId}`);
+      const allSwms = await storage.getUserSWMS(userId);
+      console.log(`Analytics: Found ${allSwms.length} documents for user ${userId}`);
       const { timeRange } = req.query;
       
       // Filter by time range if specified

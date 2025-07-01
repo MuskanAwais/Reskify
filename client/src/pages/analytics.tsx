@@ -100,7 +100,7 @@ export default function Analytics() {
       </div>
 
       {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center">
@@ -129,20 +129,7 @@ export default function Analytics() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center">
-              <div className="p-2 bg-purple-100 rounded-lg">
-                <Shield className="h-6 w-6 text-purple-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Compliance Score</p>
-                <p className="text-2xl font-bold text-green-600">{analytics.averageComplianceScore}%</p>
-                <p className="text-xs text-gray-500">Always 100% compliant</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+
 
         <Card>
           <CardContent className="pt-6">
@@ -161,25 +148,7 @@ export default function Analytics() {
       </div>
 
       {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        {/* Documents by Trade */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Documents by Trade</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={analytics.documentsByTrade}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="trade" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="count" fill="#3b82f6" />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-
+      <div className="grid grid-cols-1 gap-6 mb-8">
         {/* Risk Levels Distribution */}
         <Card>
           <CardHeader>
@@ -208,24 +177,6 @@ export default function Analytics() {
           </CardContent>
         </Card>
       </div>
-
-      {/* Compliance Trend */}
-      <Card className="mb-8">
-        <CardHeader>
-          <CardTitle>Compliance Score Trend</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={analytics.complianceScores}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis domain={[0, 100]} />
-              <Tooltip />
-              <Line type="monotone" dataKey="score" stroke="#10b981" strokeWidth={2} />
-            </LineChart>
-          </ResponsiveContainer>
-        </CardContent>
-      </Card>
 
       {/* Bottom Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
