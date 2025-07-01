@@ -65,9 +65,22 @@ export default function MySwms() {
 
   // Get documents array from API response
   const documents = (documentsData as any)?.documents || [];
+  const deletedDocuments = (deletedDocumentsData as any)?.documents || [];
   
   // Format documents for display
   const formattedDocuments = documents.map((doc: any) => ({
+    ...doc,
+    title: doc.title || doc.jobName || 'Untitled SWMS',
+    tradeType: doc.tradeType || 'General Construction',
+    projectLocation: doc.projectAddress || doc.projectLocation || 'Not specified',
+    activities: doc.activities || [],
+    aiEnhanced: doc.aiEnhanced || false,
+    complianceScore: doc.complianceScore || 85,
+    riskLevel: doc.riskLevel || 'medium'
+  }));
+
+  // Format deleted documents for display
+  const formattedDeletedDocuments = deletedDocuments.map((doc: any) => ({
     ...doc,
     title: doc.title || doc.jobName || 'Untitled SWMS',
     tradeType: doc.tradeType || 'General Construction',
@@ -413,18 +426,7 @@ export default function MySwms() {
     );
   }
 
-  // Get deleted documents array from API response
-  const deletedDocuments = (deletedDocumentsData as any)?.documents || [];
-  
-  // Format deleted documents for display
-  const formattedDeletedDocuments = deletedDocuments.map((doc: any) => ({
-    ...doc,
-    title: doc.title || doc.jobName || 'Untitled SWMS',
-    tradeType: doc.tradeType || 'General Construction',
-    projectLocation: doc.projectAddress || doc.projectLocation || 'Not specified',
-    activities: doc.activities || [],
-    deletedAt: doc.deletedAt
-  }));
+
 
   return (
     <div className="space-y-6">
