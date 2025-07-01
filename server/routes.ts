@@ -396,7 +396,24 @@ export async function registerRoutes(app: Express) {
       const draft = await storage.getSwmsDocumentById(draftId);
       if (draft) {
         console.log('Draft found:', draft.title || 'Untitled');
-        res.json(draft);
+        
+        // Map database field names (underscores) to frontend field names (camelCase)
+        const mappedDraft = {
+          ...draft,
+          principalContractor: draft.principal_contractor || draft.principalContractor || '',
+          projectManager: draft.project_manager || draft.projectManager || '',
+          siteSupervisor: draft.site_supervisor || draft.siteSupervisor || '',
+          swmsCreatorName: draft.swms_creator_name || draft.swmsCreatorName || '',
+          swmsCreatorPosition: draft.swms_creator_position || draft.swmsCreatorPosition || '',
+          jobName: draft.job_name || draft.jobName || draft.title || '',
+          jobNumber: draft.job_number || draft.jobNumber || '',
+          projectAddress: draft.project_address || draft.projectAddress || '',
+          projectLocation: draft.project_location || draft.projectLocation || '',
+          startDate: draft.start_date || draft.startDate || '',
+          tradeType: draft.trade_type || draft.tradeType || ''
+        };
+        
+        res.json(mappedDraft);
       } else {
         console.log('Draft not found');
         res.status(404).json({ error: "Draft not found" });
