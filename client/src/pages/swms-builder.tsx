@@ -158,6 +158,9 @@ export default function SwmsBuilder() {
     tradeType: "",
     swmsCreatorName: "", // Person creating and authorising SWMS
     swmsCreatorPosition: "", // Position of person creating SWMS
+    principalContractor: "", // Principal contractor field
+    projectManager: "", // Project manager field
+    siteSupervisor: "", // Site supervisor field
     activities: [],
     hazards: [],
     riskAssessments: [],
@@ -345,6 +348,8 @@ export default function SwmsBuilder() {
           projectLocation: data.projectLocation || '',
           startDate: data.startDate || '',
           principalContractor: data.principalContractor || '',
+          projectManager: data.projectManager || '',
+          siteSupervisor: data.siteSupervisor || '',
           swmsCreatorName: data.swmsCreatorName || '',
           swmsCreatorPosition: data.swmsCreatorPosition || '',
           workDescription: data.projectDescription || '',

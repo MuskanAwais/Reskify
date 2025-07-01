@@ -45,6 +45,8 @@ export const swmsDocuments = pgTable("swms_documents", {
   projectLocation: text("project_location").notNull(),
   projectDescription: text("project_description"),
   principalContractor: text("principal_contractor").notNull(),
+  projectManager: text("project_manager"),
+  siteSupervisor: text("site_supervisor"),
   swmsCreatorName: text("swms_creator_name"),
   swmsCreatorPosition: text("swms_creator_position"),
   signatureMethod: text("signature_method"), // 'upload' or 'type'
