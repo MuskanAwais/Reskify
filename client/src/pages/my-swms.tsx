@@ -83,6 +83,7 @@ export default function MySwms() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/swms"] });
       queryClient.invalidateQueries({ queryKey: ["/api/swms/deleted"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
       toast({
         title: "Document Moved to Recycling Bin",
         description: "SWMS document has been moved to recycling bin.",
@@ -96,6 +97,7 @@ export default function MySwms() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/swms"] });
       queryClient.invalidateQueries({ queryKey: ["/api/swms/deleted"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
       // Switch back to active tab to show restored document
       setActiveTab("active");
       toast({
@@ -114,9 +116,10 @@ export default function MySwms() {
 
   // Permanently delete document
   const permanentDeleteMutation = useMutation({
-    mutationFn: (id: number) => apiRequest("DELETE", `/api/swms/permanent-delete/${id}`, {}),
+    mutationFn: (id: number) => apiRequest("DELETE", `/api/swms/${id}/permanent`, {}),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/swms/deleted"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
       toast({
         title: "Document Permanently Deleted",
         description: "SWMS document has been permanently deleted and cannot be recovered.",

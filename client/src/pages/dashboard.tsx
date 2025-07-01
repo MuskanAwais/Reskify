@@ -22,7 +22,15 @@ import {
 export default function Dashboard() {
   const { user } = useUser();
 
-  const { data: dashboardData, isLoading } = useQuery({
+  const { data: dashboardData, isLoading } = useQuery<{
+    draftSwms: number;
+    completedSwms: number;
+    totalSwms: number;
+    credits: number;
+    subscription: string;
+    recentSwms: any[];
+    recentDocuments: any[];
+  }>({
     queryKey: [`/api/dashboard/${user?.id || 999}`],
     enabled: true, // Always enabled, use demo user ID
   });
