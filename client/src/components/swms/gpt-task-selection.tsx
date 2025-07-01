@@ -203,7 +203,7 @@ interface GeneratedSWMSData {
 
 interface GPTTaskSelectionProps {
   projectDetails: ProjectDetails;
-  onActivitiesGenerated: (activities: any[], plantEquipment: any[]) => void;
+  onActivitiesGenerated: (activities: any[], plantEquipment: any[], workDescription?: string) => void;
   onMethodSelected: (method: string) => void;
   savedWorkDescription?: string;
   savedActivities?: any[];
@@ -363,7 +363,7 @@ export default function GPTTaskSelection({
         const allPlantEquipment = [...convertedPlantEquipment, ...autoPlantEquipment];
 
         setTimeout(() => {
-          onActivitiesGenerated(convertedActivities, allPlantEquipment);
+          onActivitiesGenerated(convertedActivities, allPlantEquipment, plainTextDescription);
           toast({
             title: "SWMS Generated Successfully",
             description: `Generated ${convertedActivities.length} tasks with ${allPlantEquipment.length} equipment items auto-populated. You can edit them below before finalizing.`,

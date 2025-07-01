@@ -572,7 +572,7 @@ const StepContent = ({ step, formData, onDataChange, onNext }: StepContentProps)
             }}
             savedWorkDescription={formData.workDescription || formData.projectDescription || ''}
             savedActivities={formData.activities || []}
-            onActivitiesGenerated={(activities: any[], plantEquipment: any[]) => {
+            onActivitiesGenerated={(activities: any[], plantEquipment: any[], workDescription?: string) => {
               // Auto-detect PPE based on AI-generated activities
               const activityTexts = activities.map(activity => 
                 `${activity.name || ''} ${activity.description || ''} ${
@@ -620,12 +620,19 @@ const StepContent = ({ step, formData, onDataChange, onNext }: StepContentProps)
               
               console.log('Detected PPE:', Array.from(detectedPPE));
               
-              updateFormData({ 
+              const updateData: any = { 
                 selectedTasks: activities,
                 plantEquipment: plantEquipment,
                 ppeRequirements: Array.from(detectedPPE),
                 generationMethod: 'gpt'
-              });
+              };
+              
+              // Save work description if provided
+              if (workDescription) {
+                updateData.workDescription = workDescription;
+              }
+              
+              updateFormData(updateData);
             }}
             onMethodSelected={(method: string) => {
               updateFormData({ generationMethod: method });
