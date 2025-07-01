@@ -371,13 +371,22 @@ export class DatabaseStorage implements IStorage {
       const userId = data.userId || 999;
       const title = data.projectName || data.jobName || data.tradeType || 'Draft SWMS';
       
-      // Always look for existing draft for this user (only one draft per user)
-      const existingDrafts = await db
-        .select()
-        .from(swmsDocuments)
-        .where(and(eq(swmsDocuments.userId, userId), eq(swmsDocuments.status, 'draft')));
+      // Check if this is updating a specific draft (has draftId) or creating new
+      let existingDraft = null;
       
-      const existingDraft = existingDrafts[0]; // Get the first (and should be only) draft
+      if (data.draftId) {
+        // Update specific draft by ID
+        const [draft] = await db
+          .select()
+          .from(swmsDocuments)
+          .where(and(
+            eq(swmsDocuments.id, data.draftId),
+            eq(swmsDocuments.userId, userId),
+            eq(swmsDocuments.status, 'draft')
+          ));
+        existingDraft = draft;
+      }
+      // If no draftId, always create a new document (don't look for existing drafts)
 
       const swmsData = {
         userId,
@@ -405,7 +414,7 @@ export class DatabaseStorage implements IStorage {
       };
 
       if (existingDraft) {
-        // Update the single existing draft
+        // Update the specific existing draft
         const [updatedDoc] = await db
           .update(swmsDocuments)
           .set(swmsData)
@@ -414,7 +423,7 @@ export class DatabaseStorage implements IStorage {
         console.log('SWMS draft updated:', updatedDoc.id);
         return updatedDoc;
       } else {
-        // Create new draft (first time for this user)
+        // Create new draft - either first time or new document
         const [savedDoc] = await db.insert(swmsDocuments).values(swmsData).returning();
         console.log('SWMS draft created:', savedDoc.id);
         return savedDoc;

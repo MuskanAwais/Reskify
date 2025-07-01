@@ -138,48 +138,24 @@ export default function MySwms() {
 
         console.log('Sending data to RiskTemplateBuilder:', templateBuilderData);
 
-        // Try RiskTemplateBuilder first, fallback to local generation if it fails
-        let pdfBlob;
+        // Send to RiskTemplateBuilder for PDF generation
+        const response = await fetch('https://risktemplatebuilder--3000.prod1a.defang.dev/api/generate-pdf', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(templateBuilderData)
+        });
+
+        if (!response.ok) {
+          throw new Error(`RiskTemplateBuilder failed: ${response.status}`);
+        }
+
+        // Get the PDF blob from RiskTemplateBuilder
+        const pdfBlob = await response.blob();
         
-        try {
-          const response = await fetch('https://risktemplatebuilder--3000.prod1a.defang.dev/api/generate-pdf', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(templateBuilderData)
-          });
-
-          if (response.ok) {
-            pdfBlob = await response.blob();
-            if (pdfBlob.size > 0) {
-              console.log('RiskTemplateBuilder PDF generated successfully');
-            } else {
-              throw new Error('Empty PDF from RiskTemplateBuilder');
-            }
-          } else {
-            throw new Error(`RiskTemplateBuilder returned ${response.status}`);
-          }
-        } catch (riskTemplateError) {
-          console.warn('RiskTemplateBuilder failed, using local fallback:', riskTemplateError);
-          
-          // Fallback to local PDF generation
-          const fallbackResponse = await fetch('/api/swms/pdf-download', {
-            method: 'POST',
-            credentials: 'include',
-            headers: {
-              'Content-Type': 'application/json',
-              'Accept': 'application/pdf',
-            },
-            body: JSON.stringify(templateBuilderData)
-          });
-
-          if (!fallbackResponse.ok) {
-            throw new Error(`Both RiskTemplateBuilder and local generation failed`);
-          }
-
-          pdfBlob = await fallbackResponse.blob();
-          console.log('Local PDF fallback generated successfully');
+        if (pdfBlob.size === 0) {
+          throw new Error('Empty PDF received from RiskTemplateBuilder');
         }
 
         // Download the PDF
