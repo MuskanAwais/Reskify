@@ -56,6 +56,11 @@ export default function MySwms() {
     enabled: !!user,
   });
 
+  const { data: deletedDocumentsData, isLoading: isLoadingDeleted } = useQuery({
+    queryKey: ["/api/swms/deleted"],
+    enabled: !!user && activeTab === "deleted"
+  });
+
   // Get documents array from API response
   const documents = (documentsData as any)?.documents || [];
   
@@ -75,9 +80,34 @@ export default function MySwms() {
     mutationFn: (id: number) => apiRequest("DELETE", `/api/swms/${id}`, {}),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/swms"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/swms/deleted"] });
       toast({
-        title: "Document Deleted",
-        description: "SWMS document has been successfully deleted.",
+        title: "Document Moved to Recycling Bin",
+        description: "SWMS document has been moved to recycling bin.",
+      });
+    },
+  });
+
+  const restoreDocumentMutation = useMutation({
+    mutationFn: (id: number) => apiRequest("POST", `/api/swms/${id}/restore`, {}),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/swms"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/swms/deleted"] });
+      toast({
+        title: "Document Restored",
+        description: "SWMS document has been successfully restored.",
+      });
+    },
+  });
+
+  const permanentDeleteMutation = useMutation({
+    mutationFn: (id: number) => apiRequest("DELETE", `/api/swms/${id}/permanent`, {}),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/swms/deleted"] });
+      toast({
+        title: "Document Permanently Deleted",
+        description: "SWMS document has been permanently deleted and cannot be recovered.",
+        variant: "destructive"
       });
     },
   });
@@ -331,6 +361,19 @@ export default function MySwms() {
     );
   }
 
+  // Get deleted documents array from API response
+  const deletedDocuments = (deletedDocumentsData as any)?.documents || [];
+  
+  // Format deleted documents for display
+  const formattedDeletedDocuments = deletedDocuments.map((doc: any) => ({
+    ...doc,
+    title: doc.title || doc.jobName || 'Untitled SWMS',
+    tradeType: doc.tradeType || 'General Construction',
+    projectLocation: doc.projectAddress || doc.projectLocation || 'Not specified',
+    activities: doc.activities || [],
+    deletedAt: doc.deletedAt
+  }));
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -347,10 +390,24 @@ export default function MySwms() {
         </Link>
       </div>
 
-      {/* Filters */}
-      <Card>
-        <CardContent className="pt-6">
-          <div className="flex flex-col md:flex-row gap-4">
+      {/* Tabs for Active Documents and Recycling Bin */}
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="active" className="flex items-center gap-2">
+            <FileText className="h-4 w-4" />
+            Active Documents ({formattedDocuments.length})
+          </TabsTrigger>
+          <TabsTrigger value="deleted" className="flex items-center gap-2">
+            <Archive className="h-4 w-4" />
+            Recycling Bin ({formattedDeletedDocuments.length})
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="active" className="mt-6 space-y-6">
+          {/* Filters for Active Documents */}
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -506,6 +563,78 @@ export default function MySwms() {
           ))}
         </div>
       )}
+        </TabsContent>
+
+        <TabsContent value="deleted" className="mt-6 space-y-6">
+          {formattedDeletedDocuments.length === 0 ? (
+            <Card>
+              <CardContent className="pt-6">
+                <div className="text-center py-12">
+                  <Archive className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">Recycling Bin is Empty</h3>
+                  <p className="text-gray-600">No deleted SWMS documents found.</p>
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {formattedDeletedDocuments.map((doc: any) => (
+                <Card key={doc.id} className="border-red-200">
+                  <CardHeader className="pb-3">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <CardTitle className="text-lg text-gray-700">{doc.title}</CardTitle>
+                        <p className="text-sm text-gray-500 mt-1">{doc.tradeType}</p>
+                      </div>
+                      <Badge variant="destructive" className="ml-2">Deleted</Badge>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2 text-sm text-gray-600">
+                      <div className="flex items-center gap-2">
+                        <Calendar className="h-4 w-4" />
+                        <span>Deleted: {new Date(doc.deletedAt).toLocaleDateString()}</span>
+                      </div>
+                      {doc.projectLocation && (
+                        <div className="flex items-center gap-2">
+                          <Shield className="h-4 w-4" />
+                          <span>{doc.projectLocation}</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex gap-2 mt-4">
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => restoreDocumentMutation.mutate(doc.id)}
+                        disabled={restoreDocumentMutation.isPending}
+                        className="flex-1"
+                      >
+                        <RotateCcw className="mr-2 h-4 w-4" />
+                        Restore
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="destructive"
+                        onClick={() => {
+                          if (confirm('Are you sure you want to permanently delete this document? This action cannot be undone.')) {
+                            permanentDeleteMutation.mutate(doc.id);
+                          }
+                        }}
+                        disabled={permanentDeleteMutation.isPending}
+                        className="flex-1"
+                      >
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Delete Forever
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
