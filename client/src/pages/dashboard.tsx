@@ -23,8 +23,8 @@ export default function Dashboard() {
   const { user } = useUser();
 
   const { data: dashboardData, isLoading } = useQuery({
-    queryKey: [`/api/dashboard/${user?.id || 2}`],
-    enabled: true, // Always enabled, use fallback user ID
+    queryKey: [`/api/dashboard/${user?.id || 999}`],
+    enabled: true, // Always enabled, use demo user ID
   });
 
 

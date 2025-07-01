@@ -13,6 +13,8 @@ import {
   CheckCircle,
   Clock,
   Filter,
+  AlertCircle,
+  MapPin,
   Search,
   Plus,
   RotateCcw,
@@ -90,13 +92,15 @@ export default function MySwms() {
 
   // Restore document from recycling bin
   const restoreDocumentMutation = useMutation({
-    mutationFn: (id: number) => apiRequest("POST", `/api/swms/restore/${id}`, {}),
+    mutationFn: (id: number) => apiRequest("POST", `/api/swms/${id}/restore`, {}),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/swms"] });
       queryClient.invalidateQueries({ queryKey: ["/api/swms/deleted"] });
+      // Switch back to active tab to show restored document
+      setActiveTab("active");
       toast({
         title: "Document Restored",
-        description: "SWMS document has been successfully restored.",
+        description: "SWMS document has been successfully restored and moved to active documents.",
       });
     },
     onError: () => {
@@ -584,6 +588,18 @@ export default function MySwms() {
         </TabsContent>
 
         <TabsContent value="deleted" className="mt-6 space-y-6">
+          {/* 30-day deletion notice */}
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
+            <div className="flex items-center gap-2 text-amber-800">
+              <AlertCircle className="h-5 w-5" />
+              <span className="font-medium">Auto-deletion Notice</span>
+            </div>
+            <p className="text-amber-700 mt-1 text-sm">
+              Documents in the recycling bin will be permanently deleted after 30 days. 
+              Restore important documents before they are automatically removed.
+            </p>
+          </div>
+
           {formattedDeletedDocuments.length === 0 ? (
             <Card>
               <CardContent className="pt-6">
@@ -597,38 +613,38 @@ export default function MySwms() {
           ) : (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {formattedDeletedDocuments.map((doc: any) => (
-                <Card key={doc.id} className="border-red-200">
+                <Card key={doc.id} className="border-red-200 hover:shadow-md transition-shadow">
                   <CardHeader className="pb-3">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
-                        <CardTitle className="text-lg text-gray-700">{doc.title}</CardTitle>
+                        <CardTitle className="text-lg text-gray-700 line-clamp-2">{doc.title}</CardTitle>
                         <p className="text-sm text-gray-500 mt-1">{doc.tradeType}</p>
                       </div>
-                      <Badge variant="destructive" className="ml-2">Deleted</Badge>
+                      <Badge variant="destructive" className="ml-2 shrink-0">Deleted</Badge>
                     </div>
                   </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2 text-sm text-gray-600">
+                  <CardContent className="pt-0">
+                    <div className="space-y-2 text-sm text-gray-600 mb-4">
                       <div className="flex items-center gap-2">
-                        <Calendar className="h-4 w-4" />
+                        <Calendar className="h-4 w-4 text-gray-400" />
                         <span>Deleted: {new Date(doc.deletedAt).toLocaleDateString()}</span>
                       </div>
                       {doc.projectLocation && (
                         <div className="flex items-center gap-2">
-                          <Shield className="h-4 w-4" />
-                          <span>{doc.projectLocation}</span>
+                          <MapPin className="h-4 w-4 text-gray-400" />
+                          <span className="truncate">{doc.projectLocation}</span>
                         </div>
                       )}
                     </div>
-                    <div className="flex gap-2 mt-4">
+                    <div className="flex gap-2">
                       <Button 
                         size="sm" 
                         variant="outline"
                         onClick={() => restoreDocumentMutation.mutate(doc.id)}
                         disabled={restoreDocumentMutation.isPending}
-                        className="flex-1"
+                        className="flex-1 text-xs"
                       >
-                        <RotateCcw className="mr-2 h-4 w-4" />
+                        <RotateCcw className="mr-1 h-3 w-3" />
                         Restore
                       </Button>
                       <Button 
@@ -640,9 +656,9 @@ export default function MySwms() {
                           }
                         }}
                         disabled={permanentDeleteMutation.isPending}
-                        className="flex-1"
+                        className="flex-1 text-xs"
                       >
-                        <Trash2 className="mr-2 h-4 w-4" />
+                        <Trash2 className="mr-1 h-3 w-3" />
                         Delete Forever
                       </Button>
                     </div>
