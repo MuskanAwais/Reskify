@@ -80,71 +80,86 @@ export default function MySwms() {
 
   const downloadDocumentMutation = useMutation({
     mutationFn: async (swmsDocument: any) => {
-      console.log('Starting PDF download for:', swmsDocument.title || swmsDocument.jobName);
+      console.log('Starting RiskTemplateBuilder PDF download for:', swmsDocument.title || swmsDocument.jobName);
       
       try {
-        // Use the comprehensive PDF generation endpoint
-        const response = await fetch('/api/swms/pdf-download', {
+        // Prepare comprehensive data for RiskTemplateBuilder - same as live preview
+        const templateBuilderData = {
+          // Project Information
+          project_name: swmsDocument.title || swmsDocument.jobName || '',
+          job_number: swmsDocument.jobNumber || '',
+          project_address: swmsDocument.projectAddress || swmsDocument.projectLocation || '',
+          principal_contractor: swmsDocument.principalContractor || '',
+          project_manager: swmsDocument.projectManager || '',
+          site_supervisor: swmsDocument.siteSupervisor || '',
+          
+          // Creator Information
+          swms_creator_name: swmsDocument.swmsCreatorName || '',
+          swms_creator_position: swmsDocument.swmsCreatorPosition || '',
+          
+          // Company Logo
+          company_logo: swmsDocument.companyLogo || '',
+          
+          // Work Activities with proper structure
+          work_activities: (swmsDocument.workActivities || []).map((activity: any) => ({
+            activity: activity.activity || activity.description || '',
+            hazards: Array.isArray(activity.hazards) ? activity.hazards.join(', ') : (activity.hazards || ''),
+            initial_risk: activity.initialRisk || activity.riskLevel || 'Medium',
+            control_measures: Array.isArray(activity.controlMeasures) ? activity.controlMeasures.join(', ') : (activity.controlMeasures || ''),
+            residual_risk: activity.residualRisk || activity.finalRiskLevel || 'Low',
+            legislation: activity.legislation || 'WHS Act 2011, WHS Regulation 2017'
+          })),
+          
+          // Plant and Equipment
+          plant_equipment: (swmsDocument.plantEquipment || []).map((equipment: any) => ({
+            equipment: equipment.equipment || equipment.name || '',
+            risk_level: equipment.riskLevel || 'Low',
+            next_inspection: equipment.nextInspection || 'As Required',
+            certification_required: equipment.certificationRequired ? 'Required' : 'Not Required'
+          })),
+          
+          // PPE Requirements
+          ppe_requirements: swmsDocument.ppeRequirements || [],
+          
+          // HRCW Categories
+          hrcw_categories: swmsDocument.hrcwCategories || [],
+          
+          // Emergency Procedures
+          emergency_contact: swmsDocument.emergencyProcedures?.emergencyContact || '',
+          evacuation_procedure: swmsDocument.emergencyProcedures?.evacuationProcedure || '',
+          
+          // Risk Assessment Summary
+          overall_risk_level: swmsDocument.overallRiskLevel || 'Medium',
+          
+          // Dates
+          start_date: swmsDocument.startDate || new Date().toISOString().split('T')[0],
+          created_date: new Date().toISOString().split('T')[0]
+        };
+
+        console.log('Sending data to RiskTemplateBuilder:', templateBuilderData);
+
+        // Send to RiskTemplateBuilder for PDF generation
+        const response = await fetch('https://risktemplatebuilder--3000.prod1a.defang.dev/api/generate-pdf', {
           method: 'POST',
-          credentials: 'include',
           headers: {
             'Content-Type': 'application/json',
-            'Accept': 'application/pdf',
           },
-          body: JSON.stringify({
-            title: swmsDocument.title || swmsDocument.jobName,
-            projectName: swmsDocument.title || swmsDocument.jobName,
-            projectNumber: swmsDocument.jobNumber,
-            projectAddress: swmsDocument.projectAddress || swmsDocument.projectLocation,
-            companyName: swmsDocument.principalContractor,
-            principalContractor: swmsDocument.principalContractor,
-            swmsData: swmsDocument.swmsData || {
-              activities: swmsDocument.workActivities || [],
-              plantEquipment: swmsDocument.plantEquipment || [],
-              emergencyProcedures: swmsDocument.emergencyProcedures || {}
-            },
-            formData: {
-              jobName: swmsDocument.title || swmsDocument.jobName,
-              jobNumber: swmsDocument.jobNumber,
-              projectLocation: swmsDocument.projectAddress || swmsDocument.projectLocation,
-              principalContractor: swmsDocument.principalContractor,
-              supervisorName: swmsDocument.responsiblePersons?.supervisor || 'N/A',
-              supervisorPhone: swmsDocument.responsiblePersons?.phone || 'N/A'
-            }
-          })
+          body: JSON.stringify(templateBuilderData)
         });
 
-        console.log('Response status:', response.status);
-        console.log('Response headers:', Object.fromEntries(response.headers.entries()));
-
         if (!response.ok) {
-          const errorText = await response.text();
-          console.error('PDF generation failed:', errorText);
-          throw new Error(`Failed to generate PDF: ${response.status}`);
+          throw new Error(`RiskTemplateBuilder failed: ${response.status}`);
         }
 
-        // Check if response is actually a PDF
-        const contentType = response.headers.get('content-type');
-        console.log('Content type:', contentType);
+        // Get the PDF blob from RiskTemplateBuilder
+        const pdfBlob = await response.blob();
         
-        if (!contentType || !contentType.includes('application/pdf')) {
-          console.error('Response is not a PDF:', contentType);
-          const responseText = await response.text();
-          console.error('Response body:', responseText);
-          throw new Error('Server returned invalid response format');
+        if (pdfBlob.size === 0) {
+          throw new Error('Empty PDF received from RiskTemplateBuilder');
         }
 
-        // Get response as ArrayBuffer for proper binary handling
-        const arrayBuffer = await response.arrayBuffer();
-        console.log('ArrayBuffer size:', arrayBuffer.byteLength, 'bytes');
-        
-        if (arrayBuffer.byteLength === 0) {
-          throw new Error('Empty PDF received from server');
-        }
-
-        // Create blob with explicit PDF MIME type
-        const blob = new Blob([arrayBuffer], { type: 'application/pdf' });
-        const url = URL.createObjectURL(blob);
+        // Download the PDF
+        const url = URL.createObjectURL(pdfBlob);
         const a = document.createElement('a');
         a.href = url;
         a.download = `${(swmsDocument.title || swmsDocument.jobName).replace(/[^a-z0-9]/gi, '_').toLowerCase()}_swms.pdf`;
@@ -153,10 +168,10 @@ export default function MySwms() {
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
         
-        console.log('PDF download completed successfully');
+        console.log('RiskTemplateBuilder PDF download completed successfully');
         return { success: true };
       } catch (error) {
-        console.error('PDF download error:', error);
+        console.error('RiskTemplateBuilder PDF download error:', error);
         throw error;
       }
     },
