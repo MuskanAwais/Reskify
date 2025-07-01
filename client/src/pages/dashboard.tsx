@@ -22,7 +22,7 @@ import {
 export default function Dashboard() {
   const { user } = useUser();
 
-  const { data: dashboardData, isLoading } = useQuery<{
+  const { data: dashboardData, isLoading, error } = useQuery<{
     draftSwms: number;
     completedSwms: number;
     totalSwms: number;
@@ -33,7 +33,14 @@ export default function Dashboard() {
   }>({
     queryKey: [`/api/dashboard/${user?.id || 999}`],
     enabled: true, // Always enabled, use demo user ID
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
   });
+
+  // Debug logging
+  console.log('Dashboard data:', dashboardData);
+  console.log('Dashboard error:', error);
+  console.log('Dashboard loading:', isLoading);
 
 
 
