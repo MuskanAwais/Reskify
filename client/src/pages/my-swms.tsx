@@ -195,8 +195,8 @@ export default function MySwms() {
 
         console.log('Sending data to RiskTemplateBuilder:', templateBuilderData);
 
-        // Send to RiskTemplateBuilder for PDF generation
-        const response = await fetch('https://risktemplatebuilder--3000.prod1a.defang.dev/api/generate-pdf', {
+        // Send to our server endpoint which handles RiskTemplateBuilder integration
+        const response = await fetch('/api/swms/pdf-download', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -205,14 +205,15 @@ export default function MySwms() {
         });
 
         if (!response.ok) {
-          throw new Error(`RiskTemplateBuilder failed: ${response.status}`);
+          const errorText = await response.text();
+          throw new Error(`PDF generation failed: ${response.status} - ${errorText}`);
         }
 
-        // Get the PDF blob from RiskTemplateBuilder
+        // Get the PDF blob from our server
         const pdfBlob = await response.blob();
         
         if (pdfBlob.size === 0) {
-          throw new Error('Empty PDF received from RiskTemplateBuilder');
+          throw new Error('Empty PDF received from server');
         }
 
         // Download the PDF

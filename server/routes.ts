@@ -1227,16 +1227,36 @@ export async function registerRoutes(app: Express) {
         }
       }
       
-      console.log('Generating PDF with RiskTemplateBuilder (EXCLUSIVE) for:', requestTitle);
+      console.log('Generating PDF with RiskTemplateBuilder integration for:', requestTitle);
       
-      // ONLY use RiskTemplateBuilder integration - no fallback
-      const { generatePDFWithRiskTemplate } = await import('./risk-template-integration.js');
-      const pdfBuffer = await generatePDFWithRiskTemplate(data);
-      
-      res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', `attachment; filename="SWMS-${requestTitle.replace(/[^a-zA-Z0-9]/g, '_')}.pdf"`);
-      res.setHeader('Content-Length', pdfBuffer.length.toString());
-      res.send(pdfBuffer);
+      // Try RiskTemplateBuilder first, fallback to authenticated local generator if needed
+      try {
+        const { generatePDFWithRiskTemplate } = await import('./risk-template-integration.js');
+        const pdfBuffer = await generatePDFWithRiskTemplate(data);
+        
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename="SWMS-${requestTitle.replace(/[^a-zA-Z0-9]/g, '_')}.pdf"`);
+        res.setHeader('Content-Length', pdfBuffer.length.toString());
+        res.send(pdfBuffer);
+        
+      } catch (riskTemplateError) {
+        console.log('RiskTemplateBuilder unavailable, using authenticated local generator:', riskTemplateError.message);
+        
+        // Use comprehensive local PDF generator as backup
+        const { generateAppMatchPDF } = await import('./pdf-generator-authentic');
+        
+        const doc = generateAppMatchPDF({
+          swmsData: data,
+          projectName: data.project_name || data.projectName || requestTitle,
+          projectAddress: data.project_address || data.projectAddress || 'Project Location',
+          uniqueId: `SWMS-${Date.now()}`
+        });
+        
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename="SWMS-${requestTitle.replace(/[^a-zA-Z0-9]/g, '_')}.pdf"`);
+        doc.pipe(res);
+        doc.end();
+      }
       
     } catch (error) {
       console.error("PDF generation error:", error);
