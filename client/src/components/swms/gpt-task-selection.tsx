@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -205,12 +205,16 @@ interface GPTTaskSelectionProps {
   projectDetails: ProjectDetails;
   onActivitiesGenerated: (activities: any[], plantEquipment: any[]) => void;
   onMethodSelected: (method: string) => void;
+  savedWorkDescription?: string;
+  savedActivities?: any[];
 }
 
 export default function GPTTaskSelection({ 
   projectDetails, 
   onActivitiesGenerated, 
-  onMethodSelected 
+  onMethodSelected,
+  savedWorkDescription = '',
+  savedActivities = []
 }: GPTTaskSelectionProps) {
   const { toast } = useToast();
   const { user } = useAuth();
@@ -233,6 +237,18 @@ export default function GPTTaskSelection({
   const [isEditing, setIsEditing] = useState(false);
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
   const [editingTask, setEditingTask] = useState<any>(null);
+
+  // Initialize component with saved data when available
+  useEffect(() => {
+    if (savedWorkDescription) {
+      setPlainTextDescription(savedWorkDescription);
+      console.log('Restored job description:', savedWorkDescription);
+    }
+    if (savedActivities && savedActivities.length > 0) {
+      setGeneratedTasks(savedActivities);
+      console.log('Restored saved activities:', savedActivities);
+    }
+  }, [savedWorkDescription, savedActivities]);
 
   // Risk matrix mapping
   const getRiskDescription = (score: number): string => {
