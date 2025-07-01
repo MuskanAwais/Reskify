@@ -281,8 +281,8 @@ export async function registerRoutes(app: Express) {
         draftSwms: drafts,
         completedSwms: completed,
         totalSwms: userSwms.length,
-        credits: user?.credits || 0,
-        subscription: user?.subscription || 'trial',
+        credits: user?.creditsBalance || 10,
+        subscription: user?.subscriptionType || 'trial',
         recentSwms,
         recentDocuments: recentSwms
       });
