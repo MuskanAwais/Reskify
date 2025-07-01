@@ -318,7 +318,7 @@ export default function GPTTaskSelection({
         // Convert generated data to the format expected by the parent component
         const convertedActivities = data.data.activities.map((activity: any, index: number) => ({
           id: `activity-${index + 1}`,
-          name: activity.name,
+          name: activity.name || activity.task,
           description: activity.description,
           hazards: activity.hazards,
           ppe: activity.ppe,
