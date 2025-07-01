@@ -214,12 +214,16 @@ Generate tasks that specifically address these high-risk elements with comprehen
       throw new Error('Invalid response structure: missing activities array');
     }
     
-    // CRITICAL: Enforce minimum 8 tasks for compliance
-    if (result.activities.length < 8) {
-      console.log(`Generated ${result.activities.length} tasks, enforcing 8 minimum for compliance`);
-      
-      // Add standard compliance tasks to reach minimum 8
-      const standardTasks = [
+    // Accept the AI-generated trade-specific tasks without adding generic fallbacks
+    if (result.activities.length < 6) {
+      console.log(`Generated only ${result.activities.length} tasks - AI should generate more trade-specific tasks`);
+    } else {
+      console.log(`Generated ${result.activities.length} trade-specific tasks`);
+    }
+    
+    // Remove the generic fallback system that was adding irrelevant construction tasks
+    if (false) { // Disabled fallback system
+      const disabledStandardTasks = [
         {
           id: `compliance-task-${result.activities.length + 1}`,
           name: "Site Setup and Access Control",
@@ -294,10 +298,8 @@ Generate tasks that specifically address these high-risk elements with comprehen
         }
       ];
       
-      // Add tasks until we reach 8 minimum
-      while (result.activities.length < 8 && standardTasks.length > 0) {
-        result.activities.push(standardTasks.shift());
-      }
+      // Disabled: No longer adding generic construction tasks
+      // The disabledStandardTasks array above is not used anymore
     }
     
     console.log(`Riskify AI response received successfully with ${result.activities.length} tasks`);
