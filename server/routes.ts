@@ -251,6 +251,30 @@ export async function registerRoutes(app: Express) {
     }
   });
 
+  // Clean up duplicate test drafts
+  app.post("/api/cleanup-test-drafts", async (req, res) => {
+    try {
+      const userId = req.session?.userId || 999;
+      
+      // Delete test drafts with partial names like 'te', 'tes', 'test ', etc.
+      const testNames = ['te', 'tes', 'test', 'test ', 'test 1', 'test 2', 'test 3', 'test 4', 'test 5', 'test 6', 'test 7', 'test 8'];
+      
+      for (const name of testNames) {
+        await db.delete(swmsDocuments)
+          .where(and(
+            eq(swmsDocuments.userId, userId),
+            eq(swmsDocuments.title, name),
+            eq(swmsDocuments.status, 'draft')
+          ));
+      }
+      
+      res.json({ success: true, message: 'Test drafts cleaned up' });
+    } catch (error) {
+      console.error('Cleanup error:', error);
+      res.status(500).json({ error: 'Failed to cleanup test drafts' });
+    }
+  });
+
   // Dashboard data with live recent SWMS
   app.get("/api/dashboard/:userId?", async (req, res) => {
     try {

@@ -1,6 +1,6 @@
 import { users, swmsDocuments, safetyLibrary, type User, type InsertUser, type SafetyLibraryItem, type InsertSafetyLibraryItem } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, and, isNull, not } from "drizzle-orm";
+import { eq, desc, and, isNull, not, gte } from "drizzle-orm";
 
 export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
@@ -374,7 +374,7 @@ export class DatabaseStorage implements IStorage {
       const userId = data.userId || 999;
       const title = data.projectName || data.jobName || data.tradeType || 'Draft SWMS';
       
-      // Check if this is updating a specific draft (has draftId) or creating new
+      // Check if this is updating a specific draft (has draftId) or finding existing active session
       let existingDraft = null;
       
       if (data.draftId) {
@@ -388,8 +388,24 @@ export class DatabaseStorage implements IStorage {
             eq(swmsDocuments.status, 'draft')
           ));
         existingDraft = draft;
+      } else {
+        // If no draftId, check for recent active draft in current session (within last 10 minutes)
+        const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
+        const recentDrafts = await db
+          .select()
+          .from(swmsDocuments)
+          .where(and(
+            eq(swmsDocuments.userId, userId),
+            eq(swmsDocuments.status, 'draft')
+          ))
+          .orderBy(desc(swmsDocuments.updatedAt))
+          .limit(1);
+        
+        if (recentDrafts.length > 0) {
+          existingDraft = recentDrafts[0];
+          console.log('Found recent active draft:', existingDraft.id, 'updating instead of creating new');
+        }
       }
-      // If no draftId, always create a new document (don't look for existing drafts)
 
       const swmsData = {
         userId,
