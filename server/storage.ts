@@ -378,7 +378,7 @@ export class DatabaseStorage implements IStorage {
       let existingDraft = null;
       
       if (data.draftId) {
-        // Update specific draft by ID
+        // Update specific draft by ID - only when explicitly editing an existing draft
         const [draft] = await db
           .select()
           .from(swmsDocuments)
@@ -388,24 +388,9 @@ export class DatabaseStorage implements IStorage {
             eq(swmsDocuments.status, 'draft')
           ));
         existingDraft = draft;
-      } else {
-        // If no draftId, check for recent active draft in current session (within last 10 minutes)
-        const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
-        const recentDrafts = await db
-          .select()
-          .from(swmsDocuments)
-          .where(and(
-            eq(swmsDocuments.userId, userId),
-            eq(swmsDocuments.status, 'draft')
-          ))
-          .orderBy(desc(swmsDocuments.updatedAt))
-          .limit(1);
-        
-        if (recentDrafts.length > 0) {
-          existingDraft = recentDrafts[0];
-          console.log('Found recent active draft:', existingDraft.id, 'updating instead of creating new');
-        }
+        console.log('Updating existing draft:', data.draftId);
       }
+      // If no draftId provided, always create a new document
 
       const swmsData = {
         userId,
