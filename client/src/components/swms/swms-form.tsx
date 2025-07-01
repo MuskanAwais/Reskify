@@ -621,6 +621,7 @@ const StepContent = ({ step, formData, onDataChange, onNext }: StepContentProps)
               console.log('Detected PPE:', Array.from(detectedPPE));
               
               const updateData: any = { 
+                activities: activities,
                 selectedTasks: activities,
                 plantEquipment: plantEquipment,
                 ppeRequirements: Array.from(detectedPPE),
