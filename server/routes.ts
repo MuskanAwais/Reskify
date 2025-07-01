@@ -10,6 +10,9 @@ import { storage } from "./storage.js";
 import { generateExactPDF } from "./pdf-generator-figma-exact.js";
 import { generatePuppeteerPDF } from "./pdf-generator-puppeteer.js";
 import { generateSimplePDF } from "./pdf-generator-simple.js";
+import { db } from "./db.js";
+import { swmsDocuments } from "@shared/schema";
+import { eq, and, isNull } from "drizzle-orm";
 
 // Initialize Multer for file uploads
 const upload = multer({
@@ -400,6 +403,42 @@ export async function registerRoutes(app: Express) {
     } catch (error) {
       console.error("Get SWMS error:", error);
       res.json({ documents: [] });
+    }
+  });
+
+  // Delete SWMS document (move to recycling bin)
+  app.delete("/api/swms/:id", async (req, res) => {
+    try {
+      const swmsId = parseInt(req.params.id);
+      const userId = req.session?.userId || 999; // Demo user
+      
+      console.log(`Moving SWMS ${swmsId} to recycling bin for user ${userId}`);
+      
+      const now = new Date();
+      const permanentDeleteDate = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000); // 30 days from now
+      
+      await db.update(swmsDocuments)
+        .set({
+          deletedAt: now,
+          permanentDeleteAt: permanentDeleteDate,
+          updatedAt: now
+        })
+        .where(
+          and(
+            eq(swmsDocuments.id, swmsId),
+            eq(swmsDocuments.userId, userId)
+          )
+        );
+      
+      res.json({ 
+        success: true, 
+        message: "SWMS moved to recycling bin",
+        swmsId,
+        permanentDeleteDate: permanentDeleteDate.toISOString()
+      });
+    } catch (error) {
+      console.error('SWMS delete error:', error);
+      res.status(500).json({ error: 'Failed to delete SWMS' });
     }
   });
 
