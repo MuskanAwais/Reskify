@@ -171,30 +171,29 @@ export default function Dashboard() {
             ) : (
               <div className="space-y-4">
                 {((stats as any).recentDocuments || []).map((doc: any, index: number) => (
-                  <div key={index} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                    <div className="flex items-center space-x-4">
-                      <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-                        <FileText className="text-primary h-5 w-5" />
+                  <Link key={index} href={doc.status === 'draft' ? `/swms-builder?edit=${doc.id}` : `/my-swms`}>
+                    <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
+                      <div className="flex items-center space-x-4">
+                        <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                          <FileText className="text-primary h-5 w-5" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-gray-800">{doc.title}</p>
+                          <p className="text-sm text-gray-500">
+                            Modified {new Date(doc.updatedAt).toLocaleDateString()}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-medium text-gray-800">{doc.title}</p>
-                        <p className="text-sm text-gray-500">
-                          Modified {new Date(doc.updatedAt).toLocaleDateString()}
-                        </p>
+                      <div className="flex items-center space-x-2">
+                        <Badge 
+                          variant="secondary" 
+                          className={`status-${doc.status}`}
+                        >
+                          {doc.status.replace('_', ' ')}
+                        </Badge>
                       </div>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <Badge 
-                        variant="secondary" 
-                        className={`status-${doc.status}`}
-                      >
-                        {doc.status.replace('_', ' ')}
-                      </Badge>
-                      <Button variant="ghost" size="sm">
-                        <MoreVertical className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
             )}
