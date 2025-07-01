@@ -252,13 +252,17 @@ export async function registerRoutes(app: Express) {
   });
 
   // Dashboard data with live recent SWMS
-  app.get("/api/dashboard", async (req, res) => {
+  app.get("/api/dashboard/:userId?", async (req, res) => {
     try {
-      const userId = req.session?.userId || 999;
+      const userId = parseInt(req.params.userId) || req.session?.userId || 999;
+      
+      console.log(`Dashboard API called for user: ${userId}`);
       
       // Get user details for credits
       const user = await storage.getUser(userId);
       const userSwms = await storage.getUserSwms(userId);
+      
+      console.log(`User found: ${user?.username}, SWMS count: ${userSwms.length}, Credits: ${user?.swmsCredits}`);
       
       // Count drafts and completed
       const drafts = userSwms.filter(doc => doc.status === 'draft').length;
@@ -277,7 +281,7 @@ export async function registerRoutes(app: Express) {
           location: doc.projectLocation || doc.project_location || doc.projectAddress
         }));
       
-      res.json({
+      const responseData = {
         draftSwms: drafts,
         completedSwms: completed,
         totalSwms: userSwms.length,
@@ -285,7 +289,11 @@ export async function registerRoutes(app: Express) {
         subscription: user?.subscriptionType || 'trial',
         recentSwms,
         recentDocuments: recentSwms
-      });
+      };
+      
+      console.log('Dashboard response data:', responseData);
+      
+      res.json(responseData);
     } catch (error) {
       console.error("Dashboard error:", error);
       // Fallback with some sample data
