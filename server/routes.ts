@@ -1958,15 +1958,165 @@ export async function registerRoutes(app: Express) {
 
       const averageComplianceScore = 100; // Always 100% compliant
 
+      // 1. Daily/Weekly Activity Patterns
+      const activityPatterns = {
+        dailyCreation: {} as Record<string, number>,
+        weeklyCreation: {} as Record<string, number>,
+        monthlyCreation: {} as Record<string, number>
+      };
+
+      filteredSwms.forEach((swms: any) => {
+        const date = new Date(swms.createdAt || Date.now());
+        const dayName = date.toLocaleDateString('en-AU', { weekday: 'long' });
+        const monthName = date.toLocaleDateString('en-AU', { month: 'long' });
+        
+        // Daily patterns
+        activityPatterns.dailyCreation[dayName] = (activityPatterns.dailyCreation[dayName] || 0) + 1;
+        
+        // Monthly patterns
+        activityPatterns.monthlyCreation[monthName] = (activityPatterns.monthlyCreation[monthName] || 0) + 1;
+      });
+
+      // 2. Most Common Hazards Analysis
+      const hazardFrequency: Record<string, number> = {};
+      filteredSwms.forEach((swms: any) => {
+        if (swms.workActivities && Array.isArray(swms.workActivities)) {
+          swms.workActivities.forEach((activity: any) => {
+            if (activity.hazards && Array.isArray(activity.hazards)) {
+              activity.hazards.forEach((hazard: string) => {
+                const cleanHazard = hazard.trim();
+                if (cleanHazard) {
+                  hazardFrequency[cleanHazard] = (hazardFrequency[cleanHazard] || 0) + 1;
+                }
+              });
+            }
+          });
+        }
+      });
+
+      // 3. High-Risk Construction Work (HRCW) Categories
+      const hrcwFrequency: Record<string, number> = {};
+      const hrcwCategories = [
+        'Scaffolding work', 'Structural steelwork', 'Demolition work', 'Excavation work',
+        'Concrete work', 'Work in confined spaces', 'Work at height', 'Electrical work',
+        'Asbestos removal', 'Crane and lifting operations', 'Traffic management',
+        'Hot works', 'Work over water', 'Diving work', 'Tunnelling work',
+        'Tilt-up and precast concrete', 'Pressure equipment work', 'Work in extreme weather'
+      ];
+
+      filteredSwms.forEach((swms: any) => {
+        if (swms.hrcwCategories && Array.isArray(swms.hrcwCategories)) {
+          swms.hrcwCategories.forEach((categoryIndex: number) => {
+            const categoryName = hrcwCategories[categoryIndex] || `Category ${categoryIndex}`;
+            hrcwFrequency[categoryName] = (hrcwFrequency[categoryName] || 0) + 1;
+          });
+        }
+      });
+
+      // 4. Location Analysis
+      const locationFrequency: Record<string, number> = {};
+      filteredSwms.forEach((swms: any) => {
+        if (swms.projectLocation) {
+          // Extract city/suburb from location
+          const location = swms.projectLocation.split(',')[0].trim();
+          locationFrequency[location] = (locationFrequency[location] || 0) + 1;
+        }
+      });
+
+      // 5. Equipment Usage Patterns
+      const equipmentFrequency: Record<string, number> = {};
+      filteredSwms.forEach((swms: any) => {
+        if (swms.plantEquipment && Array.isArray(swms.plantEquipment)) {
+          swms.plantEquipment.forEach((equipment: any) => {
+            if (equipment.name) {
+              equipmentFrequency[equipment.name] = (equipmentFrequency[equipment.name] || 0) + 1;
+            }
+          });
+        }
+      });
+
+      // 6. PPE Requirements Analysis
+      const ppeFrequency: Record<string, number> = {};
+      filteredSwms.forEach((swms: any) => {
+        if (swms.ppeRequirements && Array.isArray(swms.ppeRequirements)) {
+          swms.ppeRequirements.forEach((ppe: string) => {
+            ppeFrequency[ppe] = (ppeFrequency[ppe] || 0) + 1;
+          });
+        }
+      });
+
+      // 7. Document Completeness Score
+      const completenessScores = filteredSwms.map((swms: any) => {
+        let score = 0;
+        let maxScore = 10;
+        
+        // Check required sections
+        if (swms.title) score++;
+        if (swms.projectAddress) score++;
+        if (swms.workActivities && Array.isArray(swms.workActivities) && swms.workActivities.length > 0) score++;
+        if (swms.emergencyProcedures) score++;
+        if (swms.plantEquipment && Array.isArray(swms.plantEquipment) && swms.plantEquipment.length > 0) score++;
+        if (swms.ppeRequirements && Array.isArray(swms.ppeRequirements) && swms.ppeRequirements.length > 0) score++;
+        if (swms.swmsCreatorName) score++;
+        if (swms.signatureMethod) score++;
+        if (swms.status !== 'draft') score++;
+        if (swms.hrcwCategories && Array.isArray(swms.hrcwCategories) && swms.hrcwCategories.length > 0) score++;
+
+        return (score / maxScore) * 100;
+      });
+
+      const averageCompleteness = completenessScores.length > 0 
+        ? Math.round(completenessScores.reduce((sum, score) => sum + score, 0) / completenessScores.length)
+        : 0;
+
+      // 8. Review & Update Frequency
+      const updateFrequency = filteredSwms.map((swms: any) => {
+        const created = new Date(swms.createdAt || Date.now());
+        const updated = new Date(swms.updatedAt || swms.createdAt || Date.now());
+        const daysBetween = Math.ceil((updated.getTime() - created.getTime()) / (1000 * 60 * 60 * 24));
+        return Math.max(0, daysBetween);
+      });
+
+      const averageUpdateDays = updateFrequency.length > 0 
+        ? Math.round(updateFrequency.reduce((sum, days) => sum + days, 0) / updateFrequency.length)
+        : 0;
+
       const analyticsData = {
+        // Basic metrics
         totalDocuments,
         activeDocuments,
-        averageComplianceScore,
-        documentsByTrade,
-        complianceScores,
+        draftDocuments,
         riskLevels,
-        recentActivity,
-        topRisks
+        
+        // Comprehensive construction safety analytics
+        activityPatterns: {
+          daily: Object.entries(activityPatterns.dailyCreation).map(([day, count]) => ({ day, count })),
+          monthly: Object.entries(activityPatterns.monthlyCreation).map(([month, count]) => ({ month, count }))
+        },
+        topHazards: Object.entries(hazardFrequency)
+          .sort(([,a], [,b]) => (b as number) - (a as number))
+          .slice(0, 10)
+          .map(([hazard, count]) => ({ hazard, count })),
+        hrcwFrequency: Object.entries(hrcwFrequency)
+          .sort(([,a], [,b]) => (b as number) - (a as number))
+          .slice(0, 8)
+          .map(([category, count]) => ({ category, count })),
+        topLocations: Object.entries(locationFrequency)
+          .sort(([,a], [,b]) => (b as number) - (a as number))
+          .slice(0, 8)
+          .map(([location, count]) => ({ location, count })),
+        topEquipment: Object.entries(equipmentFrequency)
+          .sort(([,a], [,b]) => (b as number) - (a as number))
+          .slice(0, 10)
+          .map(([equipment, count]) => ({ equipment, count })),
+        topPPE: Object.entries(ppeFrequency)
+          .sort(([,a], [,b]) => (b as number) - (a as number))
+          .slice(0, 10)
+          .map(([ppe, count]) => ({ ppe, count })),
+        averageCompleteness,
+        averageUpdateDays,
+        
+        recentActivity
       };
 
       res.json(analyticsData);

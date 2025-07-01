@@ -20,7 +20,7 @@ import ProfileSettings from "@/pages/profile-settings";
 
 import MySwms from "@/pages/my-swms";
 import SwmsEditor from "@/pages/swms-editor";
-import Analytics from "@/pages/analytics";
+import ComprehensiveAnalytics from "@/pages/comprehensive-analytics";
 import AiAssistant from "@/pages/ai-assistant";
 import Settings from "@/pages/settings";
 import Billing from "@/pages/billing";
@@ -189,7 +189,7 @@ function Router() {
         <ProtectedRoute path="/swms-builder" component={SwmsBuilder} />
         <ProtectedRoute path="/my-swms" component={MySwms} />
         <ProtectedRoute path="/swms-editor/:id" component={SwmsEditor} />
-        <ProtectedRoute path="/analytics" component={Analytics} />
+        <ProtectedRoute path="/analytics" component={ComprehensiveAnalytics} />
         <ProtectedRoute path="/ai-assistant" component={AiAssistant} />
         <ProtectedRoute path="/profile" component={Profile} />
 
