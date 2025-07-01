@@ -565,9 +565,6 @@ export default function SwmsBuilder() {
     if (!formData.projectAddress?.trim()) {
       errors.push("Project Address is required");
     }
-    if (!formData.startDate?.trim()) {
-      errors.push("Start Date is required");
-    }
     if (!formData.tradeType?.trim()) {
       errors.push("Trade Type is required");
     }
