@@ -335,18 +335,21 @@ export default function SwmsBuilder() {
         // Check if this document has already been paid for
         const hasPaidAccess = data.paidAccess === true;
         
-        // Map database fields to form structure, but blank out step 1 fields for editing
+        // Map database fields to form structure, preserving all saved data
         const mappedData = {
           ...formData, // Keep existing form structure
           id: data.id,
-          // BLANK OUT STEP 1 FIELDS AS REQUESTED - User wants to re-enter project details
-          title: '',
-          jobName: '',
-          jobNumber: '',
-          projectAddress: '',
-          projectLocation: '',
-          startDate: '',
-          principalContractor: '',
+          // Keep all Step 1 fields from saved draft
+          title: data.title || data.jobName || '',
+          jobName: data.jobName || '',
+          jobNumber: data.jobNumber || '',
+          projectAddress: data.projectAddress || '',
+          projectLocation: data.projectLocation || '',
+          startDate: data.startDate || '',
+          principalContractor: data.principalContractor || '',
+          swmsCreatorName: data.swmsCreatorName || '',
+          swmsCreatorPosition: data.swmsCreatorPosition || '',
+          workDescription: data.projectDescription || '',
           // Keep other data from the saved draft
           tradeType: data.tradeType || '',
           customTradeType: data.customTradeType || '',
@@ -368,7 +371,7 @@ export default function SwmsBuilder() {
           ppeRequirements: data.ppeRequirements || []
         };
         
-        console.log('Mapped form data for editing (Step 1 blanked):', mappedData);
+        console.log('Mapped form data for editing (all data preserved):', mappedData);
         setFormData(mappedData);
         setDraftId(data.id);
         setIsDraft(true);
