@@ -8,7 +8,7 @@ import DocumentPreview from "@/components/swms/document-preview";
 import { SimplifiedTableEditor } from "@/components/swms/simplified-table-editor";
 import CreditCounter from "@/components/ui/credit-counter";
 
-import { ArrowLeft, ArrowRight, FileText, Shield, CheckCircle, Save, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, FileText, Shield, CheckCircle, Save, X, Plus } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
@@ -700,6 +700,50 @@ export default function SwmsBuilder() {
     }, 1000);
   };
 
+  // Function to start a new SWMS (clear existing draft)
+  const handleCreateNew = () => {
+    setDraftId(null);
+    setIsDraft(false);
+    setCurrentStep(1);
+    setFormData({
+      title: "",
+      jobName: "",
+      jobNumber: "",
+      projectAddress: "",
+      projectLocation: "",
+      startDate: "",
+      tradeType: "",
+      swmsCreatorName: "",
+      swmsCreatorPosition: "",
+      activities: [],
+      hazards: [],
+      riskAssessments: [],
+      paidAccess: false,
+      safetyMeasures: [],
+      complianceCodes: [],
+      acceptedDisclaimer: false,
+      selectedTasks: [],
+      workDescription: "",
+      plantEquipment: [],
+      signatures: [],
+      emergencyProcedures: [],
+      generalRequirements: [],
+      hrcwCategories: [],
+      ppeRequirements: []
+    });
+    
+    // Clear localStorage
+    localStorage.removeItem('swms-form-data');
+    
+    // Clear URL parameters
+    setLocation("/swms-builder");
+    
+    toast({
+      title: "New SWMS Started",
+      description: "Starting fresh SWMS document.",
+    });
+  };
+
   // Check if user has access to AI generation (Pro+ only)
   const hasAIAccess = (subscription as any)?.plan === "Pro" || (subscription as any)?.plan === "Enterprise";
   
@@ -820,6 +864,15 @@ export default function SwmsBuilder() {
           )}
         </div>
         <div className="flex items-center gap-3">
+          <Button 
+            variant="outline" 
+            onClick={handleCreateNew}
+            className="gap-2 bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100"
+            title="Start a new SWMS document"
+          >
+            <Plus className="h-4 w-4" />
+            New SWMS
+          </Button>
           <Button 
             variant="outline" 
             onClick={handleSaveAndClose}
