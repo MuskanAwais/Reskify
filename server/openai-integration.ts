@@ -62,6 +62,8 @@ export interface GeneratedSWMSData {
 export async function generateSWMSFromTask(request: TaskGenerationRequest): Promise<GeneratedSWMSData> {
   try {
     console.log('Generating SWMS with Riskify AI...');
+    console.log(`🔍 TRADE TYPE: "${request.projectDetails.tradeType}"`);
+    console.log(`🔍 JOB DESCRIPTION: "${request.plainTextDescription}"`);
       
     // Determine the mode and create appropriate prompt
     const tradeName = request.projectDetails.tradeType;
