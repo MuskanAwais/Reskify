@@ -1846,9 +1846,7 @@ export async function registerRoutes(app: Express) {
     try {
       // Get user-specific SWMS documents to match My SWMS data
       const userId = req.session?.userId || 999; // Demo mode support
-      console.log(`Analytics: Getting SWMS for user ${userId}`);
       const allSwms = await storage.getUserSWMS(userId);
-      console.log(`Analytics: Found ${allSwms.length} documents for user ${userId}`);
       const { timeRange } = req.query;
       
       // Filter by time range if specified

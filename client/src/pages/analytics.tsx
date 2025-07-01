@@ -77,8 +77,8 @@ export default function Analytics() {
       {/* Header */}
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Document Analytics</h1>
-          <p className="text-gray-600 mt-1">Track compliance, performance, and safety metrics</p>
+          <h1 className="text-3xl font-bold text-gray-900">My Document Analytics</h1>
+          <p className="text-gray-600 mt-1">Track your SWMS documents and risk assessments</p>
         </div>
         <div className="flex items-center gap-4">
           <Select value={timeRange} onValueChange={setTimeRange}>
