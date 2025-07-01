@@ -80,7 +80,16 @@ export async function generateSWMSFromTask(request: TaskGenerationRequest): Prom
     } else {
       // Job Mode: Generate SWMS tasks from job description
       const jobDescription = request.plainTextDescription || request.projectDetails.description || request.taskName || 'General construction work';
-      prompt = `We are doing ${jobDescription} as a ${tradeName}. Generate at least 10 individual SWMS rows, one per task, with full markdown table format, each column properly delimited. Include 8+ comprehensive hazards and control measures for each task with detailed risk assessments.`;
+      prompt = `Generate SWMS tasks ONLY for a ${tradeName} performing this specific job: "${jobDescription}". 
+
+CRITICAL: Only generate tasks that are directly related to ${tradeName} work. Do NOT include unrelated construction activities like excavation, concrete pouring, or steel work unless specifically mentioned in the job description.
+
+For example:
+- If it's "tiling a bathroom" - generate only tiling, waterproofing, and bathroom-specific tasks
+- If it's "electrical installation" - generate only electrical work tasks  
+- If it's "plumbing repair" - generate only plumbing-specific tasks
+
+Generate 6-8 specific tasks that a ${tradeName} would actually perform for "${jobDescription}". Each task must be relevant to the specific trade and job description provided.`;
     }
 
     // Create promise with timeout
@@ -117,7 +126,7 @@ export async function generateSWMSFromTask(request: TaskGenerationRequest): Prom
   "emergencyProcedures": []
 }
 
-MANDATORY: Generate exactly 8 tasks covering: 1)Site setup 2)Main work (4-5 tasks) 3)Safety procedures 4)Cleanup. Each task needs 4-5 hazards with controls. Risk scores: 1-5=Low, 6-10=Medium, 11-15=High, 16-20=Extreme. Australian WHS compliance. JSON only.`
+MANDATORY: Generate 6-8 tasks that are SPECIFIC to the trade and job description provided. DO NOT include generic construction tasks unless they are directly relevant to the specific trade work being performed. Focus on the actual trade-specific activities, preparation, safety, and cleanup related to that specific trade only. Each task needs 4-5 hazards with controls. Risk scores: 1-5=Low, 6-10=Medium, 11-15=High, 16-20=Extreme. Australian WHS compliance. JSON only.`
         },
         {
           role: "user", 
