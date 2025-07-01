@@ -254,7 +254,49 @@ ${siteEnvironment === 'industrial' ? `- Integration with existing industrial pro
 - Coordination with facility shutdown schedules
 - Industrial-grade materials and performance requirements` : ''}
 
-Return JSON with validateTradeScope, specific hazards with cause agents, hierarchical control measures, and Australian legislation references.`;
+MANDATORY JSON FORMAT:
+{
+  "activities": [
+    {
+      "name": "Task name",
+      "description": "Brief description", 
+      "riskScore": 12,
+      "residualRisk": 6,
+      "legislation": "${state} WHS Act 2011",
+      "validateTradeScope": {"isTaskWithinTradeScope": "YES", "reasonIfNo": ""},
+      "referencedLegislation": ["${state} WHS Reg 2017 s217", "AS standards"],
+      "hazards": [{
+        "type": "Specific hazard type",
+        "description": "Cause agent + environment + consequence",
+        "riskRating": 15,
+        "controlMeasures": {
+          "elimination": "Remove hazard completely",
+          "engineering": "Engineering controls",
+          "administrative": "Procedures and training", 
+          "ppe": "Personal protective equipment"
+        },
+        "residualRisk": 5
+      }],
+      "ppe": ["Hard Hat", "Safety Glasses", "Steel Cap Boots", "Hearing Protection"],
+      "tools": ["Tile cutter (wet saw)", "Notched trowel", "Spirit level"],
+      "trainingRequired": ["Trade-specific training"]
+    }
+  ],
+  "plantEquipment": [
+    {
+      "name": "Tile cutter (wet saw)",
+      "type": "Equipment",
+      "category": "Cutting Tools", 
+      "certificationRequired": true,
+      "inspectionStatus": "Current",
+      "riskLevel": "Medium",
+      "safetyRequirements": ["Training required", "PPE mandatory"]
+    }
+  ],
+  "emergencyProcedures": []
+}
+
+Return ONLY this JSON format. No other text or format.`;
 
     // Enhanced user message with safety context and HRCW integration
     const userMessage = `ENHANCED SAFETY CONTEXT:
@@ -375,8 +417,27 @@ ABSOLUTE REQUIREMENT: Generate ONLY ${tradeName === 'Tiling & Waterproofing' ? '
         tools: ["Standard trade tools"],
         trainingRequired: ["Trade specific training"]
       }));
+    } else if (parsedResult.SWMS_Tasks) {
+      // Convert SWMS_Tasks format to activities format
+      activities = parsedResult.SWMS_Tasks.map((task: any) => ({
+        name: task.Task || task.name || 'Generated Task',
+        description: task.Description || task.description || 'AI-generated task description',
+        riskScore: 8,
+        residualRisk: 4,
+        legislation: `${state} WHS Act 2011`,
+        hazards: [{
+          type: "General",
+          description: "Standard workplace hazards",
+          riskRating: 6,
+          controlMeasures: ["Follow safety procedures", "Use appropriate PPE"],
+          residualRisk: 3
+        }],
+        ppe: ["Hard hat", "Safety glasses", "Steel cap boots"],
+        tools: ["Standard trade tools"],
+        trainingRequired: ["Trade specific training"]
+      }));
     } else {
-      throw new Error('No activities or tasks found in AI response');
+      throw new Error('No activities, tasks, or SWMS_Tasks found in AI response');
     }
 
     console.log(`🔍 FINAL ACTIVITIES COUNT: ${activities.length}`);
