@@ -147,6 +147,7 @@ export default function SwmsBuilder() {
   const [currentStep, setCurrentStep] = useState(1);
   const [isDraft, setIsDraft] = useState(false);
   const [draftId, setDraftId] = useState(null);
+  const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
     jobName: "",
@@ -409,27 +410,41 @@ export default function SwmsBuilder() {
   // Silent auto-save mutation (no notifications)
   const autoSaveMutation = useMutation({
     mutationFn: async (data: any) => {
-      const requestData = {
-        ...data,
-        userId: 999, // Demo user ID
-        status: "draft",
-        currentStep,
-        projectName: data.jobName || data.title || "Untitled SWMS",
-        title: data.jobName || data.title || "Untitled SWMS",
-        createdAt: new Date().toISOString(),
-        lastModified: new Date().toISOString()
-      };
-      
-      // Only include draftId if it exists (for updates)
-      if (draftId) {
-        requestData.draftId = draftId;
+      // Prevent concurrent saves
+      if (isSaving) {
+        console.log('Auto-save skipped - already saving');
+        return { id: draftId, message: 'Save already in progress' };
       }
       
-      const response = await apiRequest("POST", "/api/swms/draft", requestData);
-      if (!response.ok) {
-        throw new Error('Failed to auto-save draft');
+      setIsSaving(true);
+      try {
+        const requestData = {
+          ...data,
+          userId: 999, // Demo user ID
+          status: "draft",
+          currentStep,
+          projectName: data.jobName || data.title || "Untitled SWMS",
+          title: data.jobName || data.title || "Untitled SWMS",
+          createdAt: new Date().toISOString(),
+          lastModified: new Date().toISOString()
+        };
+        
+        // Only include draftId if it exists (for updates)
+        if (draftId) {
+          requestData.draftId = draftId;
+          console.log('Auto-save using existing draftId:', draftId);
+        } else {
+          console.log('Auto-save creating new document (no draftId)');
+        }
+        
+        const response = await apiRequest("POST", "/api/swms/draft", requestData);
+        if (!response.ok) {
+          throw new Error('Failed to auto-save draft');
+        }
+        return response.json();
+      } finally {
+        setIsSaving(false);
       }
-      return response.json();
     },
     onSuccess: (data: any) => {
       // Set draftId on first save to update same document during session
@@ -449,20 +464,37 @@ export default function SwmsBuilder() {
   // Manual save mutation (with notifications)
   const saveDraftMutation = useMutation({
     mutationFn: async (data: any) => {
-      const response = await apiRequest("POST", "/api/swms/draft", {
-        ...data,
-        userId: 999, // Demo user ID
-        status: "draft",
-        currentStep,
-        projectName: data.jobName || data.title || "Untitled SWMS",
-        title: data.jobName || data.title || "Untitled SWMS",
-        createdAt: new Date().toISOString(),
-        lastModified: new Date().toISOString()
-      });
-      if (!response.ok) {
-        throw new Error('Failed to save draft');
+      // Prevent concurrent saves
+      if (isSaving) {
+        throw new Error('Save already in progress');
       }
-      return response.json();
+      
+      setIsSaving(true);
+      try {
+        const requestData = {
+          ...data,
+          userId: 999, // Demo user ID
+          status: "draft",
+          currentStep,
+          projectName: data.jobName || data.title || "Untitled SWMS",
+          title: data.jobName || data.title || "Untitled SWMS",
+          createdAt: new Date().toISOString(),
+          lastModified: new Date().toISOString()
+        };
+        
+        // Include draftId if it exists
+        if (draftId) {
+          requestData.draftId = draftId;
+        }
+        
+        const response = await apiRequest("POST", "/api/swms/draft", requestData);
+        if (!response.ok) {
+          throw new Error('Failed to save draft');
+        }
+        return response.json();
+      } finally {
+        setIsSaving(false);
+      }
     },
     onSuccess: (data: any) => {
       // Set draftId on first save to update same document during session
