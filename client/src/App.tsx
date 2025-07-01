@@ -49,11 +49,11 @@ import SystemHealth from "@/pages/admin/system-health";
 import SecurityMonitoring from "@/pages/admin/security-monitoring";
 import SystemTesting from "@/pages/admin/system-testing";
 
-// Innovative features
-import SmartRiskPredictor from "@/pages/smart-risk-predictor";
-import DigitalTwinDashboard from "@/pages/digital-twin-dashboard";
-import LiveCollaboration from "@/pages/live-collaboration";
-import AISwmsGenerator from "@/pages/ai-swms-generator";
+// Innovative features - Coming Soon pages
+// import SmartRiskPredictor from "@/pages/smart-risk-predictor";
+// import DigitalTwinDashboard from "@/pages/digital-twin-dashboard";
+// import LiveCollaboration from "@/pages/live-collaboration";
+// import AISwmsGenerator from "@/pages/ai-swms-generator";
 
 
 
@@ -201,11 +201,7 @@ function Router() {
         <Route path="/legal-disclaimer" component={LegalDisclaimer} />
         <Route path="/pdf-test" component={PDFTest} />
         
-        {/* Innovative Features */}
-        <ProtectedRoute path="/smart-risk-predictor" component={SmartRiskPredictor} />
-        <ProtectedRoute path="/digital-twin-dashboard" component={DigitalTwinDashboard} />
-        <ProtectedRoute path="/live-collaboration" component={LiveCollaboration} />
-        <ProtectedRoute path="/ai-swms-generator" component={AISwmsGenerator} />
+        {/* Innovative Features - Coming Soon */}
 
 
         
