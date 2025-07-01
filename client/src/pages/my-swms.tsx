@@ -140,7 +140,7 @@ export default function MySwms() {
       console.log('Starting RiskTemplateBuilder PDF download for:', swmsDocument.title || swmsDocument.jobName);
       
       try {
-        // Prepare comprehensive data for RiskTemplateBuilder - same as live preview
+        // Prepare comprehensive data for RiskTemplateBuilder - ALL FIELDS MAPPED
         const templateBuilderData = {
           // Project Information
           project_name: swmsDocument.title || swmsDocument.jobName || '',
@@ -150,12 +150,27 @@ export default function MySwms() {
           project_manager: swmsDocument.projectManager || '',
           site_supervisor: swmsDocument.siteSupervisor || '',
           
+          // Additional Project Fields
+          subcontractor: swmsDocument.subcontractor || '',
+          principal_contractor_abn: swmsDocument.principalContractorAbn || '',
+          subcontractor_abn: swmsDocument.subcontractorAbn || '',
+          license_number: swmsDocument.licenseNumber || '',
+          document_version: swmsDocument.documentVersion || '1.0',
+          
           // Creator Information
           swms_creator_name: swmsDocument.swmsCreatorName || '',
           swms_creator_position: swmsDocument.swmsCreatorPosition || '',
           
           // Company Logo
           company_logo: swmsDocument.companyLogo || '',
+          
+          // Signature Fields - CRITICAL MISSING FIELDS
+          signature_method: swmsDocument.signatureMethod || '',
+          signature_image: swmsDocument.signatureImage || '',
+          signature_text: swmsDocument.signatureText || '',
+          signed_by: swmsDocument.signedBy || '',
+          signature_title: swmsDocument.signatureTitle || '',
+          signed_at: swmsDocument.signedAt || '',
           
           // Work Activities with proper structure
           work_activities: (swmsDocument.workActivities || []).map((activity: any) => ({
@@ -178,12 +193,23 @@ export default function MySwms() {
           // PPE Requirements
           ppe_requirements: swmsDocument.ppeRequirements || [],
           
-          // HRCW Categories
+          // HRCW Categories and Risk Fields
           hrcw_categories: swmsDocument.hrcwCategories || [],
+          is_high_risk_work: swmsDocument.isHighRiskWork || false,
+          high_risk_activities: swmsDocument.highRiskActivities || [],
+          whs_regulations: swmsDocument.whsRegulations || [],
+          high_risk_justification: swmsDocument.highRiskJustification || '',
           
           // Emergency Procedures
           emergency_contact: swmsDocument.emergencyProcedures?.emergencyContact || '',
           evacuation_procedure: swmsDocument.emergencyProcedures?.evacuationProcedure || '',
+          nearest_hospital: swmsDocument.nearestHospital || '',
+          first_aid_arrangements: swmsDocument.firstAidArrangements || '',
+          
+          // Training and Competency
+          training_requirements: swmsDocument.trainingRequirements || [],
+          competency_requirements: swmsDocument.competencyRequirements || [],
+          permits_required: swmsDocument.permitsRequired || [],
           
           // Risk Assessment Summary
           overall_risk_level: swmsDocument.overallRiskLevel || 'Medium',

@@ -80,6 +80,46 @@ Each equipment in `plantEquipment` array maps to `plant_equipment` array with:
 | `startDate` | `start_date` | string (YYYY-MM-DD) | Step 1 - Project Dates |
 | Current Date | `created_date` | string (YYYY-MM-DD) | Auto-generated |
 
+## SIGNATURE FIELDS (MISSING - NEEDS TO BE ADDED)
+
+| Riskify Field | RiskTemplateBuilder Field | Data Type | Source |
+|---------------|-------------------------|-----------|---------|
+| `signatureMethod` | `signature_method` | string | Step 7 - Signature Type ('upload' or 'type') |
+| `signatureImage` | `signature_image` | string (Base64) | Step 7 - Uploaded Signature Image |
+| `signatureText` | `signature_text` | string | Step 7 - Typed Name Signature |
+| `signedBy` | `signed_by` | string | Step 7 - Person's Name |
+| `signatureTitle` | `signature_title` | string | Step 7 - Job Title/Role |
+| `signedAt` | `signed_at` | string (ISO Date) | Step 7 - When Signed |
+
+## ADDITIONAL PROJECT FIELDS (MISSING - NEEDS TO BE ADDED)
+
+| Riskify Field | RiskTemplateBuilder Field | Data Type | Source |
+|---------------|-------------------------|-----------|---------|
+| `subcontractor` | `subcontractor` | string | Step 1 - Subcontractor Name |
+| `principalContractorAbn` | `principal_contractor_abn` | string | Step 1 - Principal Contractor ABN |
+| `subcontractorAbn` | `subcontractor_abn` | string | Step 1 - Subcontractor ABN |
+| `licenseNumber` | `license_number` | string | Step 1 - License Number |
+| `documentVersion` | `document_version` | string | Step 1 - Document Version |
+
+## ADDITIONAL SAFETY FIELDS (MISSING - NEEDS TO BE ADDED)
+
+| Riskify Field | RiskTemplateBuilder Field | Data Type | Source |
+|---------------|-------------------------|-----------|---------|
+| `nearestHospital` | `nearest_hospital` | string | Step 5 - Emergency Information |
+| `firstAidArrangements` | `first_aid_arrangements` | string | Step 5 - First Aid Details |
+| `trainingRequirements` | `training_requirements` | array | Step 5 - Required Training |
+| `competencyRequirements` | `competency_requirements` | array | Step 5 - Competency Requirements |
+| `permitsRequired` | `permits_required` | array | Step 5 - Required Permits |
+
+## ADDITIONAL RISK FIELDS (MISSING - NEEDS TO BE ADDED)
+
+| Riskify Field | RiskTemplateBuilder Field | Data Type | Source |
+|---------------|-------------------------|-----------|---------|
+| `isHighRiskWork` | `is_high_risk_work` | boolean | Step 3 - HRCW Detection |
+| `highRiskActivities` | `high_risk_activities` | array | Step 3 - HRCW Categories |
+| `whsRegulations` | `whs_regulations` | array | Step 3 - WHS Regulation References |
+| `highRiskJustification` | `high_risk_justification` | string | Step 3 - HRCW Justification |
+
 ---
 
 ## DATA TRANSFORMATION EXAMPLES
@@ -145,7 +185,7 @@ plant_equipment: [
 
 ---
 
-## COMPLETE JSON PAYLOAD STRUCTURE
+## COMPLETE JSON PAYLOAD STRUCTURE - ALL FIELDS
 
 ```json
 {
@@ -155,9 +195,20 @@ plant_equipment: [
   "principal_contractor": "string",
   "project_manager": "string",
   "site_supervisor": "string",
+  "subcontractor": "string",
+  "principal_contractor_abn": "string",
+  "subcontractor_abn": "string",
+  "license_number": "string",
+  "document_version": "string",
   "swms_creator_name": "string",
   "swms_creator_position": "string",
   "company_logo": "string (Base64)",
+  "signature_method": "string (upload|type)",
+  "signature_image": "string (Base64)",
+  "signature_text": "string",
+  "signed_by": "string",
+  "signature_title": "string",
+  "signed_at": "string (ISO Date)",
   "work_activities": [
     {
       "activity": "string",
@@ -178,8 +229,17 @@ plant_equipment: [
   ],
   "ppe_requirements": ["string"],
   "hrcw_categories": [number],
+  "is_high_risk_work": boolean,
+  "high_risk_activities": ["string"],
+  "whs_regulations": ["string"],
+  "high_risk_justification": "string",
   "emergency_contact": "string",
-  "evacuation_procedure": "string", 
+  "evacuation_procedure": "string",
+  "nearest_hospital": "string",
+  "first_aid_arrangements": "string",
+  "training_requirements": ["object"],
+  "competency_requirements": ["object"],
+  "permits_required": ["string"],
   "overall_risk_level": "string",
   "start_date": "YYYY-MM-DD",
   "created_date": "YYYY-MM-DD"
