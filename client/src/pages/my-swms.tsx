@@ -14,13 +14,16 @@ import {
   Clock,
   Filter,
   Search,
-  Plus
+  Plus,
+  RotateCcw,
+  Archive
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { generateProtectedPDF } from "@/lib/pdf-generator";
@@ -44,6 +47,7 @@ export default function MySwms() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [tradeFilter, setTradeFilter] = useState("all");
+  const [activeTab, setActiveTab] = useState("active");
   const { toast } = useToast();
   const user = useUser();
 

@@ -1,6 +1,6 @@
 import { users, swmsDocuments, safetyLibrary, type User, type InsertUser, type SafetyLibraryItem, type InsertSafetyLibraryItem } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, and } from "drizzle-orm";
+import { eq, desc, and, isNull, not } from "drizzle-orm";
 
 export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
@@ -275,14 +275,17 @@ export class DatabaseStorage implements IStorage {
   async getUserSwms(userId: number): Promise<any[]> {
     try {
       console.log(`Querying database for user ${userId} SWMS documents...`);
-      // Fetch all SWMS documents for the user (both drafts and completed)
+      // Fetch all SWMS documents for the user (both drafts and completed) - EXCLUDE deleted documents
       const documents = await db
         .select()
         .from(swmsDocuments)
-        .where(eq(swmsDocuments.userId, userId))
+        .where(and(
+          eq(swmsDocuments.userId, userId),
+          isNull(swmsDocuments.deletedAt) // Only get non-deleted documents
+        ))
         .orderBy(desc(swmsDocuments.createdAt));
       
-      console.log(`Database returned ${documents.length} SWMS documents for user ${userId}`);
+      console.log(`Database returned ${documents.length} active SWMS documents for user ${userId}`);
       console.log('Sample document:', documents[0] ? { id: documents[0].id, title: documents[0].title } : 'none');
       return documents;
     } catch (error) {
@@ -468,6 +471,67 @@ export class DatabaseStorage implements IStorage {
   async getUserSWMS(userId: number): Promise<any[]> {
     // Alias method for backward compatibility
     return this.getUserSwms(userId);
+  }
+
+  async getDeletedSwms(userId: number): Promise<any[]> {
+    try {
+      console.log(`Querying deleted SWMS documents for user ${userId}...`);
+      // Fetch only deleted documents for the user
+      const deletedDocuments = await db
+        .select()
+        .from(swmsDocuments)
+        .where(and(
+          eq(swmsDocuments.userId, userId),
+          not(isNull(swmsDocuments.deletedAt)) // Only get deleted documents
+        ))
+        .orderBy(desc(swmsDocuments.deletedAt));
+      
+      console.log(`Found ${deletedDocuments.length} deleted SWMS documents for user ${userId}`);
+      return deletedDocuments;
+    } catch (error) {
+      console.error('Error fetching deleted SWMS documents:', error);
+      return [];
+    }
+  }
+
+  async restoreSwmsDocument(id: number, userId: number): Promise<any> {
+    try {
+      console.log(`Restoring SWMS document ${id} for user ${userId}`);
+      const [restoredDoc] = await db
+        .update(swmsDocuments)
+        .set({
+          deletedAt: null,
+          permanentDeleteAt: null,
+          updatedAt: new Date()
+        })
+        .where(and(
+          eq(swmsDocuments.id, id),
+          eq(swmsDocuments.userId, userId)
+        ))
+        .returning();
+      
+      return restoredDoc;
+    } catch (error) {
+      console.error('Error restoring SWMS document:', error);
+      throw error;
+    }
+  }
+
+  async permanentlyDeleteSwms(id: number, userId: number): Promise<boolean> {
+    try {
+      console.log(`Permanently deleting SWMS document ${id} for user ${userId}`);
+      await db
+        .delete(swmsDocuments)
+        .where(and(
+          eq(swmsDocuments.id, id),
+          eq(swmsDocuments.userId, userId)
+        ));
+      
+      return true;
+    } catch (error) {
+      console.error('Error permanently deleting SWMS document:', error);
+      throw error;
+    }
   }
 
   async getAllSWMS(): Promise<any[]> {

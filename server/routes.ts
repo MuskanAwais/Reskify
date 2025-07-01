@@ -836,6 +836,63 @@ export async function registerRoutes(app: Express) {
     }
   });
 
+  // Get deleted SWMS documents (recycling bin)
+  app.get('/api/swms/deleted', async (req, res) => {
+    try {
+      const userId = req.session?.userId || 999;
+      const deletedDocuments = await storage.getDeletedSwms(userId);
+      
+      res.json({
+        success: true,
+        documents: deletedDocuments
+      });
+    } catch (error) {
+      console.error('Error fetching deleted SWMS documents:', error);
+      res.status(500).json({ error: 'Failed to fetch deleted documents' });
+    }
+  });
+
+  // Restore SWMS document from recycling bin
+  app.post('/api/swms/:id/restore', async (req, res) => {
+    try {
+      const swmsId = parseInt(req.params.id);
+      const userId = req.session?.userId || 999;
+      
+      console.log(`Restoring SWMS ${swmsId} for user ${userId}`);
+      
+      const restoredDoc = await storage.restoreSwmsDocument(swmsId, userId);
+      
+      res.json({
+        success: true,
+        message: 'SWMS restored successfully',
+        document: restoredDoc
+      });
+    } catch (error) {
+      console.error('Error restoring SWMS document:', error);
+      res.status(500).json({ error: 'Failed to restore document' });
+    }
+  });
+
+  // Permanently delete SWMS document
+  app.delete('/api/swms/:id/permanent', async (req, res) => {
+    try {
+      const swmsId = parseInt(req.params.id);
+      const userId = req.session?.userId || 999;
+      
+      console.log(`Permanently deleting SWMS ${swmsId} for user ${userId}`);
+      
+      await storage.permanentlyDeleteSwms(swmsId, userId);
+      
+      res.json({
+        success: true,
+        message: 'SWMS permanently deleted'
+      });
+    } catch (error) {
+      console.error('Error permanently deleting SWMS document:', error);
+      res.status(500).json({ error: 'Failed to permanently delete document' });
+    }
+  });
+
   // Credit usage endpoint
   app.post('/api/user/use-credit', async (req, res) => {
     try {
