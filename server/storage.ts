@@ -406,7 +406,7 @@ export class DatabaseStorage implements IStorage {
         swmsCreatorName: data.swmsCreatorName || '',
         swmsCreatorPosition: data.swmsCreatorPosition || '',
         tradeType: data.tradeType || '',
-        activities: [data.tradeType || 'General Construction'],
+        activities: data.activities || data.selectedTasks || [data.tradeType || 'General Construction'],
         workActivities: data.workActivities || [],
         riskAssessments: data.workActivities || [],
         safetyMeasures: data.workActivities || [],

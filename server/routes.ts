@@ -410,7 +410,15 @@ export async function registerRoutes(app: Express) {
           projectAddress: draft.project_address || draft.projectAddress || '',
           projectLocation: draft.project_location || draft.projectLocation || '',
           startDate: draft.start_date || draft.startDate || '',
-          tradeType: draft.trade_type || draft.tradeType || ''
+          tradeType: draft.trade_type || draft.tradeType || '',
+          // Include activities and other important fields for step 2 data persistence
+          activities: draft.activities || [],
+          workActivities: draft.work_activities || draft.workActivities || [],
+          selectedTasks: draft.activities || [],
+          riskAssessments: draft.risk_assessments || draft.riskAssessments || [],
+          plantEquipment: draft.plant_equipment || draft.plantEquipment || [],
+          hrcwCategories: draft.hrcw_categories || draft.hrcwCategories || [],
+          ppeRequirements: draft.ppe_requirements || draft.ppeRequirements || []
         };
         
         res.json(mappedDraft);
