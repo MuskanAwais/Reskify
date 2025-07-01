@@ -1019,15 +1019,15 @@ export async function registerRoutes(app: Express) {
       // Transform the request to match the expected format
       const transformedRequest = {
         projectDetails: {
-          projectName: req.body.projectName || 'Generated SWMS',
-          location: req.body.location || 'Project Site',
-          tradeType: req.body.tradeType || 'General',
-          description: req.body.jobDescription || req.body.description || '',
-          siteEnvironment: req.body.siteEnvironment || 'Commercial',
-          hrcwCategories: req.body.hrcwCategories || [],
-          state: req.body.state || 'NSW'
+          projectName: req.body.projectDetails?.projectName || 'Generated SWMS',
+          location: req.body.projectDetails?.location || 'Project Site',
+          tradeType: req.body.projectDetails?.tradeType || 'General',
+          description: req.body.plainTextDescription || req.body.projectDetails?.description || '',
+          siteEnvironment: req.body.projectDetails?.siteEnvironment || 'Commercial',
+          hrcwCategories: req.body.projectDetails?.hrcwCategories || [],
+          state: req.body.projectDetails?.state || 'NSW'
         },
-        plainTextDescription: req.body.jobDescription || req.body.description || '',
+        plainTextDescription: req.body.plainTextDescription || '',
         mode: req.body.mode || 'job'
       };
       

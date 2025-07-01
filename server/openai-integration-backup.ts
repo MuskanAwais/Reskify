@@ -116,14 +116,40 @@ Generate 6 tasks in JSON format.`;
     console.log(`🔍 RAW AI RESPONSE: ${rawContent.substring(0, 300)}...`);
 
     const result = JSON.parse(rawContent);
-    console.log(`🔍 PARSED RESULT - Generated ${result.activities?.length || 0} activities`);
+    console.log(`🔍 PARSED RESULT:`, result);
 
-    if (result.activities && result.activities.length > 0) {
-      console.log(`🔍 FIRST ACTIVITY: ${result.activities[0].name}`);
+    // Handle different response formats
+    let activities = [];
+    if (result.activities) {
+      activities = result.activities;
+    } else if (result.tasks) {
+      // Convert tasks format to activities format
+      activities = result.tasks.map((task: any) => ({
+        name: task.taskName || task.task || task.name || 'Unknown Task',
+        description: task.description || '',
+        riskScore: 8,
+        residualRisk: 4,
+        legislation: 'WHS Act 2011',
+        hazards: [{
+          type: 'General',
+          description: 'Standard workplace hazards',
+          riskRating: 6,
+          controlMeasures: ['Follow safety procedures', 'Use appropriate PPE'],
+          residualRisk: 3
+        }],
+        ppe: ['Hard hat', 'Safety glasses', 'Steel cap boots'],
+        tools: task.toolsRequired || ['Standard trade tools'],
+        trainingRequired: ['Trade specific training']
+      }));
+    }
+
+    console.log(`🔍 FINAL ACTIVITIES COUNT: ${activities.length}`);
+    if (activities.length > 0) {
+      console.log(`🔍 FIRST ACTIVITY: ${activities[0].name}`);
     }
 
     return {
-      activities: result.activities || [],
+      activities: activities,
       plantEquipment: result.plantEquipment || [],
       emergencyProcedures: result.emergencyProcedures || []
     };
