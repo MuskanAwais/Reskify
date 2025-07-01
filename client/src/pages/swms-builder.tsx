@@ -432,9 +432,9 @@ export default function SwmsBuilder() {
       return response.json();
     },
     onSuccess: (data: any) => {
-      // Don't set draftId from auto-save - let user create multiple documents
-      // Only set isDraft for UI state
-      if (data?.id) {
+      // Set draftId on first save to update same document during session
+      if (data?.id && !draftId) {
+        setDraftId(data.id);
         setIsDraft(true);
       }
       // Invalidate both possible query keys to ensure refresh
@@ -465,9 +465,9 @@ export default function SwmsBuilder() {
       return response.json();
     },
     onSuccess: (data: any) => {
-      // Don't set draftId - allow each save to create a new document
-      // Only set isDraft for UI state
-      if (data?.id) {
+      // Set draftId on first save to update same document during session
+      if (data?.id && !draftId) {
+        setDraftId(data.id);
         setIsDraft(true);
       }
       toast({
