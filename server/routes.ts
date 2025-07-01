@@ -255,6 +255,9 @@ export async function registerRoutes(app: Express) {
   app.get("/api/dashboard", async (req, res) => {
     try {
       const userId = req.session?.userId || 999;
+      
+      // Get user details for credits
+      const user = await storage.getUser(userId);
       const userSwms = await storage.getUserSwms(userId);
       
       // Count drafts and completed
@@ -275,19 +278,22 @@ export async function registerRoutes(app: Express) {
         }));
       
       res.json({
-        drafts,
-        completed,
-        credits: 10,
-        subscription: 'trial',
-        recentSwms
+        draftSwms: drafts,
+        completedSwms: completed,
+        totalSwms: userSwms.length,
+        credits: user?.credits || 0,
+        subscription: user?.subscription || 'trial',
+        recentSwms,
+        recentDocuments: recentSwms
       });
     } catch (error) {
       console.error("Dashboard error:", error);
       // Fallback with some sample data
       res.json({ 
-        drafts: 2, 
-        completed: 3, 
-        credits: 10, 
+        draftSwms: 0, 
+        completedSwms: 0, 
+        totalSwms: 0,
+        credits: 0, 
         subscription: 'trial',
         recentSwms: []
       });
