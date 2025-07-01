@@ -32,16 +32,33 @@ export interface GeneratedSWMSData {
     riskScore: number;
     residualRisk: number;
     legislation: string;
+    referencedLegislation?: string[]; // Australian compliance references
+    validateTradeScope?: {
+      isTaskWithinTradeScope: 'YES' | 'NO';
+      reasonIfNo?: string;
+    };
     hazards: Array<{
       type: string;
       description: string;
       riskRating: number;
-      controlMeasures: string[];
+      controlMeasures: string[] | {
+        elimination?: string;
+        substitution?: string;
+        isolation?: string;
+        engineering?: string;
+        administrative?: string;
+        ppe?: string;
+      };
       residualRisk: number;
+      causeAgent?: string;
+      environmentalCondition?: string;
+      consequence?: string;
     }>;
     ppe: string[];
     tools: string[];
     trainingRequired: string[];
+    hrcwReferences?: number[]; // Referenced HRCW categories
+    permitRequired?: string[]; // Required permits/forms
   }>;
   plantEquipment: Array<{
     name: string;
@@ -132,23 +149,93 @@ export async function generateSWMSFromTask(request: TaskGenerationRequest): Prom
     // Enhanced system message with safety context
     const systemMessage = `You are Riskify, an Australian construction safety expert specializing in ${state} regulations. YOU MUST ONLY GENERATE TASKS FOR THE SPECIFIED TRADE.
 
+CRITICAL TRADE BOUNDARY ENFORCEMENT:
+You must only generate tasks the specified trade performs with their own tools and licenses. Reject anything outside this boundary.
+
+For each task, validate using this structure:
+"validateTradeScope": {
+  "isTaskWithinTradeScope": "YES" | "NO",
+  "reasonIfNo": "Explain which trade this task belongs to"
+}
+
+TRADE-SPECIFIC SCOPE ENFORCEMENT:
+${tradeName === 'Tiling & Waterproofing' ? `
+TILING & WATERPROOFING: ONLY tile work, waterproofing, surface prep, grouting, sealing
+- Surface preparation for tiling (cleaning, leveling, priming)
+- Waterproofing membrane application and testing
+- Tile measurement, cutting, and layout planning
+- Adhesive application using notched trowels
+- Tile installation with spacers and alignment
+- Grouting application and joint finishing
+- Sealing and protective coating application
+- Quality inspection and rectification work
+FORBIDDEN: Plumbing connections, electrical, framing, concrete, steelwork, painting` : ''}
+
+${tradeName === 'Electrical' ? `
+ELECTRICAL: ONLY electrical installation, wiring, testing, compliance
+- Cable installation and routing through conduits
+- Electrical component mounting (switches, outlets, lights)
+- Circuit connection and termination work
+- Electrical testing and commissioning procedures
+- Safety testing and equipment tagging
+- Compliance verification and certification
+- Electrical troubleshooting and fault finding
+- Meter board and distribution board work
+FORBIDDEN: Structural work, plumbing, tiling, concrete, steelwork, painting` : ''}
+
+${tradeName === 'Plumbing' ? `
+PLUMBING: ONLY pipe work, fixtures, pressure testing, commissioning
+- Pipe cutting, joining, and installation
+- Fixture installation (taps, toilets, basins, showers)
+- Pressure testing and leak detection
+- Hot water system connection and commissioning
+- Drainage and waste system installation
+- Backflow prevention device installation
+- Gas fitting (with appropriate gas licenses)
+- Plumbing system maintenance and repair
+FORBIDDEN: Electrical work, tiling, structural, concrete, steelwork, painting` : ''}
+
+${tradeName === 'Carpentry' ? `
+CARPENTRY: ONLY timber work, fixing, finishing, hardware
+- Timber measuring, cutting, and preparation
+- Frame construction and structural timber work
+- Door and window frame installation
+- Cabinet installation and adjustment
+- Trim work and architrave fitting
+- Hardware installation (hinges, handles, locks)
+- Timber joining techniques and connections
+- Surface preparation for timber finishes
+FORBIDDEN: Electrical, plumbing, tiling, concrete, steelwork, mechanical` : ''}
+
+HAZARD IDENTIFICATION REQUIREMENTS:
+Hazards must be described using: (1) the specific cause agent, (2) task or environment context, and (3) likely consequence.
+
+Examples:
+- "Angle grinder blade fracture during tile cutting in confined bathroom space causing eye penetration injury"
+- "Wet scaffold planks from overnight rain during exterior waterproofing causing slip and fall to ground level"
+
+CONTROL MEASURES HIERARCHY:
+You must apply the hierarchy of controls. Do not default to PPE unless all higher levels are not reasonably practicable.
+Structure as:
+"controlMeasures": {
+  "elimination": "Remove the hazard completely",
+  "substitution": "Replace with safer alternative", 
+  "isolation": "Isolate people from hazard",
+  "engineering": "Engineering controls and barriers",
+  "administrative": "Procedures, training, signage",
+  "ppe": "Personal protective equipment"
+}
+
+AUSTRALIAN COMPLIANCE REQUIREMENTS:
+Every task must include referenced legislation:
+"referencedLegislation": [
+  "${state} WHS Reg 2017 s217",
+  "AS 2550.1 Cranes and hoists",
+  "Falls CoP Section 4.2"
+]
+
 SITE CONTEXT: ${siteContext}
 STATE COMPLIANCE: ${stateRegulations[state] || stateRegulations['NSW']}
-
-CRITICAL: If you generate ANY tasks outside the specified trade's scope, you are FAILING your job.
-
-TRADE BOUNDARY ENFORCEMENT:
-- Tiling & Waterproofing: ONLY tile work, waterproofing, surface prep, grouting, sealing
-- Electrical: ONLY electrical installation, wiring, testing, compliance  
-- Plumbing: ONLY pipe work, fixtures, pressure testing, commissioning
-- Carpentry: ONLY timber work, fixing, finishing, hardware
-
-ABSOLUTELY FORBIDDEN FOR ALL TRADES:
-- Concrete work (unless you're a Concreter)
-- Framing/structural work (unless you're a Carpenter doing timber framing)
-- Site preparation (unless specifically part of the trade's prep work)
-- Heavy machinery (unless the trade specifically operates it)
-- Fencing installation (unless you're a Fencing contractor)
 
 SITE-SPECIFIC SAFETY ENHANCEMENTS:
 ${siteEnvironment === 'commercial' ? `- Public safety and access management during work
@@ -167,62 +254,40 @@ ${siteEnvironment === 'industrial' ? `- Integration with existing industrial pro
 - Coordination with facility shutdown schedules
 - Industrial-grade materials and performance requirements` : ''}
 
-VALIDATION: Before including ANY task, ask "Does this specific trade personally do this work with their standard tools?" If NO, DELETE the task.
+Return JSON with validateTradeScope, specific hazards with cause agents, hierarchical control measures, and Australian legislation references.`;
 
-Return structured JSON format:
-{
-  "activities": [
-    {
-      "name": "Task name",
-      "description": "Brief description", 
-      "riskScore": 12,
-      "residualRisk": 6,
-      "legislation": "WHS Act 2011",
-      "hazards": [
-        {
-          "type": "Trade-specific hazard type",
-          "description": "Risk description",
-          "riskRating": 15,
-          "controlMeasures": ["Control 1", "Control 2", "Control 3"],
-          "residualRisk": 5
-        }
-      ],
-      "ppe": ["Trade-appropriate PPE"],
-      "tools": ["Trade-specific tools"],
-      "trainingRequired": ["Trade-specific training"]
-    }
-  ],
-  "plantEquipment": [],
-  "emergencyProcedures": []
-}
-
-MANDATORY: Generate 6-8 tasks that are EXCLUSIVELY within the specified trade's scope of work. Focus on trade-specific preparation, installation, testing, and completion tasks. Each task needs 4-5 hazards with controls. Risk scores: 1-5=Low, 6-10=Medium, 11-15=High, 16-20=Extreme. Australian WHS compliance. JSON only.`;
-
-    // Enhanced user message with safety context
+    // Enhanced user message with safety context and HRCW integration
     const userMessage = `ENHANCED SAFETY CONTEXT:
 SITE TYPE: ${siteEnvironment.toUpperCase()} - Apply ${siteEnvironment}-specific safety protocols and considerations
 STATE: ${state} - Follow ${stateRegulations[state] || stateRegulations['NSW']} requirements
 
 ${hrcwCategories.length > 0 ? `
 HIGH-RISK CONSTRUCTION WORK IDENTIFIED: Categories ${hrcwCategories.join(', ')}
-User has specifically selected these HRCW categories. Ensure ALL generated tasks incorporate enhanced safety measures for:
+User has specifically selected these HRCW categories:
 ${hrcwCategories.map(id => `- Category ${id}: ${hrcwMap[id] || 'High-risk work requiring specialized procedures'}`).join('\n')}
 
-MANDATORY: Every task must address how it relates to these HRCW categories with specific control measures.
+HRCW REQUIREMENTS:
+- Tasks that trigger any selected category must explicitly reference the HRCW number
+- Include controls that mention permits or risk control forms (e.g. "S030408 Hot Works Permit", "Q030428 Confined Space Permit")
+- Add "hrcwReferences": [${hrcwCategories.join(', ')}] to applicable tasks
+- Include "permitRequired": ["Specific permit name"] when permits are needed
 ` : ''}
 
 JOB DESCRIPTION: ${prompt}
 
 TRADE-SPECIFIC REQUIREMENT: Generate 6-8 tasks that ONLY a ${tradeName} would personally perform for this job.
 
-FINAL VALIDATION CHECK: Before submitting your response, review EVERY SINGLE TASK and ask:
-1. "Does a ${tradeName} personally do this with their standard tools?" 
-2. "Would this task require a different trade license or skills?"
-3. "Is this concrete, framing, fencing, or general construction work?"
+RESPONSE FORMAT REQUIREMENTS:
+Each task must include:
+- "validateTradeScope": {"isTaskWithinTradeScope": "YES|NO", "reasonIfNo": "explanation"}
+- "referencedLegislation": ["${state} WHS Reg 2017 s217", "AS standards", "CoP sections"]
+- "hazards" with causeAgent, environmentalCondition, consequence fields
+- "controlMeasures" using hierarchy structure (elimination, substitution, isolation, engineering, administrative, ppe)
+${hrcwCategories.length > 0 ? '- "hrcwReferences" and "permitRequired" arrays for HRCW tasks' : ''}
 
-If ANY task fails these checks, DELETE IT IMMEDIATELY. 
+FINAL VALIDATION: Every task MUST pass trade scope validation. If a ${tradeName} wouldn't personally do this work with their standard tools and licenses, DELETE the task.
 
-ABSOLUTE REQUIREMENT: Generate ONLY ${tradeName === 'Tiling & Waterproofing' ? 'tiling, waterproofing, surface preparation, grouting, and sealing' : 'trade-specific'} tasks. NO exceptions. NO general construction. NO other trades.`;
+ABSOLUTE REQUIREMENT: Generate ONLY ${tradeName === 'Tiling & Waterproofing' ? 'tiling, waterproofing, surface preparation, grouting, and sealing' : 'trade-specific'} tasks.`;
 
     console.log(`🔍 SENDING ENHANCED PROMPT WITH SAFETY OPTIONS`);
 

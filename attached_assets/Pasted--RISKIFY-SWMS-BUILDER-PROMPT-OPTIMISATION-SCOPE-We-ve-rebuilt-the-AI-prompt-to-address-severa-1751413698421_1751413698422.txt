@@ -1,0 +1,83 @@
+📌 RISKIFY SWMS BUILDER – PROMPT OPTIMISATION SCOPE
+
+We’ve rebuilt the AI prompt to address several key issues in the current generator. This scope outlines all optimisations now required for reliable, regulation-aligned Safe Work Method Statement generation:
+ 
+✅ 1. TRADE BOUNDARY ENFORCEMENT (CRITICAL)
+
+Problem: The model was including tasks from other trades or general construction duties.
+
+Fix:
+•	Enforce a "validateTradeScope" logic block:
+
+"validateTradeScope": {
+  "isTaskWithinTradeScope": "YES" | "NO",
+  "reasonIfNo": "Explain which trade this task belongs to"
+}
+   
+•	Model must reject non-trade tasks rather than try to re-assign them.
+•	Add system prompt clause:
+
+“You must only generate tasks the specified trade performs with their own tools and licences. Reject anything outside this boundary.”
+
+
+✅ 2. SPECIFIC HAZARD IDENTIFICATION
+
+Problem: Hazards were too generic.
+
+Fix:
+•	Each hazard must include:
+o	Cause agent (e.g. “angle grinder blade fracture”)
+o	Environmental condition (e.g. “tight subfloor”, “wet scaffold planks”)
+o	Consequence (e.g. “eye penetration”, “electric shock”)
+•	Prompt clause:
+
+“Hazards must be described using: (1) the specific cause agent, (2) task or environment context, and (3) likely consequence.”
+ 
+✅ 3. HIGH-RISK CONSTRUCTION WORK (HRCW) CATEGORY INTEGRATION
+
+Fix:
+•	Prompt accepts input like:
+"hrcwCategories": [1, 2, 6, 10]
+
+•	Tasks that trigger any selected category must:
+o	Explicitly reference the HRCW number
+o	Include controls that mention permits or risk control forms from the Risk Register
+(e.g. "S030408 Hot Works Permit", "Q030428 Confined Space Permit")
+ 
+ 
+✅ 4. DETAILED CONTROL MEASURES (HIERARCHY STRUCTURE)
+
+Problem: Controls were vague or mis-prioritised.
+
+Fix:
+•	Controls must now be structured by Hierarchy of Controls:
+"controlMeasures": {
+  "elimination": "...",
+  "substitution": "...",
+  "isolation": "...",
+  "engineering": "...",
+  "administrative": "...",
+  "ppe": "..."
+}
+
+•	Prompt clause:
+
+“You must apply the hierarchy of controls. Do not default to PPE unless all higher levels are not reasonably practicable.”
+ 
+✅ 5. AUSTRALIAN COMPLIANCE ACCURACY
+
+Fix:
+•	Every task must include this structure:
+"referencedLegislation": [
+  "NSW WHS Reg 2017 s217",
+  "AS 2550.1",
+  "Falls CoP Section 4.2"
+]
+
+•	Source clauses from:
+o	NSW WHS Regulation 2017
+o	Model Codes of Practice (e.g. Falls CoP, Excavation CoP)
+o	Relevant Australian Standards (e.g. AS 4576 Scaffold, AS 3012 Electrical)
+•	❓ OPEN ITEM FOR REPLIT
+•	
+•	Are there any other fields, schema constraints, or ingestion requirements we should add to this prompt structure to ensure seamless integration with the Riskify ingestion engine?
