@@ -148,6 +148,7 @@ interface StepContentProps {
   step: number;
   formData: any;
   onDataChange: (data: any) => void;
+  onNext?: () => void;
 }
 
 interface SWMSFormProps {
@@ -157,7 +158,7 @@ interface SWMSFormProps {
   onDataChange?: (data: any) => void;
 }
 
-const StepContent = ({ step, formData, onDataChange }: StepContentProps) => {
+const StepContent = ({ step, formData, onDataChange, onNext }: StepContentProps) => {
   const { toast } = useToast();
 
   const updateFormData = (updates: any) => {
@@ -1227,6 +1228,7 @@ export default function SWMSForm({ step, data = {}, onNext, onDataChange, isPaid
         step={step} 
         formData={formData} 
         onDataChange={updateFormData} 
+        onNext={onNext}
       />
     </div>
   );
