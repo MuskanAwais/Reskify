@@ -82,14 +82,28 @@ export async function generateSWMSFromTask(request: TaskGenerationRequest): Prom
       const jobDescription = request.plainTextDescription || request.projectDetails.description || request.taskName || 'General construction work';
       prompt = `Generate SWMS tasks ONLY for a ${tradeName} performing this specific job: "${jobDescription}". 
 
-CRITICAL: Only generate tasks that are directly related to ${tradeName} work. Do NOT include unrelated construction activities like excavation, concrete pouring, or steel work unless specifically mentioned in the job description.
+CRITICAL RESTRICTIONS - FOLLOW THESE RULES EXACTLY:
+1. NEVER include excavation, concrete pouring, steel work, earthworks, or heavy civil construction tasks
+2. NEVER include structural work unless it's explicitly part of the trade (e.g., structural steel for steelworkers)
+3. NEVER include general construction activities like site preparation, demolition, or major structural work
+4. ONLY generate tasks that a ${tradeName} tradesperson would personally perform
 
-For example:
-- If it's "tiling a bathroom" - generate only tiling, waterproofing, and bathroom-specific tasks
-- If it's "electrical installation" - generate only electrical work tasks  
-- If it's "plumbing repair" - generate only plumbing-specific tasks
+SPECIFIC EXAMPLES:
+- Tiling bathroom: Surface preparation, waterproofing membrane, tile cutting, tile installation, grouting, sealing, cleanup
+- Electrical work: Cable installation, outlet installation, testing, compliance verification
+- Plumbing: Pipe installation, fixture fitting, pressure testing, commissioning
+- Carpentry: Framework, fixing, finishing, hardware installation
 
-Generate 6-8 specific tasks that a ${tradeName} would actually perform for "${jobDescription}". Each task must be relevant to the specific trade and job description provided.`;
+FORBIDDEN ACTIVITIES (NEVER INCLUDE):
+- Excavation of any kind
+- Concrete pouring or concrete work
+- Steel erection or structural steel work
+- Earthworks or site preparation
+- Heavy machinery operation
+- Major demolition work
+- Civil engineering tasks
+
+Generate 6-8 specific tasks that ONLY a ${tradeName} would perform for "${jobDescription}". Each task must be trade-specific work that falls within the tradesperson's scope of practice.`;
     }
 
     // Create promise with timeout
@@ -98,7 +112,14 @@ Generate 6-8 specific tasks that a ${tradeName} would actually perform for "${jo
       messages: [
         {
           role: "system",
-          content: `You are Riskify, an expert Australian construction safety consultant. The user will provide prompts requesting SWMS data in markdown table format. Convert this into structured JSON format with the following structure:
+          content: `You are Riskify, an expert Australian construction safety consultant specializing in trade-specific work. Generate ONLY tasks that fall within the specific tradesperson's scope of practice. 
+
+ABSOLUTE RESTRICTIONS:
+- NEVER generate excavation, concrete, steel erection, or civil engineering tasks unless explicitly part of the trade
+- NEVER include general construction activities that are outside the specific trade's scope
+- ONLY include tasks that the specified tradesperson would personally perform with their tools and skills
+
+Return structured JSON format:
 
 {
   "activities": [
@@ -110,23 +131,23 @@ Generate 6-8 specific tasks that a ${tradeName} would actually perform for "${jo
       "legislation": "WHS Act 2011",
       "hazards": [
         {
-          "type": "Electrical",
+          "type": "Trade-specific hazard type",
           "description": "Risk description",
           "riskRating": 15,
           "controlMeasures": ["Control 1", "Control 2", "Control 3"],
           "residualRisk": 5
         }
       ],
-      "ppe": ["Safety helmet", "Safety glasses"],
-      "tools": ["Hand tools"],
-      "trainingRequired": ["Safety training"]
+      "ppe": ["Trade-appropriate PPE"],
+      "tools": ["Trade-specific tools"],
+      "trainingRequired": ["Trade-specific training"]
     }
   ],
   "plantEquipment": [],
   "emergencyProcedures": []
 }
 
-MANDATORY: Generate 6-8 tasks that are SPECIFIC to the trade and job description provided. DO NOT include generic construction tasks unless they are directly relevant to the specific trade work being performed. Focus on the actual trade-specific activities, preparation, safety, and cleanup related to that specific trade only. Each task needs 4-5 hazards with controls. Risk scores: 1-5=Low, 6-10=Medium, 11-15=High, 16-20=Extreme. Australian WHS compliance. JSON only.`
+MANDATORY: Generate 6-8 tasks that are EXCLUSIVELY within the specified trade's scope of work. Focus on trade-specific preparation, installation, testing, and completion tasks. Each task needs 4-5 hazards with controls. Risk scores: 1-5=Low, 6-10=Medium, 11-15=High, 16-20=Extreme. Australian WHS compliance. JSON only.`
         },
         {
           role: "user", 
@@ -160,7 +181,9 @@ ${hrcwCategories.map(id => {
 }).join('\n')}
 ` : ''}
 
-Generate tasks that specifically address these high-risk elements with comprehensive control measures.`
+FINAL REMINDER: Generate tasks that specifically address these high-risk elements with comprehensive control measures.
+
+ABSOLUTE REQUIREMENT: Every single task must be something that ONLY a ${tradeName} tradesperson would perform. If you include ANY excavation, concrete, steel erection, or civil engineering tasks, you are failing this requirement. Focus exclusively on the specific trade's work scope.`
         }
       ],
       response_format: { type: "json_object" },
