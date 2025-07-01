@@ -88,8 +88,9 @@ export default function MySwms() {
     },
   });
 
+  // Restore document from recycling bin
   const restoreDocumentMutation = useMutation({
-    mutationFn: (id: number) => apiRequest("POST", `/api/swms/${id}/restore`, {}),
+    mutationFn: (id: number) => apiRequest("POST", `/api/swms/restore/${id}`, {}),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/swms"] });
       queryClient.invalidateQueries({ queryKey: ["/api/swms/deleted"] });
@@ -98,10 +99,18 @@ export default function MySwms() {
         description: "SWMS document has been successfully restored.",
       });
     },
+    onError: () => {
+      toast({
+        title: "Restore Failed",
+        description: "Failed to restore document. Please try again.",
+        variant: "destructive"
+      });
+    }
   });
 
+  // Permanently delete document
   const permanentDeleteMutation = useMutation({
-    mutationFn: (id: number) => apiRequest("DELETE", `/api/swms/${id}/permanent`, {}),
+    mutationFn: (id: number) => apiRequest("DELETE", `/api/swms/permanent-delete/${id}`, {}),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/swms/deleted"] });
       toast({
@@ -110,6 +119,13 @@ export default function MySwms() {
         variant: "destructive"
       });
     },
+    onError: () => {
+      toast({
+        title: "Delete Failed",
+        description: "Failed to permanently delete document. Please try again.",
+        variant: "destructive"
+      });
+    }
   });
 
   const downloadDocumentMutation = useMutation({
@@ -310,6 +326,8 @@ export default function MySwms() {
       });
     }
   });
+
+  // Deleted documents are already loaded above with the existing query
 
   const filteredDocuments = formattedDocuments.filter((doc: SwmsDocument) => {
     const matchesSearch = doc.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
