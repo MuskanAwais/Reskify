@@ -229,6 +229,7 @@ export default function GPTTaskSelection({
   const [selectedTask, setSelectedTask] = useState("");
   const [siteEnvironment, setSiteEnvironment] = useState("");
   const [specialRiskFactors, setSpecialRiskFactors] = useState<string[]>([]);
+  const [hrcwCategories, setHrcwCategories] = useState<number[]>([]);
   const [selectedState, setSelectedState] = useState("NSW");
   const [showAllHRCW, setShowAllHRCW] = useState(false);
   const [generationProgress, setGenerationProgress] = useState(0);
@@ -537,6 +538,14 @@ export default function GPTTaskSelection({
     );
   };
 
+  const toggleHrcwCategory = (categoryId: number) => {
+    setHrcwCategories(prev =>
+      prev.includes(categoryId)
+        ? prev.filter(id => id !== categoryId)
+        : [...prev, categoryId]
+    );
+  };
+
   const handleGenerate = () => {
     let request;
     
@@ -577,7 +586,7 @@ export default function GPTTaskSelection({
           ...projectDetails,
           siteEnvironment,
           specialRiskFactors,
-          hrcwCategories: specialRiskFactors.map(f => parseInt(f)).filter(n => !isNaN(n)),
+          hrcwCategories: hrcwCategories,
           state: selectedState
         }
       };
@@ -828,7 +837,7 @@ export default function GPTTaskSelection({
                             { id: 18, title: "Work on live electrical conductors", description: "Live electrical conductor work" }
                           ])
                         ].map((category) => {
-                          const isSelected = specialRiskFactors.includes(category.id.toString());
+                          const isSelected = hrcwCategories.includes(category.id);
                           return (
                             <div 
                               key={category.id} 
@@ -837,7 +846,7 @@ export default function GPTTaskSelection({
                                   ? 'border-red-500 bg-red-50 shadow-md' 
                                   : 'border-gray-200 bg-white hover:border-gray-300'
                               }`}
-                              onClick={() => toggleRiskFactor(category.id.toString())}
+                              onClick={() => toggleHrcwCategory(category.id)}
                             >
                               <div className="flex items-start space-x-3">
                                 <div className={`w-5 h-5 rounded border-2 flex items-center justify-center mt-0.5 ${
