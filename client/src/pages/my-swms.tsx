@@ -350,8 +350,7 @@ export default function MySwms() {
               <SelectContent>
                 <SelectItem value="all">All Status</SelectItem>
                 <SelectItem value="draft">Draft</SelectItem>
-                <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="archived">Archived</SelectItem>
+                <SelectItem value="completed">Completed</SelectItem>
               </SelectContent>
             </Select>
             <Select value={tradeFilter} onValueChange={setTradeFilter}>
@@ -440,71 +439,48 @@ export default function MySwms() {
 
                 <div className="flex gap-2 mt-4 pt-4 border-t">
                   {document.status === 'completed' ? (
-                    // Completed documents: PDF Preview and Download
+                    // Completed documents: Download and Delete only
                     <>
-                      <PDFPreview
-                        swmsData={{
-                          title: document.title,
-                          projectName: document.title,
-                          projectLocation: document.projectLocation,
-                          projectAddress: document.projectLocation,
-                          principalContractor: document.principalContractor || 'N/A',
-                          tradeType: document.tradeType,
-                          jobNumber: document.jobNumber || 'N/A',
-                          workActivities: document.workActivities || []
-                        }}
-                        swmsId={document.id}
-                        onDownload={() => downloadDocumentMutation.mutate(document)}
-                        buttonText="Preview PDF"
-                        variant="default"
-                      />
-                      
                       <Button
-                        variant="outline"
+                        variant="default"
                         size="sm"
                         onClick={() => downloadDocumentMutation.mutate(document)}
                         disabled={downloadDocumentMutation.isPending}
+                        className="flex-1"
                       >
-                        <Download className="h-4 w-4" />
+                        <Download className="h-4 w-4 mr-1" />
+                        Download
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => deleteDocumentMutation.mutate(document.id)}
+                        disabled={deleteDocumentMutation.isPending}
+                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                      >
+                        <Trash2 className="h-4 w-4" />
                       </Button>
                     </>
                   ) : (
-                    // Draft documents: Preview and Edit options
+                    // Draft documents: Edit and Delete only
                     <>
-                      <PDFPreview
-                        swmsData={{
-                          title: document.title,
-                          projectName: document.title,
-                          projectLocation: document.projectLocation,
-                          projectAddress: document.projectLocation,
-                          principalContractor: document.principalContractor || 'N/A',
-                          tradeType: document.tradeType,
-                          jobNumber: document.jobNumber || 'N/A',
-                          workActivities: document.workActivities || []
-                        }}
-                        swmsId={document.id}
-                        buttonText="Preview"
-                        variant="outline"
-                      />
-                      
-                      <Link href={`/swms-builder?edit=${document.id}`}>
-                        <Button variant="outline" size="sm">
+                      <Link href={`/swms-builder?edit=${document.id}`} className="flex-1">
+                        <Button variant="default" size="sm" className="w-full">
                           <Edit className="h-4 w-4 mr-1" />
                           Edit
                         </Button>
                       </Link>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => deleteDocumentMutation.mutate(document.id)}
+                        disabled={deleteDocumentMutation.isPending}
+                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </>
                   )}
-                  
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => deleteDocumentMutation.mutate(document.id)}
-                    disabled={deleteDocumentMutation.isPending}
-                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
                 </div>
               </CardContent>
             </Card>

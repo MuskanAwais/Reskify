@@ -180,19 +180,16 @@ export default function SwmsBuilder() {
     const editId = urlParams.get('edit');
     
     if (editId) {
-      // Load draft from database
+      // Load draft from database for editing
       loadDraftMutation.mutate(parseInt(editId));
     } else {
-      // Load from localStorage for new SWMS
-      const savedData = localStorage.getItem('swms-form-data');
-      if (savedData) {
-        try {
-          const parsedData = JSON.parse(savedData);
-          setFormData(prev => ({ ...prev, ...parsedData }));
-        } catch (error) {
-          console.error('Error loading saved data:', error);
-        }
-      }
+      // Starting new SWMS - clear everything and start fresh
+      setDraftId(null);
+      setIsDraft(false);
+      setCurrentStep(1);
+      // Clear localStorage for fresh start
+      localStorage.removeItem('swms-form-data');
+      // Keep initial empty form data
     }
     
     // Parse step from URL
@@ -412,17 +409,23 @@ export default function SwmsBuilder() {
   // Silent auto-save mutation (no notifications)
   const autoSaveMutation = useMutation({
     mutationFn: async (data: any) => {
-      const response = await apiRequest("POST", "/api/swms/draft", {
+      const requestData = {
         ...data,
         userId: 999, // Demo user ID
-        draftId: draftId, // Include existing draft ID to update instead of create new
         status: "draft",
         currentStep,
         projectName: data.jobName || data.title || "Untitled SWMS",
         title: data.jobName || data.title || "Untitled SWMS",
         createdAt: new Date().toISOString(),
         lastModified: new Date().toISOString()
-      });
+      };
+      
+      // Only include draftId if it exists (for updates)
+      if (draftId) {
+        requestData.draftId = draftId;
+      }
+      
+      const response = await apiRequest("POST", "/api/swms/draft", requestData);
       if (!response.ok) {
         throw new Error('Failed to auto-save draft');
       }
@@ -864,15 +867,6 @@ export default function SwmsBuilder() {
           )}
         </div>
         <div className="flex items-center gap-3">
-          <Button 
-            variant="outline" 
-            onClick={handleCreateNew}
-            className="gap-2 bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100"
-            title="Start a new SWMS document"
-          >
-            <Plus className="h-4 w-4" />
-            New SWMS
-          </Button>
           <Button 
             variant="outline" 
             onClick={handleSaveAndClose}

@@ -115,6 +115,9 @@ export const swmsDocuments = pgTable("swms_documents", {
   witnessName: text("witness_name"),
   witnessSignature: text("witness_signature"),
   witnessSignedAt: timestamp("witness_signed_at"),
+  // Recycling bin functionality
+  deletedAt: timestamp("deleted_at"), // when document was moved to recycle bin
+  permanentDeleteAt: timestamp("permanent_delete_at"), // when document will be permanently deleted (30 days after deletedAt)
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
