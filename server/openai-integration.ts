@@ -83,25 +83,20 @@ export async function generateSWMSFromTask(request: TaskGenerationRequest): Prom
       prompt = `Generate SWMS tasks ONLY for a ${tradeName} performing this specific job: "${jobDescription}". 
 
 CRITICAL RESTRICTIONS - FOLLOW THESE RULES EXACTLY:
-1. NEVER include excavation, concrete pouring, steel work, earthworks, or heavy civil construction tasks
-2. NEVER include structural work unless it's explicitly part of the trade (e.g., structural steel for steelworkers)
-3. NEVER include general construction activities like site preparation, demolition, or major structural work
-4. ONLY generate tasks that a ${tradeName} tradesperson would personally perform
+1. ONLY generate tasks that fall within the specific trade's licensed scope of practice
+2. NEVER include tasks that would require different trade licenses or qualifications
+3. NEVER include tasks that other trades would typically perform
+4. NEVER include general construction activities outside the specific trade's expertise
+5. Focus exclusively on tasks using the trade's specific tools, materials, and techniques
 
-SPECIFIC EXAMPLES:
-- Tiling bathroom: Surface preparation, waterproofing membrane, tile cutting, tile installation, grouting, sealing, cleanup
-- Electrical work: Cable installation, outlet installation, testing, compliance verification
-- Plumbing: Pipe installation, fixture fitting, pressure testing, commissioning
-- Carpentry: Framework, fixing, finishing, hardware installation
+UNIVERSAL TRADE BOUNDARY RULES:
+- Each trade has specific materials, tools, and techniques - stay within these boundaries
+- If a task requires specialized equipment or licenses that the specified trade doesn't typically have, exclude it
+- Focus on the trade's core competencies and standard work practices
+- Include only preparation, installation, testing, and completion tasks specific to that trade
 
-FORBIDDEN ACTIVITIES (NEVER INCLUDE):
-- Excavation of any kind
-- Concrete pouring or concrete work
-- Steel erection or structural steel work
-- Earthworks or site preparation
-- Heavy machinery operation
-- Major demolition work
-- Civil engineering tasks
+SCOPE VALIDATION TEST:
+Ask yourself: "Would a ${tradeName} tradesperson with standard tools and training personally perform this task as part of their normal work?" If NO, exclude the task.
 
 Generate 6-8 specific tasks that ONLY a ${tradeName} would perform for "${jobDescription}". Each task must be trade-specific work that falls within the tradesperson's scope of practice.`;
     }
@@ -112,12 +107,13 @@ Generate 6-8 specific tasks that ONLY a ${tradeName} would perform for "${jobDes
       messages: [
         {
           role: "system",
-          content: `You are Riskify, an expert Australian construction safety consultant specializing in trade-specific work. Generate ONLY tasks that fall within the specific tradesperson's scope of practice. 
+          content: `You are Riskify, an expert Australian construction safety consultant specializing in trade-specific work. Generate ONLY tasks that fall within the specific tradesperson's licensed scope of practice and standard work boundaries.
 
 ABSOLUTE RESTRICTIONS:
-- NEVER generate excavation, concrete, steel erection, or civil engineering tasks unless explicitly part of the trade
-- NEVER include general construction activities that are outside the specific trade's scope
-- ONLY include tasks that the specified tradesperson would personally perform with their tools and skills
+- NEVER generate tasks that require different trade licenses, qualifications, or specialized training
+- NEVER include work that other trades would typically perform or be responsible for
+- NEVER cross trade boundaries - each trade has specific materials, tools, techniques, and work scope
+- ONLY include tasks that the specified tradesperson would personally perform with their standard trade tools and skills
 
 Return structured JSON format:
 
@@ -183,7 +179,7 @@ ${hrcwCategories.map(id => {
 
 FINAL REMINDER: Generate tasks that specifically address these high-risk elements with comprehensive control measures.
 
-ABSOLUTE REQUIREMENT: Every single task must be something that ONLY a ${tradeName} tradesperson would perform. If you include ANY excavation, concrete, steel erection, or civil engineering tasks, you are failing this requirement. Focus exclusively on the specific trade's work scope.`
+ABSOLUTE REQUIREMENT: Every single task must be something that ONLY a ${tradeName} tradesperson would perform within their licensed scope of practice. If you include ANY tasks that would require different trade qualifications, licenses, or that other trades would typically perform, you are failing this requirement. Focus exclusively on the specific trade's standard work scope and core competencies.`
         }
       ],
       response_format: { type: "json_object" },
