@@ -283,7 +283,30 @@ Each task must include:
 - "referencedLegislation": ["${state} WHS Reg 2017 s217", "AS standards", "CoP sections"]
 - "hazards" with causeAgent, environmentalCondition, consequence fields
 - "controlMeasures" using hierarchy structure (elimination, substitution, isolation, engineering, administrative, ppe)
+- "tools": [specific tool names, not "standard trade tools"]
+- "ppe": [specific PPE items from standard and task-specific lists]
 ${hrcwCategories.length > 0 ? '- "hrcwReferences" and "permitRequired" arrays for HRCW tasks' : ''}
+
+PLANT & EQUIPMENT GENERATION:
+You MUST generate a comprehensive "plantEquipment" array with specific trade tools:
+
+${tradeName === 'Tiling & Waterproofing' ? `
+TILING & WATERPROOFING EQUIPMENT:
+- Tile cutter (wet saw) - Equipment, Cutting Tools, certification required, Current inspection, Medium risk
+- Angle grinder - Equipment, Power Tools, certification required, Current inspection, High risk  
+- Notched trowel - Equipment, Hand Tools, not required, Current inspection, Low risk
+- Spirit level - Equipment, Measuring Tools, not required, Current inspection, Low risk
+- Tile spacers - Equipment, Installation Tools, not required, Current inspection, Low risk
+- Rubber float - Equipment, Finishing Tools, not required, Current inspection, Low risk
+- Waterproofing application tools - Equipment, Application Tools, not required, Current inspection, Medium risk
+- Measuring tape - Equipment, Measuring Tools, not required, Current inspection, Low risk` : ''}
+
+PPE SPECIFICATION REQUIREMENTS:
+For ${tradeName === 'Tiling & Waterproofing' ? 'tiling work' : 'this trade'}, specify exact PPE from these categories:
+
+STANDARD PPE: "Hard Hat", "Hi-Vis Vest/Shirt", "Steel Cap Boots", "Safety Glasses", "Gloves", "Long Pants", "Long Sleeve Shirt"
+
+TASK-SPECIFIC PPE: "Hearing Protection", "Dust Mask", "Knee Pads", "Cut-Resistant Gloves", "Respirator (Half/Full Face)"
 
 FINAL VALIDATION: Every task MUST pass trade scope validation. If a ${tradeName} wouldn't personally do this work with their standard tools and licenses, DELETE the task.
 
