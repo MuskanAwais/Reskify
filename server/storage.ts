@@ -92,10 +92,12 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateUserCredits(userId: number, credits: number): Promise<void> {
-    await db
+    console.log(`Storage: Updating user ${userId} credits to ${credits}`);
+    const result = await db
       .update(users)
       .set({ swmsCredits: credits })
       .where(eq(users.id, userId));
+    console.log(`Storage: Update result:`, result);
   }
 
   async updateUserLastActive(userId: number): Promise<void> {
