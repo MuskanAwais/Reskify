@@ -2523,9 +2523,18 @@ export async function registerRoutes(app: Express) {
               activity.hazards.forEach((hazard: any) => {
                 try {
                   // Ensure hazard is a string before calling trim
-                  const hazardStr = typeof hazard === 'string' ? hazard : String(hazard || '');
+                  let hazardStr = '';
+                  if (typeof hazard === 'string') {
+                    hazardStr = hazard;
+                  } else if (typeof hazard === 'object' && hazard !== null) {
+                    // Skip objects completely to avoid "[object Object]"
+                    return;
+                  } else {
+                    hazardStr = String(hazard || '');
+                  }
+                  
                   const cleanHazard = hazardStr.trim();
-                  if (cleanHazard) {
+                  if (cleanHazard && cleanHazard !== '[object Object]') {
                     riskFrequency[cleanHazard] = (riskFrequency[cleanHazard] || 0) + 1;
                   }
                 } catch (error) {
@@ -2571,9 +2580,18 @@ export async function registerRoutes(app: Express) {
             if (activity.hazards && Array.isArray(activity.hazards)) {
               activity.hazards.forEach((hazard: any) => {
                 // Ensure hazard is a string before calling trim
-                const hazardStr = typeof hazard === 'string' ? hazard : String(hazard || '');
+                let hazardStr = '';
+                if (typeof hazard === 'string') {
+                  hazardStr = hazard;
+                } else if (typeof hazard === 'object' && hazard !== null) {
+                  // Skip objects completely to avoid "[object Object]"
+                  return;
+                } else {
+                  hazardStr = String(hazard || '');
+                }
+                
                 const cleanHazard = hazardStr.trim();
-                if (cleanHazard) {
+                if (cleanHazard && cleanHazard !== '[object Object]') {
                   hazardFrequency[cleanHazard] = (hazardFrequency[cleanHazard] || 0) + 1;
                 }
               });
