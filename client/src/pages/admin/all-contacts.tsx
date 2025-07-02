@@ -67,11 +67,15 @@ export default function AllContacts() {
   
   const users = (usersResponse as any)?.users || [];
 
-  // Get unique companies
-  const companies = [...new Set(users.map((user: any) => user.company).filter(Boolean))].sort();
+  // Get unique companies  
+  const companySet = new Set();
+  users.forEach((user: any) => {
+    if (user.company) companySet.add(user.company);
+  });
+  const companies = Array.from(companySet).sort();
 
   // Filter users
-  const filteredUsers = users.filter((user: User) => {
+  const filteredUsers = users.filter((user: any) => {
     const matchesSearch = user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          user.company?.toLowerCase().includes(searchTerm.toLowerCase());
