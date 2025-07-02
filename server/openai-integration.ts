@@ -317,7 +317,16 @@ CRITICAL: RETURN ONLY THIS EXACT JSON STRUCTURE WITH REAL DATA:
 
 GENERATE 4-6 TILING TASKS WITH THIS EXACT FORMAT. 
 
-MANDATORY REQUIREMENTS:
+ABSOLUTELY BANNED RESPONSES - DO NOT USE:
+- "Standard workplace hazards"
+- "WHS Act 2011" (too generic)
+- "Standard trade tools" 
+- "Trade specific training"
+- "Follow safety procedures"
+- "Use appropriate PPE"
+- Generic risk ratings (must vary between tasks)
+
+MANDATORY SPECIFIC REQUIREMENTS:
 - Use DIFFERENT risk scores (4-9) for each task
 - Use SPECIFIC tools for each task (wet saw, grinder, trowel, float, etc.)
 - Use SPECIFIC training for each task (silica awareness, chemical handling, etc.)
@@ -345,7 +354,11 @@ HRCW REQUIREMENTS:
 
 JOB DESCRIPTION: ${prompt}
 
+CRITICAL REQUIREMENT: This is a ${siteEnvironment.toUpperCase()} site in ${state}. You MUST generate tasks with ${state}-specific legislation.
+
 TRADE-SPECIFIC REQUIREMENT: Generate 6-8 tasks that ONLY a ${tradeName} would personally perform for this job.
+
+AUSTRALIAN LEGISLATION REQUIREMENT: Every task MUST include specific ${state} regulations, not generic "WHS Act 2011".
 
 RESPONSE FORMAT REQUIREMENTS:
 Each task must include:
@@ -420,6 +433,8 @@ ABSOLUTE REQUIREMENT: Generate ONLY ${tradeName === 'Tiling & Waterproofing' ? '
     console.log(`🔍 SITE ENVIRONMENT: ${siteEnvironment}`);
     console.log(`🔍 HRCW CATEGORIES: ${hrcwCategories.join(', ')}`);
     console.log(`🔍 STATE: ${state}`);
+    console.log(`🔍 FULL SYSTEM MESSAGE:`, systemMessage.substring(0, 500) + '...');
+    console.log(`🔍 FULL USER MESSAGE:`, userMessage.substring(0, 500) + '...');
 
     // Create promise with timeout
     const apiCall = openai.chat.completions.create({
