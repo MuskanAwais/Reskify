@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { 
@@ -18,7 +18,10 @@ import {
   Search,
   Plus,
   RotateCcw,
-  Archive
+  Archive,
+  Users,
+  Settings,
+  Crown
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -50,16 +53,47 @@ export default function MySwms() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [tradeFilter, setTradeFilter] = useState("all");
   const [activeTab, setActiveTab] = useState("active");
+  const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+  const [isAdminViewMode, setIsAdminViewMode] = useState(false);
   const { toast } = useToast();
   const user = useUser();
 
+  // Get current user data with admin status
+  const { data: currentUserData } = useQuery({
+    queryKey: ["/api/user"],
+    enabled: !!user,
+  });
+
+  const isAdmin = currentUserData?.isAdmin || false;
+  const effectiveUserId = isAdminViewMode && selectedUserId ? selectedUserId : (user?.id || 999);
+
+  // Get all users for admin user switcher
+  const { data: allUsersData } = useQuery({
+    queryKey: ["/api/admin/users"],
+    enabled: isAdmin,
+  });
+
+  const allUsers = allUsersData?.users || [];
+
   const { data: documentsData, isLoading, refetch } = useQuery({
-    queryKey: ["/api/swms"],
+    queryKey: ["/api/swms", effectiveUserId],
+    queryFn: async () => {
+      if (isAdminViewMode && selectedUserId) {
+        return apiRequest("GET", `/api/admin/user/${selectedUserId}/swms`);
+      }
+      return apiRequest("GET", "/api/swms");
+    },
     enabled: !!user,
   });
 
   const { data: deletedDocumentsData, isLoading: isLoadingDeleted } = useQuery({
-    queryKey: ["/api/swms/deleted"],
+    queryKey: ["/api/swms/deleted", effectiveUserId],
+    queryFn: async () => {
+      if (isAdminViewMode && selectedUserId) {
+        return apiRequest("GET", `/api/admin/user/${selectedUserId}/swms/deleted`);
+      }
+      return apiRequest("GET", "/api/swms/deleted");
+    },
     enabled: !!user && activeTab === "deleted"
   });
 
@@ -457,6 +491,70 @@ export default function MySwms() {
         </div>
       </div>
 
+      {/* Admin User View Switcher */}
+      {isAdmin && (
+        <Card className="mb-6 border-orange-200 bg-orange-50">
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Crown className="h-5 w-5 text-orange-600" />
+                <div>
+                  <h3 className="font-semibold text-orange-800">Admin View Mode</h3>
+                  <p className="text-sm text-orange-600">
+                    {isAdminViewMode && selectedUserId 
+                      ? `Viewing SWMS for: ${allUsers.find(u => u.id === selectedUserId)?.name || 'Unknown User'}`
+                      : 'Switch to view and edit any user\'s SWMS documents with admin privileges'
+                    }
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-3">
+                {isAdminViewMode ? (
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setIsAdminViewMode(false);
+                      setSelectedUserId(null);
+                    }}
+                    className="border-orange-300 text-orange-700 hover:bg-orange-100"
+                  >
+                    <Settings className="h-4 w-4 mr-2" />
+                    Exit Admin View
+                  </Button>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <Select
+                      value={selectedUserId?.toString() || ""}
+                      onValueChange={(value) => {
+                        const userId = parseInt(value);
+                        setSelectedUserId(userId);
+                        setIsAdminViewMode(true);
+                      }}
+                    >
+                      <SelectTrigger className="w-48 border-orange-300">
+                        <SelectValue placeholder="Select a user..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {allUsers.map((user: any) => (
+                          <SelectItem key={user.id} value={user.id.toString()}>
+                            <div className="flex items-center gap-2">
+                              <Users className="h-4 w-4" />
+                              {user.name || user.username} 
+                              {user.isAdmin && <Crown className="h-3 w-3 text-orange-500" />}
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Tabs for Active Documents and Recycling Bin */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-2">
@@ -582,7 +680,7 @@ export default function MySwms() {
 
                 <div className="flex gap-2 mt-4 pt-4 border-t">
                   {document.status === 'completed' ? (
-                    // Completed documents: Download and Delete only
+                    // Completed documents: Download and Delete only (Admin can edit)
                     <>
                       <Button
                         variant="default"
@@ -594,6 +692,16 @@ export default function MySwms() {
                         <Download className="h-4 w-4 mr-1" />
                         Download
                       </Button>
+                      
+                      {isAdmin && (
+                        <Link href={`/swms-builder?edit=${document.id}&admin=true`} className="flex-1">
+                          <Button variant="outline" size="sm" className="w-full border-orange-200 text-orange-700 hover:bg-orange-50">
+                            <Crown className="h-4 w-4 mr-1" />
+                            Admin Edit
+                          </Button>
+                        </Link>
+                      )}
+                      
                       <Button
                         variant="outline"
                         size="sm"
@@ -607,10 +715,10 @@ export default function MySwms() {
                   ) : (
                     // Draft documents: Edit and Delete only
                     <>
-                      <Link href={`/swms-builder?edit=${document.id}`} className="flex-1">
+                      <Link href={`/swms-builder?edit=${document.id}${isAdminViewMode ? '&admin=true' : ''}`} className="flex-1">
                         <Button variant="default" size="sm" className="w-full">
                           <Edit className="h-4 w-4 mr-1" />
-                          Edit
+                          {isAdminViewMode ? 'Admin Edit' : 'Edit'}
                         </Button>
                       </Link>
                       <Button
