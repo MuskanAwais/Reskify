@@ -1196,6 +1196,35 @@ export async function registerRoutes(app: Express) {
     }
   });
 
+  // Test credit addition endpoint (for development/demo purposes)
+  app.post('/api/test-add-credits', async (req, res) => {
+    try {
+      const { userId = 999, credits = 5, amount = 60, type = 'credits' } = req.body;
+      
+      console.log(`TEST: Adding ${credits} credits to user ${userId} for $${amount} ${type} purchase`);
+      
+      const user = await storage.getUserById(userId);
+      if (user) {
+        const newCredits = (user.swmsCredits || 0) + credits;
+        await storage.updateUserCredits(userId, newCredits);
+        console.log(`TEST: Successfully added ${credits} credits. New balance: ${newCredits}`);
+        
+        res.json({
+          success: true,
+          message: `Added ${credits} credits to user ${userId}`,
+          oldBalance: user.swmsCredits || 0,
+          newBalance: newCredits,
+          creditsAdded: credits
+        });
+      } else {
+        res.status(404).json({ error: 'User not found' });
+      }
+    } catch (error) {
+      console.error('Test credit addition error:', error);
+      res.status(500).json({ error: 'Failed to add credits' });
+    }
+  });
+
   // Legacy payment intent endpoint (keep for backward compatibility)
   app.post('/api/create-payment-intent', async (req, res) => {
     try {
