@@ -1048,7 +1048,53 @@ export async function registerRoutes(app: Express) {
     }
   });
 
-  // Stripe payment intent endpoint
+  // Stripe checkout session endpoint
+  app.post('/api/create-checkout-session', async (req, res) => {
+    try {
+      const { amount, type } = req.body;
+      
+      console.log('Creating checkout session for:', { amount, type });
+      
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        line_items: [
+          {
+            price_data: {
+              currency: 'aud',
+              product_data: {
+                name: type === 'credits' ? 'SWMS Credits' : 'One-off SWMS Access',
+                description: type === 'credits' ? `${amount === 60 ? '10' : '5'} SWMS Credits` : 'Single SWMS Document Access',
+              },
+              unit_amount: Math.round(amount * 100), // Convert to cents
+            },
+            quantity: 1,
+          },
+        ],
+        mode: 'payment',
+        success_url: `${req.headers.origin}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${req.headers.origin}/payment?cancelled=true`,
+        metadata: {
+          type: type || 'one-off',
+          userId: req.session?.userId || '999'
+        }
+      });
+
+      res.json({ 
+        checkoutUrl: session.url,
+        sessionId: session.id,
+        amount: amount,
+        type: type
+      });
+    } catch (error: any) {
+      console.error('Checkout session creation error:', error);
+      res.status(500).json({ 
+        error: 'Failed to create checkout session',
+        message: error.message 
+      });
+    }
+  });
+
+  // Legacy payment intent endpoint (keep for backward compatibility)
   app.post('/api/create-payment-intent', async (req, res) => {
     try {
       const { amount, type } = req.body;
@@ -1057,7 +1103,7 @@ export async function registerRoutes(app: Express) {
       
       const paymentIntent = await stripe.paymentIntents.create({
         amount: Math.round(amount * 100), // Convert to cents
-        currency: 'usd',
+        currency: 'aud',
         metadata: {
           type: type || 'one-off',
           userId: req.session?.userId || '999'

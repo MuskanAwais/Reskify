@@ -25,6 +25,7 @@ import AiAssistant from "@/pages/ai-assistant";
 import Settings from "@/pages/settings";
 import Billing from "@/pages/billing";
 import Payment from "@/pages/payment";
+import PaymentSuccess from "@/pages/payment-success";
 import SWMSTesting from "@/pages/swms-testing";
 import PDFTest from "@/pages/pdf-test";
 import NotFound from "@/pages/not-found";
