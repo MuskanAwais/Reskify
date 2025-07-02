@@ -1029,7 +1029,8 @@ const StepContent = ({ step, formData, onDataChange, onNext }: StepContentProps)
                           updateFormData({ 
                             paymentMethod: 'credits', 
                             paid: true,
-                            creditsUsed: true 
+                            creditsUsed: true,
+                            paidAccess: true  // This is what the step validation checks for
                           });
                           
                           // Trigger next step via the parent component

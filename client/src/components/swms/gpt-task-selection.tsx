@@ -257,10 +257,7 @@ export default function GPTTaskSelection({
     }
   }, [savedWorkDescription, savedActivities]);
 
-  // Debug effect to track generatedTasks changes
-  useEffect(() => {
-    console.log('Step 2 - Generated tasks updated, count:', generatedTasks.length, 'isEditing:', isEditing);
-  }, [generatedTasks, isEditing]);
+
 
   // Risk matrix mapping
   const getRiskDescription = (score: number): string => {
@@ -975,15 +972,10 @@ export default function GPTTaskSelection({
               )}
 
               {/* Editable Tasks Table */}
-              {(() => {
-                console.log('RENDER CHECK - isEditing:', isEditing, 'generatedTasks.length:', generatedTasks.length, 'Should show table:', isEditing && generatedTasks.length > 0);
-                return null;
-              })()}
               {isEditing && generatedTasks.length > 0 && (
-                <div className="space-y-4 border-4 border-red-500 p-4 bg-yellow-100">
-                  <div className="text-red-600 font-bold text-xl">🚨 TASKS TABLE IS RENDERING! 🚨</div>
+                <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold">Generated Tasks (Editable) - COUNT: {generatedTasks.length}</h3>
+                    <h3 className="text-lg font-semibold">Generated Tasks (Editable)</h3>
                     <Button onClick={finalizeEditedTasks} variant="outline">
                       Finalize Tasks
                     </Button>
