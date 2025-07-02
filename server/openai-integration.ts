@@ -263,7 +263,7 @@ YOU MUST RETURN EXACTLY THIS JSON STRUCTURE - NO OTHER FORMAT ACCEPTED:
       "description": "Task description here",
       "riskScore": 8,
       "residualRisk": 4,
-      "legislation": "NSW WHS Act 2011",
+      "legislation": "NSW WHS Reg 2017 s213, AS 3958.1-1991",
       "hazards": [{"type": "Physical", "description": "Slip hazard from wet surfaces", "riskRating": 6, "controlMeasures": ["Non-slip footwear", "Caution signs"], "residualRisk": 3}],
       "ppe": ["Hard Hat", "Safety Glasses", "Steel Cap Boots"],
       "tools": ["Tile cutter (wet saw)", "Notched trowel"],
@@ -328,6 +328,18 @@ TILING & WATERPROOFING EQUIPMENT:
 - Waterproofing application tools - Equipment, Application Tools, not required, Current inspection, Medium risk
 - Measuring tape - Equipment, Measuring Tools, not required, Current inspection, Low risk` : ''}
 
+LEGISLATION REQUIREMENTS:
+Each task must include specific Australian legislation relevant to that activity:
+
+${tradeName === 'Tiling & Waterproofing' ? `
+TILING & WATERPROOFING LEGISLATION:
+- Surface preparation: "${state} WHS Reg 2017 s213, AS 3958.1-1991"
+- Waterproofing: "${state} WHS Reg 2017 s291, AS 3740-2021" 
+- Power tool cutting: "${state} WHS Reg 2017 s203, AS 2245.1-2010"
+- Chemical adhesives: "${state} WHS Reg 2017 ch4.1, AS 1530.1-1994"
+- Grouting/sealing: "${state} WHS Reg 2017 s291, AS 3740-2021"
+- Quality inspection: "${state} WHS Reg 2017 s19, AS 4349.1-2014"` : ''}
+
 PPE SPECIFICATION REQUIREMENTS:
 For ${tradeName === 'Tiling & Waterproofing' ? 'tiling work' : 'this trade'}, specify exact PPE from these categories:
 
@@ -388,9 +400,9 @@ ABSOLUTE REQUIREMENT: Generate ONLY ${tradeName === 'Tiling & Waterproofing' ? '
       activities = parsedResult.tasks.map((task: any) => ({
         name: task.task || task.name || task.description || 'Generated Task',
         description: task.details || task.description || 'AI-generated task description',
-        riskScore: 8,
-        residualRisk: 4,
-        legislation: `${state} WHS Act 2011`,
+        riskScore: task.riskScore || 8,
+        residualRisk: task.residualRisk || 4,
+        legislation: task.legislation || `${state} WHS Act 2011`,
         hazards: [{
           type: "General",
           description: "Standard workplace hazards",
@@ -407,9 +419,9 @@ ABSOLUTE REQUIREMENT: Generate ONLY ${tradeName === 'Tiling & Waterproofing' ? '
       activities = parsedResult.SWMS_Tasks.map((task: any) => ({
         name: task.Task || task.name || 'Generated Task',
         description: task.Description || task.description || 'AI-generated task description',
-        riskScore: 8,
-        residualRisk: 4,
-        legislation: `${state} WHS Act 2011`,
+        riskScore: task.riskScore || 8,
+        residualRisk: task.residualRisk || 4,
+        legislation: task.legislation || `${state} WHS Act 2011`,
         hazards: [{
           type: "General",
           description: "Standard workplace hazards",
@@ -465,9 +477,9 @@ ABSOLUTE REQUIREMENT: Generate ONLY ${tradeName === 'Tiling & Waterproofing' ? '
         activities = foundTasks.map((task: any) => ({
           name: task.name || task.task || task.Task || task.description || 'Generated Task',
           description: task.details || task.Description || task.description || 'AI-generated task description',
-          riskScore: 8,
-          residualRisk: 4,
-          legislation: `${state} WHS Act 2011`,
+          riskScore: task.riskScore || 8,
+          residualRisk: task.residualRisk || 4,
+          legislation: task.legislation || `${state} WHS Act 2011`,
           hazards: [{
             type: "General",
             description: "Standard workplace hazards",
