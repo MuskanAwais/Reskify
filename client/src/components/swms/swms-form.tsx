@@ -1036,6 +1036,12 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
                           const result = await response.json();
                           console.log('Credit used successfully:', result);
                           
+                          // Invalidate cache to refresh user data and dashboard
+                          await Promise.all([
+                            queryClient.invalidateQueries({ queryKey: ['/api/user'] }),
+                            queryClient.invalidateQueries({ queryKey: ['/api/dashboard/999'] })
+                          ]);
+                          
                           // Update form data to indicate payment is complete
                           updateFormData({ 
                             paymentMethod: 'credits', 
@@ -1267,6 +1273,7 @@ export default function SWMSForm({ step, data = {}, onNext, onDataChange }: SWMS
         onNext={onNext}
         isProcessingCredit={isProcessingCredit}
         setIsProcessingCredit={setIsProcessingCredit}
+        userData={userData}
       />
     </div>
   );
