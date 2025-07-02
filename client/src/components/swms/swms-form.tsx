@@ -149,6 +149,8 @@ interface StepContentProps {
   formData: any;
   onDataChange: (data: any) => void;
   onNext?: () => void;
+  isProcessingCredit?: boolean;
+  setIsProcessingCredit?: (value: boolean) => void;
 }
 
 interface SWMSFormProps {
@@ -158,7 +160,7 @@ interface SWMSFormProps {
   onDataChange?: (data: any) => void;
 }
 
-const StepContent = ({ step, formData, onDataChange, onNext }: StepContentProps) => {
+const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit, setIsProcessingCredit }: StepContentProps) => {
   const { toast } = useToast();
 
   const updateFormData = (updates: any) => {
@@ -1012,7 +1014,7 @@ const StepContent = ({ step, formData, onDataChange, onNext }: StepContentProps)
                     onClick={async () => {
                       if (isProcessingCredit) return; // Prevent double clicks
                       
-                      setIsProcessingCredit(true);
+                      setIsProcessingCredit?.(true);
                       console.log('Credit button clicked - starting process');
                       
                       try {
@@ -1059,7 +1061,7 @@ const StepContent = ({ step, formData, onDataChange, onNext }: StepContentProps)
                           onNext(); // Allow progression anyway for demo
                         }
                       } finally {
-                        setIsProcessingCredit(false);
+                        setIsProcessingCredit?.(false);
                       }
                     }}
                   >
@@ -1254,6 +1256,8 @@ export default function SWMSForm({ step, data = {}, onNext, onDataChange }: SWMS
         formData={formData} 
         onDataChange={updateFormData} 
         onNext={onNext}
+        isProcessingCredit={isProcessingCredit}
+        setIsProcessingCredit={setIsProcessingCredit}
       />
     </div>
   );
