@@ -131,18 +131,6 @@ export async function generateSWMSFromTask(request: TaskGenerationRequest): Prom
       18: "Live conductors - Include specialized PPE, clearance distances"
     };
 
-    let prompt = '';
-    
-    if (request.mode === 'task' && request.taskList && request.taskList.length > 0) {
-      // Task Mode: Generate SWMS for specific tasks
-      const taskListText = request.taskList.join(', ');
-      prompt = `Generate SWMS for these ${tradeName} tasks: ${taskListText}`;
-    } else {
-      // Job Mode: Generate SWMS for the entire job description
-      const jobDescription = request.plainTextDescription || `${tradeName} work`;
-      prompt = `Generate SWMS tasks for a ${tradeName} doing: "${jobDescription}"`;
-    }
-
     console.log(`🔍 FINAL PROMPT INPUTS - Trade: ${tradeName}, Job: ${request.plainTextDescription}`);
     console.log(`🔍 SITE ENVIRONMENT: ${siteEnvironment}, STATE: ${state}, HRCW: ${hrcwCategories.join(',')}`);
 
