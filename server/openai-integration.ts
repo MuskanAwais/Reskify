@@ -488,25 +488,36 @@ ABSOLUTE REQUIREMENT: Generate ONLY ${tradeName === 'Tiling & Waterproofing' ? '
         return {
           name: taskName,
           description: task.description || 'AI-generated task description',
-          riskScore: Math.floor(Math.random() * 6) + 4, // Force different scores 4-9
-          residualRisk: Math.floor(Math.random() * 4) + 2, // Force different residual 2-5
-          legislation: specificLegislation,
-          validateTradeScope: { isTaskWithinTradeScope: "YES", reasonIfNo: "" },
-          hazards: [{
+          riskScore: task.riskScore || 6,
+          residualRisk: task.residualRisk || 3,
+          legislation: task.referencedLegislation ? task.referencedLegislation.join(', ') : (task.legislation || specificLegislation),
+          validateTradeScope: task.validateTradeScope || { isTaskWithinTradeScope: "YES", reasonIfNo: "" },
+          hazards: task.hazards ? task.hazards.map((hazard: any) => ({
+            type: hazard.type || getHazardType(taskName),
+            description: hazard.description || getSpecificHazardDescription(taskName, tradeName),
+            riskRating: hazard.riskRating || 6,
+            causeAgent: hazard.causeAgent || getSpecificCauseAgent(taskName, tradeName),
+            environmentalCondition: hazard.environmentalCondition || (siteEnvironment + " work environment with specific conditions"),
+            consequence: hazard.consequence || getSpecificConsequence(taskName, tradeName),
+            controlMeasures: hazard.controlMeasures || getHierarchyControls(taskName, tradeName),
+            residualRisk: hazard.residualRisk || 3,
+            hrcwReferences: hazard.hrcwReferences || [],
+            permitRequired: hazard.permitRequired || []
+          })) : [{
             type: getHazardType(taskName),
             description: getSpecificHazardDescription(taskName, tradeName),
-            riskRating: Math.floor(Math.random() * 6) + 4, // Force different ratings 4-9
+            riskRating: 6,
             causeAgent: getSpecificCauseAgent(taskName, tradeName),
             environmentalCondition: siteEnvironment + " work environment with specific conditions",
             consequence: getSpecificConsequence(taskName, tradeName),
             controlMeasures: getHierarchyControls(taskName, tradeName),
-            residualRisk: Math.floor(Math.random() * 4) + 2,
+            residualRisk: 3,
             hrcwReferences: [],
             permitRequired: []
           }],
-          ppe: specificPPE,
-          tools: specificTools,
-          trainingRequired: specificTraining
+          ppe: task.ppe || specificPPE,
+          tools: task.tools || specificTools,
+          trainingRequired: task.trainingRequired || specificTraining
         };
       });
     } else if (parsedResult.SWMS_Tasks) {
@@ -585,22 +596,31 @@ ABSOLUTE REQUIREMENT: Generate ONLY ${tradeName === 'Tiling & Waterproofing' ? '
           return {
             name: taskName,
             description: task.details || task.Description || task.description || 'AI-generated task description',
-            riskScore: Math.floor(Math.random() * 6) + 4, // Force different scores 4-9
-            residualRisk: Math.floor(Math.random() * 4) + 2, // Force different residual 2-5
-            legislation: specificLegislation,
-            hazards: [{
+            riskScore: task.riskScore || 6,
+            residualRisk: task.residualRisk || 3,
+            legislation: task.referencedLegislation ? task.referencedLegislation.join(', ') : (task.legislation || specificLegislation),
+            hazards: task.hazards ? task.hazards.map((hazard: any) => ({
+              type: hazard.type || getHazardType(taskName),
+              description: hazard.description || getSpecificHazardDescription(taskName, tradeName),
+              riskRating: hazard.riskRating || 6,
+              causeAgent: hazard.causeAgent || getSpecificCauseAgent(taskName, tradeName),
+              environmentalCondition: hazard.environmentalCondition || (siteEnvironment + " work environment with specific conditions"),
+              consequence: hazard.consequence || getSpecificConsequence(taskName, tradeName),
+              controlMeasures: hazard.controlMeasures || getHierarchyControls(taskName, tradeName),
+              residualRisk: hazard.residualRisk || 3
+            })) : [{
               type: getHazardType(taskName),
               description: getSpecificHazardDescription(taskName, tradeName),
-              riskRating: Math.floor(Math.random() * 6) + 4,
+              riskRating: 6,
               causeAgent: getSpecificCauseAgent(taskName, tradeName),
               environmentalCondition: siteEnvironment + " work environment with specific conditions",
               consequence: getSpecificConsequence(taskName, tradeName),
               controlMeasures: getHierarchyControls(taskName, tradeName),
-              residualRisk: Math.floor(Math.random() * 4) + 2
+              residualRisk: 3
             }],
-            ppe: specificPPE,
-            tools: specificTools,
-            trainingRequired: specificTraining
+            ppe: task.ppe || specificPPE,
+            tools: task.tools || specificTools,
+            trainingRequired: task.trainingRequired || specificTraining
           };
         });
       } else {
