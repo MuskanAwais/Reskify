@@ -453,6 +453,11 @@ export default function SwmsBuilder() {
     queryKey: ["/api/user/subscription"],
   });
 
+  // Get current user data for real-time credit balance
+  const { data: currentUser } = useQuery({
+    queryKey: ['/api/user']
+  });
+
   const progress = ((currentStep - 1) / (STEPS.length - 1)) * 100;
 
   // Silent auto-save mutation (no notifications)
@@ -717,8 +722,7 @@ export default function SwmsBuilder() {
         return;
       }
       
-      // Get current user data for real-time credit balance
-      const { data: currentUser } = useQuery({ queryKey: ['/api/user'] });
+      // Use current user data for real-time credit balance  
       const creditsRemaining = currentUser ? (currentUser as any).swmsCredits || 0 : 0;
       const hasProPlan = (subscription as any)?.plan === "Pro" || (subscription as any)?.plan === "Enterprise";
       const isAdminDemo = localStorage.getItem('adminDemoMode') === 'true';
