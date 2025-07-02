@@ -1020,7 +1020,7 @@ export async function registerRoutes(app: Express) {
   // SWMS Generation endpoint
   app.post("/api/generate-swms", async (req, res) => {
     try {
-      const { generateSWMSFromTask } = await import('./openai-integration-backup.js');
+      const { generateSWMSFromTask } = await import('./openai-integration.js');
       
       console.log('SWMS generation request received:', req.body);
       
