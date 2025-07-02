@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { queryClient } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -151,6 +153,7 @@ interface StepContentProps {
   onNext?: () => void;
   isProcessingCredit?: boolean;
   setIsProcessingCredit?: (value: boolean) => void;
+  userData?: any;
 }
 
 interface SWMSFormProps {
@@ -160,7 +163,7 @@ interface SWMSFormProps {
   onDataChange?: (data: any) => void;
 }
 
-const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit, setIsProcessingCredit }: StepContentProps) => {
+const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit, setIsProcessingCredit, userData }: StepContentProps) => {
   const { toast } = useToast();
 
   const updateFormData = (updates: any) => {
@@ -1001,10 +1004,10 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
                   <div className="flex items-center justify-between mb-3">
                     <div>
                       <p className="font-medium text-green-800">Use Current Credits</p>
-                      <p className="text-green-700 text-sm">You have 10 SWMS credits remaining from your subscription</p>
+                      <p className="text-green-700 text-sm">You have {userData?.swmsCredits || 0} SWMS credits remaining from your subscription</p>
                     </div>
                     <Badge className="bg-green-100 text-green-800">
-                      10 Credits
+                      {userData?.swmsCredits || 0} Credits
                     </Badge>
                   </div>
                   <Button 
@@ -1233,6 +1236,12 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
 export default function SWMSForm({ step, data = {}, onNext, onDataChange }: SWMSFormProps) {
   const [formData, setFormData] = useState(data);
   const [isProcessingCredit, setIsProcessingCredit] = useState(false);
+
+  // Fetch current user data for real-time credits
+  const { data: userData, refetch: refetchUserData } = useQuery({
+    queryKey: ['/api/user'],
+    enabled: step === 6, // Only fetch when on payment step
+  });
 
   const updateFormData = (updates: any) => {
     const newData = { 
