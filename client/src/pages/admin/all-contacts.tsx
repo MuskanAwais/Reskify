@@ -284,10 +284,10 @@ export default function AllContacts() {
                         </div>
                       </div>
                       <div className="text-right space-y-2">
-                        <Badge className={getSubscriptionBadge(user.subscriptionType)}>
-                          {user.subscriptionType.toUpperCase()}
+                        <Badge variant={user.subscriptionType === 'trial' ? 'secondary' : 'default'}>
+                          {user.subscriptionType === 'trial' ? 'Trial' : 'Subscription'}
                         </Badge>
-                        <div className="flex items-center gap-1 text-sm">
+                        <div className="flex items-center gap-1 text-sm font-medium">
                           <CreditCard className="h-3 w-3" />
                           {user.swmsCredits} credits
                         </div>
