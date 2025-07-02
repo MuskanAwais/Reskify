@@ -462,29 +462,45 @@ ABSOLUTE REQUIREMENT: Generate ONLY ${tradeName === 'Tiling & Waterproofing' ? '
       activities = parsedResult.activities;
     } else if (parsedResult.tasks) {
       // Convert tasks format to activities format
-      activities = parsedResult.tasks.map((task: any) => ({
-        name: task.taskName || task.name || task.description || 'Generated Task',
-        description: task.description || 'AI-generated task description',
-        riskScore: Math.floor(Math.random() * 6) + 4, // Force different scores 4-9
-        residualRisk: Math.floor(Math.random() * 4) + 2, // Force different residual 2-5
-        legislation: getTaskSpecificLegislation(task.taskName || task.name, state, tradeName),
-        validateTradeScope: { isTaskWithinTradeScope: "YES", reasonIfNo: "" },
-        hazards: [{
-          type: getHazardType(task.taskName || task.name),
-          description: getSpecificHazardDescription(task.taskName || task.name, tradeName),
-          riskRating: Math.floor(Math.random() * 6) + 4, // Force different ratings 4-9
-          causeAgent: getSpecificCauseAgent(task.taskName || task.name, tradeName),
-          environmentalCondition: siteEnvironment + " work environment with specific conditions",
-          consequence: getSpecificConsequence(task.taskName || task.name, tradeName),
-          controlMeasures: getHierarchyControls(task.taskName || task.name, tradeName),
-          residualRisk: Math.floor(Math.random() * 4) + 2,
-          hrcwReferences: [],
-          permitRequired: []
-        }],
-        ppe: getTaskSpecificPPE(task.taskName || task.name, tradeName),
-        tools: getTaskSpecificTools(task.taskName || task.name, tradeName),
-        trainingRequired: getTaskSpecificTraining(task.taskName || task.name, tradeName)
-      }));
+      activities = parsedResult.tasks.map((task: any) => {
+        const taskName = task.task || task.taskName || task.name || task.description || 'Generated Task';
+        console.log(`🔧 PROCESSING TASK: "${taskName}"`);
+        console.log(`🔧 TASK OBJECT:`, task);
+        
+        const specificLegislation = getTaskSpecificLegislation(taskName, state, tradeName);
+        const specificPPE = getTaskSpecificPPE(taskName, tradeName);
+        const specificTools = getTaskSpecificTools(taskName, tradeName);
+        const specificTraining = getTaskSpecificTraining(taskName, tradeName);
+        
+        console.log(`🔧 GENERATED LEGISLATION: ${specificLegislation}`);
+        console.log(`🔧 GENERATED PPE:`, specificPPE);
+        console.log(`🔧 GENERATED TOOLS:`, specificTools);
+        console.log(`🔧 GENERATED TRAINING:`, specificTraining);
+        
+        return {
+          name: taskName,
+          description: task.description || 'AI-generated task description',
+          riskScore: Math.floor(Math.random() * 6) + 4, // Force different scores 4-9
+          residualRisk: Math.floor(Math.random() * 4) + 2, // Force different residual 2-5
+          legislation: specificLegislation,
+          validateTradeScope: { isTaskWithinTradeScope: "YES", reasonIfNo: "" },
+          hazards: [{
+            type: getHazardType(taskName),
+            description: getSpecificHazardDescription(taskName, tradeName),
+            riskRating: Math.floor(Math.random() * 6) + 4, // Force different ratings 4-9
+            causeAgent: getSpecificCauseAgent(taskName, tradeName),
+            environmentalCondition: siteEnvironment + " work environment with specific conditions",
+            consequence: getSpecificConsequence(taskName, tradeName),
+            controlMeasures: getHierarchyControls(taskName, tradeName),
+            residualRisk: Math.floor(Math.random() * 4) + 2,
+            hrcwReferences: [],
+            permitRequired: []
+          }],
+          ppe: specificPPE,
+          tools: specificTools,
+          trainingRequired: specificTraining
+        };
+      });
     } else if (parsedResult.SWMS_Tasks) {
       // Convert SWMS_Tasks format to activities format
       activities = parsedResult.SWMS_Tasks.map((task: any) => ({
