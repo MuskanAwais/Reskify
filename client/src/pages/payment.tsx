@@ -31,25 +31,35 @@ const CheckoutForm = ({ amount, type }: { amount: number, type: string }) => {
       return;
     }
 
-    const { error } = await stripe.confirmPayment({
-      elements,
-      confirmParams: {
-        return_url: `${window.location.origin}/swms-builder?step=6`,
-      },
-    });
+    try {
+      const { error } = await stripe.confirmPayment({
+        elements,
+        confirmParams: {
+          return_url: `${window.location.origin}/swms-builder?step=6`,
+        },
+      });
 
-    if (error) {
+      if (error) {
+        console.error('Stripe payment error:', error);
+        toast({
+          title: "Payment Failed",
+          description: error.message || "An error occurred during payment processing",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Payment Successful",
+          description: "Redirecting to continue with your SWMS...",
+        });
+        setLocation("/swms-builder?step=6");
+      }
+    } catch (err) {
+      console.error('Payment processing error:', err);
       toast({
-        title: "Payment Failed",
-        description: error.message,
+        title: "Payment Error",
+        description: "An unexpected error occurred. Please try again.",
         variant: "destructive",
       });
-    } else {
-      toast({
-        title: "Payment Successful",
-        description: "Redirecting to continue with your SWMS...",
-      });
-      setLocation("/swms-builder?step=6");
     }
   };
 
