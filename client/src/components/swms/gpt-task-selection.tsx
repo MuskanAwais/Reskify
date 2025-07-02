@@ -1016,6 +1016,11 @@ export default function GPTTaskSelection({
                 </div>
               )}
 
+              {/* DEBUG: Critical display condition check */}
+              {console.log('RENDER DEBUG: isEditing =', isEditing, 'generatedTasks.length =', generatedTasks.length)}
+              {console.log('RENDER DEBUG: Display condition =', isEditing && generatedTasks.length > 0)}
+              {console.log('RENDER DEBUG: Current generatedTasks =', generatedTasks)}
+              
               {/* Editable Tasks Table */}
               {isEditing && generatedTasks.length > 0 && (
                 <div className="space-y-4">
