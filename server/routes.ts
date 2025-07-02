@@ -234,6 +234,71 @@ export async function registerRoutes(app: Express) {
   app.post("/api/login", loginHandler);
   app.post("/api/auth/login", loginHandler);
 
+  // Registration endpoint
+  app.post("/api/register", async (req, res) => {
+    try {
+      const { username, password, name, companyName, primaryTrade, email, phone } = req.body;
+      
+      console.log('Registration attempt for:', username);
+      
+      // Validate required fields
+      if (!username || !password || !name || !companyName || !primaryTrade) {
+        return res.status(400).json({ error: "All required fields must be provided" });
+      }
+      
+      // Check if user already exists
+      const existingUser = await storage.getUserByUsername(username);
+      if (existingUser) {
+        return res.status(400).json({ error: "User already exists" });
+      }
+      
+      // Hash password
+      const hashedPassword = await bcrypt.hash(password, 10);
+      
+      // Create user data
+      const userData = {
+        username,
+        password: hashedPassword,
+        name,
+        email: email || (username.includes('@') ? username : undefined),
+        companyName,
+        primaryTrade,
+        phone: phone || (!username.includes('@') ? username : undefined),
+        isAdmin: false,
+        subscriptionType: 'trial',
+        swmsCredits: 5, // Trial credits
+        addonCredits: 0,
+        subscriptionCredits: 5,
+        lastCreditReset: new Date()
+      };
+      
+      // Create the user
+      const newUser = await storage.createUser(userData);
+      
+      // Set session
+      req.session.userId = newUser.id;
+      req.session.isAdmin = false;
+      
+      console.log('User registered successfully:', newUser.username);
+      
+      res.json({
+        success: true,
+        user: {
+          id: newUser.id,
+          username: newUser.username,
+          name: newUser.name,
+          email: newUser.email,
+          isAdmin: newUser.isAdmin || false,
+          credits: newUser.swmsCredits || 0,
+          subscription: newUser.subscriptionType || 'trial'
+        }
+      });
+    } catch (error) {
+      console.error("Registration error:", error);
+      res.status(500).json({ error: "Registration failed" });
+    }
+  });
+
   // Clean up duplicate test drafts
   app.post("/api/cleanup-test-drafts", async (req, res) => {
     try {
