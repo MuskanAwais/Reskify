@@ -663,7 +663,11 @@ export default function SwmsBuilder() {
   // Enhanced validation functions for each step
   const validateStep2 = () => {
     const errors: string[] = [];
-    if (!formData.selectedTasks || formData.selectedTasks.length === 0) {
+    // Check for either selectedTasks (new documents) or activities (existing documents)
+    const hasTasks = (formData.selectedTasks && formData.selectedTasks.length > 0) || 
+                     (formData.activities && formData.activities.length > 0);
+    
+    if (!hasTasks) {
       errors.push("At least one work activity must be selected");
     }
     return errors;

@@ -1,0 +1,72 @@
+> rest-express@1.0.0 dev
+The `fetchConnectionCache` option is deprecated (now always `true`)
+9:21:25 AM [express] Initializing database connection...
+Testing database connection...
+Database connection successful
+9:21:27 AM [express] Server running on port 5000
+9:21:27 AM [express] Environment: development
+Browserslist: browsers data (caniuse-lite) is 9 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+9:21:38 AM [express] GET /api/user 304 in 27ms :: {"id":999,"username":"demo","name":"Demo User","em…
+9:21:38 AM [express] GET /api/user 304 in 80ms :: {"id":999,"username":"demo","name":"Demo User","em…
+Fetching SWMS for user: 999
+Querying database for user 999 SWMS documents...
+Admin middleware check: {
+  sessionUserId: undefined,
+  hasSession: true,
+  sessionId: '4CoICCqKxvKN-KCcfWKRG5-QcA0gLaOp'
+}
+Admin middleware: Granting demo admin access
+9:21:38 AM [express] GET /api/admin/users 200 in 29ms :: {"users":[{"id":1,"username":"John Doe","na…
+Database returned 25 active SWMS documents for user 999
+Sample document: { id: 232, title: 'Test Job for Credit Payment' }
+Found SWMS documents: 25
+9:21:38 AM [express] GET /api/swms 304 in 97ms :: {"documents":[{"id":232,"userId":999,"title":"Test…
+Admin middleware check: {
+  sessionUserId: undefined,
+  hasSession: true,
+  sessionId: '2aJsd7JAWvj0_QsAImSci4hy_HuoU0Ml'
+}
+Admin middleware: Granting demo admin access
+Querying database for user 5 SWMS documents...
+Database returned 0 active SWMS documents for user 5
+Sample document: none
+9:21:46 AM [express] GET /api/admin/user/5/swms 200 in 80ms :: {"documents":[]}
+Admin middleware check: {
+  sessionUserId: undefined,
+  hasSession: true,
+  sessionId: 'tZqNkWhmyKjEgWLxzTXaAiPQvzUjj4iZ'
+}
+Admin middleware: Granting demo admin access
+Querying database for user 3 SWMS documents...
+Database returned 0 active SWMS documents for user 3
+Sample document: none
+9:21:50 AM [express] GET /api/admin/user/3/swms 200 in 29ms :: {"documents":[]}
+Admin middleware check: {
+  sessionUserId: undefined,
+  hasSession: true,
+  sessionId: 'Lp8ojGLjefuCIswz_NoED7BYXReauPai'
+}
+Admin middleware: Granting demo admin access
+Querying database for user 9 SWMS documents...
+Database returned 4 active SWMS documents for user 9
+Sample document: { id: 234, title: 'Electrical Panel Installation - Office Building' }
+9:21:54 AM [express] GET /api/admin/user/9/swms 200 in 83ms :: {"documents":[{"id":234,"userId":9,"t…
+Admin middleware check: {
+  sessionUserId: undefined,
+  hasSession: true,
+  sessionId: 'j-F5f12RnFxBITcQhufDv9IYN7VZNSrc'
+}
+Admin middleware: Granting demo admin access
+Querying database for user 10 SWMS documents...
+Database returned 4 active SWMS documents for user 10
+Sample document: { id: 238, title: 'Kitchen Renovation Plumbing - Restaurant' }
+9:21:57 AM [express] GET /api/admin/user/10/swms 200 in 32ms :: {"documents":[{"id":238,"userId":10,…
+9:22:02 AM [express] GET /api/user/subscription 200 in 7ms
+Loading draft for editing: 238
+Loading draft for editing: 238
+Draft found: Kitchen Renovation Plumbing - Restaurant
+9:22:02 AM [express] GET /api/swms/draft/238 200 in 75ms :: {"id":238,"userId":10,"title":"Kitchen R…
+Draft found: Kitchen Renovation Plumbing - Restaurant
+9:22:02 AM [express] GET /api/swms/draft/238 200 in 72ms :: {"id":238,"userId":10,"title":"Kitchen R…
