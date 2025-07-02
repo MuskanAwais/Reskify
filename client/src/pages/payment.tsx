@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -68,6 +68,11 @@ export default function Payment() {
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const { toast } = useToast();
+
+  // Extract URL parameters
+  const urlParams = new URLSearchParams(window.location.search);
+  const paymentType = urlParams.get('plan') || '';
+  const amount = parseInt(urlParams.get('amount') || '0');
 
   const { data: user } = useQuery({
     queryKey: ["/api/user"],

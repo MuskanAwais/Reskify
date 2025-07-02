@@ -1008,7 +1008,13 @@ const StepContent = ({ step, formData, onDataChange, onNext }: StepContentProps)
                   <Button 
                     size="lg"
                     className="w-full bg-green-600 hover:bg-green-700"
+                    disabled={isProcessingCredit}
                     onClick={async () => {
+                      if (isProcessingCredit) return; // Prevent double clicks
+                      
+                      setIsProcessingCredit(true);
+                      console.log('Credit button clicked - starting process');
+                      
                       try {
                         // Call the credit usage API with admin demo headers
                         const response = await fetch('/api/user/use-credit', {
@@ -1033,9 +1039,13 @@ const StepContent = ({ step, formData, onDataChange, onNext }: StepContentProps)
                             paidAccess: true  // This is what the step validation checks for
                           });
                           
+                          console.log('Form data updated, calling onNext()');
                           // Trigger next step via the parent component
                           if (onNext) {
+                            console.log('Calling onNext to progress to next step');
                             onNext();
+                          } else {
+                            console.log('WARNING: onNext is not available');
                           }
                         } else {
                           console.error('Failed to use credit:', response.statusText);
@@ -1045,8 +1055,11 @@ const StepContent = ({ step, formData, onDataChange, onNext }: StepContentProps)
                         console.error('Error using credit:', error);
                         // Show more helpful error message
                         if (onNext) {
+                          console.log('Error occurred, calling onNext anyway for demo');
                           onNext(); // Allow progression anyway for demo
                         }
+                      } finally {
+                        setIsProcessingCredit(false);
                       }
                     }}
                   >
@@ -1217,6 +1230,7 @@ const StepContent = ({ step, formData, onDataChange, onNext }: StepContentProps)
 
 export default function SWMSForm({ step, data = {}, onNext, onDataChange }: SWMSFormProps) {
   const [formData, setFormData] = useState(data);
+  const [isProcessingCredit, setIsProcessingCredit] = useState(false);
 
   const updateFormData = (updates: any) => {
     const newData = { 
