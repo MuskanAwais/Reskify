@@ -21,7 +21,8 @@ import {
   TrendingUp,
   Plus,
   Check,
-  Star
+  Star,
+  FileText
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -452,8 +453,20 @@ export default function Billing() {
                       </Button>
                     </div>
                     
-                    {/* Mobile - Show only SWMS Pack */}
-                    <div className="md:hidden">
+                    {/* Mobile - Show three main options */}
+                    <div className="md:hidden space-y-3">
+                      <Button 
+                        onClick={() => handleCreateCheckoutSession(15, 'one-off')} 
+                        variant="outline" 
+                        size="lg"
+                        className="w-full h-12 border-2 border-blue-300 hover:border-blue-500 hover:bg-blue-50"
+                      >
+                        <FileText className="w-4 h-4 mr-2" />
+                        <div className="text-left">
+                          <div className="font-semibold">Single SWMS</div>
+                          <div className="text-sm text-muted-foreground">$15</div>
+                        </div>
+                      </Button>
                       <Button 
                         onClick={() => handleCreateCheckoutSession(65, 'one-off')} 
                         variant="outline" 

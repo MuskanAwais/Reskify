@@ -1146,8 +1146,10 @@ export async function registerRoutes(app: Express) {
           creditsToAdd = 5;
         } else if (paymentType === 'credits' && amount === 100) {
           creditsToAdd = 10;
-        } else if (paymentType === 'one-off' && (amount === 15 || amount === 65)) {
-          creditsToAdd = 1; // One SWMS access
+        } else if (paymentType === 'one-off' && amount === 15) {
+          creditsToAdd = 1; // Single SWMS access
+        } else if (paymentType === 'one-off' && amount === 65) {
+          creditsToAdd = 5; // SWMS Pack - 5 SWMS access
         }
         
         if (creditsToAdd > 0) {
