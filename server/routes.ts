@@ -280,6 +280,12 @@ export async function registerRoutes(app: Express) {
       req.session.isAdmin = false;
       
       console.log('User registered successfully:', newUser.username, 'ID:', newUser.id);
+      console.log('New user credits:', {
+        swmsCredits: newUser.swmsCredits,
+        subscriptionCredits: newUser.subscriptionCredits, 
+        addonCredits: newUser.addonCredits,
+        total: (newUser.swmsCredits || 0) + (newUser.subscriptionCredits || 0) + (newUser.addonCredits || 0)
+      });
       console.log('New user will appear in admin All Contacts list');
       
       res.json({
@@ -290,7 +296,7 @@ export async function registerRoutes(app: Express) {
           name: newUser.name,
           email: newUser.email,
           isAdmin: newUser.isAdmin || false,
-          credits: newUser.swmsCredits || 0,
+          credits: (newUser.swmsCredits || 0) + (newUser.subscriptionCredits || 0) + (newUser.addonCredits || 0),
           subscription: newUser.subscriptionType || 'trial'
         }
       });
