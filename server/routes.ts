@@ -12,7 +12,7 @@ import { generatePuppeteerPDF } from "./pdf-generator-puppeteer.js";
 import { generateSimplePDF } from "./pdf-generator-simple.js";
 import { db } from "./db.js";
 import { swmsDocuments, users } from "@shared/schema";
-import { eq, and, isNull } from "drizzle-orm";
+import { eq, and, isNull, sql } from "drizzle-orm";
 
 // Initialize Multer for file uploads
 const upload = multer({
@@ -2789,19 +2789,32 @@ export async function registerRoutes(app: Express) {
   });
 
   // Admin: Add credits to user account
-  app.post("/api/admin/users/:id/credits", async (req, res) => {
+  app.post("/api/admin/users/:id/credits", requireAdmin, async (req, res) => {
     try {
       const userId = parseInt(req.params.id);
       const { credits } = req.body;
       
       console.log(`Admin adding ${credits} credits to user ${userId}`);
       
+      // Update the user's credits in the database
+      const [updatedUser] = await db.update(users)
+        .set({ 
+          swmsCredits: sql`${users.swmsCredits} + ${credits}`,
+          addonCredits: sql`${users.addonCredits} + ${credits}`
+        })
+        .where(eq(users.id, userId))
+        .returning();
+      
+      if (!updatedUser) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+      
       res.json({ 
         success: true, 
         message: `Added ${credits} credits to user account`,
         userId,
         creditsAdded: credits,
-        newBalance: 25 + credits // Simulated new balance
+        newBalance: updatedUser.swmsCredits
       });
     } catch (error) {
       console.error('Admin add credits error:', error);

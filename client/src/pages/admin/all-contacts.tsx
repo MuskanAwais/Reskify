@@ -353,7 +353,7 @@ export default function AllContacts() {
                               </div>
                               <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                  <Label>Subscription Type</Label>
+                                  <Label>Subscription Status</Label>
                                   <Select 
                                     value={editingUser.subscriptionType} 
                                     onValueChange={(value) => setEditingUser({...editingUser, subscriptionType: value})}
@@ -362,14 +362,13 @@ export default function AllContacts() {
                                       <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
-                                      <SelectItem value="trial">Trial</SelectItem>
-                                      <SelectItem value="pro">Pro</SelectItem>
-                                      <SelectItem value="enterprise">Enterprise</SelectItem>
+                                      <SelectItem value="trial">Trial (No Subscription)</SelectItem>
+                                      <SelectItem value="active">Active Subscription</SelectItem>
                                     </SelectContent>
                                   </Select>
                                 </div>
                                 <div className="space-y-2">
-                                  <Label>Status</Label>
+                                  <Label>Account Status</Label>
                                   <Select 
                                     value={editingUser.status} 
                                     onValueChange={(value) => setEditingUser({...editingUser, status: value as any})}
