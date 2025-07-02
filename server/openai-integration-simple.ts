@@ -49,17 +49,26 @@ Return JSON:
 }`;
 
   try {
-    console.log(`🚀 SENDING SIMPLE REQUEST...`);
+    console.log(`🚀 SENDING SIMPLE REQUEST WITH TIMEOUT...`);
     
-    const response = await openai.chat.completions.create({
-      model: 'gpt-4o',
-      messages: [
-        { role: 'system', content: systemMessage },
-        { role: 'user', content: `Generate tasks for ${tradeType} work: ${plainTextDescription}` }
-      ],
-      max_tokens: 2000,
-      temperature: 0.3,
+    // Create timeout promise
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('OpenAI request timed out after 30 seconds')), 30000);
     });
+    
+    // Race between OpenAI request and timeout
+    const response = await Promise.race([
+      openai.chat.completions.create({
+        model: 'gpt-4o',
+        messages: [
+          { role: 'system', content: systemMessage },
+          { role: 'user', content: `Generate tasks for ${tradeType} work: ${plainTextDescription}` }
+        ],
+        max_tokens: 1500,
+        temperature: 0.3,
+      }),
+      timeoutPromise
+    ]);
 
     console.log(`🚀 RECEIVED RESPONSE`);
     
@@ -67,10 +76,13 @@ Return JSON:
     let parsedResult;
     
     try {
-      parsedResult = JSON.parse(responseContent);
+      // Clean up markdown code blocks if present
+      const cleanedContent = responseContent.replace(/```json\n?/g, '').replace(/```\n?$/g, '').trim();
+      parsedResult = JSON.parse(cleanedContent);
       console.log(`🚀 PARSED SUCCESSFULLY - Activities: ${parsedResult.activities?.length || 0}`);
     } catch (error) {
       console.error('JSON Parse Error:', error);
+      console.log('Raw response:', responseContent);
       throw new Error('Invalid JSON response from AI');
     }
 
