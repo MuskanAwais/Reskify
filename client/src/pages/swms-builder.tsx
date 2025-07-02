@@ -717,7 +717,9 @@ export default function SwmsBuilder() {
         return;
       }
       
-      const creditsRemaining = subscription ? (subscription as any).creditsRemaining || 0 : 0;
+      // Get current user data for real-time credit balance
+      const { data: currentUser } = useQuery({ queryKey: ['/api/user'] });
+      const creditsRemaining = currentUser ? (currentUser as any).swmsCredits || 0 : 0;
       const hasProPlan = (subscription as any)?.plan === "Pro" || (subscription as any)?.plan === "Enterprise";
       const isAdminDemo = localStorage.getItem('adminDemoMode') === 'true';
       const isAppAdmin = localStorage.getItem('isAppAdmin') === 'true';

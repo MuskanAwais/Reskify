@@ -2431,11 +2431,7 @@ export async function registerRoutes(app: Express) {
     }
   });
 
-  // User credit usage endpoint
-  app.post("/api/user/use-credit", (req, res) => {
-    // Demo mode - always return success
-    res.json({ success: true, remainingCredits: 9 });
-  });
+
 
   // ===========================================
   // COMPREHENSIVE ADMIN API ROUTES - ALL PROTECTED

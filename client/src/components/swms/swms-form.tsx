@@ -1036,9 +1036,10 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
                           const result = await response.json();
                           console.log('Credit used successfully:', result);
                           
-                          // Invalidate cache to refresh user data, dashboard, and billing
+                          // Invalidate cache to refresh ALL user-related data
                           await Promise.all([
                             queryClient.invalidateQueries({ queryKey: ['/api/user'] }),
+                            queryClient.invalidateQueries({ queryKey: ['/api/user/subscription'] }),
                             queryClient.invalidateQueries({ queryKey: ['/api/dashboard/999'] }),
                             queryClient.invalidateQueries({ queryKey: ['/api/user/billing'] }),
                             queryClient.invalidateQueries({ queryKey: ['/api/user/settings'] })
