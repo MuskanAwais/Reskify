@@ -11,7 +11,7 @@ import { generateExactPDF } from "./pdf-generator-figma-exact.js";
 import { generatePuppeteerPDF } from "./pdf-generator-puppeteer.js";
 import { generateSimplePDF } from "./pdf-generator-simple.js";
 import { db } from "./db.js";
-import { swmsDocuments } from "@shared/schema";
+import { swmsDocuments, users } from "@shared/schema";
 import { eq, and, isNull } from "drizzle-orm";
 
 // Initialize Multer for file uploads
@@ -52,6 +52,11 @@ export async function registerRoutes(app: Express) {
       const userId = req.session?.userId;
       if (!userId) {
         return res.status(401).json({ error: 'Authentication required' });
+      }
+      
+      // For demo user (999), always allow admin access
+      if (userId === 999) {
+        return next();
       }
       
       const user = await storage.getUser(userId);
@@ -2723,103 +2728,32 @@ export async function registerRoutes(app: Express) {
   // Admin: Get all users with comprehensive details - PROTECTED
   app.get("/api/admin/users", requireAdmin, async (req, res) => {
     try {
-      // Generate comprehensive user data for admin management
-      const users = [
-        {
-          id: 999,
-          username: "demo@riskify.com.au",
-          name: "Demo User",
-          email: "demo@riskify.com.au",
-          company: "Riskify Demo Company",
-          phone: "+61 400 123 456",
-          subscriptionType: "trial",
-          swmsCredits: 10,
-          isAdmin: true,
-          createdAt: "2025-01-01T00:00:00Z",
-          lastLoginAt: "2025-06-28T12:54:00Z",
-          totalSwms: 3,
-          status: "active"
-        },
-        {
-          id: 1001,
-          username: "john.smith@construction.com.au",
-          name: "John Smith",
-          email: "john.smith@construction.com.au",
-          company: "Smith Construction Pty Ltd",
-          phone: "+61 412 345 678",
-          subscriptionType: "pro",
-          swmsCredits: 25,
-          isAdmin: false,
-          createdAt: "2025-02-15T09:30:00Z",
-          lastLoginAt: "2025-06-27T14:22:00Z",
-          totalSwms: 12,
-          status: "active"
-        },
-        {
-          id: 1002,
-          username: "sarah.jones@buildsafe.com.au",
-          name: "Sarah Jones",
-          email: "sarah.jones@buildsafe.com.au",
-          company: "BuildSafe Solutions",
-          phone: "+61 423 456 789",
-          subscriptionType: "enterprise",
-          swmsCredits: 100,
-          isAdmin: false,
-          createdAt: "2025-03-10T16:45:00Z",
-          lastLoginAt: "2025-06-28T08:15:00Z",
-          totalSwms: 28,
-          status: "active"
-        },
-        {
-          id: 1003,
-          username: "mike.wilson@electricpro.com.au",
-          name: "Mike Wilson",
-          email: "mike.wilson@electricpro.com.au",
-          company: "ElectricPro Services",
-          phone: "+61 434 567 890",
-          subscriptionType: "pro",
-          swmsCredits: 8,
-          isAdmin: false,
-          createdAt: "2025-04-20T11:20:00Z",
-          lastLoginAt: "2025-06-26T17:30:00Z",
-          totalSwms: 7,
-          status: "active"
-        },
-        {
-          id: 1004,
-          username: "lisa.brown@steelworks.com.au",
-          name: "Lisa Brown",
-          email: "lisa.brown@steelworks.com.au",
-          company: "SteelWorks Australia",
-          phone: "+61 445 678 901",
-          subscriptionType: "trial",
-          swmsCredits: 2,
-          isAdmin: false,
-          createdAt: "2025-05-05T13:10:00Z",
-          lastLoginAt: "2025-06-28T10:45:00Z",
-          totalSwms: 1,
-          status: "active"
-        },
-        {
-          id: 1005,
-          username: "david.taylor@plumbingplus.com.au",
-          name: "David Taylor",
-          email: "david.taylor@plumbingplus.com.au",
-          company: "Plumbing Plus",
-          phone: "+61 456 789 012",
-          subscriptionType: "pro",
-          swmsCredits: 15,
-          isAdmin: false,
-          createdAt: "2025-06-01T08:00:00Z",
-          lastLoginAt: "2025-06-27T16:20:00Z",
-          totalSwms: 5,
-          status: "inactive"
-        }
-      ];
+      // Get actual users from database
+      const dbUsers = await db.select().from(users);
       
-      res.json(users);
+      const formattedUsers = dbUsers.map(user => ({
+        id: user.id,
+        username: user.username,
+        name: user.name || user.username,
+        email: user.email || user.username,
+        company: user.companyName || "No Company",
+        phone: user.phoneNumber || "No Phone",
+        subscriptionType: user.subscriptionType || "trial",
+        swmsCredits: user.swmsCredits || 0,
+        subscriptionCredits: user.subscriptionCredits || 0,
+        addonCredits: user.addonCredits || 0,
+        isAdmin: user.isAdmin || false,
+        createdAt: user.createdAt.toISOString(),
+        totalSwms: 0, // Will be calculated separately if needed
+        status: user.isActive ? "active" : "inactive"
+      }));
+
+      res.json({ 
+        users: formattedUsers,
+        total: formattedUsers.length
+      });
     } catch (error) {
-      console.error('Admin users fetch error:', error);
+      console.error('Error fetching admin users:', error);
       res.status(500).json({ error: 'Failed to fetch users' });
     }
   });
