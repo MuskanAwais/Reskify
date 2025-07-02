@@ -237,7 +237,15 @@ export default function SwmsBuilder() {
     
     // Activity-based detection
     activities.forEach(activity => {
-      const activityText = `${activity.task || ''} ${activity.hazards?.join(' ') || ''} ${activity.controlMeasures?.join(' ') || ''}`.toLowerCase();
+      // Handle different activity object structures
+      const activityText = `
+        ${activity.task || activity.name || activity.description || ''} 
+        ${activity.hazards?.map(h => h.description || h).join(' ') || ''} 
+        ${activity.controlMeasures?.join(' ') || ''} 
+        ${activity.ppe?.join(' ') || ''}
+        ${activity.tools?.join(' ') || ''}
+        ${JSON.stringify(activity).toLowerCase()}
+      `.toLowerCase();
       
       // Height work
       if (activityText.includes('height') || activityText.includes('ladder') || activityText.includes('scaffold') || activityText.includes('roof')) {
@@ -328,9 +336,11 @@ export default function SwmsBuilder() {
   useEffect(() => {
     if (formData.activities.length > 0 || (formData.hrcwCategories && formData.hrcwCategories.length > 0)) {
       const detectedPPE = detectPPERequirements(formData.activities, formData.hrcwCategories || []);
+      console.log('PPE Detection - Activities:', formData.activities.length);
+      console.log('PPE Detection - Detected:', detectedPPE);
       setFormData(prev => ({
         ...prev,
-        ppeRequirements: detectedPPE
+        ppeRequirements: Array.from(detectedPPE)
       }));
     }
   }, [formData.activities, formData.hrcwCategories]);
