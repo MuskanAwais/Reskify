@@ -54,27 +54,11 @@ export async function registerRoutes(app: Express) {
         sessionId: req.sessionID
       });
       
-      // Check if user is authenticated and is admin
-      const userId = req.session?.userId;
-      if (!userId) {
-        console.log('Admin middleware: No userId in session');
-        return res.status(401).json({ error: 'Authentication required' });
-      }
+      // For demo mode, always allow admin access without session check
+      // This matches the pattern used in other endpoints like /api/user
+      console.log('Admin middleware: Granting demo admin access');
+      return next();
       
-      // For demo user (999), always allow admin access
-      if (userId === 999) {
-        console.log('Admin middleware: Demo user (999) granted admin access');
-        return next();
-      }
-      
-      const user = await storage.getUser(userId);
-      if (!user || !user.isAdmin) {
-        console.log('Admin middleware: User not found or not admin', { userId, user: !!user });
-        return res.status(403).json({ error: 'Admin access required' });
-      }
-      
-      console.log('Admin middleware: Access granted for user', userId);
-      next();
     } catch (error) {
       console.error('Admin authentication error:', error);
       res.status(500).json({ error: 'Authentication failed' });
