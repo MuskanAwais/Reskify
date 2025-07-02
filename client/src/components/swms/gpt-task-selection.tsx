@@ -323,7 +323,10 @@ export default function GPTTaskSelection({
       }
     },
     onSuccess: (data: any) => {
-      if (data.success) {
+      console.log('Generation success response:', data);
+      setGenerationProgress(100);
+      
+      if (data.success && data.data && data.data.activities && data.data.activities.length > 0) {
         // Convert generated data to the format expected by the parent component
         const convertedActivities = data.data.activities.map((activity: any, index: number) => ({
           id: `activity-${index + 1}`,
@@ -340,16 +343,23 @@ export default function GPTTaskSelection({
 
         console.log('Raw AI activities:', data.data.activities);
         console.log('Converted activities:', convertedActivities);
+        
+        if (convertedActivities.length === 0) {
+          console.error('CRITICAL: No activities generated despite success response');
+          toast({
+            title: "Generation Error",
+            description: "No tasks were generated. Please try again with a different description.",
+            variant: "destructive",
+          });
+          setGenerationProgress(0);
+          return;
+        }
 
         const convertedPlantEquipment = data.data.plantEquipment?.map((equipment: any, index: number) => ({
           id: `equipment-${index + 1}`,
           ...equipment
         })) || [];
 
-        // Set generated tasks for editing
-        setGeneratedTasks(convertedActivities);
-        setIsEditing(true);
-        
         // Auto-extract plant and equipment from generated tasks with proper risk levels
         const autoPlantEquipment: any[] = [];
         convertedActivities.forEach((activity: any, index: number) => {
@@ -374,13 +384,48 @@ export default function GPTTaskSelection({
 
         const allPlantEquipment = [...convertedPlantEquipment, ...autoPlantEquipment];
 
+        // CRITICAL FIX: Set tasks and editing state together BEFORE calling the callback
+        console.log('CRITICAL FIX: Setting generated tasks and editing state immediately');
+        console.log('CRITICAL FIX: Generated tasks count:', convertedActivities.length);
+        console.log('CRITICAL FIX: First task:', convertedActivities[0]?.name);
+        
+        // Use functional state updates to ensure immediate state change
+        setGeneratedTasks(() => {
+          console.log('CRITICAL FIX: State setter called for generatedTasks');
+          return convertedActivities;
+        });
+        setIsEditing(() => {
+          console.log('CRITICAL FIX: State setter called for isEditing');
+          return true;
+        });
+        
+        // Call the callback immediately to update parent state
+        console.log('CRITICAL FIX: Calling onActivitiesGenerated callback');
+        onActivitiesGenerated(convertedActivities, allPlantEquipment, plainTextDescription);
+        
+        // Show success toast
+        toast({
+          title: "SWMS Generated Successfully",
+          description: `Generated ${convertedActivities.length} tasks with ${allPlantEquipment.length} equipment items auto-populated. Tasks are now ready for editing.`,
+        });
+        
+        // Force a re-render by updating state
         setTimeout(() => {
-          onActivitiesGenerated(convertedActivities, allPlantEquipment, plainTextDescription);
-          toast({
-            title: "SWMS Generated Successfully",
-            description: `Generated ${convertedActivities.length} tasks with ${allPlantEquipment.length} equipment items auto-populated. You can edit them below before finalizing.`,
-          });
-        }, 1000);
+          if (!isEditing || generatedTasks.length === 0) {
+            console.log('BACKUP: Force setting editing state and tasks again');
+            setIsEditing(true);
+            setGeneratedTasks(convertedActivities);
+          }
+        }, 100);
+        
+      } else {
+        console.error('CRITICAL: Generation API returned success but no valid data:', data);
+        toast({
+          title: "Generation Error", 
+          description: "The AI generated an empty response. Please try with a more detailed description.",
+          variant: "destructive",
+        });
+        setGenerationProgress(0);
       }
     },
     onError: (error: any) => {
