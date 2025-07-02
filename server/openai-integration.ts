@@ -386,8 +386,8 @@ ABSOLUTE REQUIREMENT: Generate ONLY ${tradeName === 'Tiling & Waterproofing' ? '
     } else if (parsedResult.tasks) {
       // Convert tasks format to activities format
       activities = parsedResult.tasks.map((task: any) => ({
-        name: task.task || task.name || 'Generated Task',
-        description: task.description || 'AI-generated task description',
+        name: task.task || task.name || task.description || 'Generated Task',
+        description: task.details || task.description || 'AI-generated task description',
         riskScore: 8,
         residualRisk: 4,
         legislation: `${state} WHS Act 2011`,
@@ -398,9 +398,9 @@ ABSOLUTE REQUIREMENT: Generate ONLY ${tradeName === 'Tiling & Waterproofing' ? '
           controlMeasures: ["Follow safety procedures", "Use appropriate PPE"],
           residualRisk: 3
         }],
-        ppe: ["Hard hat", "Safety glasses", "Steel cap boots"],
-        tools: ["Standard trade tools"],
-        trainingRequired: ["Trade specific training"]
+        ppe: ["Hard Hat", "Safety Glasses", "Steel Cap Boots", "Hearing Protection"],
+        tools: ["Tile cutter (wet saw)", "Notched trowel", "Spirit level", "Rubber float"],
+        trainingRequired: ["Trade certification"]
       }));
     } else if (parsedResult.SWMS_Tasks) {
       // Convert SWMS_Tasks format to activities format
@@ -463,8 +463,8 @@ ABSOLUTE REQUIREMENT: Generate ONLY ${tradeName === 'Tiling & Waterproofing' ? '
       if (foundTasks) {
         console.log(`🔍 Found tasks in key: ${taskKey}`);
         activities = foundTasks.map((task: any) => ({
-          name: task.name || task.task || task.Task || 'Generated Task',
-          description: task.description || task.Description || 'AI-generated task description',
+          name: task.name || task.task || task.Task || task.description || 'Generated Task',
+          description: task.details || task.Description || task.description || 'AI-generated task description',
           riskScore: 8,
           residualRisk: 4,
           legislation: `${state} WHS Act 2011`,
