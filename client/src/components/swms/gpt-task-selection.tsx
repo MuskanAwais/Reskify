@@ -245,10 +245,14 @@ export default function GPTTaskSelection({
       setPlainTextDescription(savedWorkDescription);
       console.log('Restored job description:', savedWorkDescription);
     }
-    // Only restore saved activities if we don't have generated tasks already
-    if (savedActivities && savedActivities.length > 0 && generatedTasks.length === 0) {
+    // Always restore saved activities if they exist, regardless of current generated tasks
+    if (savedActivities && savedActivities.length > 0) {
+      console.log('Step 2 - Restoring saved activities:', savedActivities);
+      console.log('Step 2 - Current generated tasks count:', generatedTasks.length);
       setGeneratedTasks(savedActivities);
-      console.log('Restored saved activities:', savedActivities);
+      console.log('Step 2 - Activities restored successfully');
+    } else {
+      console.log('Step 2 - No saved activities to restore');
     }
   }, [savedWorkDescription, savedActivities]);
 

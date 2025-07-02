@@ -324,7 +324,7 @@ export default function SwmsBuilder() {
     
     if (hrcwCategories.includes(1) && isActualHeightWork) detectedPPE.add('fall-arrest-harness'); // Fall risk - only if actual height work
     if (hrcwCategories.includes(4)) detectedPPE.add('respirator'); // Asbestos
-    if (hrcwCategories.includes(6) && !jobDescription.includes('bathroom')) detectedPPE.add('confined-space-breathing-apparatus'); // Confined space - not bathrooms
+    if (hrcwCategories.includes(6) && !jobDescription.includes('bathroom') && !jobDescription.includes('commercial bathroom')) detectedPPE.add('confined-space-breathing-apparatus'); // Confined space - not bathrooms
     if (hrcwCategories.includes(11) || hrcwCategories.includes(18)) {
       const hasElectricalWork = activities.some(activity => {
         const text = `${activity.name} ${activity.description}`.toLowerCase();
