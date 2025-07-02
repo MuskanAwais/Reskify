@@ -248,14 +248,19 @@ export default function GPTTaskSelection({
     // Always restore saved activities if they exist, regardless of current generated tasks
     if (savedActivities && savedActivities.length > 0) {
       console.log('Step 2 - Restoring saved activities:', savedActivities);
-      console.log('Step 2 - Current generated tasks count:', generatedTasks.length);
+      console.log('Step 2 - Current generated tasks count (before update):', generatedTasks.length);
       setGeneratedTasks(savedActivities);
       setIsEditing(true); // Enable editing mode to display the restored activities
-      console.log('Step 2 - Activities restored successfully');
+      console.log('Step 2 - Activities restored successfully, setting isEditing to true');
     } else {
       console.log('Step 2 - No saved activities to restore');
     }
   }, [savedWorkDescription, savedActivities]);
+
+  // Debug effect to track generatedTasks changes
+  useEffect(() => {
+    console.log('Step 2 - Generated tasks updated, count:', generatedTasks.length, 'isEditing:', isEditing);
+  }, [generatedTasks, isEditing]);
 
   // Risk matrix mapping
   const getRiskDescription = (score: number): string => {
