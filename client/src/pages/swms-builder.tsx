@@ -247,20 +247,24 @@ export default function SwmsBuilder() {
         ${JSON.stringify(activity).toLowerCase()}
       `.toLowerCase();
       
-      // Height work
-      if (activityText.includes('height') || activityText.includes('ladder') || activityText.includes('scaffold') || activityText.includes('roof')) {
+      // Height work - Only for actual elevated work above 2m, not bathroom tiling
+      if ((activityText.includes('height') || activityText.includes('ladder') || activityText.includes('scaffold') || activityText.includes('roof')) &&
+          !activityText.includes('bathroom') && !activityText.includes('ground level') &&
+          (activityText.includes('>2m') || activityText.includes('storey') || activityText.includes('elevated platform'))) {
         detectedPPE.add('fall-arrest-harness');
         detectedPPE.add('safety-harness-lanyard');
       }
       
-      // Welding
-      if (activityText.includes('weld') || activityText.includes('cutting') || activityText.includes('torch')) {
+      // Welding - Only for actual welding/torching, not tile cutting
+      if ((activityText.includes('weld') || activityText.includes('torch')) && 
+          !activityText.includes('tile') && !activityText.includes('grinder') && !activityText.includes('cutter')) {
         detectedPPE.add('welding-helmet-gloves');
         detectedPPE.add('fire-retardant-clothing');
       }
       
-      // Electrical
-      if (activityText.includes('electrical') || activityText.includes('power') || activityText.includes('wiring')) {
+      // Electrical - Only for actual electrical work, not power tools
+      if ((activityText.includes('electrical') || activityText.includes('wiring')) && 
+          !activityText.includes('tool') && !activityText.includes('grinder') && !activityText.includes('cutter')) {
         detectedPPE.add('insulated-gloves');
         detectedPPE.add('anti-static-clothing');
       }
@@ -310,13 +314,26 @@ export default function SwmsBuilder() {
       }
     });
     
-    // HRCW-based detection
-    if (hrcwCategories.includes(1)) detectedPPE.add('fall-arrest-harness'); // Fall risk
+    // HRCW-based detection - Only add if actually relevant to the work activities
+    const jobDescription = formData.plainTextDescription?.toLowerCase() || '';
+    const isActualHeightWork = activities.some(activity => {
+      const text = `${activity.name} ${activity.description}`.toLowerCase();
+      return (text.includes('>2m') || text.includes('storey') || text.includes('elevated platform') || 
+              text.includes('scaffold')) && !text.includes('bathroom') && !text.includes('ground level');
+    });
+    
+    if (hrcwCategories.includes(1) && isActualHeightWork) detectedPPE.add('fall-arrest-harness'); // Fall risk - only if actual height work
     if (hrcwCategories.includes(4)) detectedPPE.add('respirator'); // Asbestos
-    if (hrcwCategories.includes(6)) detectedPPE.add('confined-space-breathing-apparatus'); // Confined space
+    if (hrcwCategories.includes(6) && !jobDescription.includes('bathroom')) detectedPPE.add('confined-space-breathing-apparatus'); // Confined space - not bathrooms
     if (hrcwCategories.includes(11) || hrcwCategories.includes(18)) {
-      detectedPPE.add('insulated-gloves'); // Electrical
-      detectedPPE.add('anti-static-clothing');
+      const hasElectricalWork = activities.some(activity => {
+        const text = `${activity.name} ${activity.description}`.toLowerCase();
+        return (text.includes('electrical') || text.includes('wiring')) && !text.includes('tool') && !text.includes('grinder');
+      });
+      if (hasElectricalWork) {
+        detectedPPE.add('insulated-gloves'); // Electrical - only if actual electrical work
+        detectedPPE.add('anti-static-clothing');
+      }
     }
     if (hrcwCategories.includes(12)) detectedPPE.add('respirator'); // Contaminated atmosphere
     

@@ -353,15 +353,16 @@ AUSTRALIAN LEGISLATION REQUIREMENT: Every task MUST include specific ${state} re
 CONTENT QUALITY REQUIREMENTS:
 - Each task description must be 2-3 detailed sentences explaining the complete work process
 - Each hazard description must include specific cause agent (e.g. "angle grinder blade fracture"), environmental condition (e.g. "confined bathroom space"), and consequence (e.g. "eye penetration injury")
-- Control measures must be comprehensive with 4-6 specific actions per hierarchy level
-- All content must be highly detailed and professional for commercial construction sites
+- Each control measure must be detailed and specific (e.g. "Use wet cutting technique with continuous water feed to suppress dust generation" instead of "Control dust")
+- Control measures must include 4-6 comprehensive actions per hierarchy level with specific procedures
+- All hazard and control content must be highly detailed and professional for commercial construction sites
 
 RESPONSE FORMAT REQUIREMENTS:
 Each task must include:
 - "validateTradeScope": {"isTaskWithinTradeScope": "YES|NO", "reasonIfNo": "explanation"}
 - "referencedLegislation": ["${state} WHS Reg 2017 s217", "AS standards", "CoP sections"]
-- "hazards" with causeAgent, environmentalCondition, consequence fields
-- "controlMeasures" using hierarchy structure (elimination, substitution, isolation, engineering, administrative, ppe)
+- "hazards" with detailed causeAgent, environmentalCondition, consequence fields (minimum 15 words each describing specific technical details)
+- "controlMeasures" using hierarchy structure with comprehensive detailed actions for each level (elimination, substitution, isolation, engineering, administrative, ppe) - minimum 20 words per control action with specific procedures
 - "tools": [specific tool names, not "standard trade tools"]
 - "ppe": [specific PPE items from standard and task-specific lists]
 ${hrcwCategories.length > 0 ? '- "hrcwReferences" and "permitRequired" arrays for HRCW tasks' : ''}
