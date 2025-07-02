@@ -254,56 +254,77 @@ ${siteEnvironment === 'industrial' ? `- Integration with existing industrial pro
 - Coordination with facility shutdown schedules
 - Industrial-grade materials and performance requirements` : ''}
 
-YOU MUST RETURN EXACTLY THIS JSON STRUCTURE - NO OTHER FORMAT ACCEPTED:
+CRITICAL: RETURN ONLY THIS EXACT JSON STRUCTURE WITH REAL DATA:
 
 {
   "activities": [
     {
       "name": "Surface preparation and cleaning",
-      "description": "Task description here",
-      "riskScore": 8,
-      "residualRisk": 4,
-      "referencedLegislation": ["NSW WHS Reg 2017 s213", "AS 3958.1-1991", "Construction Work CoP Section 3.1"],
-      "validateTradeScope": {
-        "isTaskWithinTradeScope": "YES",
-        "reasonIfNo": ""
-      },
+      "description": "Remove existing adhesive, clean substrate, check for level",
+      "riskScore": 6,
+      "residualRisk": 3,
+      "referencedLegislation": ["NSW WHS Reg 2017 s213", "AS 3958.1-1991"],
       "hazards": [{
-        "type": "Physical", 
-        "description": "Slip hazard from wet surfaces", 
-        "riskRating": 6, 
-        "causeAgent": "adhesive residue on floor",
-        "environmentalCondition": "confined bathroom space with limited ventilation",
-        "consequence": "fall injury with potential head trauma",
+        "type": "Physical",
+        "description": "Dust inhalation from grinding adhesive residue",
+        "riskRating": 7,
+        "causeAgent": "angle grinder creating silica dust",
+        "environmentalCondition": "confined bathroom with poor ventilation",
+        "consequence": "respiratory damage and lung disease",
         "controlMeasures": {
-          "elimination": "Remove work from hazardous area where possible",
-          "substitution": "Use non-slip surface treatments",
-          "isolation": "Barrier off wet areas",
-          "engineering": "Install temporary ventilation",
-          "administrative": "Safety briefings and signage",
-          "ppe": "Non-slip footwear and safety glasses"
+          "elimination": "Remove work from confined space where possible",
+          "substitution": "Use water suppression on grinder",
+          "isolation": "Isolate work area with plastic sheeting",
+          "engineering": "Install mechanical ventilation extraction",
+          "administrative": "Rotate workers every 30 minutes",
+          "ppe": "P2 respirator and safety glasses"
         },
-        "residualRisk": 3,
-        "hrcwReferences": [1, 6],
-        "permitRequired": ["S030408 Hot Works Permit"]
+        "residualRisk": 4
       }],
-      "ppe": ["Hard Hat", "Safety Glasses", "Steel Cap Boots"],
-      "tools": ["Tile cutter (wet saw)", "Notched trowel"],
-      "trainingRequired": ["Trade certification"]
-    }
-  ],
-  "plantEquipment": [
+      "ppe": ["P2 Respirator", "Safety Glasses", "Steel Cap Boots"],
+      "tools": ["Angle grinder with dust extraction", "Scraper", "Vacuum"],
+      "trainingRequired": ["Silica awareness training", "PPE use training"]
+    },
     {
-      "name": "Tile cutter (wet saw)",
-      "type": "Equipment", 
-      "category": "Cutting Tools",
-      "certificationRequired": true,
-      "inspectionStatus": "Current",
-      "riskLevel": "Medium",
-      "safetyRequirements": ["Training required"]
+      "name": "Waterproofing membrane application",
+      "description": "Apply liquid membrane to walls and floors in wet areas",
+      "riskScore": 5,
+      "residualRisk": 2,
+      "referencedLegislation": ["NSW WHS Reg 2017 s291", "AS 3740-2021"],
+      "hazards": [{
+        "type": "Chemical",
+        "description": "Skin contact with waterproofing chemicals",
+        "riskRating": 6,
+        "causeAgent": "liquid membrane containing solvents",
+        "environmentalCondition": "enclosed bathroom space",
+        "consequence": "chemical burns and skin sensitization",
+        "controlMeasures": {
+          "elimination": "Use water-based products where possible",
+          "substitution": "Select low-VOC membrane products",
+          "isolation": "Restrict access during application",
+          "engineering": "Ensure adequate ventilation",
+          "administrative": "Read SDS before use",
+          "ppe": "Chemical resistant gloves and apron"
+        },
+        "residualRisk": 3
+      }],
+      "ppe": ["Chemical Gloves", "Safety Glasses", "Respirator"],
+      "tools": ["Roller", "Brush", "Mixing paddle"],
+      "trainingRequired": ["Chemical handling", "Waterproofing standards"]
     }
   ]
-}`;
+}
+
+GENERATE 4-6 TILING TASKS WITH THIS EXACT FORMAT. 
+
+MANDATORY REQUIREMENTS:
+- Use DIFFERENT risk scores (4-9) for each task
+- Use SPECIFIC tools for each task (wet saw, grinder, trowel, float, etc.)
+- Use SPECIFIC training for each task (silica awareness, chemical handling, etc.)
+- Use TASK-SPECIFIC legislation (different AS standards for each task)
+- Use DETAILED hazard descriptions with cause agent, environment, consequence
+
+NO GENERIC "Standard trade tools" OR "Trade specific training" OR "WHS Act 2011" ALLOWED.`;
 
     // Enhanced user message with safety context and HRCW integration
     const userMessage = `ENHANCED SAFETY CONTEXT:
@@ -471,9 +492,9 @@ ABSOLUTE REQUIREMENT: Generate ONLY ${tradeName === 'Tiling & Waterproofing' ? '
           hrcwReferences: [],
           permitRequired: []
         }],
-        ppe: ["Hard Hat", "Safety Glasses", "Steel Cap Boots", "Hearing Protection"],
-        tools: ["Tile cutter (wet saw)", "Notched trowel", "Spirit level", "Rubber float"],
-        trainingRequired: ["Trade certification"]
+        ppe: task.ppe || ["Hard Hat", "Safety Glasses", "Steel Cap Boots"],
+        tools: task.tools || ["Tile cutter", "Trowel", "Level"],
+        trainingRequired: task.trainingRequired || ["Trade certification"]
       }));
     } else if (parsedResult.SWMS_Tasks) {
       // Convert SWMS_Tasks format to activities format
