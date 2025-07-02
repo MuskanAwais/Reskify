@@ -58,10 +58,15 @@ export default function Billing() {
   });
 
   // Fetch real billing data
-  const { data: billingResponse } = useQuery({
+  const { data: billingResponse, isLoading: isBillingLoading, error: billingError } = useQuery({
     queryKey: ['/api/user/billing'],
     queryFn: () => apiRequest('GET', '/api/user/billing')
   });
+
+  // Debug logging
+  console.log('Billing response:', billingResponse);
+  console.log('Billing loading:', isBillingLoading);
+  console.log('Billing error:', billingError);
 
   const billingData: BillingData = (billingResponse as any) || {
     currentPlan: "Free",
