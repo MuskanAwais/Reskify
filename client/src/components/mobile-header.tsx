@@ -33,7 +33,7 @@ export function MobileHeader() {
     { href: "/swms-builder", label: "SWMS Builder", icon: FileText },
     { href: "/my-swms", label: "My SWMS", icon: FileText },
     { href: "/analytics", label: "Analytics", icon: BarChart3 },
-    { href: "/profile", label: "Account", icon: User },
+    { href: "/billing?tab=account", label: "Account", icon: User },
   ];
 
   const adminItems = [
