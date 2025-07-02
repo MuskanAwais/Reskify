@@ -138,39 +138,43 @@ export async function registerRoutes(app: Express) {
     }
   });
 
-  // Complete SWMS PDF Download endpoint using exact layout
+  // Complete SWMS PDF Download endpoint using SWMSprint integration
   app.post("/api/swms/pdf-download", async (req, res) => {
     try {
       const requestTitle = req.body?.projectName || req.body?.title || 'Unknown project';
-      console.log("PDF generation request received:", requestTitle);
+      console.log("SWMSprint PDF generation request received:", requestTitle);
       
       const data = req.body;
       
-      // Import authentic PDF generator with proper card spacing and real data only
-      const { generateAppMatchPDF } = await import('./pdf-generator-authentic');
+      // EXCLUSIVELY use SWMSprint integration - no fallback
+      console.log('Generating PDF with SWMSprint (EXCLUSIVE)');
+      const { generatePDFWithRiskTemplate } = await import('./risk-template-integration.js');
+      const pdfBuffer = await generatePDFWithRiskTemplate(data);
       
-      const doc = generateAppMatchPDF({
-        swmsData: data,
-        projectName: data.projectName || data.project_name || 'Unknown Project',
-        projectAddress: data.projectAddress || data.project_address || 'Unknown Address',
-        uniqueId: `SWMS-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
-      });
+      // Generate filename with project details
+      const sanitizedTitle = (data.projectName || data.title || 'SWMS-Document')
+        .replace(/[^a-zA-Z0-9\s-]/g, '')
+        .replace(/\s+/g, '_')
+        .substring(0, 50);
+      const filename = `${sanitizedTitle}_${Date.now()}.pdf`;
       
-      const chunks: Buffer[] = [];
-      doc.on('data', (chunk: Buffer) => chunks.push(chunk));
-      doc.on('end', () => {
-        const pdfBuffer = Buffer.concat(chunks);
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', 'attachment; filename="swms_document.pdf"');
-        res.setHeader('Content-Length', pdfBuffer.length.toString());
-        res.send(pdfBuffer);
-      });
-      doc.end();
+      // Set headers for PDF download
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+      res.setHeader('Content-Length', pdfBuffer.length.toString());
+      res.setHeader('Cache-Control', 'no-cache');
+      res.setHeader('X-Content-Type-Options', 'nosniff');
+      
+      console.log(`SWMSprint PDF generated successfully: ${filename} (${pdfBuffer.length} bytes)`);
+      res.send(pdfBuffer);
       
     } catch (error) {
-      console.error("PDF generation error:", error);
+      console.error("SWMSprint PDF generation error:", error);
       if (!res.headersSent) {
-        res.status(500).json({ error: "Failed to generate PDF" });
+        res.status(500).json({ 
+          error: "Failed to generate PDF with SWMSprint",
+          details: error.message 
+        });
       }
     }
   });
