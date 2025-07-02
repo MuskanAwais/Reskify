@@ -2347,17 +2347,88 @@ export async function registerRoutes(app: Express) {
   });
 
   // User endpoint for demo access
-  app.get("/api/user", (req, res) => {
-    // Demo mode - always return user 999
-    res.json({
-      id: 999,
-      username: "demo@riskify.com.au", 
-      name: "Demo User",
-      email: "demo@riskify.com.au",
-      isAdmin: true,
-      subscriptionType: "trial",
-      swmsCredits: 10
-    });
+  app.get("/api/user", async (req, res) => {
+    try {
+      // Get real user data from database for demo user 999
+      const user = await storage.getUserById(999);
+      
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      res.json({
+        id: user.id,
+        username: user.username,
+        name: user.name || "Demo User",
+        email: user.email,
+        isAdmin: user.isAdmin,
+        subscriptionType: user.subscriptionType || "trial",
+        swmsCredits: user.swmsCredits || 0
+      });
+    } catch (error) {
+      console.error("Get user error:", error);
+      res.status(500).json({ error: "Failed to fetch user data" });
+    }
+  });
+
+  // User billing endpoint
+  app.get("/api/user/billing", async (req, res) => {
+    try {
+      // Get real user data from database for demo user 999
+      const user = await storage.getUserById(999);
+      
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      // Calculate billing data
+      const currentCredits = user.swmsCredits || 0;
+      const subscriptionType = user.subscriptionType || "trial";
+      const monthlyLimit = subscriptionType === "enterprise" ? 100 : 
+                          subscriptionType === "pro" ? 50 : 10;
+      
+      res.json({
+        currentPlan: subscriptionType.charAt(0).toUpperCase() + subscriptionType.slice(1),
+        credits: currentCredits,
+        monthlyLimit: monthlyLimit,
+        billingCycle: "monthly",
+        nextBillingDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        totalSpent: subscriptionType === "enterprise" ? 99 : 
+                   subscriptionType === "pro" ? 29 : 0,
+        creditsUsedThisMonth: monthlyLimit - currentCredits
+      });
+    } catch (error) {
+      console.error("Get billing error:", error);
+      res.status(500).json({ error: "Failed to fetch billing data" });
+    }
+  });
+
+  // User settings endpoint
+  app.get("/api/user/settings", async (req, res) => {
+    try {
+      // Get real user data from database for demo user 999
+      const user = await storage.getUserById(999);
+      
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      res.json({
+        profile: {
+          name: user.name || "Demo User",
+          email: user.email || "demo@riskify.com.au",
+          company: user.companyName || "Demo Company",
+          phone: user.phone || "+61 400 000 000"
+        },
+        notifications: {
+          email: true,
+          sms: false
+        }
+      });
+    } catch (error) {
+      console.error("Get settings error:", error);
+      res.status(500).json({ error: "Failed to fetch settings data" });
+    }
   });
 
   // User credit usage endpoint

@@ -1036,10 +1036,12 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
                           const result = await response.json();
                           console.log('Credit used successfully:', result);
                           
-                          // Invalidate cache to refresh user data and dashboard
+                          // Invalidate cache to refresh user data, dashboard, and billing
                           await Promise.all([
                             queryClient.invalidateQueries({ queryKey: ['/api/user'] }),
-                            queryClient.invalidateQueries({ queryKey: ['/api/dashboard/999'] })
+                            queryClient.invalidateQueries({ queryKey: ['/api/dashboard/999'] }),
+                            queryClient.invalidateQueries({ queryKey: ['/api/user/billing'] }),
+                            queryClient.invalidateQueries({ queryKey: ['/api/user/settings'] })
                           ]);
                           
                           // Update form data to indicate payment is complete
