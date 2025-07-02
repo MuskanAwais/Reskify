@@ -67,10 +67,10 @@ export default function MySwms() {
   const isAdmin = currentUserData?.isAdmin || false;
   const effectiveUserId = isAdminViewMode && selectedUserId ? selectedUserId : (user?.id || 999);
 
-  // Get all users for admin user switcher
+  // Get all users for admin user switcher - only after user data is loaded
   const { data: allUsersData } = useQuery({
     queryKey: ["/api/admin/users"],
-    enabled: isAdmin,
+    enabled: isAdmin && !!currentUserData,
   });
 
   const allUsers = allUsersData?.users || [];
@@ -78,6 +78,7 @@ export default function MySwms() {
   const { data: documentsData, isLoading, refetch } = useQuery({
     queryKey: ["/api/swms", effectiveUserId],
     queryFn: async () => {
+      console.log('Fetching SWMS documents...', { isAdminViewMode, selectedUserId, effectiveUserId });
       if (isAdminViewMode && selectedUserId) {
         return apiRequest("GET", `/api/admin/user/${selectedUserId}/swms`);
       }
@@ -100,6 +101,11 @@ export default function MySwms() {
   // Get documents array from API response
   const documents = (documentsData as any)?.documents || [];
   const deletedDocuments = (deletedDocumentsData as any)?.documents || [];
+  
+  // Debug logging for documents
+  if (documents.length > 0) {
+    console.log('Documents loaded:', documents.length, 'First doc:', documents[0]);
+  }
   
   // Format documents for display
   const formattedDocuments = documents.map((doc: any) => ({
@@ -414,6 +420,19 @@ export default function MySwms() {
     const matchesSearch = doc.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          doc.tradeType?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          doc.projectLocation?.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    // Debug logging
+    if (formattedDocuments.length > 0 && filteredDocuments.length === 0) {
+      console.log('Debug filtering:', {
+        totalDocs: formattedDocuments.length,
+        activeTab,
+        statusFilter,
+        tradeFilter,
+        searchTerm,
+        firstDocStatus: formattedDocuments[0]?.status,
+        firstDocTitle: formattedDocuments[0]?.title
+      });
+    }
     
     // Fix status filtering - "All Status" should show everything, map database statuses correctly
     let matchesStatus = true;
