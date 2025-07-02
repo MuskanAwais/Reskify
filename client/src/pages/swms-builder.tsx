@@ -992,7 +992,9 @@ export default function SwmsBuilder() {
   };
 
   const handleFormDataChange = (data: any) => {
+    console.log('handleFormDataChange called with:', Object.keys(data).filter(key => data[key]));
     const newFormData = { ...formData, ...data };
+    console.log('New form data after update:', Object.keys(newFormData).filter(key => newFormData[key]));
     setFormData(newFormData);
     
     // Silent auto-save with debouncing

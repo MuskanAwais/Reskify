@@ -167,11 +167,13 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
   const { toast } = useToast();
 
   const updateFormData = (updates: any) => {
+    console.log('SWMSForm updateFormData called with:', Object.keys(updates).filter(key => updates[key]));
     const newData = { 
       ...formData, 
       ...updates,
       lastModified: new Date().toISOString()
     };
+    console.log('SWMSForm calling onDataChange with:', Object.keys(newData).filter(key => newData[key]));
     onDataChange(newData);
   };
 
