@@ -382,17 +382,16 @@ export class DatabaseStorage implements IStorage {
       let existingDraft = null;
       
       if (data.draftId) {
-        // Update specific draft by ID - only when explicitly editing an existing draft
-        const [draft] = await db
+        // Update specific document by ID - allow updating both draft and completed documents
+        const [document] = await db
           .select()
           .from(swmsDocuments)
           .where(and(
             eq(swmsDocuments.id, data.draftId),
-            eq(swmsDocuments.userId, userId),
-            eq(swmsDocuments.status, 'draft')
+            eq(swmsDocuments.userId, userId)
           ));
-        existingDraft = draft;
-        console.log('Updating existing draft:', data.draftId);
+        existingDraft = document;
+        console.log('Updating existing document:', data.draftId);
       }
       // If no draftId provided, always create a new document
 
@@ -425,8 +424,9 @@ export class DatabaseStorage implements IStorage {
         complianceCodes: ['WHS Act 2011', 'WHS Regulation 2017'],
         responsiblePersons: [{name: 'Site Supervisor', role: 'Supervisor'}],
         currentStep: data.currentStep || 1,
-        status: data.status || 'draft',
-        paidAccess: data.paidAccess === true ? true : false // Only true if explicitly set
+        // Preserve existing status and paidAccess if updating an existing document
+        status: existingDraft ? (existingDraft.status || 'draft') : (data.status || 'draft'),
+        paidAccess: existingDraft ? (existingDraft.paidAccess || false) : (data.paidAccess === true ? true : false)
       };
 
       if (existingDraft) {
