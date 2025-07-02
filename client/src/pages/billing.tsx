@@ -408,46 +408,65 @@ export default function Billing() {
 
                 <div className="space-y-3">
                   <div className="text-center">
-                    <h4 className="font-semibold text-primary mb-2">Buy Extra Credits</h4>
-                    <p className="text-xs text-muted-foreground">Credits never expire!</p>
+                    <h4 className="font-semibold text-primary mb-2">Purchase Options</h4>
+                    <p className="text-xs text-muted-foreground">Choose your preferred option</p>
                   </div>
                   <div className="grid grid-cols-1 gap-3">
-                    <Button 
-                      onClick={() => purchaseCredits(5)} 
-                      variant="outline" 
-                      size="lg"
-                      className="h-12 border-2 border-primary/30 hover:border-primary hover:bg-primary/5"
-                    >
-                      <Plus className="w-4 h-4 mr-2" />
-                      <div className="text-left">
-                        <div className="font-semibold">+5 Credits</div>
-                        <div className="text-sm text-muted-foreground">$60</div>
-                      </div>
-                    </Button>
-                    <Button 
-                      onClick={() => handleCreateCheckoutSession(65, 'one-off')} 
-                      variant="outline" 
-                      size="lg"
-                      className="h-12 border-2 border-amber-300 hover:border-amber-500 hover:bg-amber-50"
-                    >
-                      <Zap className="w-4 h-4 mr-2" />
-                      <div className="text-left">
-                        <div className="font-semibold">SWMS Pack</div>
-                        <div className="text-sm text-muted-foreground">$65</div>
-                      </div>
-                    </Button>
-                    <Button 
-                      onClick={() => purchaseCredits(10)} 
-                      variant="outline" 
-                      size="lg"
-                      className="h-12 border-2 border-primary/30 hover:border-primary hover:bg-primary/5"
-                    >
-                      <Plus className="w-4 h-4 mr-2" />
-                      <div className="text-left">
-                        <div className="font-semibold">+10 Credits</div>
-                        <div className="text-sm text-muted-foreground">$100</div>
-                      </div>
-                    </Button>
+                    {/* Desktop - Show all options */}
+                    <div className="hidden md:block space-y-3">
+                      <Button 
+                        onClick={() => purchaseCredits(5)} 
+                        variant="outline" 
+                        size="lg"
+                        className="w-full h-12 border-2 border-primary/30 hover:border-primary hover:bg-primary/5"
+                      >
+                        <Plus className="w-4 h-4 mr-2" />
+                        <div className="text-left">
+                          <div className="font-semibold">+5 Credits</div>
+                          <div className="text-sm text-muted-foreground">$60</div>
+                        </div>
+                      </Button>
+                      <Button 
+                        onClick={() => handleCreateCheckoutSession(65, 'one-off')} 
+                        variant="outline" 
+                        size="lg"
+                        className="w-full h-12 border-2 border-amber-300 hover:border-amber-500 hover:bg-amber-50"
+                      >
+                        <Zap className="w-4 h-4 mr-2" />
+                        <div className="text-left">
+                          <div className="font-semibold">SWMS Pack (5 SWMS)</div>
+                          <div className="text-sm text-muted-foreground">$65</div>
+                        </div>
+                      </Button>
+                      <Button 
+                        onClick={() => purchaseCredits(10)} 
+                        variant="outline" 
+                        size="lg"
+                        className="w-full h-12 border-2 border-primary/30 hover:border-primary hover:bg-primary/5"
+                      >
+                        <Plus className="w-4 h-4 mr-2" />
+                        <div className="text-left">
+                          <div className="font-semibold">+10 Credits</div>
+                          <div className="text-sm text-muted-foreground">$100</div>
+                        </div>
+                      </Button>
+                    </div>
+                    
+                    {/* Mobile - Show only SWMS Pack */}
+                    <div className="md:hidden">
+                      <Button 
+                        onClick={() => handleCreateCheckoutSession(65, 'one-off')} 
+                        variant="outline" 
+                        size="lg"
+                        className="w-full h-12 border-2 border-amber-300 hover:border-amber-500 hover:bg-amber-50"
+                      >
+                        <Zap className="w-4 h-4 mr-2" />
+                        <div className="text-left">
+                          <div className="font-semibold">SWMS Pack (5 SWMS)</div>
+                          <div className="text-sm text-muted-foreground">$65 - Best Value!</div>
+                        </div>
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </CardContent>
