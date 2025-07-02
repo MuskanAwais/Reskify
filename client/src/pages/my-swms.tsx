@@ -82,10 +82,15 @@ export default function MySwms() {
     queryKey: ["/api/swms", effectiveUserId],
     queryFn: async () => {
       console.log('Fetching SWMS documents...', { isAdminViewMode, selectedUserId, effectiveUserId });
+      let response;
       if (isAdminViewMode && selectedUserId) {
-        return apiRequest("GET", `/api/admin/user/${selectedUserId}/swms`);
+        response = await apiRequest("GET", `/api/admin/user/${selectedUserId}/swms`);
+      } else {
+        response = await apiRequest("GET", "/api/swms");
       }
-      return apiRequest("GET", "/api/swms");
+      const data = await response.json();
+      console.log('Parsed API response:', data);
+      return data;
     },
     enabled: !!user,
   });
@@ -93,19 +98,24 @@ export default function MySwms() {
   const { data: deletedDocumentsData, isLoading: isLoadingDeleted } = useQuery({
     queryKey: ["/api/swms/deleted", effectiveUserId],
     queryFn: async () => {
+      let response;
       if (isAdminViewMode && selectedUserId) {
-        return apiRequest("GET", `/api/admin/user/${selectedUserId}/swms/deleted`);
+        response = await apiRequest("GET", `/api/admin/user/${selectedUserId}/swms/deleted`);
+      } else {
+        response = await apiRequest("GET", "/api/swms/deleted");
       }
-      return apiRequest("GET", "/api/swms/deleted");
+      return await response.json();
     },
     enabled: !!user && activeTab === "deleted"
   });
 
   // Get documents array from API response
+  console.log('Raw documentsData:', documentsData);
   const documents = (documentsData as any)?.documents || [];
   const deletedDocuments = (deletedDocumentsData as any)?.documents || [];
   
   // Debug logging for documents
+  console.log('Extracted documents:', documents.length, 'documentsData type:', typeof documentsData);
   if (documents.length > 0) {
     console.log('Documents loaded:', documents.length, 'First doc:', documents[0]);
   }
