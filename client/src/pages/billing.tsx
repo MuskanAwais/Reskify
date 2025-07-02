@@ -418,7 +418,7 @@ export default function Billing() {
                     {/* Desktop - Show all options */}
                     <div className="hidden md:block space-y-3">
                       <Button 
-                        onClick={() => purchaseCredits(5)} 
+                        onClick={() => handleCreateCheckoutSession(60, 'credits')} 
                         variant="outline" 
                         size="lg"
                         className="w-full h-12 border-2 border-primary/30 hover:border-primary hover:bg-primary/5"
@@ -430,19 +430,7 @@ export default function Billing() {
                         </div>
                       </Button>
                       <Button 
-                        onClick={() => handleCreateCheckoutSession(60, 'one-off')} 
-                        variant="outline" 
-                        size="lg"
-                        className="w-full h-12 border-2 border-amber-300 hover:border-amber-500 hover:bg-amber-50"
-                      >
-                        <Zap className="w-4 h-4 mr-2" />
-                        <div className="text-left">
-                          <div className="font-semibold">SWMS Pack (5 SWMS)</div>
-                          <div className="text-sm text-muted-foreground">$60</div>
-                        </div>
-                      </Button>
-                      <Button 
-                        onClick={() => purchaseCredits(10)} 
+                        onClick={() => handleCreateCheckoutSession(100, 'credits')} 
                         variant="outline" 
                         size="lg"
                         className="w-full h-12 border-2 border-primary/30 hover:border-primary hover:bg-primary/5"
