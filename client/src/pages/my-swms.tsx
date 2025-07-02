@@ -434,19 +434,6 @@ export default function MySwms() {
                          doc.tradeType?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          doc.projectLocation?.toLowerCase().includes(searchTerm.toLowerCase());
     
-    // Debug logging
-    if (formattedDocuments.length > 0 && filteredDocuments.length === 0) {
-      console.log('Debug filtering:', {
-        totalDocs: formattedDocuments.length,
-        activeTab,
-        statusFilter,
-        tradeFilter,
-        searchTerm,
-        firstDocStatus: formattedDocuments[0]?.status,
-        firstDocTitle: formattedDocuments[0]?.title
-      });
-    }
-    
     // Fix status filtering - "All Status" should show everything, map database statuses correctly
     let matchesStatus = true;
     if (statusFilter !== "all") {
@@ -463,6 +450,15 @@ export default function MySwms() {
     
     const matchesTrade = tradeFilter === "all" || doc.tradeType === tradeFilter;
     return matchesSearch && matchesStatus && matchesTrade;
+  });
+
+  // Debug logging after filteredDocuments is defined
+  console.log('Filtering results:', {
+    totalDocs: formattedDocuments.length,
+    filteredDocs: filteredDocuments.length,
+    activeTab,
+    statusFilter,
+    tradeFilter
   });
 
   const getStatusBadge = (status: string) => {
