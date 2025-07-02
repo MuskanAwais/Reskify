@@ -266,9 +266,9 @@ export async function registerRoutes(app: Express) {
         phone: phone || (!username.includes('@') ? username : undefined),
         isAdmin: false,
         subscriptionType: 'trial',
-        swmsCredits: 5, // Trial credits
+        swmsCredits: 0, // New accounts start with 0 credits
         addonCredits: 0,
-        subscriptionCredits: 5,
+        subscriptionCredits: 0, // No free subscription credits
         lastCreditReset: new Date()
       };
       
