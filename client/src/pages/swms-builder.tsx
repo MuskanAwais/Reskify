@@ -606,7 +606,14 @@ export default function SwmsBuilder() {
       return (data: any) => {
         clearTimeout(timeoutId);
         timeoutId = setTimeout(() => {
-          if (data.title || data.jobName || data.tradeType) {
+          // More inclusive condition for Step 1 fields to ensure auto-save triggers
+          const hasSignificantData = data.title || data.jobName || data.tradeType || 
+                                    data.projectAddress || data.jobNumber || data.startDate ||
+                                    data.swmsCreatorName || data.principalContractor ||
+                                    data.projectManager || data.siteSupervisor;
+          
+          if (hasSignificantData) {
+            console.log('Auto-saving with data:', Object.keys(data).filter(key => data[key]));
             autoSaveMutation.mutate(data);
           }
         }, 1000); // Save after 1 second of inactivity
@@ -617,13 +624,36 @@ export default function SwmsBuilder() {
 
   // Auto-save when moving between steps
   const autoSave = () => {
-    if (formData.title || formData.jobName || formData.tradeType) {
+    const hasSignificantData = formData.title || formData.jobName || formData.tradeType || 
+                              formData.projectAddress || formData.jobNumber || formData.startDate ||
+                              formData.swmsCreatorName || formData.principalContractor ||
+                              formData.projectManager || formData.siteSupervisor;
+                              
+    if (hasSignificantData) {
       console.log('Auto-saving draft with form data:', formData);
       debouncedAutoSave(formData);
     } else {
       console.log('Skipping auto-save - insufficient data');
     }
   };
+
+  // Auto-save when form data changes (debounced to prevent excessive API calls)
+  useEffect(() => {
+    // Skip auto-save on initial mount or if no significant data exists
+    // Include more Step 1 fields to ensure proper auto-save triggers
+    const hasSignificantData = formData.jobName || formData.title || formData.tradeType || 
+                              formData.projectAddress || formData.jobNumber || formData.startDate ||
+                              formData.swmsCreatorName || formData.principalContractor ||
+                              formData.projectManager || formData.siteSupervisor;
+    
+    if (!hasSignificantData) {
+      return;
+    }
+    
+    // Trigger debounced auto-save whenever form data changes
+    console.log('Form data changed, triggering auto-save...');
+    debouncedAutoSave(formData);
+  }, [formData, debouncedAutoSave]);
 
   // Validation function for step 1
   const validateStep1 = () => {
