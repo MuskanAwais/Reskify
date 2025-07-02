@@ -191,7 +191,7 @@ export default function Payment() {
     }
   });
 
-  const handlePurchase = (planType: string) => {
+  const handlePurchase = async (planType: string) => {
     setSelectedPlan(planType);
     
     let paymentAmount = amount; // Use URL parameter if available
@@ -209,7 +209,33 @@ export default function Payment() {
       }
     }
     
-    createPaymentIntent.mutate({ amount: paymentAmount, type: planType });
+    try {
+      toast({
+        title: "Redirecting to Stripe Checkout",
+        description: `Processing ${planType} payment for $${paymentAmount}...`,
+      });
+      
+      // Create Stripe checkout session
+      const response = await apiRequest("POST", "/api/create-checkout-session", { 
+        amount: paymentAmount, 
+        type: planType
+      });
+      
+      const data = await response.json();
+      
+      if (data.checkoutUrl) {
+        // Redirect to Stripe Checkout
+        window.location.href = data.checkoutUrl;
+      } else {
+        throw new Error("Failed to create checkout session");
+      }
+    } catch (error) {
+      toast({
+        title: "Payment Error",
+        description: "Failed to process payment. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleGoBack = () => {

@@ -196,6 +196,7 @@ function Router() {
 
         <ProtectedRoute path="/billing" component={Billing} />
         <ProtectedRoute path="/payment" component={Payment} />
+        <ProtectedRoute path="/payment-success" component={PaymentSuccess} />
         <ProtectedRoute path="/settings" component={Settings} />
         <Route path="/language-test" component={LanguageTest} />
         <Route path="/language-demo" component={LanguageDemo} />

@@ -249,12 +249,25 @@ export default function Billing() {
       const price = credits === 5 ? 60 : 100;
       
       toast({
-        title: "Redirecting to Payment",
+        title: "Redirecting to Stripe Checkout",
         description: `Processing purchase of ${credits} credits for $${price}...`,
       });
       
-      // Redirect to payment page with credit purchase parameters
-      setLocation(`/payment?type=credits&amount=${price}&credits=${credits}`);
+      // Create Stripe checkout session
+      const response = await apiRequest("POST", "/api/create-checkout-session", { 
+        amount: price, 
+        type: "credits",
+        credits: credits
+      });
+      
+      const data = await response.json();
+      
+      if (data.checkoutUrl) {
+        // Redirect to Stripe Checkout
+        window.location.href = data.checkoutUrl;
+      } else {
+        throw new Error("Failed to create checkout session");
+      }
     } catch (error) {
       toast({
         title: "Payment Error",

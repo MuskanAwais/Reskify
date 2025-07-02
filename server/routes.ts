@@ -1055,29 +1055,53 @@ export async function registerRoutes(app: Express) {
       
       console.log('Creating checkout session for:', { amount, type });
       
-      const session = await stripe.checkout.sessions.create({
+      // Different configuration for subscription vs one-time payments
+      let sessionConfig: any = {
         payment_method_types: ['card'],
-        line_items: [
-          {
-            price_data: {
-              currency: 'aud',
-              product_data: {
-                name: type === 'credits' ? 'SWMS Credits' : 'One-off SWMS Access',
-                description: type === 'credits' ? `${amount === 60 ? '10' : '5'} SWMS Credits` : 'Single SWMS Document Access',
-              },
-              unit_amount: Math.round(amount * 100), // Convert to cents
-            },
-            quantity: 1,
-          },
-        ],
-        mode: 'payment',
         success_url: `${req.headers.origin}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${req.headers.origin}/payment?cancelled=true`,
         metadata: {
           type: type || 'one-off',
           userId: req.session?.userId || '999'
         }
-      });
+      };
+
+      if (type === 'subscription') {
+        // Recurring subscription
+        sessionConfig.mode = 'subscription';
+        sessionConfig.line_items = [{
+          price_data: {
+            currency: 'aud',
+            product_data: {
+              name: 'SWMS Monthly Subscription',
+              description: '10 SWMS documents per month with team collaboration',
+            },
+            unit_amount: Math.round(amount * 100), // Convert to cents
+            recurring: {
+              interval: 'month',
+            },
+          },
+          quantity: 1,
+        }];
+      } else {
+        // One-time payment
+        sessionConfig.mode = 'payment';
+        sessionConfig.line_items = [{
+          price_data: {
+            currency: 'aud',
+            product_data: {
+              name: type === 'credits' ? 'SWMS Credits' : 'One-off SWMS Access',
+              description: type === 'credits' ? 
+                `${amount === 100 ? '10' : '5'} SWMS Credits (never expire)` : 
+                'Single SWMS Document Access',
+            },
+            unit_amount: Math.round(amount * 100), // Convert to cents
+          },
+          quantity: 1,
+        }];
+      }
+      
+      const session = await stripe.checkout.sessions.create(sessionConfig);
 
       res.json({ 
         checkoutUrl: session.url,
