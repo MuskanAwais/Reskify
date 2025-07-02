@@ -182,10 +182,16 @@ export default function SwmsBuilder() {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const editId = urlParams.get('edit');
+    const isAdminMode = urlParams.get('admin') === 'true';
     
     if (editId) {
-      // Load draft from database for editing
+      // Load draft from database for editing (admin can edit completed documents)
       loadDraftMutation.mutate(parseInt(editId));
+      
+      // Store admin mode for later use
+      if (isAdminMode) {
+        localStorage.setItem('swms-admin-mode', 'true');
+      }
     } else {
       // Starting new SWMS - clear everything and start fresh
       setDraftId(null);
@@ -193,6 +199,7 @@ export default function SwmsBuilder() {
       setCurrentStep(1);
       // Clear localStorage for fresh start
       localStorage.removeItem('swms-form-data');
+      localStorage.removeItem('swms-admin-mode');
       // Keep initial empty form data
     }
     
@@ -376,8 +383,24 @@ export default function SwmsBuilder() {
       if (data) {
         console.log('Draft data loaded for editing:', data);
         
+        // Check admin mode from localStorage
+        const isAdminMode = localStorage.getItem('swms-admin-mode') === 'true';
+        
         // Check if this document has already been paid for
-        const hasPaidAccess = data.paidAccess === true;
+        const hasPaidAccess = data.paidAccess === true || data.status === 'completed';
+        
+        // Admin can edit completed documents
+        const canEdit = !hasPaidAccess || isAdminMode;
+        
+        if (hasPaidAccess && !isAdminMode) {
+          toast({
+            title: "Access Denied",
+            description: "This SWMS document has been completed and cannot be edited. Only administrators can edit completed documents.",
+            variant: "destructive",
+          });
+          window.location.href = '/my-swms';
+          return;
+        }
         
         // Map database fields to form structure, preserving all saved data
         const mappedData = {
@@ -426,10 +449,12 @@ export default function SwmsBuilder() {
         setCurrentStep(1);
         
         toast({
-          title: "Draft Loaded for Editing",
-          description: hasPaidAccess 
-            ? `Editing "${data.title || 'SWMS Document'}" - Payment step will be skipped.`
-            : `Editing "${data.title || 'SWMS Document'}" - Please re-enter project details.`,
+          title: isAdminMode ? "Admin Edit Mode" : "Draft Loaded for Editing",
+          description: isAdminMode 
+            ? `Admin editing "${data.title || 'SWMS Document'}" - Full edit access granted.`
+            : hasPaidAccess 
+              ? `Editing "${data.title || 'SWMS Document'}" - Payment step will be skipped.`
+              : `Editing "${data.title || 'SWMS Document'}" - Please re-enter project details.`,
         });
       }
     },
@@ -1022,9 +1047,17 @@ export default function SwmsBuilder() {
       <div className="max-w-5xl mx-auto">
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center">
-              <FileText className="mr-2 h-5 w-5" />
-              {STEPS[currentStep - 1].title}
+            <CardTitle className="flex items-center justify-between">
+              <div className="flex items-center">
+                <FileText className="mr-2 h-5 w-5" />
+                {STEPS[currentStep - 1].title}
+              </div>
+              {localStorage.getItem('swms-admin-mode') === 'true' && (
+                <Badge variant="destructive" className="ml-2">
+                  <Shield className="mr-1 h-3 w-3" />
+                  ADMIN MODE
+                </Badge>
+              )}
             </CardTitle>
           </CardHeader>
           <CardContent>

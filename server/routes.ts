@@ -2706,6 +2706,36 @@ export async function registerRoutes(app: Express) {
   // COMPREHENSIVE ADMIN API ROUTES - ALL PROTECTED
   // ===========================================
   
+  // Admin: Get user SWMS documents - PROTECTED
+  app.get("/api/admin/user/:userId/swms", requireAdmin, async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const userSwms = await storage.getUserSwms(userId);
+      
+      res.json({
+        documents: userSwms.filter(doc => doc.status !== 'deleted')
+      });
+    } catch (error) {
+      console.error('Error fetching user SWMS:', error);
+      res.status(500).json({ error: 'Failed to fetch user SWMS' });
+    }
+  });
+
+  // Admin: Get deleted user SWMS documents - PROTECTED
+  app.get("/api/admin/user/:userId/swms/deleted", requireAdmin, async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const userSwms = await storage.getUserSwms(userId);
+      
+      res.json({
+        documents: userSwms.filter(doc => doc.status === 'deleted')
+      });
+    } catch (error) {
+      console.error('Error fetching deleted user SWMS:', error);
+      res.status(500).json({ error: 'Failed to fetch deleted user SWMS' });
+    }
+  });
+
   // Admin: Get all users with comprehensive details - PROTECTED
   app.get("/api/admin/users", requireAdmin, async (req, res) => {
     try {
