@@ -284,6 +284,18 @@ export default function SwmsBuilder() {
       if (activityText.includes('wet') || activityText.includes('water') || activityText.includes('rain')) {
         detectedPPE.add('non-slip-footwear');
       }
+      
+      // Tiling work - knee pads for prolonged kneeling
+      if (activityText.includes('tile') || activityText.includes('tiling') || activityText.includes('floor') || 
+          activityText.includes('kneel') || activityText.includes('grouting') || activityText.includes('laying')) {
+        detectedPPE.add('knee-pads');
+      }
+      
+      // Chemical-resistant gloves for adhesives and waterproofing
+      if (activityText.includes('adhesive') || activityText.includes('grout') || activityText.includes('waterproof') || 
+          activityText.includes('sealant') || activityText.includes('membrane')) {
+        detectedPPE.add('chemical-resistant-apron');
+      }
     });
     
     // HRCW-based detection
