@@ -176,13 +176,13 @@ export async function registerRoutes(app: Express) {
     }
   });
 
-  // User login
-  app.post("/api/login", async (req, res) => {
+  // User login (both endpoints for compatibility)
+  const loginHandler = async (req: any, res: any) => {
     try {
       const { username, password } = req.body;
       
-      // Demo access bypass
-      if (username === 'demo' && password === 'demo') {
+      // Demo access bypass with correct credentials
+      if (username === 'demo' && password === 'password123') {
         if (req.session) {
           req.session.userId = 999;
         }
@@ -192,29 +192,10 @@ export async function registerRoutes(app: Express) {
             id: 999,
             username: 'demo',
             name: 'Demo User',
-            email: 'demo@example.com',
-            isAdmin: false,
+            email: 'demo@riskify.com',
+            isAdmin: true,
             credits: 10,
             subscription: 'trial'
-          }
-        });
-      }
-
-      // Admin user check (0421869995)
-      if (username === '0421869995' && password === 'admin123') {
-        if (req.session) {
-          req.session.userId = 1;
-        }
-        return res.json({
-          success: true,
-          user: {
-            id: 1,
-            username: '0421869995',
-            name: 'Admin User',
-            email: 'admin@riskify.com',
-            isAdmin: true,
-            credits: 100,
-            subscription: 'enterprise'
           }
         });
       }
@@ -241,7 +222,7 @@ export async function registerRoutes(app: Express) {
           name: user.name,
           email: user.email,
           isAdmin: user.isAdmin || false,
-          credits: 0,
+          credits: user.swmsCredits || 0,
           subscription: user.subscriptionType || 'trial'
         }
       });
@@ -249,7 +230,10 @@ export async function registerRoutes(app: Express) {
       console.error("Login error:", error);
       res.status(500).json({ error: "Login failed" });
     }
-  });
+  };
+
+  app.post("/api/login", loginHandler);
+  app.post("/api/auth/login", loginHandler);
 
   // Clean up duplicate test drafts
   app.post("/api/cleanup-test-drafts", async (req, res) => {
