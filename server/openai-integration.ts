@@ -340,7 +340,9 @@ HRCW REQUIREMENTS:
 - Include "permitRequired": ["Specific permit name"] when permits are needed
 ` : ''}
 
-JOB DESCRIPTION: ${prompt}
+JOB DESCRIPTION: ${request.mode === 'task' && request.taskList && request.taskList.length > 0 
+      ? `Generate SWMS for these ${tradeName} tasks: ${request.taskList.join(', ')}`
+      : `Generate SWMS tasks for a ${tradeName} doing: "${request.plainTextDescription || `${tradeName} work`}"`}
 
 CRITICAL REQUIREMENT: This is a ${siteEnvironment.toUpperCase()} site in ${state}. You MUST generate tasks with ${state}-specific legislation.
 
