@@ -1123,6 +1123,79 @@ export async function registerRoutes(app: Express) {
     }
   });
 
+  // Stripe webhook handler for successful payments
+  app.post('/api/stripe-webhook', async (req, res) => {
+    try {
+      const event = req.body;
+      
+      console.log('Received Stripe webhook:', event.type);
+      
+      if (event.type === 'checkout.session.completed') {
+        const session = event.data.object;
+        console.log('Processing successful checkout session:', session.id);
+        
+        const userId = parseInt(session.metadata?.userId || '999') || 999;
+        const paymentType = session.metadata?.type;
+        const amount = session.amount_total / 100; // Convert from cents
+        
+        console.log(`Payment completed: User ${userId}, Type: ${paymentType}, Amount: $${amount}`);
+        
+        // Update user credits based on payment type
+        let creditsToAdd = 0;
+        if (paymentType === 'credits' && amount === 60) {
+          creditsToAdd = 5;
+        } else if (paymentType === 'credits' && amount === 100) {
+          creditsToAdd = 10;
+        } else if (paymentType === 'one-off' && (amount === 15 || amount === 65)) {
+          creditsToAdd = 1; // One SWMS access
+        }
+        
+        if (creditsToAdd > 0) {
+          const user = await storage.getUserById(userId);
+          if (user) {
+            const newCredits = (user.swmsCredits || 0) + creditsToAdd;
+            await storage.updateUserCredits(userId, newCredits);
+            console.log(`Added ${creditsToAdd} credits to user ${userId}. New balance: ${newCredits}`);
+          }
+        }
+      }
+      
+      res.json({ received: true });
+    } catch (error) {
+      console.error('Webhook processing error:', error);
+      res.status(500).json({ error: 'Webhook processing failed' });
+    }
+  });
+
+  // Payment success verification endpoint
+  app.get('/api/verify-payment/:sessionId', async (req, res) => {
+    try {
+      const sessionId = req.params.sessionId;
+      console.log('Verifying payment session:', sessionId);
+      
+      const session = await stripe.checkout.sessions.retrieve(sessionId);
+      
+      if (session.payment_status === 'paid') {
+        const userId = parseInt(session.metadata?.userId || '999') || 999;
+        const user = await storage.getUserById(userId);
+        
+        res.json({
+          success: true,
+          session: session,
+          credits: user?.swmsCredits || 0
+        });
+      } else {
+        res.json({
+          success: false,
+          session: session
+        });
+      }
+    } catch (error) {
+      console.error('Payment verification error:', error);
+      res.status(500).json({ error: 'Payment verification failed' });
+    }
+  });
+
   // Legacy payment intent endpoint (keep for backward compatibility)
   app.post('/api/create-payment-intent', async (req, res) => {
     try {

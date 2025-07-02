@@ -283,6 +283,36 @@ export default function Billing() {
     }
   };
 
+  const handleCreateCheckoutSession = async (amount: number, type: string) => {
+    try {
+      toast({
+        title: "Redirecting to Stripe Checkout",
+        description: `Processing $${amount} payment...`,
+      });
+      
+      // Create Stripe checkout session
+      const response = await apiRequest("POST", "/api/create-checkout-session", { 
+        amount: amount, 
+        type: type
+      });
+      
+      const data = await response.json();
+      
+      if (data.checkoutUrl) {
+        // Redirect to Stripe Checkout
+        window.location.href = data.checkoutUrl;
+      } else {
+        throw new Error("Failed to create checkout session");
+      }
+    } catch (error) {
+      toast({
+        title: "Payment Error",
+        description: "Failed to process payment. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const upgradePlan = async (planName: string) => {
     try {
       const currentTier = getCurrentPlanTier(billingData.currentPlan);
