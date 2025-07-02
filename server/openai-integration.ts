@@ -263,8 +263,30 @@ YOU MUST RETURN EXACTLY THIS JSON STRUCTURE - NO OTHER FORMAT ACCEPTED:
       "description": "Task description here",
       "riskScore": 8,
       "residualRisk": 4,
-      "legislation": "NSW WHS Reg 2017 s213, AS 3958.1-1991",
-      "hazards": [{"type": "Physical", "description": "Slip hazard from wet surfaces", "riskRating": 6, "controlMeasures": ["Non-slip footwear", "Caution signs"], "residualRisk": 3}],
+      "referencedLegislation": ["NSW WHS Reg 2017 s213", "AS 3958.1-1991", "Construction Work CoP Section 3.1"],
+      "validateTradeScope": {
+        "isTaskWithinTradeScope": "YES",
+        "reasonIfNo": ""
+      },
+      "hazards": [{
+        "type": "Physical", 
+        "description": "Slip hazard from wet surfaces", 
+        "riskRating": 6, 
+        "causeAgent": "adhesive residue on floor",
+        "environmentalCondition": "confined bathroom space with limited ventilation",
+        "consequence": "fall injury with potential head trauma",
+        "controlMeasures": {
+          "elimination": "Remove work from hazardous area where possible",
+          "substitution": "Use non-slip surface treatments",
+          "isolation": "Barrier off wet areas",
+          "engineering": "Install temporary ventilation",
+          "administrative": "Safety briefings and signage",
+          "ppe": "Non-slip footwear and safety glasses"
+        },
+        "residualRisk": 3,
+        "hrcwReferences": [1, 6],
+        "permitRequired": ["S030408 Hot Works Permit"]
+      }],
       "ppe": ["Hard Hat", "Safety Glasses", "Steel Cap Boots"],
       "tools": ["Tile cutter (wet saw)", "Notched trowel"],
       "trainingRequired": ["Trade certification"]
@@ -347,6 +369,28 @@ STANDARD PPE: "Hard Hat", "Hi-Vis Vest/Shirt", "Steel Cap Boots", "Safety Glasse
 
 TASK-SPECIFIC PPE: "Hearing Protection", "Dust Mask", "Knee Pads", "Cut-Resistant Gloves", "Respirator (Half/Full Face)"
 
+CRITICAL REQUIREMENTS - ALL MUST BE IMPLEMENTED:
+
+1. TRADE BOUNDARY ENFORCEMENT: You must only generate tasks the specified trade performs with their own tools and licenses. Include validateTradeScope validation for EVERY task with YES/NO confirmation.
+
+2. SPECIFIC HAZARD IDENTIFICATION: Each hazard must include:
+   - Cause agent (e.g. "angle grinder blade fracture")  
+   - Environmental condition (e.g. "confined bathroom space", "wet scaffold planks")
+   - Consequence (e.g. "eye penetration injury", "electric shock")
+
+3. HRCW INTEGRATION: For selected HRCW categories ${hrcwCategories?.length ? `[${hrcwCategories.join(', ')}]` : '[]'}, tasks must:
+   - Reference specific HRCW numbers
+   - Include permit requirements (e.g. "S030408 Hot Works Permit", "Q030428 Confined Space Permit")
+
+4. HIERARCHY OF CONTROLS: Control measures MUST follow the hierarchy structure:
+   - elimination → substitution → isolation → engineering → administrative → ppe
+   Do not default to PPE unless higher levels are not reasonably practicable.
+
+5. AUSTRALIAN COMPLIANCE: Every task must include task-specific legislation:
+   - ${state} WHS Regulation 2017 section references
+   - Relevant Australian Standards (AS codes)
+   - Model Codes of Practice sections
+
 FINAL VALIDATION: Every task MUST pass trade scope validation. If a ${tradeName} wouldn't personally do this work with their standard tools and licenses, DELETE the task.
 
 ABSOLUTE REQUIREMENT: Generate ONLY ${tradeName === 'Tiling & Waterproofing' ? 'tiling, waterproofing, surface preparation, grouting, and sealing' : 'trade-specific'} tasks.`;
@@ -402,13 +446,30 @@ ABSOLUTE REQUIREMENT: Generate ONLY ${tradeName === 'Tiling & Waterproofing' ? '
         description: task.details || task.description || 'AI-generated task description',
         riskScore: task.riskScore || 8,
         residualRisk: task.residualRisk || 4,
-        legislation: task.legislation || `${state} WHS Act 2011`,
-        hazards: [{
+        legislation: task.referencedLegislation ? task.referencedLegislation.join(', ') : (task.legislation || `${state} WHS Act 2011`),
+        validateTradeScope: task.validateTradeScope || { isTaskWithinTradeScope: "YES", reasonIfNo: "" },
+        hazards: task.hazards ? task.hazards.map((hazard: any) => ({
+          type: hazard.type || "General",
+          description: hazard.description || "Standard workplace hazards",
+          riskRating: hazard.riskRating || 6,
+          causeAgent: hazard.causeAgent || "workplace equipment",
+          environmentalCondition: hazard.environmentalCondition || "standard work environment", 
+          consequence: hazard.consequence || "injury",
+          controlMeasures: hazard.controlMeasures || ["Follow safety procedures", "Use appropriate PPE"],
+          residualRisk: hazard.residualRisk || 3,
+          hrcwReferences: hazard.hrcwReferences || [],
+          permitRequired: hazard.permitRequired || []
+        })) : [{
           type: "General",
           description: "Standard workplace hazards",
           riskRating: 6,
+          causeAgent: "workplace equipment",
+          environmentalCondition: "standard work environment",
+          consequence: "injury", 
           controlMeasures: ["Follow safety procedures", "Use appropriate PPE"],
-          residualRisk: 3
+          residualRisk: 3,
+          hrcwReferences: [],
+          permitRequired: []
         }],
         ppe: ["Hard Hat", "Safety Glasses", "Steel Cap Boots", "Hearing Protection"],
         tools: ["Tile cutter (wet saw)", "Notched trowel", "Spirit level", "Rubber float"],
