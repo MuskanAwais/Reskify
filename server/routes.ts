@@ -1009,20 +1009,33 @@ export async function registerRoutes(app: Express) {
       
       console.log(`User ${userId} current credits: ${user.swmsCredits}`);
       
-      // Check if user has credits available
-      const currentCredits = user.swmsCredits || 0;
-      if (currentCredits <= 0) {
+      // Get total available credits using the new dual system
+      const creditInfo = await storage.getTotalAvailableCredits(userId);
+      console.log(`User ${userId} credit breakdown:`, creditInfo);
+      
+      if (creditInfo.total <= 0) {
         return res.status(400).json({ 
           error: 'No credits available',
-          creditsRemaining: currentCredits 
+          creditsRemaining: creditInfo.total 
         });
       }
       
-      // Deduct one credit from user account
-      const newCreditBalance = currentCredits - 1;
-      await storage.updateUserCredits(userId, newCreditBalance);
+      // Deduct credit - subscription credits first, then add-on credits
+      if (creditInfo.subscription > 0) {
+        // Deduct from subscription credits
+        const newSubscriptionCredits = (user.subscriptionCredits || 0) - 1;
+        await storage.updateUserSubscriptionCredits(userId, newSubscriptionCredits);
+        console.log(`Deducted from subscription credits: ${user.subscriptionCredits} -> ${newSubscriptionCredits}`);
+      } else if (creditInfo.addon > 0) {
+        // Deduct from add-on credits
+        const newAddonCredits = (user.addonCredits || 0) - 1;
+        await storage.updateUserAddonCredits(userId, newAddonCredits);
+        console.log(`Deducted from add-on credits: ${user.addonCredits} -> ${newAddonCredits}`);
+      }
       
-      console.log(`Credit deducted. New balance: ${newCreditBalance}`);
+      const newCreditInfo = await storage.getTotalAvailableCredits(userId);
+      
+      console.log(`Credit deducted. New total balance: ${newCreditInfo.total}`);
       
       // Find user's latest draft to mark as paid
       const userDrafts = await storage.getSwmsDocumentsByUserId(userId);
@@ -1030,8 +1043,7 @@ export async function registerRoutes(app: Express) {
       
       if (latestDraft) {
         await storage.updateSwmsDocument(latestDraft.id, { 
-          status: 'completed',
-          paidAccess: true
+          status: 'completed'
         });
         console.log(`Marked draft ${latestDraft.id} as completed`);
       }
@@ -1039,12 +1051,63 @@ export async function registerRoutes(app: Express) {
       return res.json({ 
         success: true, 
         message: 'Credit used successfully',
-        creditsRemaining: newCreditBalance,
+        creditsRemaining: newCreditInfo.total,
+        subscriptionCredits: newCreditInfo.subscription,
+        addonCredits: newCreditInfo.addon,
         paidAccess: true
       });
     } catch (error) {
       console.error('Error using credit:', error);
       res.status(500).json({ error: 'Failed to use credit' });
+    }
+  });
+
+  // Create subscription endpoint
+  app.post('/api/create-subscription', async (req, res) => {
+    try {
+      const { priceId, planName } = req.body;
+      const userId = req.session?.userId || 999;
+      
+      console.log('Creating subscription for:', { priceId, planName, userId });
+      
+      // Create or get Stripe customer
+      let customerId;
+      const user = await storage.getUserById(userId);
+      if (user?.stripeCustomerId) {
+        customerId = user.stripeCustomerId;
+      } else {
+        const customer = await stripe.customers.create({
+          email: user?.email || 'demo@example.com',
+          metadata: { userId: userId.toString() }
+        });
+        customerId = customer.id;
+        // Update user with Stripe customer ID (you'd need to implement this)
+      }
+      
+      // Create subscription with direct debit
+      const subscription = await stripe.subscriptions.create({
+        customer: customerId,
+        items: [{ price: priceId }],
+        payment_behavior: 'default_incomplete',
+        payment_settings: { save_default_payment_method: 'on_subscription' },
+        expand: ['latest_invoice.payment_intent'],
+        metadata: {
+          userId: userId.toString(),
+          planName: planName
+        }
+      });
+      
+      res.json({
+        subscriptionId: subscription.id,
+        clientSecret: subscription.latest_invoice?.payment_intent?.client_secret,
+        customerId: customerId
+      });
+    } catch (error: any) {
+      console.error('Subscription creation error:', error);
+      res.status(500).json({ 
+        error: 'Failed to create subscription',
+        message: error.message 
+      });
     }
   });
 
@@ -1156,6 +1219,32 @@ export async function registerRoutes(app: Express) {
           // All one-off purchases and credit packs go to addon credits (never expire)
           await storage.addAddonCredits(userId, creditsToAdd);
           console.log(`Added ${creditsToAdd} addon credits to user ${userId}`);
+        }
+        
+        // Handle subscription creation
+        if (paymentType === 'subscription') {
+          // Update user subscription status and reset subscription credits
+          const subscriptionCredits = amount === 29 ? 50 : amount === 99 ? 100 : 10;
+          await storage.resetSubscriptionCredits(userId, subscriptionCredits);
+          console.log(`Updated subscription for user ${userId} with ${subscriptionCredits} monthly credits`);
+        }
+      }
+      
+      // Handle subscription invoice payments for recurring billing
+      if (event.type === 'invoice.payment_succeeded') {
+        const invoice = event.data.object;
+        if (invoice.subscription) {
+          console.log('Processing subscription renewal:', invoice.subscription);
+          
+          // Find user by stripe customer ID (you'd need to implement this lookup)
+          // For demo, using user 999
+          const userId = 999;
+          
+          // Reset subscription credits based on plan
+          const amount = invoice.amount_paid / 100;
+          const subscriptionCredits = amount === 29 ? 50 : amount === 99 ? 100 : 10;
+          await storage.resetSubscriptionCredits(userId, subscriptionCredits);
+          console.log(`Renewed subscription for user ${userId} with ${subscriptionCredits} monthly credits`);
         }
       }
       
