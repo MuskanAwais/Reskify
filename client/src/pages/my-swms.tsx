@@ -414,7 +414,21 @@ export default function MySwms() {
     const matchesSearch = doc.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          doc.tradeType?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          doc.projectLocation?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === "all" || doc.status === statusFilter;
+    
+    // Fix status filtering - "All Status" should show everything, map database statuses correctly
+    let matchesStatus = true;
+    if (statusFilter !== "all") {
+      if (statusFilter === "draft") {
+        matchesStatus = doc.status === "draft";
+      } else if (statusFilter === "completed") {
+        matchesStatus = doc.status === "completed";
+      } else if (statusFilter === "active") {
+        matchesStatus = doc.status === "completed" || doc.status === "active";
+      } else {
+        matchesStatus = doc.status === statusFilter;
+      }
+    }
+    
     const matchesTrade = tradeFilter === "all" || doc.tradeType === tradeFilter;
     return matchesSearch && matchesStatus && matchesTrade;
   });
