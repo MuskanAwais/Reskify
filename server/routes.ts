@@ -309,7 +309,7 @@ export async function registerRoutes(app: Express) {
         draftSwms: drafts,
         completedSwms: completed,
         totalSwms: userSwms.length,
-        credits: user?.swmsCredits || 10,
+        credits: user?.swmsCredits || 0,
         subscription: user?.subscriptionType || 'trial',
         recentSwms,
         recentDocuments: recentSwms

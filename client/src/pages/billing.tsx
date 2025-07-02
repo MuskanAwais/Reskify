@@ -202,6 +202,12 @@ export default function Billing() {
       description: "Additional credits that never expire"
     },
     {
+      name: "SWMS Pack",
+      price: 65,
+      credits: 0,
+      description: "Single SWMS document with premium features"
+    },
+    {
       name: "+10 Credits",
       price: 100,
       credits: 10,
@@ -386,6 +392,18 @@ export default function Billing() {
                       <div className="text-left">
                         <div className="font-semibold">+5 Credits</div>
                         <div className="text-sm text-muted-foreground">$60</div>
+                      </div>
+                    </Button>
+                    <Button 
+                      onClick={() => handleCreateCheckoutSession(65, 'one-off')} 
+                      variant="outline" 
+                      size="lg"
+                      className="h-12 border-2 border-amber-300 hover:border-amber-500 hover:bg-amber-50"
+                    >
+                      <Zap className="w-4 h-4 mr-2" />
+                      <div className="text-left">
+                        <div className="font-semibold">SWMS Pack</div>
+                        <div className="text-sm text-muted-foreground">$65</div>
                       </div>
                     </Button>
                     <Button 
