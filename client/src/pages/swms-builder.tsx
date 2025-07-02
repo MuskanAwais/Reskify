@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import SwmsForm from "@/components/swms/swms-form";
 import DocumentPreview from "@/components/swms/document-preview";
 import { SimplifiedTableEditor } from "@/components/swms/simplified-table-editor";
+import EmbeddedPDFEditor from "@/components/swms/embedded-pdf-editor";
 import CreditCounter from "@/components/ui/credit-counter";
 
 import { ArrowLeft, ArrowRight, FileText, Shield, CheckCircle, Save, X, Plus } from "lucide-react";
@@ -135,7 +136,8 @@ const getSteps = () => [
   { id: 5, title: "Emergency & Monitoring", description: "Emergency procedures and review/monitoring processes" },
   { id: 6, title: "Payment & Access", description: "Select payment option to complete SWMS generation" },
   { id: 7, title: "Legal Disclaimer", description: "Accept terms and liability disclaimer" },
-  { id: 8, title: "Digital Signatures & PDF", description: "Generate complete SWMS document with optional signatures" }
+  { id: 8, title: "PDF Template Editor", description: "Review and edit your SWMS document template before final generation" },
+  { id: 9, title: "Digital Signatures & PDF", description: "Generate complete SWMS document with optional signatures" }
 ];
 
 export default function SwmsBuilder() {
@@ -1095,37 +1097,49 @@ export default function SwmsBuilder() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <SwmsForm 
-              step={currentStep}
-              data={formData}
-              onDataChange={handleFormDataChange}
-              onNext={handleNext}
-            />
-            
-            {/* Navigation */}
-            <div className="flex justify-between mt-8">
-              <Button 
-                variant="outline" 
-                onClick={handlePrevious}
-                disabled={currentStep === 1}
-              >
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Previous
-              </Button>
-              
-              {currentStep < STEPS.length ? (
-                <Button 
-                  onClick={handleNext} 
-                  className="bg-primary hover:bg-primary/90"
-                  disabled={saveDraftMutation.isPending || (currentStep === 2 && (!formData.selectedTasks || formData.selectedTasks.length === 0))}
-                >
-                  {saveDraftMutation.isPending ? "Saving..." : "Continue"}
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              ) : (
-                <DocumentPreview formData={formData} />
-              )}
-            </div>
+            {/* Step Content */}
+            {currentStep === 8 ? (
+              <EmbeddedPDFEditor
+                formData={formData}
+                onDataChange={handleFormDataChange}
+                onNext={handleNext}
+                onBack={handlePrevious}
+              />
+            ) : (
+              <>
+                <SwmsForm 
+                  step={currentStep}
+                  data={formData}
+                  onDataChange={handleFormDataChange}
+                  onNext={handleNext}
+                />
+                
+                {/* Navigation */}
+                <div className="flex justify-between mt-8">
+                  <Button 
+                    variant="outline" 
+                    onClick={handlePrevious}
+                    disabled={currentStep === 1}
+                  >
+                    <ArrowLeft className="mr-2 h-4 w-4" />
+                    Previous
+                  </Button>
+                  
+                  {currentStep < STEPS.length ? (
+                    <Button 
+                      onClick={handleNext} 
+                      className="bg-primary hover:bg-primary/90"
+                      disabled={saveDraftMutation.isPending || (currentStep === 2 && (!formData.selectedTasks || formData.selectedTasks.length === 0))}
+                    >
+                      {saveDraftMutation.isPending ? "Saving..." : "Continue"}
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  ) : (
+                    <DocumentPreview formData={formData} />
+                  )}
+                </div>
+              </>
+            )}
           </CardContent>
         </Card>
         

@@ -146,10 +146,10 @@ export async function registerRoutes(app: Express) {
       
       const data = req.body;
       
-      // EXCLUSIVELY use SWMSprint integration - no fallback allowed
-      console.log('Generating PDF with SWMSprint (EXCLUSIVE - NO FALLBACK)');
-      const { generatePDFWithRiskTemplate } = await import('./risk-template-integration.js');
-      const pdfBuffer = await generatePDFWithRiskTemplate(data);
+      // Use embedded PDF generation system
+      console.log('Generating PDF with embedded RiskTemplateBuilder system');
+      const { generateEmbeddedPDF } = await import('./embedded-pdf-generator');
+      const pdfBuffer = await generateEmbeddedPDF(data);
       
       // Generate filename with project details
       const sanitizedTitle = (data.projectName || data.title || 'SWMS-Document')
