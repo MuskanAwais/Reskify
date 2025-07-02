@@ -1452,11 +1452,16 @@ export async function registerRoutes(app: Express) {
       
       let result;
       
-      // For now, use fallback system to ensure enhanced safety options work reliably
-      // Will restore AI once connectivity issues are resolved
-      console.log('🎯 USING INTELLIGENT FALLBACK - Ensuring enhanced safety options are preserved');
-      result = generateFallbackSWMS(transformedRequest);
-      console.log('🎯 FALLBACK GENERATION SUCCESSFUL - All enhanced safety options preserved');
+      // Use enhanced AI generation with comprehensive legislation and 8-10 tasks
+      console.log('🎯 USING ENHANCED AI GENERATION - With comprehensive Australian legislation and 8-10 tasks');
+      try {
+        result = await generateSWMSFromTaskSimple(transformedRequest);
+        console.log('🎯 AI GENERATION SUCCESSFUL - Enhanced safety options and comprehensive legislation included');
+      } catch (error) {
+        console.error('AI generation failed, using fallback:', error);
+        result = generateFallbackSWMS(transformedRequest);
+        console.log('🎯 FALLBACK GENERATION USED');
+      }
       
       res.json({
         success: true,

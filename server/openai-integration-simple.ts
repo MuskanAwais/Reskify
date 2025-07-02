@@ -13,7 +13,7 @@ export async function generateSWMSFromTaskSimple(request: TaskGenerationRequest)
   console.log(`🚀 SITE: ${siteEnvironment}, STATE: ${state}, HRCW: ${hrcwCategories.join(',')}`);
 
   // Comprehensive prompt for 8-10 tasks with detailed legislation
-  const systemMessage = `Generate 8-10 comprehensive ${tradeType} activities for: "${plainTextDescription}"
+  const systemMessage = `You are a professional Australian construction safety expert. Generate EXACTLY 8-10 ${tradeType} activities for: "${plainTextDescription}"
 
 Environment: ${siteEnvironment} site in ${state}
 HRCW Categories: ${hrcwCategories.join(', ') || 'None selected'}
@@ -77,6 +77,10 @@ MANDATORY: Generate EXACTLY 8-10 activities with comprehensive legislation array
       setTimeout(() => reject(new Error('OpenAI request timed out after 30 seconds')), 30000);
     });
     
+    console.log('🚀 SENDING REQUEST TO OPENAI:');
+    console.log('System Message Length:', systemMessage.length);
+    console.log('User Message:', `Generate tasks for ${tradeType} work: ${plainTextDescription}`);
+    
     // Race between OpenAI request and timeout
     const response = await Promise.race([
       openai.chat.completions.create({
@@ -94,6 +98,10 @@ MANDATORY: Generate EXACTLY 8-10 activities with comprehensive legislation array
     console.log(`🚀 RECEIVED RESPONSE`);
     
     const responseContent = response.choices[0].message.content;
+    console.log('🚀 FULL AI RESPONSE:');
+    console.log('='.repeat(50));
+    console.log(responseContent);
+    console.log('='.repeat(50));
     let parsedResult;
     
     try {
