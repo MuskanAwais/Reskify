@@ -30,6 +30,8 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 interface BillingData {
   currentPlan: string;
   credits: number;
+  subscriptionCredits: number;
+  addonCredits: number;
   monthlyLimit: number;
   billingCycle: string;
   nextBillingDate: string;
@@ -204,9 +206,9 @@ export default function Billing() {
     },
     {
       name: "SWMS Pack",
-      price: 65,
+      price: 60,
       credits: 0,
-      description: "Single SWMS document with premium features"
+      description: "5 SWMS documents with premium features"
     },
     {
       name: "+10 Credits",
@@ -494,6 +496,18 @@ export default function Billing() {
                 <div className="flex justify-between">
                   <span>Current Plan</span>
                   <span className="font-medium">{billingData.currentPlan}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Total Credits</span>
+                  <span className="font-medium">{billingData.credits}</span>
+                </div>
+                <div className="flex justify-between text-sm text-muted-foreground">
+                  <span>• Subscription Credits</span>
+                  <span>{billingData.subscriptionCredits} (resets monthly)</span>
+                </div>
+                <div className="flex justify-between text-sm text-muted-foreground">
+                  <span>• Add-on Credits</span>
+                  <span>{billingData.addonCredits} (never expire)</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Billing Cycle</span>

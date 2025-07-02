@@ -2557,21 +2557,25 @@ export async function registerRoutes(app: Express) {
         return res.status(404).json({ error: "User not found" });
       }
 
-      // Calculate billing data
-      const currentCredits = user.swmsCredits || 0;
+      // Calculate billing data with separate credit types
+      const subscriptionCredits = user.subscriptionCredits || 0;
+      const addonCredits = user.addonCredits || 0;
+      const totalCredits = subscriptionCredits + addonCredits;
       const subscriptionType = user.subscriptionType || "trial";
       const monthlyLimit = subscriptionType === "enterprise" ? 100 : 
                           subscriptionType === "pro" ? 50 : 10;
       
       res.json({
         currentPlan: subscriptionType.charAt(0).toUpperCase() + subscriptionType.slice(1),
-        credits: currentCredits,
+        credits: totalCredits, // Total available credits
+        subscriptionCredits: subscriptionCredits, // Monthly credits that reset
+        addonCredits: addonCredits, // Never expire credits
         monthlyLimit: monthlyLimit,
         billingCycle: "monthly",
         nextBillingDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
         totalSpent: subscriptionType === "enterprise" ? 99 : 
                    subscriptionType === "pro" ? 29 : 0,
-        creditsUsedThisMonth: monthlyLimit - currentCredits
+        creditsUsedThisMonth: monthlyLimit - totalCredits
       });
     } catch (error) {
       console.error("Get billing error:", error);
