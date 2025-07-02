@@ -975,6 +975,10 @@ export default function GPTTaskSelection({
               )}
 
               {/* Editable Tasks Table */}
+              {(() => {
+                console.log('RENDER CHECK - isEditing:', isEditing, 'generatedTasks.length:', generatedTasks.length, 'Should show table:', isEditing && generatedTasks.length > 0);
+                return null;
+              })()}
               {isEditing && generatedTasks.length > 0 && (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
