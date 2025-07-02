@@ -254,49 +254,34 @@ ${siteEnvironment === 'industrial' ? `- Integration with existing industrial pro
 - Coordination with facility shutdown schedules
 - Industrial-grade materials and performance requirements` : ''}
 
-MANDATORY JSON FORMAT:
+YOU MUST RETURN EXACTLY THIS JSON STRUCTURE - NO OTHER FORMAT ACCEPTED:
+
 {
   "activities": [
     {
-      "name": "Task name",
-      "description": "Brief description", 
-      "riskScore": 12,
-      "residualRisk": 6,
-      "legislation": "${state} WHS Act 2011",
-      "validateTradeScope": {"isTaskWithinTradeScope": "YES", "reasonIfNo": ""},
-      "referencedLegislation": ["${state} WHS Reg 2017 s217", "AS standards"],
-      "hazards": [{
-        "type": "Specific hazard type",
-        "description": "Cause agent + environment + consequence",
-        "riskRating": 15,
-        "controlMeasures": {
-          "elimination": "Remove hazard completely",
-          "engineering": "Engineering controls",
-          "administrative": "Procedures and training", 
-          "ppe": "Personal protective equipment"
-        },
-        "residualRisk": 5
-      }],
-      "ppe": ["Hard Hat", "Safety Glasses", "Steel Cap Boots", "Hearing Protection"],
-      "tools": ["Tile cutter (wet saw)", "Notched trowel", "Spirit level"],
-      "trainingRequired": ["Trade-specific training"]
+      "name": "Surface preparation and cleaning",
+      "description": "Task description here",
+      "riskScore": 8,
+      "residualRisk": 4,
+      "legislation": "NSW WHS Act 2011",
+      "hazards": [{"type": "Physical", "description": "Slip hazard from wet surfaces", "riskRating": 6, "controlMeasures": ["Non-slip footwear", "Caution signs"], "residualRisk": 3}],
+      "ppe": ["Hard Hat", "Safety Glasses", "Steel Cap Boots"],
+      "tools": ["Tile cutter (wet saw)", "Notched trowel"],
+      "trainingRequired": ["Trade certification"]
     }
   ],
   "plantEquipment": [
     {
       "name": "Tile cutter (wet saw)",
-      "type": "Equipment",
-      "category": "Cutting Tools", 
+      "type": "Equipment", 
+      "category": "Cutting Tools",
       "certificationRequired": true,
       "inspectionStatus": "Current",
       "riskLevel": "Medium",
-      "safetyRequirements": ["Training required", "PPE mandatory"]
+      "safetyRequirements": ["Training required"]
     }
-  ],
-  "emergencyProcedures": []
-}
-
-Return ONLY this JSON format. No other text or format.`;
+  ]
+}`;
 
     // Enhanced user message with safety context and HRCW integration
     const userMessage = `ENHANCED SAFETY CONTEXT:
@@ -436,8 +421,67 @@ ABSOLUTE REQUIREMENT: Generate ONLY ${tradeName === 'Tiling & Waterproofing' ? '
         tools: ["Standard trade tools"],
         trainingRequired: ["Trade specific training"]
       }));
+    } else if (parsedResult.TilingAndWaterproofingTasks) {
+      // Convert TilingAndWaterproofingTasks format to activities format
+      activities = parsedResult.TilingAndWaterproofingTasks.map((task: any) => ({
+        name: task.task || task.name || 'Generated Task',
+        description: task.description || 'AI-generated task description',
+        riskScore: 8,
+        residualRisk: 4,
+        legislation: `${state} WHS Act 2011`,
+        hazards: [{
+          type: "General",
+          description: "Standard workplace hazards",
+          riskRating: 6,
+          controlMeasures: ["Follow safety procedures", "Use appropriate PPE"],
+          residualRisk: 3
+        }],
+        ppe: ["Hard hat", "Safety glasses", "Steel cap boots"],
+        tools: ["Standard trade tools"],
+        trainingRequired: ["Trade specific training"]
+      }));
     } else {
-      throw new Error('No activities, tasks, or SWMS_Tasks found in AI response');
+      // Universal format handler - try to find any array of tasks regardless of key name
+      console.log('🔍 Available keys in response:', Object.keys(parsedResult));
+      
+      let foundTasks = null;
+      let taskKey = '';
+      
+      // Search for any array that looks like tasks
+      for (const [key, value] of Object.entries(parsedResult)) {
+        if (Array.isArray(value) && value.length > 0) {
+          const firstItem = value[0];
+          if (firstItem && typeof firstItem === 'object' && 
+              (firstItem.name || firstItem.task || firstItem.Task)) {
+            foundTasks = value;
+            taskKey = key;
+            break;
+          }
+        }
+      }
+      
+      if (foundTasks) {
+        console.log(`🔍 Found tasks in key: ${taskKey}`);
+        activities = foundTasks.map((task: any) => ({
+          name: task.name || task.task || task.Task || 'Generated Task',
+          description: task.description || task.Description || 'AI-generated task description',
+          riskScore: 8,
+          residualRisk: 4,
+          legislation: `${state} WHS Act 2011`,
+          hazards: [{
+            type: "General",
+            description: "Standard workplace hazards",
+            riskRating: 6,
+            controlMeasures: ["Follow safety procedures", "Use appropriate PPE"],
+            residualRisk: 3
+          }],
+          ppe: ["Hard Hat", "Safety Glasses", "Steel Cap Boots", "Hearing Protection"],
+          tools: ["Tile cutter (wet saw)", "Notched trowel", "Spirit level", "Rubber float"],
+          trainingRequired: ["Trade certification"]
+        }));
+      } else {
+        throw new Error(`No valid task format found. Available keys: ${Object.keys(parsedResult).join(', ')}`);
+      }
     }
 
     console.log(`🔍 FINAL ACTIVITIES COUNT: ${activities.length}`);
