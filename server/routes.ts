@@ -2520,10 +2520,16 @@ export async function registerRoutes(app: Express) {
         if (swms.workActivities && Array.isArray(swms.workActivities)) {
           swms.workActivities.forEach((activity: any) => {
             if (activity.hazards && Array.isArray(activity.hazards)) {
-              activity.hazards.forEach((hazard: string) => {
-                const cleanHazard = hazard.trim();
-                if (cleanHazard) {
-                  riskFrequency[cleanHazard] = (riskFrequency[cleanHazard] || 0) + 1;
+              activity.hazards.forEach((hazard: any) => {
+                try {
+                  // Ensure hazard is a string before calling trim
+                  const hazardStr = typeof hazard === 'string' ? hazard : String(hazard || '');
+                  const cleanHazard = hazardStr.trim();
+                  if (cleanHazard) {
+                    riskFrequency[cleanHazard] = (riskFrequency[cleanHazard] || 0) + 1;
+                  }
+                } catch (error) {
+                  console.error('Error processing hazard:', hazard, typeof hazard, error);
                 }
               });
             }
@@ -2563,8 +2569,10 @@ export async function registerRoutes(app: Express) {
         if (swms.workActivities && Array.isArray(swms.workActivities)) {
           swms.workActivities.forEach((activity: any) => {
             if (activity.hazards && Array.isArray(activity.hazards)) {
-              activity.hazards.forEach((hazard: string) => {
-                const cleanHazard = hazard.trim();
+              activity.hazards.forEach((hazard: any) => {
+                // Ensure hazard is a string before calling trim
+                const hazardStr = typeof hazard === 'string' ? hazard : String(hazard || '');
+                const cleanHazard = hazardStr.trim();
                 if (cleanHazard) {
                   hazardFrequency[cleanHazard] = (hazardFrequency[cleanHazard] || 0) + 1;
                 }
