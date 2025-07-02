@@ -65,10 +65,10 @@ export default function AllContacts() {
     retry: false,
   });
   
-  const users = usersResponse?.users || [];
+  const users = (usersResponse as any)?.users || [];
 
   // Get unique companies
-  const companies = [...new Set(users.map((user: User) => user.company).filter(Boolean))].sort();
+  const companies = [...new Set(users.map((user: any) => user.company).filter(Boolean))].sort();
 
   // Filter users
   const filteredUsers = users.filter((user: User) => {

@@ -253,7 +253,7 @@ export async function registerRoutes(app: Express) {
       }
       
       // Hash password
-      const hashedPassword = await bcrypt.hash(password, 10);
+      const hashedPassword = await bcryptjs.hash(password, 10);
       
       // Create user data
       const userData = {
@@ -279,7 +279,8 @@ export async function registerRoutes(app: Express) {
       req.session.userId = newUser.id;
       req.session.isAdmin = false;
       
-      console.log('User registered successfully:', newUser.username);
+      console.log('User registered successfully:', newUser.username, 'ID:', newUser.id);
+      console.log('New user will appear in admin All Contacts list');
       
       res.json({
         success: true,
@@ -2843,7 +2844,7 @@ export async function registerRoutes(app: Express) {
   app.get("/api/admin/users", requireAdmin, async (req, res) => {
     try {
       // Get actual users from database
-      const dbUsers = await db.select().from(users);
+      const dbUsers = await db.select().from(usersTable);
       
       const formattedUsers = dbUsers.map(user => ({
         id: user.id,
@@ -2851,7 +2852,7 @@ export async function registerRoutes(app: Express) {
         name: user.name || user.username,
         email: user.email || user.username,
         company: user.companyName || "No Company",
-        phone: user.phoneNumber || "No Phone",
+        phone: user.phone || "No Phone",
         subscriptionType: user.subscriptionType || "trial",
         swmsCredits: user.swmsCredits || 0,
         subscriptionCredits: user.subscriptionCredits || 0,
@@ -2859,7 +2860,7 @@ export async function registerRoutes(app: Express) {
         isAdmin: user.isAdmin || false,
         createdAt: user.createdAt.toISOString(),
         totalSwms: 0, // Will be calculated separately if needed
-        status: user.isActive ? "active" : "inactive"
+        status: "active" // Default all users to active
       }));
 
       res.json({ 
