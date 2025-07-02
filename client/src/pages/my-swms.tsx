@@ -34,6 +34,7 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { generateProtectedPDF } from "@/lib/pdf-generator";
 import { useUser } from "@/App";
 import { PDFPreview } from "@/components/PDFPreview";
+import { PDFLoadingModal } from "@/components/pdf-loading-modal";
 
 interface SwmsDocument {
   id: number;

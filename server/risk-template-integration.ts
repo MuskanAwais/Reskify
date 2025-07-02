@@ -346,16 +346,17 @@ export async function generatePDFWithRiskTemplate(swmsData: any): Promise<Buffer
       equipmentCount: templateData.plantEquipment.length
     });
     
-    // Connect to RiskTemplateBuilder with comprehensive data mapping
-    const riskTemplateUrl = 'https://risktemplatebuilder.replit.app';
+    // Connect to SWMSprint app with comprehensive data mapping
+    const swmsPrintUrl = 'https://swmsprint.replit.app';
     
-    // Use correct API endpoints based on your app structure
+    // Use correct API endpoints for SWMSprint app
     const endpoints = [
-      `${riskTemplateUrl}/api/swms`,
-      `${riskTemplateUrl}/api/generate-pdf`,
-      `${riskTemplateUrl}/api/create-pdf`,
-      `${riskTemplateUrl}/api/health`,
-      `${riskTemplateUrl}/api/status`
+      `${swmsPrintUrl}/api/generate-pdf`,
+      `${swmsPrintUrl}/api/swms`,
+      `${swmsPrintUrl}/api/create-pdf`,
+      `${swmsPrintUrl}/generate-pdf`,
+      `${swmsPrintUrl}/api/pdf`,
+      `${swmsPrintUrl}/pdf`
     ];
     
     let response: Response | null = null;
@@ -363,7 +364,7 @@ export async function generatePDFWithRiskTemplate(swmsData: any): Promise<Buffer
     
     for (const endpoint of endpoints) {
       try {
-        console.log(`Trying RiskTemplateBuilder endpoint: ${endpoint}`);
+        console.log(`Trying SWMSprint endpoint: ${endpoint}`);
         
         response = await fetch(endpoint, {
           method: 'POST',
@@ -376,7 +377,7 @@ export async function generatePDFWithRiskTemplate(swmsData: any): Promise<Buffer
         });
         
         if (response.ok) {
-          console.log(`Successfully connected to RiskTemplateBuilder at: ${endpoint}`);
+          console.log(`Successfully connected to SWMSprint at: ${endpoint}`);
           break;
         } else {
           lastError = `${response.status} ${response.statusText}`;
@@ -390,23 +391,23 @@ export async function generatePDFWithRiskTemplate(swmsData: any): Promise<Buffer
     }
     
     if (!response || !response.ok) {
-      console.error('RiskTemplateBuilder connection failed:', {
+      console.error('SWMSprint connection failed:', {
         lastError,
         triedEndpoints: endpoints,
         responseStatus: response?.status,
         responseText: response ? await response.text() : 'No response'
       });
-      throw new Error(`EXCLUSIVE RiskTemplateBuilder FAILED: Cannot generate PDF without your custom template builder. Status: ${response?.status || 'No connection'}. Error: ${lastError}`);
+      throw new Error(`SWMSprint PDF Generation FAILED: Cannot generate PDF without SWMSprint app. Status: ${response?.status || 'No connection'}. Error: ${lastError}`);
     }
     
     const pdfBuffer = Buffer.from(await response.arrayBuffer());
-    console.log('PDF generated successfully by RiskTemplateBuilder:', pdfBuffer.length, 'bytes');
+    console.log('PDF generated successfully by SWMSprint:', pdfBuffer.length, 'bytes');
     
     return pdfBuffer;
     
   } catch (error) {
-    console.error('Error connecting to RiskTemplateBuilder:', error);
-    throw new Error(`Failed to generate PDF with RiskTemplateBuilder: ${(error as Error).message}`);
+    console.error('Error connecting to SWMSprint:', error);
+    throw new Error(`Failed to generate PDF with SWMSprint: ${(error as Error).message}`);
   }
 }
 
