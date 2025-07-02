@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { useLocation, useRoute } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -47,6 +48,7 @@ interface UserProfile {
 
 export default function Billing() {
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
   const [activeTab, setActiveTab] = useState("billing");
   const [isLoading, setIsLoading] = useState(false);
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
@@ -241,13 +243,18 @@ export default function Billing() {
     return (billingData.creditsUsedThisMonth / billingData.monthlyLimit) * 100;
   };
 
-  const purchaseCredits = async (amount: number) => {
+  const purchaseCredits = async (credits: number) => {
     try {
-      // This would integrate with Stripe payment
+      // Calculate price: 5 credits = $60, 10 credits = $100
+      const price = credits === 5 ? 60 : 100;
+      
       toast({
         title: "Redirecting to Payment",
-        description: `Processing purchase of ${amount} credits...`,
+        description: `Processing purchase of ${credits} credits for $${price}...`,
       });
+      
+      // Redirect to payment page with credit purchase parameters
+      setLocation(`/payment?type=credits&amount=${price}&credits=${credits}`);
     } catch (error) {
       toast({
         title: "Payment Error",
