@@ -48,22 +48,32 @@ export async function registerRoutes(app: Express) {
   // ADMIN MIDDLEWARE - Define early for use in all admin routes
   const requireAdmin = async (req: any, res: any, next: any) => {
     try {
+      console.log('Admin middleware check:', {
+        sessionUserId: req.session?.userId,
+        hasSession: !!req.session,
+        sessionId: req.sessionID
+      });
+      
       // Check if user is authenticated and is admin
       const userId = req.session?.userId;
       if (!userId) {
+        console.log('Admin middleware: No userId in session');
         return res.status(401).json({ error: 'Authentication required' });
       }
       
       // For demo user (999), always allow admin access
       if (userId === 999) {
+        console.log('Admin middleware: Demo user (999) granted admin access');
         return next();
       }
       
       const user = await storage.getUser(userId);
       if (!user || !user.isAdmin) {
+        console.log('Admin middleware: User not found or not admin', { userId, user: !!user });
         return res.status(403).json({ error: 'Admin access required' });
       }
       
+      console.log('Admin middleware: Access granted for user', userId);
       next();
     } catch (error) {
       console.error('Admin authentication error:', error);

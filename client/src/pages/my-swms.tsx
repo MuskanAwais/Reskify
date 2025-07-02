@@ -73,6 +73,10 @@ export default function MySwms() {
   // Get all users for admin user switcher - only after user data is loaded
   const { data: allUsersData } = useQuery({
     queryKey: ["/api/admin/users"],
+    queryFn: async () => {
+      const response = await apiRequest("GET", "/api/admin/users");
+      return await response.json();
+    },
     enabled: isAdmin && !!currentUserData,
   });
 
