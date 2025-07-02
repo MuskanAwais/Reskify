@@ -49,6 +49,7 @@ interface SwmsDocument {
 }
 
 export default function MySwms() {
+  console.log('MySwms component mounted');
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [tradeFilter, setTradeFilter] = useState("all");
@@ -57,6 +58,8 @@ export default function MySwms() {
   const [isAdminViewMode, setIsAdminViewMode] = useState(false);
   const { toast } = useToast();
   const user = useUser();
+  
+  console.log('MySwms user state:', user ? { id: user.id, isAdmin: user.isAdmin } : null);
 
   // Get current user data with admin status
   const { data: currentUserData } = useQuery({

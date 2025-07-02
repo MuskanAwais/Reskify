@@ -45,6 +45,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     queryFn: getQueryFn({ on401: "returnNull" }),
   });
 
+  // Debug logging
+  console.log('Auth state:', { user: user ? { id: user.id, username: user.username, isAdmin: user.isAdmin } : null, isLoading, error });
+
   const loginMutation = useMutation({
     mutationFn: async (credentials: LoginData) => {
       const res = await apiRequest("POST", "/api/auth/login", credentials);
