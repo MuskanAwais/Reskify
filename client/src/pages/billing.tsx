@@ -53,20 +53,13 @@ export default function Billing() {
 
   // Fetch user settings with real API
   const { data: userSettings, refetch: refetchSettings } = useQuery({
-    queryKey: ['/api/user/settings'],
-    queryFn: () => apiRequest('GET', '/api/user/settings')
+    queryKey: ['/api/user/settings']
   });
 
   // Fetch real billing data
   const { data: billingResponse, isLoading: isBillingLoading, error: billingError } = useQuery({
-    queryKey: ['/api/user/billing'],
-    queryFn: () => apiRequest('GET', '/api/user/billing')
+    queryKey: ['/api/user/billing']
   });
-
-  // Debug logging
-  console.log('Billing response:', billingResponse);
-  console.log('Billing loading:', isBillingLoading);
-  console.log('Billing error:', billingError);
 
   const billingData: BillingData = (billingResponse as any) || {
     currentPlan: "Free",
