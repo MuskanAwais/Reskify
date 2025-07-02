@@ -412,18 +412,7 @@ export async function registerRoutes(app: Express) {
           startDate: draft.start_date || draft.startDate || '',
           tradeType: draft.trade_type || draft.tradeType || '',
           // Include activities and other important fields for step 2 data persistence
-          // Ensure proper JSON parsing for activities stored as strings
-          activities: (() => {
-            try {
-              if (typeof draft.activities === 'string') {
-                return JSON.parse(draft.activities);
-              }
-              return Array.isArray(draft.activities) ? draft.activities : [];
-            } catch (e) {
-              console.log('Error parsing activities:', e);
-              return [];
-            }
-          })(),
+          // Prioritize workActivities (complex objects) over activities (simple strings)
           workActivities: (() => {
             try {
               const workActs = draft.work_activities || draft.workActivities || [];
@@ -432,6 +421,24 @@ export async function registerRoutes(app: Express) {
               }
               return Array.isArray(workActs) ? workActs : [];
             } catch (e) {
+              return [];
+            }
+          })(),
+          activities: (() => {
+            try {
+              // If workActivities has complex objects, use those; otherwise fall back to simple activities
+              const workActs = draft.work_activities || draft.workActivities || [];
+              if (Array.isArray(workActs) && workActs.length > 0 && typeof workActs[0] === 'object') {
+                return workActs; // Return complex objects from workActivities
+              }
+              
+              // Fall back to simple activities array
+              if (typeof draft.activities === 'string') {
+                return JSON.parse(draft.activities);
+              }
+              return Array.isArray(draft.activities) ? draft.activities : [];
+            } catch (e) {
+              console.log('Error parsing activities:', e);
               return [];
             }
           })(),

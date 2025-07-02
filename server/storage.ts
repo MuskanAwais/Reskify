@@ -374,14 +374,7 @@ export class DatabaseStorage implements IStorage {
       const userId = data.userId || 999;
       const title = data.projectName || data.jobName || data.tradeType || 'Draft SWMS';
       
-      // Debug: Log incoming activities data structure
-      console.log('Storage Debug - Incoming activities:', JSON.stringify(data.activities, null, 2));
-      console.log('Storage Debug - Activities type:', typeof data.activities);
-      console.log('Storage Debug - Is array:', Array.isArray(data.activities));
-      if (Array.isArray(data.activities) && data.activities.length > 0) {
-        console.log('Storage Debug - First activity:', JSON.stringify(data.activities[0], null, 2));
-        console.log('Storage Debug - First activity type:', typeof data.activities[0]);
-      }
+
       
       // Check if this is updating a specific draft (has draftId) or finding existing active session
       let existingDraft = null;

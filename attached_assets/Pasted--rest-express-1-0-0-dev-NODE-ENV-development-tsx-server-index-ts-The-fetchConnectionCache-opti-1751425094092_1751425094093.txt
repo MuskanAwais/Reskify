@@ -1,0 +1,540 @@
+> rest-express@1.0.0 dev
+> NODE_ENV=development tsx server/index.ts
+
+The `fetchConnectionCache` option is deprecated (now always `true`)
+2:53:21 AM [express] Initializing database connection...
+Testing database connection...
+Database connection successful
+2:53:21 AM [express] Server running on port 5000
+Browserslist: browsers data (caniuse-lite) is 9 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+2:53:27 AM [express] GET /api/user 200 in 3ms :: {"id":999,"username":"demo@riskify.com.au","name":"…
+2:53:27 AM [express] GET /api/user 304 in 1ms :: {"id":999,"username":"demo@riskify.com.au","name":"…
+Dashboard API called for user: 999
+Querying database for user 999 SWMS documents...
+Database returned 7 active SWMS documents for user 999
+Sample document: { id: 211, title: 'test name' }
+User found: demo, SWMS count: 7, Credits: 10
+Dashboard response data: {
+  draftSwms: 4,
+  completedSwms: 3,
+  totalSwms: 7,
+  credits: 10,
+  subscription: 'trial',
+  recentSwms: [
+    {
+      id: 211,
+      title: 'test name',
+      tradeType: 'Flooring & Floor Coverings',
+      status: 'draft',
+      updatedAt: 2025-07-02T02:50:11.658Z,
+      location: '3 '
+    },
+    {
+      id: 210,
+      title: 'Job test 2 ',
+      tradeType: 'Flooring & Floor Coverings',
+      status: 'draft',
+      updatedAt: 2025-07-02T02:43:14.312Z,
+      location: 'Australia, Belmont, Geelong, City of Greater Geelong, Victoria, 3216'
+    },
+    {
+      id: 209,
+      title: 'Commercial Infrastructure ',
+      tradeType: 'Tiling & Waterproofing',
+      status: 'draft',
+      updatedAt: 2025-07-01T23:02:18.586Z,
+      location: "IGA Romeo's Food Hall, 201-205, Pacific Highway, Crows Nest Junction, St Leonards, Lower North Shore, Sydney, Willoughby City Council, New South Wales, 2065"
+    },
+    {
+      id: 208,
+      title: 'Commercial Infrastructure ',
+      tradeType: 'Tiling & Waterproofing',
+      status: 'completed',
+      updatedAt: 2025-07-01T07:06:58.128Z,
+      location: "IGA Romeo's Food Hall, 201-205, Pacific Highway, Crows Nest Junction, St Leonards, Lower North Shore, Sydney, Willoughby City Council, New South Wales, 2065"
+    },
+    {
+      id: 204,
+      title: 'test ',
+      tradeType: 'General',
+      status: 'draft',
+      updatedAt: 2025-07-01T07:06:20.204Z,
+      location: ''
+    }
+  ],
+  recentDocuments: [
+    {
+      id: 211,
+      title: 'test name',
+      tradeType: 'Flooring & Floor Coverings',
+      status: 'draft',
+      updatedAt: 2025-07-02T02:50:11.658Z,
+      location: '3 '
+    },
+    {
+      id: 210,
+      title: 'Job test 2 ',
+      tradeType: 'Flooring & Floor Coverings',
+      status: 'draft',
+      updatedAt: 2025-07-02T02:43:14.312Z,
+      location: 'Australia, Belmont, Geelong, City of Greater Geelong, Victoria, 3216'
+    },
+    {
+      id: 209,
+      title: 'Commercial Infrastructure ',
+      tradeType: 'Tiling & Waterproofing',
+      status: 'draft',
+      updatedAt: 2025-07-01T23:02:18.586Z,
+      location: "IGA Romeo's Food Hall, 201-205, Pacific Highway, Crows Nest Junction, St Leonards, Lower North Shore, Sydney, Willoughby City Council, New South Wales, 2065"
+    },
+    {
+      id: 208,
+      title: 'Commercial Infrastructure ',
+      tradeType: 'Tiling & Waterproofing',
+      status: 'completed',
+      updatedAt: 2025-07-01T07:06:58.128Z,
+      location: "IGA Romeo's Food Hall, 201-205, Pacific Highway, Crows Nest Junction, St Leonards, Lower North Shore, Sydney, Willoughby City Council, New South Wales, 2065"
+    },
+    {
+      id: 204,
+      title: 'test ',
+      tradeType: 'General',
+      status: 'draft',
+      updatedAt: 2025-07-01T07:06:20.204Z,
+      location: ''
+    }
+  ]
+}
+2:53:28 AM [express] GET /api/dashboard/999 200 in 214ms :: {"draftSwms":4,"completedSwms":3,"totalS…
+2:53:31 AM [express] GET /api/user 304 in 1ms :: {"id":999,"username":"demo@riskify.com.au","name":"…
+2:53:31 AM [express] GET /api/user 304 in 1ms :: {"id":999,"username":"demo@riskify.com.au","name":"…
+Dashboard API called for user: 999
+Querying database for user 999 SWMS documents...
+Database returned 7 active SWMS documents for user 999
+Sample document: { id: 211, title: 'test name' }
+User found: demo, SWMS count: 7, Credits: 10
+Dashboard response data: {
+  draftSwms: 4,
+  completedSwms: 3,
+  totalSwms: 7,
+  credits: 10,
+  subscription: 'trial',
+  recentSwms: [
+    {
+      id: 211,
+      title: 'test name',
+      tradeType: 'Flooring & Floor Coverings',
+      status: 'draft',
+      updatedAt: 2025-07-02T02:50:11.658Z,
+      location: '3 '
+    },
+    {
+      id: 210,
+      title: 'Job test 2 ',
+      tradeType: 'Flooring & Floor Coverings',
+      status: 'draft',
+      updatedAt: 2025-07-02T02:43:14.312Z,
+      location: 'Australia, Belmont, Geelong, City of Greater Geelong, Victoria, 3216'
+    },
+    {
+      id: 209,
+      title: 'Commercial Infrastructure ',
+      tradeType: 'Tiling & Waterproofing',
+      status: 'draft',
+      updatedAt: 2025-07-01T23:02:18.586Z,
+      location: "IGA Romeo's Food Hall, 201-205, Pacific Highway, Crows Nest Junction, St Leonards, Lower North Shore, Sydney, Willoughby City Council, New South Wales, 2065"
+    },
+    {
+      id: 208,
+      title: 'Commercial Infrastructure ',
+      tradeType: 'Tiling & Waterproofing',
+      status: 'completed',
+      updatedAt: 2025-07-01T07:06:58.128Z,
+      location: "IGA Romeo's Food Hall, 201-205, Pacific Highway, Crows Nest Junction, St Leonards, Lower North Shore, Sydney, Willoughby City Council, New South Wales, 2065"
+    },
+    {
+      id: 204,
+      title: 'test ',
+      tradeType: 'General',
+      status: 'draft',
+      updatedAt: 2025-07-01T07:06:20.204Z,
+      location: ''
+    }
+  ],
+  recentDocuments: [
+    {
+      id: 211,
+      title: 'test name',
+      tradeType: 'Flooring & Floor Coverings',
+      status: 'draft',
+      updatedAt: 2025-07-02T02:50:11.658Z,
+      location: '3 '
+    },
+    {
+      id: 210,
+      title: 'Job test 2 ',
+      tradeType: 'Flooring & Floor Coverings',
+      status: 'draft',
+      updatedAt: 2025-07-02T02:43:14.312Z,
+      location: 'Australia, Belmont, Geelong, City of Greater Geelong, Victoria, 3216'
+    },
+    {
+      id: 209,
+      title: 'Commercial Infrastructure ',
+      tradeType: 'Tiling & Waterproofing',
+      status: 'draft',
+      updatedAt: 2025-07-01T23:02:18.586Z,
+      location: "IGA Romeo's Food Hall, 201-205, Pacific Highway, Crows Nest Junction, St Leonards, Lower North Shore, Sydney, Willoughby City Council, New South Wales, 2065"
+    },
+    {
+      id: 208,
+      title: 'Commercial Infrastructure ',
+      tradeType: 'Tiling & Waterproofing',
+      status: 'completed',
+      updatedAt: 2025-07-01T07:06:58.128Z,
+      location: "IGA Romeo's Food Hall, 201-205, Pacific Highway, Crows Nest Junction, St Leonards, Lower North Shore, Sydney, Willoughby City Council, New South Wales, 2065"
+    },
+    {
+      id: 204,
+      title: 'test ',
+      tradeType: 'General',
+      status: 'draft',
+      updatedAt: 2025-07-01T07:06:20.204Z,
+      location: ''
+    }
+  ]
+}
+2:53:32 AM [express] GET /api/dashboard/999 200 in 169ms :: {"draftSwms":4,"completedSwms":3,"totalS…
+2:54:35 AM [express] GET /api/user/subscription 200 in 9ms
+Loading draft for editing: 211
+Loading draft for editing: 211
+Draft found: test name
+2:54:35 AM [express] GET /api/swms/draft/211 200 in 98ms :: {"id":211,"userId":999,"title":"test nam…
+Draft found: test name
+2:54:35 AM [express] GET /api/swms/draft/211 200 in 95ms :: {"id":211,"userId":999,"title":"test nam…
+Saving SWMS draft for user: 999 Project: test name
+Storage Debug - Incoming activities: [
+  "Carpet Removal",
+  "Subfloor Preparation",
+  "Carpet Laying",
+  "Seam Sealing",
+  "Edge Trimming",
+  "Final Inspection and Cleanup"
+]
+Storage Debug - Activities type: object
+Storage Debug - Is array: true
+Storage Debug - First activity: "Carpet Removal"
+Storage Debug - First activity type: string
+Updating existing draft: 211
+SWMS draft updated: 211
+SWMS draft saved successfully with ID: 211
+2:57:16 AM [express] POST /api/swms/draft 200 in 654ms :: {"success":true,"id":211,"message":"Draft …
+SWMS generation request received: {
+  mode: 'job',
+  plainTextDescription: 'laying of carpet flooring in a commercial office fit out ',
+  projectDetails: {
+    projectName: '',
+    location: '3 ',
+    tradeType: 'Flooring & Floor Coverings',
+    description: '',
+    siteEnvironment: 'commercial',
+    specialRiskFactors: [],
+    hrcwCategories: [],
+    state: 'NSW'
+  }
+}
+Generating SWMS with Riskify AI...
+🔍 TRADE TYPE: "Flooring & Floor Coverings"
+🔍 JOB DESCRIPTION: "laying of carpet flooring in a commercial office fit out "
+🔍 FINAL PROMPT INPUTS - Trade: Flooring & Floor Coverings, Job: laying of carpet flooring in a commercial office fit out 
+🔍 SITE ENVIRONMENT: commercial, STATE: NSW, HRCW: 
+🔍 SENDING ENHANCED PROMPT WITH SAFETY OPTIONS
+🔍 SITE ENVIRONMENT: commercial
+🔍 HRCW CATEGORIES: 
+🔍 STATE: NSW
+🔍 FULL SYSTEM MESSAGE: You are Riskify, an Australian construction safety expert specializing in NSW regulations. YOU MUST ONLY GENERATE TASKS FOR THE SPECIFIED TRADE.
+
+CRITICAL TRADE BOUNDARY ENFORCEMENT:
+You must only generate tasks the specified trade performs with their own tools and licenses. Reject anything outside this boundary.
+
+For each task, validate using this structure:
+"validateTradeScope": {
+  "isTaskWithinTradeScope": "YES" | "NO",
+  "reasonIfNo": "Explain which trade this task belongs to"
+}
+
+TRADE-SPEC...
+🔍 FULL USER MESSAGE: ENHANCED SAFETY CONTEXT:
+SITE TYPE: COMMERCIAL - Apply commercial-specific safety protocols and considerations
+STATE: NSW - Follow NSW WHS Act 2011, WHS Regulation 2017, SafeWork NSW guidelines requirements
+
+
+
+JOB DESCRIPTION: Generate SWMS tasks for a Flooring & Floor Coverings doing: "laying of carpet flooring in a commercial office fit out "
+
+CRITICAL REQUIREMENT: This is a COMMERCIAL site in NSW. You MUST generate tasks with NSW-specific legislation.
+
+TRADE-SPECIFIC REQUIREMENT: Generate 6-8...
+🔍 RAW AI RESPONSE: {
+  "activities": [
+    {
+      "name": "Floor Surface Inspection and Preparation",
+      "description": "Inspect the concrete subfloor for cracks and imperfections. Repair any uneven surfaces by usin...
+🔍 PARSED RESULT: {"activities":[{"name":"Floor Surface Inspection and Preparation","description":"Inspect the concrete subfloor for cracks and imperfections. Repair any uneven surfaces by using a leveling compound to ...
+🔧 CHECKING RESPONSE FORMAT - Available keys: [ 'activities' ]
+🔧 USING ACTIVITIES FORMAT
+🔍 FINAL ACTIVITIES COUNT: 5
+🔍 FIRST ACTIVITY: Floor Surface Inspection and Preparation
+2:57:52 AM [express] POST /api/generate-swms 200 in 21212ms :: {"success":true,"data":{"activities":…
+Saving SWMS draft for user: 999 Project: test name
+Storage Debug - Incoming activities: [
+  {
+    "id": "activity-1",
+    "name": "Floor Surface Inspection and Preparation",
+    "description": "Inspect the concrete subfloor for cracks and imperfections. Repair any uneven surfaces by using a leveling compound to ensure a smooth base for the carpet installation.",
+    "hazards": [
+      {
+        "type": "Physical",
+        "description": "Tripping hazard from uneven floor during inspection",
+        "riskRating": 6,
+        "causeAgent": "uneven subfloor surface",
+        "environmentalCondition": "busy commercial site with ongoing operations",
+        "consequence": "trip, fall, and possible injury",
+        "controlMeasures": {
+          "elimination": "Ensure subfloor is even before work",
+          "substitution": "Use self-leveling compound for minor unevenness",
+          "isolation": "Mark and restrict access to uneven areas",
+          "engineering": "Install temporary barriers around work area",
+          "administrative": "Conduct pre-inspection briefing with team",
+          "ppe": "Safety glasses and steel cap boots"
+        },
+        "residualRisk": 3
+      }
+    ],
+    "ppe": [
+      "Steel Cap Boots",
+      "Safety Glasses",
+      "Hi-Vis Vest"
+    ],
+    "tools": [
+      "Leveling compound",
+      "Trowel",
+      "Straightedge"
+    ],
+    "trainingRequired": [
+      "Surface preparation techniques"
+    ],
+    "riskScore": 5,
+    "legislation": "WHS Act 2011, WHS Regulation 2017",
+    "selected": true
+  },
+  {
+    "id": "activity-2",
+    "name": "Carpet Cutting and Layout",
+    "description": "Measure and cut carpet sections according to room dimensions and layout plan. Arrange sections to ensure minimal seams and optimal pattern alignment.",
+    "hazards": [
+      {
+        "type": "Cutting",
+        "description": "Cuts from sharp tools during carpet cutting",
+        "riskRating": 8,
+        "causeAgent": "utility knife with exposed blade",
+        "environmentalCondition": "confined work area with limited movement space",
+        "consequence": "lacerations to hands and fingers",
+        "controlMeasures": {
+          "elimination": "Pre-cut carpet sections offsite if possible",
+          "substitution": "Use safer cutting tools with retractable blades",
+          "isolation": "Designate cutting area away from high traffic zones",
+          "engineering": "Provide cutting mats to stabilize material",
+          "administrative": "Implement blade handling training",
+          "ppe": "Cut-resistant gloves and knee pads"
+        },
+        "residualRisk": 4
+      }
+    ],
+    "ppe": [
+      "Cut-Resistant Gloves",
+      "Knee Pads",
+      "Safety Glasses"
+    ],
+    "tools": [
+      "Utility knife",
+      "Tape measure",
+      "Chalk line"
+    ],
+    "trainingRequired": [
+      "Safe cutting practice training"
+    ],
+    "riskScore": 7,
+    "legislation": "WHS Act 2011, WHS Regulation 2017",
+    "selected": true
+  },
+  {
+    "id": "activity-3",
+    "name": "Adhesive Application",
+    "description": "Apply suitable adhesive to subfloor using a notched trowel to ensure even coverage and secure carpet placement.",
+    "hazards": [
+      {
+        "type": "Chemical",
+        "description": "Inhalation of adhesive fumes during application",
+        "riskRating": 7,
+        "causeAgent": "solvent-based adhesive emitting volatile organic compounds",
+        "environmentalCondition": "poorly ventilated commercial interior",
+        "consequence": "respiratory irritation and potential allergic reactions",
+        "controlMeasures": {
+          "elimination": "Use non-toxic adhesive alternatives",
+          "substitution": "Select low-VOC adhesives",
+          "isolation": "Seal off application area with barriers",
+          "engineering": "Enhance ventilation with fans",
+          "administrative": "Adhere to adhesive manufacturer's guidelines",
+          "ppe": "Respirator and chemical-resistant gloves"
+        },
+        "residualRisk": 4
+      }
+    ],
+    "ppe": [
+      "Respirator",
+      "Chemical-Resistant Gloves",
+      "Safety Glasses"
+    ],
+    "tools": [
+      "Notched trowel",
+      "Adhesive spreader",
+      "Bucket"
+    ],
+    "trainingRequired": [
+      "Chemical safety and handling"
+    ],
+    "riskScore": 6,
+    "legislation": "WHS Act 2011, WHS Regulation 2017",
+    "selected": true
+  },
+  {
+    "id": "activity-4",
+    "name": "Carpet Installation",
+    "description": "Lay carpet sections onto the adhesive-coated subfloor, ensuring proper alignment and smoothness. Use a carpet roller to remove air bubbles and secure adhesive bond.",
+    "hazards": [
+      {
+        "type": "Musculoskeletal",
+        "description": "Strain from repetitive movements during carpet placement",
+        "riskRating": 6,
+        "causeAgent": "bending and kneeling on hard surfaces",
+        "environmentalCondition": "extended periods of manual labor",
+        "consequence": "back pain and joint inflammation",
+        "controlMeasures": {
+          "elimination": "Use mechanical aids for heavy lifting",
+          "substitution": "Employ ergonomic tools and aids",
+          "isolation": "Rotate tasks among team members",
+          "engineering": "Provide padded knee supports",
+          "administrative": "Schedule regular breaks",
+          "ppe": "Knee pads and supportive footwear"
+        },
+        "residualRisk": 3
+      }
+    ],
+    "ppe": [
+      "Knee Pads",
+      "Steel Cap Boots",
+      "Hi-Vis Vest"
+    ],
+    "tools": [
+      "Carpet roller",
+      "Seam roller",
+      "Knee kicker"
+    ],
+    "trainingRequired": [
+      "Ergonomic lifting techniques"
+    ],
+    "riskScore": 5,
+    "legislation": "WHS Act 2011, WHS Regulation 2017",
+    "selected": true
+  },
+  {
+    "id": "activity-5",
+    "name": "Trimming and Finishing",
+    "description": "Trim carpet edges along walls and fixtures using a carpet trimmer. Secure edges with transition strips and inspect for any imperfections.",
+    "hazards": [
+      {
+        "type": "Cutting",
+        "description": "Minor cuts from handling sharp carpet trimming tools",
+        "riskRating": 5,
+        "causeAgent": "carpet trimmer with exposed blade",
+        "environmentalCondition": "tight spaces near walls",
+        "consequence": "minor cuts and abrasions",
+        "controlMeasures": {
+          "elimination": "Use pre-finished carpet to minimize trimming",
+          "substitution": "Utilize trimmers with safety guards",
+          "isolation": "Restrict access to trimming area",
+          "engineering": "Install corner protectors to guide trimming",
+          "administrative": "Provide tool safety training",
+          "ppe": "Cut-resistant gloves and safety glasses"
+        },
+        "residualRisk": 2
+      }
+    ],
+    "ppe": [
+      "Cut-Resistant Gloves",
+      "Safety Glasses",
+      "Hi-Vis Vest"
+    ],
+    "tools": [
+      "Carpet trimmer",
+      "Edging tool",
+      "Transition strips"
+    ],
+    "trainingRequired": [
+      "Tool handling and safety"
+    ],
+    "riskScore": 4,
+    "legislation": "WHS Act 2011, WHS Regulation 2017",
+    "selected": true
+  }
+]
+Storage Debug - Activities type: object
+Storage Debug - Is array: true
+Storage Debug - First activity: {
+  "id": "activity-1",
+  "name": "Floor Surface Inspection and Preparation",
+  "description": "Inspect the concrete subfloor for cracks and imperfections. Repair any uneven surfaces by using a leveling compound to ensure a smooth base for the carpet installation.",
+  "hazards": [
+    {
+      "type": "Physical",
+      "description": "Tripping hazard from uneven floor during inspection",
+      "riskRating": 6,
+      "causeAgent": "uneven subfloor surface",
+      "environmentalCondition": "busy commercial site with ongoing operations",
+      "consequence": "trip, fall, and possible injury",
+      "controlMeasures": {
+        "elimination": "Ensure subfloor is even before work",
+        "substitution": "Use self-leveling compound for minor unevenness",
+        "isolation": "Mark and restrict access to uneven areas",
+        "engineering": "Install temporary barriers around work area",
+        "administrative": "Conduct pre-inspection briefing with team",
+        "ppe": "Safety glasses and steel cap boots"
+      },
+      "residualRisk": 3
+    }
+  ],
+  "ppe": [
+    "Steel Cap Boots",
+    "Safety Glasses",
+    "Hi-Vis Vest"
+  ],
+  "tools": [
+    "Leveling compound",
+    "Trowel",
+    "Straightedge"
+  ],
+  "trainingRequired": [
+    "Surface preparation techniques"
+  ],
+  "riskScore": 5,
+  "legislation": "WHS Act 2011, WHS Regulation 2017",
+  "selected": true
+}
+Storage Debug - First activity type: object
+Updating existing draft: 211
+SWMS draft updated: 211
+SWMS draft saved successfully with ID: 211
+2:57:56 AM [express] POST /api/swms/draft 200 in 226ms :: {"success":true,"id":211,"message":"Draft …
