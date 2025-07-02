@@ -412,9 +412,39 @@ export async function registerRoutes(app: Express) {
           startDate: draft.start_date || draft.startDate || '',
           tradeType: draft.trade_type || draft.tradeType || '',
           // Include activities and other important fields for step 2 data persistence
-          activities: draft.activities || [],
-          workActivities: draft.work_activities || draft.workActivities || [],
-          selectedTasks: draft.activities || [],
+          // Ensure proper JSON parsing for activities stored as strings
+          activities: (() => {
+            try {
+              if (typeof draft.activities === 'string') {
+                return JSON.parse(draft.activities);
+              }
+              return Array.isArray(draft.activities) ? draft.activities : [];
+            } catch (e) {
+              console.log('Error parsing activities:', e);
+              return [];
+            }
+          })(),
+          workActivities: (() => {
+            try {
+              const workActs = draft.work_activities || draft.workActivities || [];
+              if (typeof workActs === 'string') {
+                return JSON.parse(workActs);
+              }
+              return Array.isArray(workActs) ? workActs : [];
+            } catch (e) {
+              return [];
+            }
+          })(),
+          selectedTasks: (() => {
+            try {
+              if (typeof draft.activities === 'string') {
+                return JSON.parse(draft.activities);
+              }
+              return Array.isArray(draft.activities) ? draft.activities : [];
+            } catch (e) {
+              return [];
+            }
+          })(),
           riskAssessments: draft.risk_assessments || draft.riskAssessments || [],
           plantEquipment: draft.plant_equipment || draft.plantEquipment || [],
           hrcwCategories: draft.hrcw_categories || draft.hrcwCategories || [],

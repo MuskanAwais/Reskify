@@ -350,6 +350,12 @@ TRADE-SPECIFIC REQUIREMENT: Generate 6-8 tasks that ONLY a ${tradeName} would pe
 
 AUSTRALIAN LEGISLATION REQUIREMENT: Every task MUST include specific ${state} regulations, not generic "WHS Act 2011".
 
+CONTENT QUALITY REQUIREMENTS:
+- Each task description must be 2-3 detailed sentences explaining the complete work process
+- Each hazard description must include specific cause agent (e.g. "angle grinder blade fracture"), environmental condition (e.g. "confined bathroom space"), and consequence (e.g. "eye penetration injury")
+- Control measures must be comprehensive with 4-6 specific actions per hierarchy level
+- All content must be highly detailed and professional for commercial construction sites
+
 RESPONSE FORMAT REQUIREMENTS:
 Each task must include:
 - "validateTradeScope": {"isTaskWithinTradeScope": "YES|NO", "reasonIfNo": "explanation"}

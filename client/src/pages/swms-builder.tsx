@@ -293,15 +293,19 @@ export default function SwmsBuilder() {
         detectedPPE.add('non-slip-footwear');
       }
       
-      // Tiling work - knee pads for prolonged kneeling
-      if (activityText.includes('tile') || activityText.includes('tiling') || activityText.includes('floor') || 
-          activityText.includes('kneel') || activityText.includes('grouting') || activityText.includes('laying')) {
+      // Tiling work - More selective for commercial bathroom work
+      if ((activityText.includes('tile') || activityText.includes('tiling') || 
+          activityText.includes('kneel') || activityText.includes('grouting')) &&
+          // Exclude if it's height work or industrial
+          !activityText.includes('height') && !activityText.includes('scaffold') && 
+          !activityText.includes('industrial') && !activityText.includes('fall')) {
         detectedPPE.add('knee-pads');
       }
       
-      // Chemical-resistant gloves for adhesives and waterproofing
-      if (activityText.includes('adhesive') || activityText.includes('grout') || activityText.includes('waterproof') || 
-          activityText.includes('sealant') || activityText.includes('membrane')) {
+      // Chemical protection - Only for intensive chemical work
+      if ((activityText.includes('waterproof') || activityText.includes('membrane') || 
+          activityText.includes('solvent') || activityText.includes('acid')) &&
+          !activityText.includes('basic') && !activityText.includes('minor')) {
         detectedPPE.add('chemical-resistant-apron');
       }
     });
