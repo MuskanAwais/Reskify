@@ -419,12 +419,22 @@ export default function GPTTaskSelection({
         }, 100);
         
       } else {
-        console.error('CRITICAL: Generation API returned success but no valid data:', data);
-        toast({
-          title: "Generation Error", 
-          description: "The AI generated an empty response. Please try with a more detailed description.",
-          variant: "destructive",
-        });
+        // Check if this was a trade validation rejection
+        if (data.data && data.data.validateTradeScope && data.data.validateTradeScope.isTaskWithinTradeScope === "NO") {
+          console.log('Trade validation rejection:', data.data.validateTradeScope.reasonIfNo);
+          toast({
+            title: "Trade Validation Error",
+            description: `${data.data.validateTradeScope.reasonIfNo || 'This task is outside the scope of the selected trade. Please select the appropriate trade or modify the task description.'}`,
+            variant: "destructive",
+          });
+        } else {
+          console.error('CRITICAL: Generation API returned success but no valid data:', data);
+          toast({
+            title: "Generation Error", 
+            description: "The AI generated an empty response. Please try with a more detailed description.",
+            variant: "destructive",
+          });
+        }
         setGenerationProgress(0);
       }
     },

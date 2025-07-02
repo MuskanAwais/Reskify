@@ -33,10 +33,7 @@ export interface GeneratedSWMSData {
     residualRisk: number;
     legislation: string;
     referencedLegislation?: string[]; // Australian compliance references
-    validateTradeScope?: {
-      isTaskWithinTradeScope: 'YES' | 'NO';
-      reasonIfNo?: string;
-    };
+
     hazards: Array<{
       type: string;
       description: string;
@@ -137,14 +134,16 @@ export async function generateSWMSFromTask(request: TaskGenerationRequest): Prom
     // Enhanced system message with safety context
     const systemMessage = `You are Riskify, an Australian construction safety expert specializing in ${state} regulations. YOU MUST ONLY GENERATE TASKS FOR THE SPECIFIED TRADE.
 
-CRITICAL TRADE BOUNDARY ENFORCEMENT:
-You must only generate tasks the specified trade performs with their own tools and licenses. Reject anything outside this boundary.
+INTELLIGENT TRADE-SPECIFIC TASK ADAPTATION:
+Generate tasks that the specified trade can realistically perform. When the job description involves work outside their scope, adapt it intelligently:
 
-For each task, validate using this structure:
-"validateTradeScope": {
-  "isTaskWithinTradeScope": "YES" | "NO",
-  "reasonIfNo": "Explain which trade this task belongs to"
-}
+ADAPTATION EXAMPLES:
+- If "General" trade asked to do electrical work → Generate site preparation, material handling, cleanup, general construction tasks
+- If "Tiling" trade asked to do plumbing → Generate bathroom tiling, waterproofing, surface preparation tasks 
+- If "Electrical" trade asked to do concrete work → Generate electrical infrastructure, power distribution, lighting installation tasks
+- If "Plumbing" trade asked for general work → Generate plumbing installation, water systems, drainage tasks
+
+ALWAYS generate relevant tasks within the trade's actual expertise and licensing scope.
 
 TRADE-SPECIFIC SCOPE ENFORCEMENT:
 ${tradeName === 'Tiling & Waterproofing' ? `
