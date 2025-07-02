@@ -2610,6 +2610,11 @@ export async function registerRoutes(app: Express) {
         return res.status(404).json({ error: "User not found" });
       }
 
+      // Establish session for demo user to enable admin endpoints
+      if (req.session && !req.session.userId) {
+        req.session.userId = 999;
+      }
+
       res.json({
         id: user.id,
         username: user.username,
