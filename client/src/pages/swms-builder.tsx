@@ -657,18 +657,22 @@ export default function SwmsBuilder() {
     debouncedAutoSave(formData);
   }, [formData, debouncedAutoSave]);
 
-  // Validation function for step 1
+  // Validation function for step 1 - More flexible for editing existing documents
   const validateStep1 = () => {
     const errors: string[] = [];
     
+    console.log('Step 1 validation - formData check:', {
+      jobName: formData.jobName,
+      tradeType: formData.tradeType,
+      swmsCreatorName: formData.swmsCreatorName,
+      projectAddress: formData.projectAddress,
+      projectLocation: formData.projectLocation,
+      principalContractor: formData.principalContractor
+    });
+    
+    // Essential fields that must be present
     if (!formData.jobName?.trim()) {
       errors.push("Job Name is required");
-    }
-    if (!formData.jobNumber?.trim()) {
-      errors.push("Job Number is required");
-    }
-    if (!formData.projectAddress?.trim()) {
-      errors.push("Project Address is required");
     }
     if (!formData.tradeType?.trim()) {
       errors.push("Trade Type is required");
@@ -676,19 +680,25 @@ export default function SwmsBuilder() {
     if (!formData.swmsCreatorName?.trim()) {
       errors.push("SWMS Creator Name is required");
     }
-    if (!formData.swmsCreatorPosition?.trim()) {
-      errors.push("SWMS Creator Position is required");
-    }
-    if (!formData.principalContractor?.trim()) {
-      errors.push("Principal Contractor is required");
-    }
-    if (!formData.projectManager?.trim()) {
-      errors.push("Project Manager is required");
-    }
-    if (!formData.siteSupervisor?.trim()) {
-      errors.push("Site Supervisor is required");
+    
+    // Optional fields for editing - only warn if all are missing
+    const hasProjectInfo = formData.projectAddress?.trim() || 
+                          formData.projectLocation?.trim() ||
+                          formData.jobNumber?.trim();
+    
+    const hasPersonnelInfo = formData.principalContractor?.trim() || 
+                            formData.projectManager?.trim() || 
+                            formData.siteSupervisor?.trim();
+    
+    if (!hasProjectInfo) {
+      errors.push("At least one project detail (Job Number, Project Address, or Location) is required");
     }
     
+    if (!hasPersonnelInfo) {
+      errors.push("At least one personnel field (Principal Contractor, Project Manager, or Site Supervisor) is required");
+    }
+    
+    console.log('Step 1 validation errors:', errors);
     return errors;
   };
 

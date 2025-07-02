@@ -1,0 +1,1130 @@
+> rest-express@1.0.0 dev
+The `fetchConnectionCache` option is deprecated (now always `true`)
+10:45:16 PM [express] Initializing database connection...
+Testing database connection...
+Database connection successful
+10:45:16 PM [express] Server running on port 5000
+10:45:16 PM [express] Environment: development
+Browserslist: browsers data (caniuse-lite) is 9 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+10:45:24 PM [express] GET /api/user 401 in 2ms :: {"error":"Authentication required"}
+10:45:24 PM [express] GET /api/user 401 in 1ms :: {"error":"Authentication required"}
+10:45:28 PM [express] GET /api/user 401 in 1ms :: {"error":"Authentication required"}
+10:45:28 PM [express] GET /api/user 401 in 1ms :: {"error":"Authentication required"}
+10:45:54 PM [express] POST /api/auth/login 200 in 237ms :: {"success":true,"user":{"id":2,"username":…
+Dashboard API called for user: 999
+Querying database for user 999 SWMS documents...
+Database returned 27 active SWMS documents for user 999
+Sample document: { id: 250, title: '324' }
+User found: demo, SWMS count: 27, Credits: 10
+Dashboard response data: {
+  draftSwms: 6,
+  completedSwms: 21,
+  totalSwms: 27,
+  credits: 10,
+  subscription: 'trial',
+  recentSwms: [
+    {
+      id: 250,
+      title: '324',
+      tradeType: 'Tiling & Waterproofing',
+      status: 'draft',
+      updatedAt: 2025-07-02T11:21:10.142Z,
+      location: '234, Mountain Straight, Mount Panorama, Bathurst, Bathurst Regional Council, New South Wales, 2795'
+    },
+    {
+      id: 248,
+      title: 'Untitled SWMS',
+      tradeType: 'General',
+      status: 'draft',
+      updatedAt: 2025-07-02T11:10:39.582Z,
+      location: ''
+    },
+    {
+      id: 232,
+      title: 'Test Job for Credit Payment',
+      tradeType: 'Bricklaying & Masonry',
+      status: 'completed',
+      updatedAt: 2025-07-02T04:50:11.539Z,
+      location: '123 Test Street'
+    },
+    {
+      id: 231,
+      title: 'Test Job for Credit Payment',
+      tradeType: 'General',
+      status: 'completed',
+      updatedAt: 2025-07-02T04:50:09.675Z,
+      location: '123 Test Street'
+    },
+    {
+      id: 230,
+      title: 'Test Job for Credit Payment',
+      tradeType: 'General',
+      status: 'completed',
+      updatedAt: 2025-07-02T04:50:08.692Z,
+      location: '123 Test Street'
+    }
+  ],
+  recentDocuments: [
+    {
+      id: 250,
+      title: '324',
+      tradeType: 'Tiling & Waterproofing',
+      status: 'draft',
+      updatedAt: 2025-07-02T11:21:10.142Z,
+      location: '234, Mountain Straight, Mount Panorama, Bathurst, Bathurst Regional Council, New South Wales, 2795'
+    },
+    {
+      id: 248,
+      title: 'Untitled SWMS',
+      tradeType: 'General',
+      status: 'draft',
+      updatedAt: 2025-07-02T11:10:39.582Z,
+      location: ''
+    },
+    {
+      id: 232,
+      title: 'Test Job for Credit Payment',
+      tradeType: 'Bricklaying & Masonry',
+      status: 'completed',
+      updatedAt: 2025-07-02T04:50:11.539Z,
+      location: '123 Test Street'
+    },
+    {
+      id: 231,
+      title: 'Test Job for Credit Payment',
+      tradeType: 'General',
+      status: 'completed',
+      updatedAt: 2025-07-02T04:50:09.675Z,
+      location: '123 Test Street'
+    },
+    {
+      id: 230,
+      title: 'Test Job for Credit Payment',
+      tradeType: 'General',
+      status: 'completed',
+      updatedAt: 2025-07-02T04:50:08.692Z,
+      location: '123 Test Street'
+    }
+  ]
+}
+10:45:54 PM [express] GET /api/dashboard/999 304 in 210ms :: {"draftSwms":6,"completedSwms":21,"total…
+10:45:59 PM [express] GET /api/user/subscription 200 in 7ms
+Loading draft for editing: 248
+Draft found: Untitled SWMS
+10:45:59 PM [express] GET /api/swms/draft/248 200 in 106ms :: {"id":248,"userId":999,"title":"Untitle…
+Loading draft for editing: 248
+Draft found: Untitled SWMS
+10:45:59 PM [express] GET /api/swms/draft/248 200 in 36ms :: {"id":248,"userId":999,"title":"Untitled…
+Saving SWMS draft for user: 999 Project: Untitled SWMS
+Updating existing document: 248
+SWMS draft updated: 248
+SWMS draft saved successfully with ID: 248
+10:46:00 PM [express] POST /api/swms/draft 200 in 128ms :: {"success":true,"id":248,"message":"Draft …
+Saving SWMS draft for user: 999 Project: Untitled SWMS
+Saving SWMS draft for user: 999 Project: Untitled SWMS
+Updating existing document: 248
+Updating existing document: 248
+SWMS draft updated: 248
+SWMS draft saved successfully with ID: 248
+10:46:01 PM [express] POST /api/swms/draft 200 in 76ms :: {"success":true,"id":248,"message":"Draft s…
+SWMS draft updated: 248
+SWMS draft saved successfully with ID: 248
+10:46:01 PM [express] POST /api/swms/draft 200 in 119ms :: {"success":true,"id":248,"message":"Draft …
+Saving SWMS draft for user: 999 Project: Untitled SWMS
+Updating existing document: 248
+SWMS draft updated: 248
+SWMS draft saved successfully with ID: 248
+10:46:01 PM [express] POST /api/swms/draft 200 in 72ms :: {"success":true,"id":248,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: Untitled SWMS
+Updating existing document: 248
+SWMS draft updated: 248
+SWMS draft saved successfully with ID: 248
+10:46:01 PM [express] POST /api/swms/draft 200 in 72ms :: {"success":true,"id":248,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: Untitled SWMS
+Updating existing document: 248
+SWMS draft updated: 248
+SWMS draft saved successfully with ID: 248
+10:46:02 PM [express] POST /api/swms/draft 200 in 69ms :: {"success":true,"id":248,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: Untitled SWMS
+Saving SWMS draft for user: 999 Project: Untitled SWMS
+Updating existing document: 248
+Saving SWMS draft for user: 999 Project: Untitled SWMS
+Updating existing document: 248
+SWMS draft updated: 248
+SWMS draft saved successfully with ID: 248
+10:46:02 PM [express] POST /api/swms/draft 200 in 68ms :: {"success":true,"id":248,"message":"Draft s…
+Updating existing document: 248
+SWMS draft updated: 248
+SWMS draft saved successfully with ID: 248
+10:46:02 PM [express] POST /api/swms/draft 200 in 80ms :: {"success":true,"id":248,"message":"Draft s…
+SWMS draft updated: 248
+SWMS draft saved successfully with ID: 248
+10:46:02 PM [express] POST /api/swms/draft 200 in 111ms :: {"success":true,"id":248,"message":"Draft …
+Saving SWMS draft for user: 999 Project: Untitled SWMS
+Updating existing document: 248
+SWMS draft updated: 248
+SWMS draft saved successfully with ID: 248
+10:46:02 PM [express] POST /api/swms/draft 200 in 68ms :: {"success":true,"id":248,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: Untitled SWMS
+Saving SWMS draft for user: 999 Project: Untitled SWMS
+Updating existing document: 248
+Updating existing document: 248
+Saving SWMS draft for user: 999 Project: Untitled SWMS
+SWMS draft updated: 248
+SWMS draft saved successfully with ID: 248
+10:46:03 PM [express] POST /api/swms/draft 200 in 69ms :: {"success":true,"id":248,"message":"Draft s…
+SWMS draft updated: 248
+SWMS draft saved successfully with ID: 248
+10:46:03 PM [express] POST /api/swms/draft 200 in 71ms :: {"success":true,"id":248,"message":"Draft s…
+Updating existing document: 248
+SWMS draft updated: 248
+SWMS draft saved successfully with ID: 248
+10:46:03 PM [express] POST /api/swms/draft 200 in 67ms :: {"success":true,"id":248,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: Untitled SWMS
+Updating existing document: 248
+Saving SWMS draft for user: 999 Project: Untitled SWMS
+SWMS draft updated: 248
+SWMS draft saved successfully with ID: 248
+10:46:03 PM [express] POST /api/swms/draft 200 in 77ms :: {"success":true,"id":248,"message":"Draft s…
+Updating existing document: 248
+SWMS draft updated: 248
+SWMS draft saved successfully with ID: 248
+10:46:03 PM [express] POST /api/swms/draft 200 in 67ms :: {"success":true,"id":248,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: Untitled SWMS
+Updating existing document: 248
+SWMS draft updated: 248
+SWMS draft saved successfully with ID: 248
+10:46:03 PM [express] POST /api/swms/draft 200 in 70ms :: {"success":true,"id":248,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: Untitled SWMS
+Saving SWMS draft for user: 999 Project: Untitled SWMS
+Updating existing document: 248
+Updating existing document: 248
+SWMS draft updated: 248
+SWMS draft saved successfully with ID: 248
+10:46:04 PM [express] POST /api/swms/draft 200 in 67ms :: {"success":true,"id":248,"message":"Draft s…
+SWMS draft updated: 248
+SWMS draft saved successfully with ID: 248
+10:46:04 PM [express] POST /api/swms/draft 200 in 68ms :: {"success":true,"id":248,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: Untitled SWMS
+Saving SWMS draft for user: 999 Project: Untitled SWMS
+Saving SWMS draft for user: 999 Project: Untitled SWMS
+Updating existing document: 248
+Updating existing document: 248
+Updating existing document: 248
+SWMS draft updated: 248
+SWMS draft saved successfully with ID: 248
+10:46:04 PM [express] POST /api/swms/draft 200 in 68ms :: {"success":true,"id":248,"message":"Draft s…
+SWMS draft updated: 248
+SWMS draft saved successfully with ID: 248
+10:46:04 PM [express] POST /api/swms/draft 200 in 66ms :: {"success":true,"id":248,"message":"Draft s…
+SWMS draft updated: 248
+SWMS draft saved successfully with ID: 248
+10:46:04 PM [express] POST /api/swms/draft 200 in 68ms :: {"success":true,"id":248,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: Untitled SWMS
+Saving SWMS draft for user: 999 Project: Untitled SWMS
+Updating existing document: 248
+Admin middleware check: {
+  sessionUserId: undefined,
+  hasSession: true,
+  sessionId: 'XGvHm56bP2FQ4ItP3XDT8jVie8J_F7it'
+}
+Admin middleware: Granting demo admin access
+Updating existing document: 248
+SWMS draft updated: 248
+SWMS draft saved successfully with ID: 248
+10:46:04 PM [express] POST /api/swms/draft 200 in 65ms :: {"success":true,"id":248,"message":"Draft s…
+10:46:04 PM [express] GET /api/admin/users 304 in 34ms :: {"users":[{"id":3,"username":"michael.dewic…
+SWMS draft updated: 248
+SWMS draft saved successfully with ID: 248
+10:46:04 PM [express] POST /api/swms/draft 200 in 67ms :: {"success":true,"id":248,"message":"Draft s…
+Fetching SWMS for user: 999
+Querying database for user 999 SWMS documents...
+Database returned 27 active SWMS documents for user 999
+Sample document: { id: 250, title: '324' }
+Found SWMS documents: 27
+10:46:05 PM [express] GET /api/swms 200 in 87ms :: {"documents":[{"id":250,"userId":999,"title":"324"…
+10:46:09 PM [express] GET /api/user/subscription 200 in 5ms
+Loading draft for editing: 204
+Loading draft for editing: 204
+Draft found: Credit Test Document
+10:46:09 PM [express] GET /api/swms/draft/204 200 in 85ms :: {"id":204,"userId":999,"title":"Credit T…
+Draft found: Credit Test Document
+10:46:09 PM [express] GET /api/swms/draft/204 200 in 85ms :: {"id":204,"userId":999,"title":"Credit T…
+Saving SWMS draft for user: 999 Project: test 
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:11 PM [express] POST /api/swms/draft 200 in 110ms :: {"success":true,"id":204,"message":"Draft …
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:11 PM [express] POST /api/swms/draft 200 in 83ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:12 PM [express] POST /api/swms/draft 200 in 60ms :: {"success":true,"id":204,"message":"Draft s…
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:12 PM [express] POST /api/swms/draft 200 in 71ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:12 PM [express] POST /api/swms/draft 200 in 65ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:12 PM [express] POST /api/swms/draft 200 in 101ms :: {"success":true,"id":204,"message":"Draft …
+Saving SWMS draft for user: 999 Project: test 
+Saving SWMS draft for user: 999 Project: test 
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Updating existing document: 204
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:13 PM [express] POST /api/swms/draft 200 in 66ms :: {"success":true,"id":204,"message":"Draft s…
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:13 PM [express] POST /api/swms/draft 200 in 57ms :: {"success":true,"id":204,"message":"Draft s…
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:13 PM [express] POST /api/swms/draft 200 in 120ms :: {"success":true,"id":204,"message":"Draft …
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:13 PM [express] POST /api/swms/draft 200 in 68ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:13 PM [express] POST /api/swms/draft 200 in 66ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:13 PM [express] POST /api/swms/draft 200 in 70ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:14 PM [express] POST /api/swms/draft 200 in 69ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Saving SWMS draft for user: 999 Project: test 
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:14 PM [express] POST /api/swms/draft 200 in 74ms :: {"success":true,"id":204,"message":"Draft s…
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:14 PM [express] POST /api/swms/draft 200 in 69ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Updating existing document: 204
+Saving SWMS draft for user: 999 Project: test 
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:14 PM [express] POST /api/swms/draft 200 in 64ms :: {"success":true,"id":204,"message":"Draft s…
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:14 PM [express] POST /api/swms/draft 200 in 75ms :: {"success":true,"id":204,"message":"Draft s…
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:14 PM [express] POST /api/swms/draft 200 in 74ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:14 PM [express] POST /api/swms/draft 200 in 69ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Saving SWMS draft for user: 999 Project: test 
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Updating existing document: 204
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:15 PM [express] POST /api/swms/draft 200 in 67ms :: {"success":true,"id":204,"message":"Draft s…
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:15 PM [express] POST /api/swms/draft 200 in 65ms :: {"success":true,"id":204,"message":"Draft s…
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:15 PM [express] POST /api/swms/draft 200 in 57ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Saving SWMS draft for user: 999 Project: test 
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:15 PM [express] POST /api/swms/draft 200 in 67ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:15 PM [express] POST /api/swms/draft 200 in 58ms :: {"success":true,"id":204,"message":"Draft s…
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:15 PM [express] POST /api/swms/draft 200 in 68ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:15 PM [express] POST /api/swms/draft 200 in 69ms :: {"success":true,"id":204,"message":"Draft s…
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:15 PM [express] POST /api/swms/draft 200 in 99ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:16 PM [express] POST /api/swms/draft 200 in 140ms :: {"success":true,"id":204,"message":"Draft …
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:16 PM [express] POST /api/swms/draft 200 in 200ms :: {"success":true,"id":204,"message":"Draft …
+Saving SWMS draft for user: 999 Project: test 
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:16 PM [express] POST /api/swms/draft 200 in 58ms :: {"success":true,"id":204,"message":"Draft s…
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:16 PM [express] POST /api/swms/draft 200 in 65ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:16 PM [express] POST /api/swms/draft 200 in 58ms :: {"success":true,"id":204,"message":"Draft s…
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:16 PM [express] POST /api/swms/draft 200 in 69ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Saving SWMS draft for user: 999 Project: test 
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:17 PM [express] POST /api/swms/draft 200 in 69ms :: {"success":true,"id":204,"message":"Draft s…
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:17 PM [express] POST /api/swms/draft 200 in 69ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Saving SWMS draft for user: 999 Project: test 
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:17 PM [express] POST /api/swms/draft 200 in 57ms :: {"success":true,"id":204,"message":"Draft s…
+Updating existing document: 204
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:17 PM [express] POST /api/swms/draft 200 in 59ms :: {"success":true,"id":204,"message":"Draft s…
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:17 PM [express] POST /api/swms/draft 200 in 70ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Saving SWMS draft for user: 999 Project: test 
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:17 PM [express] POST /api/swms/draft 200 in 60ms :: {"success":true,"id":204,"message":"Draft s…
+Updating existing document: 204
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:17 PM [express] POST /api/swms/draft 200 in 58ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:17 PM [express] POST /api/swms/draft 200 in 67ms :: {"success":true,"id":204,"message":"Draft s…
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:17 PM [express] POST /api/swms/draft 200 in 69ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:18 PM [express] POST /api/swms/draft 200 in 72ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:18 PM [express] POST /api/swms/draft 200 in 67ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Saving SWMS draft for user: 999 Project: test 
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:18 PM [express] POST /api/swms/draft 200 in 68ms :: {"success":true,"id":204,"message":"Draft s…
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:18 PM [express] POST /api/swms/draft 200 in 69ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:18 PM [express] POST /api/swms/draft 200 in 61ms :: {"success":true,"id":204,"message":"Draft s…
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:18 PM [express] POST /api/swms/draft 200 in 68ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Saving SWMS draft for user: 999 Project: test 
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:19 PM [express] POST /api/swms/draft 200 in 67ms :: {"success":true,"id":204,"message":"Draft s…
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:19 PM [express] POST /api/swms/draft 200 in 77ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:19 PM [express] POST /api/swms/draft 200 in 75ms :: {"success":true,"id":204,"message":"Draft s…
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:19 PM [express] POST /api/swms/draft 200 in 75ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:19 PM [express] POST /api/swms/draft 200 in 60ms :: {"success":true,"id":204,"message":"Draft s…
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:19 PM [express] POST /api/swms/draft 200 in 69ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:20 PM [express] POST /api/swms/draft 200 in 61ms :: {"success":true,"id":204,"message":"Draft s…
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:20 PM [express] POST /api/swms/draft 200 in 66ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Saving SWMS draft for user: 999 Project: test 
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Updating existing document: 204
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:20 PM [express] POST /api/swms/draft 200 in 67ms :: {"success":true,"id":204,"message":"Draft s…
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:20 PM [express] POST /api/swms/draft 200 in 60ms :: {"success":true,"id":204,"message":"Draft s…
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:20 PM [express] POST /api/swms/draft 200 in 106ms :: {"success":true,"id":204,"message":"Draft …
+Saving SWMS draft for user: 999 Project: test 
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:20 PM [express] POST /api/swms/draft 200 in 59ms :: {"success":true,"id":204,"message":"Draft s…
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:20 PM [express] POST /api/swms/draft 200 in 68ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:21 PM [express] POST /api/swms/draft 200 in 67ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:21 PM [express] POST /api/swms/draft 200 in 126ms :: {"success":true,"id":204,"message":"Draft …
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:21 PM [express] POST /api/swms/draft 200 in 67ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:21 PM [express] POST /api/swms/draft 200 in 59ms :: {"success":true,"id":204,"message":"Draft s…
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:21 PM [express] POST /api/swms/draft 200 in 67ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:21 PM [express] POST /api/swms/draft 200 in 56ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:21 PM [express] POST /api/swms/draft 200 in 50ms :: {"success":true,"id":204,"message":"Draft s…
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:21 PM [express] POST /api/swms/draft 200 in 53ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:22 PM [express] POST /api/swms/draft 200 in 52ms :: {"success":true,"id":204,"message":"Draft s…
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:22 PM [express] POST /api/swms/draft 200 in 53ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Saving SWMS draft for user: 999 Project: test 
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:22 PM [express] POST /api/swms/draft 200 in 52ms :: {"success":true,"id":204,"message":"Draft s…
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:22 PM [express] POST /api/swms/draft 200 in 52ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Saving SWMS draft for user: 999 Project: test 
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:22 PM [express] POST /api/swms/draft 200 in 53ms :: {"success":true,"id":204,"message":"Draft s…
+Updating existing document: 204
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Saving SWMS draft for user: 999 Project: test 
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:22 PM [express] POST /api/swms/draft 200 in 53ms :: {"success":true,"id":204,"message":"Draft s…
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:22 PM [express] POST /api/swms/draft 200 in 154ms :: {"success":true,"id":204,"message":"Draft …
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:22 PM [express] POST /api/swms/draft 200 in 49ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:22 PM [express] POST /api/swms/draft 200 in 57ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:22 PM [express] POST /api/swms/draft 200 in 48ms :: {"success":true,"id":204,"message":"Draft s…
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:22 PM [express] POST /api/swms/draft 200 in 54ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:22 PM [express] POST /api/swms/draft 200 in 60ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:22 PM [express] POST /api/swms/draft 200 in 49ms :: {"success":true,"id":204,"message":"Draft s…
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:22 PM [express] POST /api/swms/draft 200 in 51ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:23 PM [express] POST /api/swms/draft 200 in 52ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Saving SWMS draft for user: 999 Project: test 
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Updating existing document: 204
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:23 PM [express] POST /api/swms/draft 200 in 52ms :: {"success":true,"id":204,"message":"Draft s…
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:23 PM [express] POST /api/swms/draft 200 in 52ms :: {"success":true,"id":204,"message":"Draft s…
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:23 PM [express] POST /api/swms/draft 200 in 51ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:23 PM [express] POST /api/swms/draft 200 in 53ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Saving SWMS draft for user: 999 Project: test 
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Updating existing document: 204
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:23 PM [express] POST /api/swms/draft 200 in 50ms :: {"success":true,"id":204,"message":"Draft s…
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:23 PM [express] POST /api/swms/draft 200 in 50ms :: {"success":true,"id":204,"message":"Draft s…
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:23 PM [express] POST /api/swms/draft 200 in 51ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:23 PM [express] POST /api/swms/draft 200 in 50ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:23 PM [express] POST /api/swms/draft 200 in 50ms :: {"success":true,"id":204,"message":"Draft s…
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:23 PM [express] POST /api/swms/draft 200 in 51ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:24 PM [express] POST /api/swms/draft 200 in 50ms :: {"success":true,"id":204,"message":"Draft s…
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:24 PM [express] POST /api/swms/draft 200 in 51ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:24 PM [express] POST /api/swms/draft 200 in 54ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:24 PM [express] POST /api/swms/draft 200 in 53ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:24 PM [express] POST /api/swms/draft 200 in 53ms :: {"success":true,"id":204,"message":"Draft s…
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:24 PM [express] POST /api/swms/draft 200 in 51ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:24 PM [express] POST /api/swms/draft 200 in 52ms :: {"success":true,"id":204,"message":"Draft s…
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:24 PM [express] POST /api/swms/draft 200 in 52ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:24 PM [express] POST /api/swms/draft 200 in 50ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Saving SWMS draft for user: 999 Project: test 
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:24 PM [express] POST /api/swms/draft 200 in 53ms :: {"success":true,"id":204,"message":"Draft s…
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:24 PM [express] POST /api/swms/draft 200 in 50ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Saving SWMS draft for user: 999 Project: test 
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:24 PM [express] POST /api/swms/draft 200 in 51ms :: {"success":true,"id":204,"message":"Draft s…
+Updating existing document: 204
+Saving SWMS draft for user: 999 Project: test 
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:24 PM [express] POST /api/swms/draft 200 in 53ms :: {"success":true,"id":204,"message":"Draft s…
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:24 PM [express] POST /api/swms/draft 200 in 53ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Saving SWMS draft for user: 999 Project: test 
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:24 PM [express] POST /api/swms/draft 200 in 51ms :: {"success":true,"id":204,"message":"Draft s…
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:24 PM [express] POST /api/swms/draft 200 in 51ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Saving SWMS draft for user: 999 Project: test 
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:24 PM [express] POST /api/swms/draft 200 in 63ms :: {"success":true,"id":204,"message":"Draft s…
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:24 PM [express] POST /api/swms/draft 200 in 51ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:24 PM [express] POST /api/swms/draft 200 in 61ms :: {"success":true,"id":204,"message":"Draft s…
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:24 PM [express] POST /api/swms/draft 200 in 73ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Saving SWMS draft for user: 999 Project: test 
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:25 PM [express] POST /api/swms/draft 200 in 51ms :: {"success":true,"id":204,"message":"Draft s…
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:25 PM [express] POST /api/swms/draft 200 in 52ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Saving SWMS draft for user: 999 Project: test 
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:25 PM [express] POST /api/swms/draft 200 in 52ms :: {"success":true,"id":204,"message":"Draft s…
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:25 PM [express] POST /api/swms/draft 200 in 52ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:25 PM [express] POST /api/swms/draft 200 in 51ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:25 PM [express] POST /api/swms/draft 200 in 52ms :: {"success":true,"id":204,"message":"Draft s…
+Updating existing document: 204
+Saving SWMS draft for user: 999 Project: test 
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:25 PM [express] POST /api/swms/draft 200 in 51ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:25 PM [express] POST /api/swms/draft 200 in 50ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:25 PM [express] POST /api/swms/draft 200 in 51ms :: {"success":true,"id":204,"message":"Draft s…
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:25 PM [express] POST /api/swms/draft 200 in 52ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Saving SWMS draft for user: 999 Project: test 
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:25 PM [express] POST /api/swms/draft 200 in 51ms :: {"success":true,"id":204,"message":"Draft s…
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:25 PM [express] POST /api/swms/draft 200 in 49ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:25 PM [express] POST /api/swms/draft 200 in 49ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:25 PM [express] POST /api/swms/draft 200 in 52ms :: {"success":true,"id":204,"message":"Draft s…
+Updating existing document: 204
+Saving SWMS draft for user: 999 Project: test 
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:25 PM [express] POST /api/swms/draft 200 in 51ms :: {"success":true,"id":204,"message":"Draft s…
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:25 PM [express] POST /api/swms/draft 200 in 50ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Saving SWMS draft for user: 999 Project: test 
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:25 PM [express] POST /api/swms/draft 200 in 53ms :: {"success":true,"id":204,"message":"Draft s…
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:25 PM [express] POST /api/swms/draft 200 in 54ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:25 PM [express] POST /api/swms/draft 200 in 49ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:25 PM [express] POST /api/swms/draft 200 in 50ms :: {"success":true,"id":204,"message":"Draft s…
+Updating existing document: 204
+Saving SWMS draft for user: 999 Project: test 
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:25 PM [express] POST /api/swms/draft 200 in 52ms :: {"success":true,"id":204,"message":"Draft s…
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:26 PM [express] POST /api/swms/draft 200 in 53ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Saving SWMS draft for user: 999 Project: test 
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:26 PM [express] POST /api/swms/draft 200 in 51ms :: {"success":true,"id":204,"message":"Draft s…
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:26 PM [express] POST /api/swms/draft 200 in 51ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:26 PM [express] POST /api/swms/draft 200 in 52ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:26 PM [express] POST /api/swms/draft 200 in 54ms :: {"success":true,"id":204,"message":"Draft s…
+Updating existing document: 204
+Saving SWMS draft for user: 999 Project: test 
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:26 PM [express] POST /api/swms/draft 200 in 62ms :: {"success":true,"id":204,"message":"Draft s…
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:26 PM [express] POST /api/swms/draft 200 in 53ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Saving SWMS draft for user: 999 Project: test 
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:26 PM [express] POST /api/swms/draft 200 in 50ms :: {"success":true,"id":204,"message":"Draft s…
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:26 PM [express] POST /api/swms/draft 200 in 51ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:26 PM [express] POST /api/swms/draft 200 in 51ms :: {"success":true,"id":204,"message":"Draft s…
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:26 PM [express] POST /api/swms/draft 200 in 53ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Saving SWMS draft for user: 999 Project: test 
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:26 PM [express] POST /api/swms/draft 200 in 118ms :: {"success":true,"id":204,"message":"Draft …
+Updating existing document: 204
+Saving SWMS draft for user: 999 Project: test 
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:26 PM [express] POST /api/swms/draft 200 in 50ms :: {"success":true,"id":204,"message":"Draft s…
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:26 PM [express] POST /api/swms/draft 200 in 113ms :: {"success":true,"id":204,"message":"Draft …
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:26 PM [express] POST /api/swms/draft 200 in 54ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:26 PM [express] POST /api/swms/draft 200 in 50ms :: {"success":true,"id":204,"message":"Draft s…
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:26 PM [express] POST /api/swms/draft 200 in 56ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Saving SWMS draft for user: 999 Project: test 
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:26 PM [express] POST /api/swms/draft 200 in 53ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:26 PM [express] POST /api/swms/draft 200 in 65ms :: {"success":true,"id":204,"message":"Draft s…
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:26 PM [express] POST /api/swms/draft 200 in 48ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:26 PM [express] POST /api/swms/draft 200 in 51ms :: {"success":true,"id":204,"message":"Draft s…
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:26 PM [express] POST /api/swms/draft 200 in 51ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Saving SWMS draft for user: 999 Project: test 
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:27 PM [express] POST /api/swms/draft 200 in 51ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:27 PM [express] POST /api/swms/draft 200 in 52ms :: {"success":true,"id":204,"message":"Draft s…
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:27 PM [express] POST /api/swms/draft 200 in 54ms :: {"success":true,"id":204,"message":"Draft s…
+Updating existing document: 204
+Saving SWMS draft for user: 999 Project: test 
+Saving SWMS draft for user: 999 Project: test 
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:27 PM [express] POST /api/swms/draft 200 in 393ms :: {"success":true,"id":204,"message":"Draft …
+Updating existing document: 204
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:27 PM [express] POST /api/swms/draft 200 in 57ms :: {"success":true,"id":204,"message":"Draft s…
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:27 PM [express] POST /api/swms/draft 200 in 58ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Saving SWMS draft for user: 999 Project: test 
+Saving SWMS draft for user: 999 Project: test 
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:27 PM [express] POST /api/swms/draft 200 in 69ms :: {"success":true,"id":204,"message":"Draft s…
+Updating existing document: 204
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:27 PM [express] POST /api/swms/draft 200 in 57ms :: {"success":true,"id":204,"message":"Draft s…
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:27 PM [express] POST /api/swms/draft 200 in 52ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:27 PM [express] POST /api/swms/draft 200 in 50ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Saving SWMS draft for user: 999 Project: test 
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Updating existing document: 204
+Saving SWMS draft for user: 999 Project: test 
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:27 PM [express] POST /api/swms/draft 200 in 51ms :: {"success":true,"id":204,"message":"Draft s…
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:27 PM [express] POST /api/swms/draft 200 in 50ms :: {"success":true,"id":204,"message":"Draft s…
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:27 PM [express] POST /api/swms/draft 200 in 50ms :: {"success":true,"id":204,"message":"Draft s…
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:27 PM [express] POST /api/swms/draft 200 in 90ms :: {"success":true,"id":204,"message":"Draft s…
+Updating existing document: 204
+Saving SWMS draft for user: 999 Project: test 
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:27 PM [express] POST /api/swms/draft 200 in 103ms :: {"success":true,"id":204,"message":"Draft …
+Updating existing document: 204
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:27 PM [express] POST /api/swms/draft 200 in 52ms :: {"success":true,"id":204,"message":"Draft s…
+Saving SWMS draft for user: 999 Project: test 
+Saving SWMS draft for user: 999 Project: test 
+Updating existing document: 204
+Updating existing document: 204
+Saving SWMS draft for user: 999 Project: test 
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:27 PM [express] POST /api/swms/draft 200 in 50ms :: {"success":true,"id":204,"message":"Draft s…
+SWMS draft updated: 204
+SWMS draft saved successfully with ID: 204
+10:46:27 PM [express] POST /api/swms/draft 200 in 50ms :: {"success":true,"id":204,"message":"Draft 
