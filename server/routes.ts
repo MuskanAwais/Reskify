@@ -138,50 +138,18 @@ export async function registerRoutes(app: Express) {
     }
   });
 
-  // Complete SWMS PDF Download endpoint with SWMSprint integration and fallback
+  // Complete SWMS PDF Download endpoint using EXCLUSIVE SWMSprint integration
   app.post("/api/swms/pdf-download", async (req, res) => {
     try {
       const requestTitle = req.body?.projectName || req.body?.title || 'Unknown project';
-      console.log("Professional PDF generation request received:", requestTitle);
+      console.log("SWMSprint PDF generation request received:", requestTitle);
       
       const data = req.body;
-      let pdfBuffer: Buffer;
-      let generationMethod = 'Unknown';
       
-      // Try SWMSprint integration first
-      try {
-        console.log('Attempting SWMSprint PDF generation...');
-        const { generatePDFWithRiskTemplate } = await import('./risk-template-integration.js');
-        pdfBuffer = await generatePDFWithRiskTemplate(data);
-        generationMethod = 'SWMSprint';
-        console.log('PDF generated successfully with SWMSprint');
-      } catch (swmsprintError) {
-        console.log('SWMSprint unavailable, using professional fallback generator...');
-        
-        // Fallback to high-quality local PDF generator
-        const { generateAppMatchPDF } = await import('./pdf-generator-authentic');
-        
-        const doc = generateAppMatchPDF({
-          swmsData: data,
-          projectName: data.projectName || data.project_name || data.title || 'SWMS Project',
-          projectAddress: data.projectAddress || data.project_address || data.projectLocation || 'Project Location',
-          uniqueId: `SWMS-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
-        });
-        
-        const chunks: Buffer[] = [];
-        await new Promise<void>((resolve, reject) => {
-          doc.on('data', (chunk: Buffer) => chunks.push(chunk));
-          doc.on('end', () => {
-            pdfBuffer = Buffer.concat(chunks);
-            resolve();
-          });
-          doc.on('error', reject);
-        });
-        doc.end();
-        
-        generationMethod = 'Professional Local Generator';
-        console.log('PDF generated successfully with fallback generator');
-      }
+      // EXCLUSIVELY use SWMSprint integration - no fallback allowed
+      console.log('Generating PDF with SWMSprint (EXCLUSIVE - NO FALLBACK)');
+      const { generatePDFWithRiskTemplate } = await import('./risk-template-integration.js');
+      const pdfBuffer = await generatePDFWithRiskTemplate(data);
       
       // Generate filename with project details
       const sanitizedTitle = (data.projectName || data.title || 'SWMS-Document')
@@ -197,15 +165,15 @@ export async function registerRoutes(app: Express) {
       res.setHeader('Cache-Control', 'no-cache');
       res.setHeader('X-Content-Type-Options', 'nosniff');
       
-      console.log(`Professional PDF generated successfully: ${filename} (${pdfBuffer.length} bytes) via ${generationMethod}`);
+      console.log(`SWMSprint PDF generated successfully: ${filename} (${pdfBuffer.length} bytes)`);
       res.send(pdfBuffer);
       
     } catch (error) {
-      console.error("Professional PDF generation error:", error);
+      console.error("SWMSprint PDF generation error:", error);
       if (!res.headersSent) {
         res.status(500).json({ 
-          error: "Failed to generate professional PDF",
-          details: error.message 
+          error: "Failed to generate PDF with SWMSprint - app may be unavailable",
+          details: (error as Error).message 
         });
       }
     }

@@ -25,7 +25,7 @@ export function PDFLoadingModal({
   const [currentStep, setCurrentStep] = useState(0);
 
   const loadingSteps = [
-    "Connecting to SWMSprint generator...",
+    "Connecting to RiskTemplateBuilder generator...",
     "Mapping SWMS data to template fields...",
     "Generating professional PDF layout...",
     "Processing activities and risk assessments...",
