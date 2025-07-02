@@ -84,7 +84,7 @@ export default function AuthPage() {
   const onLogin = async (data: LoginForm) => {
     try {
       await loginMutation.mutateAsync(data);
-      setLocation("/");
+      setLocation("/dashboard");
     } catch (error) {
       // Error handled by mutation
     }
@@ -98,7 +98,7 @@ export default function AuthPage() {
         phone: !data.username.includes('@') ? data.username : data.phone,
       };
       await registerMutation.mutateAsync(registerData);
-      setLocation("/");
+      setLocation("/dashboard");
     } catch (error) {
       // Error handled by mutation
     }
