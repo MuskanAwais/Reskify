@@ -1428,9 +1428,9 @@ export async function registerRoutes(app: Express) {
         console.log('Demo access granted for SWMS generation');
       }
       
-      const { generateSWMSFromTask } = await import('./openai-integration.js');
+      const { generateSWMSFromTaskSimple } = await import('./openai-integration-simple.js');
       
-      console.log('SWMS generation request received:', req.body);
+      console.log('SWMS generation request received (SIMPLE):', req.body);
       
       // Transform the request to match the expected format
       const transformedRequest = {
@@ -1447,7 +1447,7 @@ export async function registerRoutes(app: Express) {
         mode: req.body.mode || 'job'
       };
       
-      const result = await generateSWMSFromTask(transformedRequest);
+      const result = await generateSWMSFromTaskSimple(transformedRequest);
       
       res.json({
         success: true,
