@@ -131,19 +131,10 @@ export async function generateSWMSFromTask(request: TaskGenerationRequest): Prom
     console.log(`🔍 FINAL PROMPT INPUTS - Trade: ${tradeName}, Job: ${request.plainTextDescription}`);
     console.log(`🔍 SITE ENVIRONMENT: ${siteEnvironment}, STATE: ${state}, HRCW: ${hrcwCategories.join(',')}`);
 
-    // Enhanced system message with safety context
-    const systemMessage = `You are Riskify, an Australian construction safety expert specializing in ${state} regulations. YOU MUST ONLY GENERATE TASKS FOR THE SPECIFIED TRADE.
+    // Simplified system message
+    const systemMessage = `You are an Australian construction safety expert. Generate 6-8 realistic tasks for a ${tradeName} worker based on the job description.
 
-INTELLIGENT TRADE-SPECIFIC TASK ADAPTATION:
-Generate tasks that the specified trade can realistically perform. When the job description involves work outside their scope, adapt it intelligently:
-
-ADAPTATION EXAMPLES:
-- If "General" trade asked to do electrical work → Generate site preparation, material handling, cleanup, general construction tasks
-- If "Tiling" trade asked to do plumbing → Generate bathroom tiling, waterproofing, surface preparation tasks 
-- If "Electrical" trade asked to do concrete work → Generate electrical infrastructure, power distribution, lighting installation tasks
-- If "Plumbing" trade asked for general work → Generate plumbing installation, water systems, drainage tasks
-
-ALWAYS generate relevant tasks within the trade's actual expertise and licensing scope.
+TASK ADAPTATION: If the job description involves work outside the trade's scope, generate related tasks the ${tradeName} CAN safely perform within their expertise.
 
 TRADE-SPECIFIC SCOPE ENFORCEMENT:
 ${tradeName === 'Tiling & Waterproofing' ? `
