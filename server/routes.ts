@@ -998,8 +998,31 @@ export async function registerRoutes(app: Express) {
     try {
       console.log('Credit usage request received');
       
-      // Mark payment as completed for the user's draft
       const userId = req.session?.userId || 999;
+      console.log(`Processing credit usage for user: ${userId}`);
+      
+      // Get current user to check credits
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+      
+      console.log(`User ${userId} current credits: ${user.swmsCredits}`);
+      
+      // Check if user has credits available
+      const currentCredits = user.swmsCredits || 0;
+      if (currentCredits <= 0) {
+        return res.status(400).json({ 
+          error: 'No credits available',
+          creditsRemaining: currentCredits 
+        });
+      }
+      
+      // Deduct one credit from user account
+      const newCreditBalance = currentCredits - 1;
+      await storage.updateUserCredits(userId, newCreditBalance);
+      
+      console.log(`Credit deducted. New balance: ${newCreditBalance}`);
       
       // Find user's latest draft to mark as paid
       const userDrafts = await storage.getSwmsDocumentsByUserId(userId);
@@ -1007,15 +1030,16 @@ export async function registerRoutes(app: Express) {
       
       if (latestDraft) {
         await storage.updateSwmsDocument(latestDraft.id, { 
-          status: 'completed'
+          status: 'completed',
+          paidAccess: true
         });
+        console.log(`Marked draft ${latestDraft.id} as completed`);
       }
       
-      // Always allow credit usage in demo mode
       return res.json({ 
         success: true, 
         message: 'Credit used successfully',
-        creditsRemaining: 9,
+        creditsRemaining: newCreditBalance,
         paidAccess: true
       });
     } catch (error) {
