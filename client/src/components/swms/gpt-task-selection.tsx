@@ -250,6 +250,7 @@ export default function GPTTaskSelection({
       console.log('Step 2 - Restoring saved activities:', savedActivities);
       console.log('Step 2 - Current generated tasks count:', generatedTasks.length);
       setGeneratedTasks(savedActivities);
+      setIsEditing(true); // Enable editing mode to display the restored activities
       console.log('Step 2 - Activities restored successfully');
     } else {
       console.log('Step 2 - No saved activities to restore');

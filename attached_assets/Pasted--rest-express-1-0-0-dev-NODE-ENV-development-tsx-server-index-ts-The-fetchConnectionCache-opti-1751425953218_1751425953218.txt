@@ -1,0 +1,318 @@
+> rest-express@1.0.0 dev
+> NODE_ENV=development tsx server/index.ts
+
+The `fetchConnectionCache` option is deprecated (now always `true`)
+2:59:58 AM [express] Initializing database connection...
+Database connection successful
+3:00:00 AM [express] Server running on port 5000
+3:00:00 AM [express] Environment: development
+Browserslist: browsers data (caniuse-lite) is 9 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+3:00:06 AM [express] GET /api/user 200 in 3ms :: {"id":999,"username":"demo@riskify.com.au","name":"…
+3:00:06 AM [express] GET /api/user 304 in 3ms :: {"id":999,"username":"demo@riskify.com.au","name":"…
+Dashboard API called for user: 999
+Querying database for user 999 SWMS documents...
+Database returned 7 active SWMS documents for user 999
+Sample document: { id: 211, title: 'test name' }
+User found: demo, SWMS count: 7, Credits: 10
+Dashboard response data: {
+  draftSwms: 4,
+  completedSwms: 3,
+  totalSwms: 7,
+  credits: 10,
+  subscription: 'trial',
+  recentSwms: [
+    {
+      id: 211,
+      title: 'test name',
+      tradeType: 'Flooring & Floor Coverings',
+      status: 'draft',
+      updatedAt: 2025-07-02T02:50:11.658Z,
+      location: '3 '
+    },
+    {
+      id: 210,
+      title: 'Job test 2 ',
+      tradeType: 'Flooring & Floor Coverings',
+      status: 'draft',
+      updatedAt: 2025-07-02T02:43:14.312Z,
+      location: 'Australia, Belmont, Geelong, City of Greater Geelong, Victoria, 3216'
+    },
+    {
+      id: 209,
+      title: 'Commercial Infrastructure ',
+      tradeType: 'Tiling & Waterproofing',
+      status: 'draft',
+      updatedAt: 2025-07-01T23:02:18.586Z,
+      location: "IGA Romeo's Food Hall, 201-205, Pacific Highway, Crows Nest Junction, St Leonards, Lower North Shore, Sydney, Willoughby City Council, New South Wales, 2065"
+    },
+    {
+      id: 208,
+      title: 'Commercial Infrastructure ',
+      tradeType: 'Tiling & Waterproofing',
+      status: 'completed',
+      updatedAt: 2025-07-01T07:06:58.128Z,
+      location: "IGA Romeo's Food Hall, 201-205, Pacific Highway, Crows Nest Junction, St Leonards, Lower North Shore, Sydney, Willoughby City Council, New South Wales, 2065"
+    },
+    {
+      id: 204,
+      title: 'test ',
+      tradeType: 'General',
+      status: 'draft',
+      updatedAt: 2025-07-01T07:06:20.204Z,
+      location: ''
+    }
+  ],
+  recentDocuments: [
+    {
+      id: 211,
+      title: 'test name',
+      tradeType: 'Flooring & Floor Coverings',
+      status: 'draft',
+      updatedAt: 2025-07-02T02:50:11.658Z,
+      location: '3 '
+    },
+    {
+      id: 210,
+      title: 'Job test 2 ',
+      tradeType: 'Flooring & Floor Coverings',
+      status: 'draft',
+      updatedAt: 2025-07-02T02:43:14.312Z,
+      location: 'Australia, Belmont, Geelong, City of Greater Geelong, Victoria, 3216'
+    },
+    {
+      id: 209,
+      title: 'Commercial Infrastructure ',
+      tradeType: 'Tiling & Waterproofing',
+      status: 'draft',
+      updatedAt: 2025-07-01T23:02:18.586Z,
+      location: "IGA Romeo's Food Hall, 201-205, Pacific Highway, Crows Nest Junction, St Leonards, Lower North Shore, Sydney, Willoughby City Council, New South Wales, 2065"
+    },
+    {
+      id: 208,
+      title: 'Commercial Infrastructure ',
+      tradeType: 'Tiling & Waterproofing',
+      status: 'completed',
+      updatedAt: 2025-07-01T07:06:58.128Z,
+      location: "IGA Romeo's Food Hall, 201-205, Pacific Highway, Crows Nest Junction, St Leonards, Lower North Shore, Sydney, Willoughby City Council, New South Wales, 2065"
+    },
+    {
+      id: 204,
+      title: 'test ',
+      tradeType: 'General',
+      status: 'draft',
+      updatedAt: 2025-07-01T07:06:20.204Z,
+      location: ''
+    }
+  ]
+}
+3:00:10 AM [express] GET /api/user 304 in 1ms :: {"id":999,"username":"demo@riskify.com.au","name":"…
+3:00:10 AM [express] GET /api/user 304 in 1ms :: {"id":999,"username":"demo@riskify.com.au","name":"…
+Dashboard API called for user: 999
+Querying database for user 999 SWMS documents...
+Database returned 7 active SWMS documents for user 999
+Sample document: { id: 211, title: 'test name' }
+User found: demo, SWMS count: 7, Credits: 10
+Dashboard response data: {
+  draftSwms: 4,
+  completedSwms: 3,
+  totalSwms: 7,
+  credits: 10,
+  subscription: 'trial',
+  recentSwms: [
+    {
+      id: 211,
+      title: 'test name',
+      tradeType: 'Flooring & Floor Coverings',
+      status: 'draft',
+      updatedAt: 2025-07-02T02:50:11.658Z,
+      location: '3 '
+    },
+    {
+      id: 210,
+      title: 'Job test 2 ',
+      tradeType: 'Flooring & Floor Coverings',
+      status: 'draft',
+      updatedAt: 2025-07-02T02:43:14.312Z,
+      location: 'Australia, Belmont, Geelong, City of Greater Geelong, Victoria, 3216'
+    },
+    {
+      id: 209,
+      title: 'Commercial Infrastructure ',
+      tradeType: 'Tiling & Waterproofing',
+      status: 'draft',
+      updatedAt: 2025-07-01T23:02:18.586Z,
+      location: "IGA Romeo's Food Hall, 201-205, Pacific Highway, Crows Nest Junction, St Leonards, Lower North Shore, Sydney, Willoughby City Council, New South Wales, 2065"
+    },
+    {
+      id: 208,
+      title: 'Commercial Infrastructure ',
+      tradeType: 'Tiling & Waterproofing',
+      status: 'completed',
+      updatedAt: 2025-07-01T07:06:58.128Z,
+      location: "IGA Romeo's Food Hall, 201-205, Pacific Highway, Crows Nest Junction, St Leonards, Lower North Shore, Sydney, Willoughby City Council, New South Wales, 2065"
+    },
+    {
+      id: 204,
+      title: 'test ',
+      tradeType: 'General',
+      status: 'draft',
+      updatedAt: 2025-07-01T07:06:20.204Z,
+      location: ''
+    }
+  ],
+  recentDocuments: [
+    {
+      id: 211,
+      title: 'test name',
+      tradeType: 'Flooring & Floor Coverings',
+      status: 'draft',
+      updatedAt: 2025-07-02T02:50:11.658Z,
+      location: '3 '
+    },
+    {
+      id: 210,
+      title: 'Job test 2 ',
+      tradeType: 'Flooring & Floor Coverings',
+      status: 'draft',
+      updatedAt: 2025-07-02T02:43:14.312Z,
+      location: 'Australia, Belmont, Geelong, City of Greater Geelong, Victoria, 3216'
+    },
+    {
+      id: 209,
+      title: 'Commercial Infrastructure ',
+      tradeType: 'Tiling & Waterproofing',
+      status: 'draft',
+      updatedAt: 2025-07-01T23:02:18.586Z,
+      location: "IGA Romeo's Food Hall, 201-205, Pacific Highway, Crows Nest Junction, St Leonards, Lower North Shore, Sydney, Willoughby City Council, New South Wales, 2065"
+    },
+    {
+      id: 208,
+      title: 'Commercial Infrastructure ',
+      tradeType: 'Tiling & Waterproofing',
+      status: 'completed',
+      updatedAt: 2025-07-01T07:06:58.128Z,
+      location: "IGA Romeo's Food Hall, 201-205, Pacific Highway, Crows Nest Junction, St Leonards, Lower North Shore, Sydney, Willoughby City Council, New South Wales, 2065"
+    },
+    {
+      id: 204,
+      title: 'test ',
+      tradeType: 'General',
+      status: 'draft',
+      updatedAt: 2025-07-01T07:06:20.204Z,
+      location: ''
+    }
+  ]
+}
+3:00:10 AM [express] GET /api/dashboard/999 304 in 102ms :: {"draftSwms":4,"completedSwms":3,"totalS…
+3:02:08 AM [express] GET /api/user/subscription 200 in 6ms
+Loading draft for editing: 211
+Loading draft for editing: 211
+Draft found: test name
+3:02:09 AM [express] GET /api/swms/draft/211 200 in 487ms :: {"id":211,"userId":999,"title":"test na…
+Draft found: test name
+3:02:10 AM [express] GET /api/swms/draft/211 200 in 2113ms :: {"id":211,"userId":999,"title":"test n…
+Saving SWMS draft for user: 999 Project: test name
+Updating existing draft: 211
+SWMS draft updated: 211
+SWMS draft saved successfully with ID: 211
+3:02:12 AM [express] POST /api/swms/draft 200 in 132ms :: {"success":true,"id":211,"message":"Draft …
+SWMS generation request received: {
+  mode: 'job',
+  plainTextDescription: 'install carpet flooring to an office fit out ',
+  projectDetails: {
+    projectName: '',
+    location: '3 ',
+    tradeType: 'Flooring & Floor Coverings',
+    description: '',
+    siteEnvironment: 'commercial',
+    specialRiskFactors: [],
+    hrcwCategories: [],
+    state: 'NSW'
+  }
+}
+Generating SWMS with Riskify AI...
+🔍 TRADE TYPE: "Flooring & Floor Coverings"
+🔍 JOB DESCRIPTION: "install carpet flooring to an office fit out "
+🔍 FINAL PROMPT INPUTS - Trade: Flooring & Floor Coverings, Job: install carpet flooring to an office fit out 
+🔍 SITE ENVIRONMENT: commercial, STATE: NSW, HRCW: 
+🔍 SENDING ENHANCED PROMPT WITH SAFETY OPTIONS
+🔍 SITE ENVIRONMENT: commercial
+🔍 HRCW CATEGORIES: 
+🔍 STATE: NSW
+🔍 FULL SYSTEM MESSAGE: You are Riskify, an Australian construction safety expert specializing in NSW regulations. YOU MUST ONLY GENERATE TASKS FOR THE SPECIFIED TRADE.
+
+CRITICAL TRADE BOUNDARY ENFORCEMENT:
+You must only generate tasks the specified trade performs with their own tools and licenses. Reject anything outside this boundary.
+
+For each task, validate using this structure:
+"validateTradeScope": {
+  "isTaskWithinTradeScope": "YES" | "NO",
+  "reasonIfNo": "Explain which trade this task belongs to"
+}
+
+TRADE-SPEC...
+🔍 FULL USER MESSAGE: ENHANCED SAFETY CONTEXT:
+SITE TYPE: COMMERCIAL - Apply commercial-specific safety protocols and considerations
+STATE: NSW - Follow NSW WHS Act 2011, WHS Regulation 2017, SafeWork NSW guidelines requirements
+
+
+
+JOB DESCRIPTION: Generate SWMS tasks for a Flooring & Floor Coverings doing: "install carpet flooring to an office fit out "
+
+CRITICAL REQUIREMENT: This is a COMMERCIAL site in NSW. You MUST generate tasks with NSW-specific legislation.
+
+TRADE-SPECIFIC REQUIREMENT: Generate 6-8 tasks that ...
+🔍 RAW AI RESPONSE: {
+  "activities": [
+    {
+      "name": "Carpet Underlay Installation",
+      "description": "Position and secure carpet underlay over the prepared subfloor using adhesive, ensuring a smooth surface f...
+🔍 PARSED RESULT: {"activities":[{"name":"Carpet Underlay Installation","description":"Position and secure carpet underlay over the prepared subfloor using adhesive, ensuring a smooth surface for carpet installation.",...
+🔧 CHECKING RESPONSE FORMAT - Available keys: [ 'activities' ]
+🔧 USING ACTIVITIES FORMAT
+🔍 FINAL ACTIVITIES COUNT: 6
+🔍 FIRST ACTIVITY: Carpet Underlay Installation
+3:02:49 AM [express] POST /api/generate-swms 200 in 22272ms :: {"success":true,"data":{"activities":…
+Saving SWMS draft for user: 999 Project: test name
+Updating existing draft: 211
+SWMS draft updated: 211
+SWMS draft saved successfully with ID: 211
+3:02:54 AM [express] POST /api/swms/draft 200 in 2234ms :: {"success":true,"id":211,"message":"Draft…
+3:05:23 AM [express] GET /api/user 304 in 0ms :: {"id":999,"username":"demo@riskify.com.au","name":"…
+3:05:23 AM [express] GET /api/user 304 in 1ms :: {"id":999,"username":"demo@riskify.com.au","name":"…
+3:05:24 AM [express] GET /api/user/subscription 200 in 6ms
+Loading draft for editing: 211
+Loading draft for editing: 211
+Draft found: test name
+3:05:27 AM [express] GET /api/swms/draft/211 200 in 2491ms :: {"id":211,"userId":999,"title":"test n…
+Draft found: test name
+3:05:27 AM [express] GET /api/swms/draft/211 200 in 3065ms :: {"id":211,"userId":999,"title":"test n…
+3:09:28 AM [express] GET /api/user 304 in 1ms :: {"id":999,"username":"demo@riskify.com.au","name":"…
+3:09:28 AM [express] GET /api/user 304 in 1ms :: {"id":999,"username":"demo@riskify.com.au","name":"…
+3:09:29 AM [express] GET /api/user/subscription 200 in 5ms
+Loading draft for editing: 211
+Loading draft for editing: 211
+Draft found: test name
+3:09:30 AM [express] GET /api/swms/draft/211 304 in 488ms :: {"id":211,"userId":999,"title":"test na…
+Draft found: test name
+3:09:30 AM [express] GET /api/swms/draft/211 304 in 1182ms :: {"id":211,"userId":999,"title":"test n…
+Fetching SWMS for user: 999
+Querying database for user 999 SWMS documents...
+Database returned 7 active SWMS documents for user 999
+Sample document: { id: 211, title: 'test name' }
+Found SWMS documents: 7
+3:12:04 AM [express] GET /api/swms 200 in 511ms :: {"documents":[{"id":211,"userId":999,"title":"tes…
+3:12:07 AM [express] GET /api/user/subscription 200 in 3ms
+Loading draft for editing: 211
+Draft found: test name
+3:12:08 AM [express] GET /api/swms/draft/211 304 in 49ms :: {"id":211,"userId":999,"title":"test nam…
+Loading draft for editing: 211
+Draft found: test name
+3:12:08 AM [express] GET /api/swms/draft/211 304 in 29ms :: {"id":211,"userId":999,"title":"test nam…
+Saving SWMS draft for user: 999 Project: test name
+Updating existing draft: 211
+SWMS draft updated: 211
+SWMS draft saved successfully with ID: 211
+3:12:12 AM [express] POST /api/swms/draft 200 in 2256ms :: {"success":true,"id":211,"message":"Draft…
