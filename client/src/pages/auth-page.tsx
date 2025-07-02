@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -58,7 +58,14 @@ type RegisterForm = z.infer<typeof registerSchema>;
 
 export default function AuthPage() {
   const [, setLocation] = useLocation();
-  const { loginMutation, registerMutation } = useAuth();
+  const { loginMutation, registerMutation, user } = useAuth();
+  
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (user) {
+      setLocation("/dashboard");
+    }
+  }, [user, setLocation]);
 
   const loginForm = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
@@ -82,12 +89,12 @@ export default function AuthPage() {
   });
 
   const onLogin = async (data: LoginForm) => {
-    try {
-      await loginMutation.mutateAsync(data);
-      setLocation("/dashboard");
-    } catch (error) {
-      // Error handled by mutation
-    }
+    loginMutation.mutate(data, {
+      onSuccess: () => {
+        // User state will be updated by the mutation
+        // Redirect will happen through the user check above
+      }
+    });
   };
 
   const onRegister = async (data: RegisterForm) => {
