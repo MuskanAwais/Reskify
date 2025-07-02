@@ -1,0 +1,221 @@
+> rest-express@1.0.0 dev
+> NODE_ENV=development tsx server/index.ts
+
+The `fetchConnectionCache` option is deprecated (now always `true`)
+3:35:10 AM [express] Initializing database connection...
+Testing database connection...
+Database connection successful
+3:35:10 AM [express] Server running on port 5000
+Browserslist: browsers data (caniuse-lite) is 9 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+3:35:15 AM [express] GET /api/user 200 in 3ms :: {"id":999,"username":"demo@riskify.com.au","name":"…
+3:35:15 AM [express] GET /api/user 304 in 0ms :: {"id":999,"username":"demo@riskify.com.au","name":"…
+Dashboard API called for user: 999
+Querying database for user 999 SWMS documents...
+Database returned 7 active SWMS documents for user 999
+Sample document: { id: 211, title: 'test name' }
+User found: demo, SWMS count: 7, Credits: 10
+Dashboard response data: {
+  draftSwms: 4,
+  completedSwms: 3,
+  totalSwms: 7,
+  credits: 10,
+  subscription: 'trial',
+  recentSwms: [
+    {
+      id: 211,
+      title: 'test name',
+      tradeType: 'Flooring & Floor Coverings',
+      status: 'draft',
+      updatedAt: 2025-07-02T02:50:11.658Z,
+      location: '3 '
+    },
+    {
+      id: 210,
+      title: 'Job test 2 ',
+      tradeType: 'Flooring & Floor Coverings',
+      status: 'draft',
+      updatedAt: 2025-07-02T02:43:14.312Z,
+      location: 'Australia, Belmont, Geelong, City of Greater Geelong, Victoria, 3216'
+    },
+    {
+      id: 209,
+      title: 'Commercial Infrastructure ',
+      tradeType: 'Tiling & Waterproofing',
+      status: 'draft',
+      updatedAt: 2025-07-01T23:02:18.586Z,
+      location: "IGA Romeo's Food Hall, 201-205, Pacific Highway, Crows Nest Junction, St Leonards, Lower North Shore, Sydney, Willoughby City Council, New South Wales, 2065"
+    },
+    {
+      id: 208,
+      title: 'Commercial Infrastructure ',
+      tradeType: 'Tiling & Waterproofing',
+      status: 'completed',
+      updatedAt: 2025-07-01T07:06:58.128Z,
+      location: "IGA Romeo's Food Hall, 201-205, Pacific Highway, Crows Nest Junction, St Leonards, Lower North Shore, Sydney, Willoughby City Council, New South Wales, 2065"
+    },
+    {
+      id: 204,
+      title: 'test ',
+      tradeType: 'General',
+      status: 'draft',
+      updatedAt: 2025-07-01T07:06:20.204Z,
+      location: ''
+    }
+  ],
+  recentDocuments: [
+    {
+      id: 211,
+      title: 'test name',
+      tradeType: 'Flooring & Floor Coverings',
+      status: 'draft',
+      updatedAt: 2025-07-02T02:50:11.658Z,
+      location: '3 '
+    },
+    {
+      id: 210,
+      title: 'Job test 2 ',
+      tradeType: 'Flooring & Floor Coverings',
+      status: 'draft',
+      updatedAt: 2025-07-02T02:43:14.312Z,
+      location: 'Australia, Belmont, Geelong, City of Greater Geelong, Victoria, 3216'
+    },
+    {
+      id: 209,
+      title: 'Commercial Infrastructure ',
+      tradeType: 'Tiling & Waterproofing',
+      status: 'draft',
+      updatedAt: 2025-07-01T23:02:18.586Z,
+      location: "IGA Romeo's Food Hall, 201-205, Pacific Highway, Crows Nest Junction, St Leonards, Lower North Shore, Sydney, Willoughby City Council, New South Wales, 2065"
+    },
+    {
+      id: 208,
+      title: 'Commercial Infrastructure ',
+      tradeType: 'Tiling & Waterproofing',
+      status: 'completed',
+      updatedAt: 2025-07-01T07:06:58.128Z,
+      location: "IGA Romeo's Food Hall, 201-205, Pacific Highway, Crows Nest Junction, St Leonards, Lower North Shore, Sydney, Willoughby City Council, New South Wales, 2065"
+    },
+    {
+      id: 204,
+      title: 'test ',
+      tradeType: 'General',
+      status: 'draft',
+      updatedAt: 2025-07-01T07:06:20.204Z,
+      location: ''
+    }
+  ]
+}
+3:35:16 AM [express] GET /api/dashboard/999 200 in 207ms :: {"draftSwms":4,"completedSwms":3,"totalS…
+3:35:19 AM [express] GET /api/user 304 in 0ms :: {"id":999,"username":"demo@riskify.com.au","name":"…
+3:35:19 AM [express] GET /api/user 304 in 0ms :: {"id":999,"username":"demo@riskify.com.au","name":"…
+Dashboard API called for user: 999
+Querying database for user 999 SWMS documents...
+Database returned 7 active SWMS documents for user 999
+Sample document: { id: 211, title: 'test name' }
+User found: demo, SWMS count: 7, Credits: 10
+Dashboard response data: {
+  draftSwms: 4,
+  completedSwms: 3,
+  totalSwms: 7,
+  credits: 10,
+  subscription: 'trial',
+  recentSwms: [
+    {
+      id: 211,
+      title: 'test name',
+      tradeType: 'Flooring & Floor Coverings',
+      status: 'draft',
+      updatedAt: 2025-07-02T02:50:11.658Z,
+      location: '3 '
+    },
+    {
+      id: 210,
+      title: 'Job test 2 ',
+      tradeType: 'Flooring & Floor Coverings',
+      status: 'draft',
+      updatedAt: 2025-07-02T02:43:14.312Z,
+      location: 'Australia, Belmont, Geelong, City of Greater Geelong, Victoria, 3216'
+    },
+    {
+      id: 209,
+      title: 'Commercial Infrastructure ',
+      tradeType: 'Tiling & Waterproofing',
+      status: 'draft',
+      updatedAt: 2025-07-01T23:02:18.586Z,
+      location: "IGA Romeo's Food Hall, 201-205, Pacific Highway, Crows Nest Junction, St Leonards, Lower North Shore, Sydney, Willoughby City Council, New South Wales, 2065"
+    },
+    {
+      id: 208,
+      title: 'Commercial Infrastructure ',
+      tradeType: 'Tiling & Waterproofing',
+      status: 'completed',
+      updatedAt: 2025-07-01T07:06:58.128Z,
+      location: "IGA Romeo's Food Hall, 201-205, Pacific Highway, Crows Nest Junction, St Leonards, Lower North Shore, Sydney, Willoughby City Council, New South Wales, 2065"
+    },
+    {
+      id: 204,
+      title: 'test ',
+      tradeType: 'General',
+      status: 'draft',
+      updatedAt: 2025-07-01T07:06:20.204Z,
+      location: ''
+    }
+  ],
+  recentDocuments: [
+    {
+      id: 211,
+      title: 'test name',
+      tradeType: 'Flooring & Floor Coverings',
+      status: 'draft',
+      updatedAt: 2025-07-02T02:50:11.658Z,
+      location: '3 '
+    },
+    {
+      id: 210,
+      title: 'Job test 2 ',
+      tradeType: 'Flooring & Floor Coverings',
+      status: 'draft',
+      updatedAt: 2025-07-02T02:43:14.312Z,
+      location: 'Australia, Belmont, Geelong, City of Greater Geelong, Victoria, 3216'
+    },
+    {
+      id: 209,
+      title: 'Commercial Infrastructure ',
+      tradeType: 'Tiling & Waterproofing',
+      status: 'draft',
+      updatedAt: 2025-07-01T23:02:18.586Z,
+      location: "IGA Romeo's Food Hall, 201-205, Pacific Highway, Crows Nest Junction, St Leonards, Lower North Shore, Sydney, Willoughby City Council, New South Wales, 2065"
+    },
+    {
+      id: 208,
+      title: 'Commercial Infrastructure ',
+      tradeType: 'Tiling & Waterproofing',
+      status: 'completed',
+      updatedAt: 2025-07-01T07:06:58.128Z,
+      location: "IGA Romeo's Food Hall, 201-205, Pacific Highway, Crows Nest Junction, St Leonards, Lower North Shore, Sydney, Willoughby City Council, New South Wales, 2065"
+    },
+    {
+      id: 204,
+      title: 'test ',
+      tradeType: 'General',
+      status: 'draft',
+      updatedAt: 2025-07-01T07:06:20.204Z,
+      location: ''
+    }
+  ]
+}
+3:35:20 AM [express] GET /api/dashboard/999 304 in 179ms :: {"draftSwms":4,"completedSwms":3,"totalS…
+3:36:16 AM [express] GET /api/user/subscription 200 in 9ms
+Loading draft for editing: 211
+Draft found: test name
+3:36:16 AM [express] GET /api/swms/draft/211 304 in 106ms :: {"id":211,"userId":999,"title":"test na…
+Loading draft for editing: 211
+Draft found: test name
+3:36:16 AM [express] GET /api/swms/draft/211 304 in 27ms :: {"id":211,"userId":999,"title":"test nam…
+Saving SWMS draft for user: 999 Project: test name
+Updating existing draft: 211
+SWMS draft updated: 211
+SWMS draft saved successfully with ID: 211
+3:36:18 AM [express] POST /api/swms/draft 200 in 159ms :: {"success":true,"id":211,"message":"Draft …

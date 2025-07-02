@@ -980,9 +980,10 @@ export default function GPTTaskSelection({
                 return null;
               })()}
               {isEditing && generatedTasks.length > 0 && (
-                <div className="space-y-4">
+                <div className="space-y-4 border-4 border-red-500 p-4 bg-yellow-100">
+                  <div className="text-red-600 font-bold text-xl">🚨 TASKS TABLE IS RENDERING! 🚨</div>
                   <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold">Generated Tasks (Editable)</h3>
+                    <h3 className="text-lg font-semibold">Generated Tasks (Editable) - COUNT: {generatedTasks.length}</h3>
                     <Button onClick={finalizeEditedTasks} variant="outline">
                       Finalize Tasks
                     </Button>
