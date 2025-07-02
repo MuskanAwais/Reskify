@@ -1423,7 +1423,8 @@ export async function registerRoutes(app: Express) {
     try {
       // Allow demo access for generation
       if (!req.session?.userId) {
-        req.session = { ...req.session, userId: 999 };
+        if (!req.session) req.session = {} as any;
+        req.session.userId = 999;
         console.log('Demo access granted for SWMS generation');
       }
       
