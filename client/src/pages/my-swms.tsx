@@ -53,7 +53,7 @@ export default function MySwms() {
   const { toast } = useToast();
   const user = useUser();
 
-  const { data: documentsData, isLoading } = useQuery({
+  const { data: documentsData, isLoading, refetch } = useQuery({
     queryKey: ["/api/swms"],
     enabled: !!user,
   });
@@ -436,12 +436,25 @@ export default function MySwms() {
           <h1 className="text-3xl font-bold text-gray-900">My SWMS Documents</h1>
           <p className="text-gray-600 mt-1">Manage and track your Safe Work Method Statements</p>
         </div>
-        <Link href="/swms-builder">
-          <Button className="bg-primary/600 hover:bg-primary/700 text-white">
-            <Plus className="mr-2 h-4 w-4" />
-            Create New SWMS
+        <div className="flex gap-2">
+          <Button 
+            onClick={() => {
+              queryClient.invalidateQueries({ queryKey: ["/api/swms"] });
+              refetch();
+            }}
+            variant="outline"
+            className="flex items-center gap-2"
+          >
+            <RotateCcw className="h-4 w-4" />
+            Refresh
           </Button>
-        </Link>
+          <Link href="/swms-builder">
+            <Button className="bg-primary/600 hover:bg-primary/700 text-white">
+              <Plus className="mr-2 h-4 w-4" />
+              Create New SWMS
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {/* Tabs for Active Documents and Recycling Bin */}
