@@ -60,10 +60,12 @@ export default function AllContacts() {
   const queryClient = useQueryClient();
 
   // Get all users
-  const { data: users = [], isLoading } = useQuery({
+  const { data: usersResponse, isLoading } = useQuery({
     queryKey: ["/api/admin/users"],
     retry: false,
   });
+  
+  const users = usersResponse?.users || [];
 
   // Get unique companies
   const companies = [...new Set(users.map((user: User) => user.company).filter(Boolean))].sort();
