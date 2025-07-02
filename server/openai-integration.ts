@@ -401,7 +401,7 @@ TASK-SPECIFIC PPE: "Hearing Protection", "Dust Mask", "Knee Pads", "Cut-Resistan
 
 CRITICAL REQUIREMENTS - ALL MUST BE IMPLEMENTED:
 
-1. TRADE BOUNDARY ENFORCEMENT: You must only generate tasks the specified trade performs with their own tools and licenses. Include validateTradeScope validation for EVERY task with YES/NO confirmation.
+1. TRADE-SPECIFIC TASK GENERATION: Generate 6-8 realistic tasks that the ${tradeName} can safely perform within their expertise and licensing scope.
 
 2. SPECIFIC HAZARD IDENTIFICATION: Each hazard must include:
    - Cause agent (e.g. "angle grinder blade fracture")  
