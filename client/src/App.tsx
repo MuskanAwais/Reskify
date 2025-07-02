@@ -179,12 +179,9 @@ function Router() {
   return (
     <Layout>
       <Switch>
-        <Route path="/" component={Landing} />
-        <Route path="/landing" component={Landing} />
-        <Route path="/demo" component={Demo} />
-        <Route path="/contact" component={Contact} />
-        <Route path="/register" component={Register} />
+        <Route path="/" component={AuthPage} />
         <Route path="/auth" component={AuthPage} />
+        <Route path="/register" component={Register} />
         <ProtectedRoute path="/dashboard" component={Dashboard} />
         <ProtectedRoute path="/generate" component={SwmsBuilder} />
         <ProtectedRoute path="/swms-builder" component={SwmsBuilder} />

@@ -2594,19 +2594,19 @@ export async function registerRoutes(app: Express) {
     }
   });
 
-  // User endpoint for demo access
+  // User endpoint - requires authentication
   app.get("/api/user", async (req, res) => {
     try {
-      // Get real user data from database for demo user 999
-      const user = await storage.getUserById(999);
+      // Check if user is authenticated
+      if (!req.session?.userId) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+
+      // Get real user data from database
+      const user = await storage.getUserById(req.session.userId);
       
       if (!user) {
         return res.status(404).json({ error: "User not found" });
-      }
-
-      // Establish session for demo user to enable admin endpoints
-      if (req.session && !req.session.userId) {
-        req.session.userId = 999;
       }
 
       res.json({
@@ -2627,8 +2627,13 @@ export async function registerRoutes(app: Express) {
   // User billing endpoint
   app.get("/api/user/billing", async (req, res) => {
     try {
-      // Get real user data from database for demo user 999
-      const user = await storage.getUserById(999);
+      // Check if user is authenticated
+      if (!req.session?.userId) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+
+      // Get real user data from database
+      const user = await storage.getUserById(req.session.userId);
       
       if (!user) {
         return res.status(404).json({ error: "User not found" });
@@ -2663,8 +2668,13 @@ export async function registerRoutes(app: Express) {
   // User settings endpoint
   app.get("/api/user/settings", async (req, res) => {
     try {
-      // Get real user data from database for demo user 999
-      const user = await storage.getUserById(999);
+      // Check if user is authenticated
+      if (!req.session?.userId) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+
+      // Get real user data from database
+      const user = await storage.getUserById(req.session.userId);
       
       if (!user) {
         return res.status(404).json({ error: "User not found" });
