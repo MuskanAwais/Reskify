@@ -571,7 +571,7 @@ const StepContent = ({ step, formData, onDataChange, onNext }: StepContentProps)
               description: formData.projectDescription || ''
             }}
             savedWorkDescription={formData.workDescription || formData.projectDescription || ''}
-            savedActivities={formData.activities || []}
+            savedActivities={formData.workActivities || formData.activities || []}
             onActivitiesGenerated={(activities: any[], plantEquipment: any[], workDescription?: string) => {
               // Auto-detect PPE based on AI-generated activities
               const activityTexts = activities.map(activity => 

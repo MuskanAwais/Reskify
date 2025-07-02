@@ -406,8 +406,12 @@ export class DatabaseStorage implements IStorage {
         swmsCreatorName: data.swmsCreatorName || '',
         swmsCreatorPosition: data.swmsCreatorPosition || '',
         tradeType: data.tradeType || '',
-        activities: data.activities || data.selectedTasks || [data.tradeType || 'General Construction'],
-        workActivities: data.workActivities || [],
+        activities: Array.isArray(data.activities) && data.activities.length > 0 
+          ? data.activities.map((activity: any) => typeof activity === 'object' ? activity.name || activity.title || 'Activity' : activity)
+          : (data.selectedTasks || [data.tradeType || 'General Construction']),
+        workActivities: Array.isArray(data.activities) && data.activities.length > 0 
+          ? data.activities
+          : (data.workActivities || []),
         riskAssessments: data.workActivities || [],
         safetyMeasures: data.workActivities || [],
         plantEquipment: data.plantEquipment || [],
