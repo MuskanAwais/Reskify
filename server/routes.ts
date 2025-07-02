@@ -1140,7 +1140,7 @@ export async function registerRoutes(app: Express) {
         
         console.log(`Payment completed: User ${userId}, Type: ${paymentType}, Amount: $${amount}`);
         
-        // Update user credits based on payment type
+        // Update user credits based on payment type - all add-ons go to addon credits
         let creditsToAdd = 0;
         if (paymentType === 'credits' && amount === 60) {
           creditsToAdd = 5;
@@ -1148,17 +1148,14 @@ export async function registerRoutes(app: Express) {
           creditsToAdd = 10;
         } else if (paymentType === 'one-off' && amount === 15) {
           creditsToAdd = 1; // Single SWMS access
-        } else if (paymentType === 'one-off' && amount === 65) {
-          creditsToAdd = 5; // SWMS Pack - 5 SWMS access
+        } else if (paymentType === 'one-off' && amount === 60) {
+          creditsToAdd = 5; // SWMS Pack - 5 SWMS access (updated from $65 to $60)
         }
         
         if (creditsToAdd > 0) {
-          const user = await storage.getUserById(userId);
-          if (user) {
-            const newCredits = (user.swmsCredits || 0) + creditsToAdd;
-            await storage.updateUserCredits(userId, newCredits);
-            console.log(`Added ${creditsToAdd} credits to user ${userId}. New balance: ${newCredits}`);
-          }
+          // All one-off purchases and credit packs go to addon credits (never expire)
+          await storage.addAddonCredits(userId, creditsToAdd);
+          console.log(`Added ${creditsToAdd} addon credits to user ${userId}`);
         }
       }
       

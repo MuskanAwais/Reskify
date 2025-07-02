@@ -428,7 +428,7 @@ export default function Billing() {
                         </div>
                       </Button>
                       <Button 
-                        onClick={() => handleCreateCheckoutSession(65, 'one-off')} 
+                        onClick={() => handleCreateCheckoutSession(60, 'one-off')} 
                         variant="outline" 
                         size="lg"
                         className="w-full h-12 border-2 border-amber-300 hover:border-amber-500 hover:bg-amber-50"
@@ -436,7 +436,7 @@ export default function Billing() {
                         <Zap className="w-4 h-4 mr-2" />
                         <div className="text-left">
                           <div className="font-semibold">SWMS Pack (5 SWMS)</div>
-                          <div className="text-sm text-muted-foreground">$65</div>
+                          <div className="text-sm text-muted-foreground">$60</div>
                         </div>
                       </Button>
                       <Button 
@@ -468,7 +468,7 @@ export default function Billing() {
                         </div>
                       </Button>
                       <Button 
-                        onClick={() => handleCreateCheckoutSession(65, 'one-off')} 
+                        onClick={() => handleCreateCheckoutSession(60, 'one-off')} 
                         variant="outline" 
                         size="lg"
                         className="w-full h-12 border-2 border-amber-300 hover:border-amber-500 hover:bg-amber-50"
@@ -476,7 +476,7 @@ export default function Billing() {
                         <Zap className="w-4 h-4 mr-2" />
                         <div className="text-left">
                           <div className="font-semibold">SWMS Pack (5 SWMS)</div>
-                          <div className="text-sm text-muted-foreground">$65 - Best Value!</div>
+                          <div className="text-sm text-muted-foreground">$60 - Best Value!</div>
                         </div>
                       </Button>
                     </div>

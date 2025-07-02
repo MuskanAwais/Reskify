@@ -9,6 +9,11 @@ export interface IStorage {
   createUser(insertUser: InsertUser): Promise<User>;
   getAllUsers(): Promise<User[]>;
   updateUserCredits(userId: number, credits: number): Promise<void>;
+  updateUserSubscriptionCredits(userId: number, credits: number): Promise<void>;
+  updateUserAddonCredits(userId: number, credits: number): Promise<void>;
+  addAddonCredits(userId: number, credits: number): Promise<void>;
+  resetSubscriptionCredits(userId: number, credits: number): Promise<void>;
+  getTotalAvailableCredits(userId: number): Promise<{ subscription: number, addon: number, total: number }>;
   updateUserLastActive(userId: number): Promise<void>;
   updateUserPassword(userId: number, hashedPassword: string): Promise<void>;
   updateUserAdminStatus(userId: number, isAdmin: boolean): Promise<void>;
@@ -92,12 +97,59 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateUserCredits(userId: number, credits: number): Promise<void> {
-    console.log(`Storage: Updating user ${userId} credits to ${credits}`);
+    console.log(`Storage: Updating user ${userId} legacy credits to ${credits}`);
     const result = await db
       .update(users)
       .set({ swmsCredits: credits })
       .where(eq(users.id, userId));
     console.log(`Storage: Update result:`, result);
+  }
+
+  async updateUserSubscriptionCredits(userId: number, credits: number): Promise<void> {
+    console.log(`Storage: Updating user ${userId} subscription credits to ${credits}`);
+    await db
+      .update(users)
+      .set({ subscriptionCredits: credits, lastCreditReset: new Date() })
+      .where(eq(users.id, userId));
+  }
+
+  async updateUserAddonCredits(userId: number, credits: number): Promise<void> {
+    console.log(`Storage: Setting user ${userId} addon credits to ${credits}`);
+    await db
+      .update(users)
+      .set({ addonCredits: credits })
+      .where(eq(users.id, userId));
+  }
+
+  async addAddonCredits(userId: number, credits: number): Promise<void> {
+    console.log(`Storage: Adding ${credits} addon credits to user ${userId}`);
+    const user = await this.getUserById(userId);
+    if (user) {
+      const newAddonCredits = (user.addonCredits || 0) + credits;
+      await this.updateUserAddonCredits(userId, newAddonCredits);
+    }
+  }
+
+  async resetSubscriptionCredits(userId: number, credits: number): Promise<void> {
+    console.log(`Storage: Resetting subscription credits for user ${userId} to ${credits}`);
+    await db
+      .update(users)
+      .set({ 
+        subscriptionCredits: credits, 
+        lastCreditReset: new Date() 
+      })
+      .where(eq(users.id, userId));
+  }
+
+  async getTotalAvailableCredits(userId: number): Promise<{ subscription: number, addon: number, total: number }> {
+    const user = await this.getUserById(userId);
+    if (!user) return { subscription: 0, addon: 0, total: 0 };
+    
+    const subscription = user.subscriptionCredits || 0;
+    const addon = user.addonCredits || 0;
+    const total = subscription + addon;
+    
+    return { subscription, addon, total };
   }
 
   async updateUserLastActive(userId: number): Promise<void> {

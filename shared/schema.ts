@@ -18,8 +18,11 @@ export const users = pgTable("users", {
   licenseNumber: text("license_number"),
   subscriptionType: text("subscription_type").default("trial"), // trial, pro, enterprise
   subscriptionStatus: text("subscription_status").default("trial"), // trial, active, inactive
-  swmsCredits: integer("swms_credits").default(1),
+  swmsCredits: integer("swms_credits").default(1), // Legacy field for compatibility
+  subscriptionCredits: integer("subscription_credits").default(10), // Monthly credits that reset
+  addonCredits: integer("addon_credits").default(0), // Never expire add-on credits
   swmsGenerated: integer("swms_generated").default(0),
+  lastCreditReset: timestamp("last_credit_reset").defaultNow(), // Track when subscription credits were last reset
   trialUsed: boolean("trial_used").default(false),
   subscriptionExpiresAt: timestamp("subscription_expires_at"),
   stripeCustomerId: text("stripe_customer_id"),
