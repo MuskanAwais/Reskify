@@ -1256,6 +1256,8 @@ export async function registerRoutes(app: Express) {
         payment_method_types: ['card'],
         success_url: `${baseUrl}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${baseUrl}/swms-builder?step=6`,
+        allow_promotion_codes: true,
+        billing_address_collection: 'auto',
         metadata: {
           type: type || 'one-off',
           userId: req.session?.userId || '999'
