@@ -12,19 +12,38 @@ export async function generateSWMSFromTaskSimple(request: TaskGenerationRequest)
   console.log(`🚀 SIMPLE AI GENERATION - Trade: ${tradeType}, Job: ${plainTextDescription}`);
   console.log(`🚀 SITE: ${siteEnvironment}, STATE: ${state}, HRCW: ${hrcwCategories.join(',')}`);
 
-  // Comprehensive prompt for 8-10 tasks with detailed legislation
-  const systemMessage = `You are a professional Australian construction safety expert. Generate EXACTLY 8-10 ${tradeType} activities for: "${plainTextDescription}"
+  // Comprehensive prompt for 8-10 UNIQUE tasks with detailed legislation
+  const systemMessage = `You are a professional Australian construction safety expert. Generate EXACTLY 8-10 COMPLETELY DIFFERENT ${tradeType} activities for: "${plainTextDescription}"
 
 Environment: ${siteEnvironment} site in ${state}
 HRCW Categories: ${hrcwCategories.join(', ') || 'None selected'}
 
 CRITICAL REQUIREMENTS:
 - Generate EXACTLY 8-10 activities (not 3-6)
+- Each activity MUST be COMPLETELY DIFFERENT from all others
+- NO DUPLICATE or SIMILAR tasks - each must be a unique work phase/process
+- Cover the FULL workflow from start to finish with diverse tasks
 - Each activity MUST have comprehensive legislation references including:
   * ${state} WHS Regulation 2017 (specific sections)
   * Relevant Australian Standards (AS/NZS codes)
   * Applicable Codes of Practice documents
   * Trade-specific regulatory requirements
+
+TASK DIVERSITY REQUIREMENT FOR ${tradeType}:
+${tradeType === 'Tiling & Waterproofing' ? `
+1. Site preparation and surface assessment
+2. Substrate preparation and cleaning
+3. Waterproofing membrane application
+4. Waterproofing testing and validation
+5. Tile layout and measurement planning
+6. Tile cutting and preparation
+7. Adhesive application and tile installation
+8. Grouting and joint finishing
+9. Sealing and protective coating application
+10. Quality inspection and final cleanup
+EACH TASK MUST BE DIFFERENT - NO DUPLICATES` : `
+Generate 8-10 different phases of ${tradeType} work covering preparation, installation, testing, and completion phases.
+EACH TASK MUST BE A UNIQUE WORK PROCESS - NO REPETITIVE TASKS`}
 
 Return JSON with this exact structure:
 {
@@ -93,7 +112,7 @@ MANDATORY: Generate EXACTLY 8-10 activities with comprehensive legislation array
         temperature: 0.3,
       }),
       timeoutPromise
-    ]);
+    ]) as any;
 
     console.log(`🚀 RECEIVED RESPONSE`);
     
@@ -118,10 +137,15 @@ MANDATORY: Generate EXACTLY 8-10 activities with comprehensive legislation array
     // Check if we have enough activities - if not, use fallback generation
     let finalActivities = parsedResult.activities || [];
     
-    if (finalActivities.length < 8) {
-      console.log(`🚀 Only ${finalActivities.length} activities generated, adding fallback activities to reach 8-10`);
-      const additionalActivities = generateFallbackActivities(tradeType, plainTextDescription, state, siteEnvironment, hrcwCategories, 10 - finalActivities.length);
-      finalActivities = [...finalActivities, ...additionalActivities];
+    // Check for task uniqueness - ensure no duplicates or very similar tasks
+    const uniqueActivities = ensureTaskUniqueness(finalActivities, tradeType);
+    
+    if (uniqueActivities.length < 8) {
+      console.log(`🚀 Only ${uniqueActivities.length} unique activities generated, adding diverse fallback activities to reach 8-10`);
+      const additionalActivities = generateDiverseFallbackActivities(tradeType, plainTextDescription || '', state, siteEnvironment, hrcwCategories, 10 - uniqueActivities.length);
+      finalActivities = [...uniqueActivities, ...additionalActivities];
+    } else {
+      finalActivities = uniqueActivities;
     }
 
     // Enhanced activities with comprehensive legislation
@@ -146,10 +170,281 @@ MANDATORY: Generate EXACTLY 8-10 activities with comprehensive legislation array
       emergencyProcedures: getBasicEmergencyProcedures()
     };
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('OpenAI API Error:', error);
     throw new Error(`AI generation failed: ${error.message}`);
   }
+}
+
+// Function to ensure task uniqueness by removing duplicates and similar tasks
+function ensureTaskUniqueness(activities: any[], tradeType: string): any[] {
+  if (!activities || activities.length === 0) return [];
+  
+  const uniqueActivities: any[] = [];
+  const seenTasks = new Set<string>();
+  
+  for (const activity of activities) {
+    const taskKey = normalizeTaskName(activity.name || '');
+    
+    // Skip if we've seen this task or a very similar one
+    if (seenTasks.has(taskKey)) {
+      console.log(`🚀 DUPLICATE TASK DETECTED: "${activity.name}" (normalized: "${taskKey}")`);
+      continue;
+    }
+    
+    seenTasks.add(taskKey);
+    uniqueActivities.push(activity);
+  }
+  
+  console.log(`🚀 TASK UNIQUENESS CHECK: ${activities.length} → ${uniqueActivities.length} unique tasks`);
+  return uniqueActivities;
+}
+
+// Normalize task names to detect duplicates (remove common words, lowercase, etc.)
+function normalizeTaskName(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/\b(and|the|of|for|with|using|apply|application|install|installation)\b/g, '')
+    .replace(/[^a-z]/g, '')
+    .trim();
+}
+
+// Generate diverse fallback activities specific to the trade
+function generateDiverseFallbackActivities(
+  tradeType: string, 
+  jobDescription: string, 
+  state: string, 
+  siteEnvironment: string, 
+  hrcwCategories: number[], 
+  count: number
+): any[] {
+  console.log(`🚀 GENERATING ${count} DIVERSE FALLBACK ACTIVITIES FOR ${tradeType}`);
+  
+  const tradeActivities: { [key: string]: any[] } = {
+    'Tiling & Waterproofing': [
+      {
+        name: "Site measurement and layout planning",
+        description: "Conduct detailed measurements of installation areas and create comprehensive tile layout plans to optimize material usage and visual appeal",
+        riskScore: 4,
+        residualRisk: 2,
+        legislation: [`${state} WHS Regulation 2017 - Section 213`, "AS 3958.1-1991 Guide to installation of ceramic tiles", "Building Code of Australia - Waterproofing requirements"],
+        hazards: [{
+          type: "Physical",
+          description: "Strain injury from awkward positioning during measurement in confined spaces",
+          riskRating: 5,
+          controlMeasures: ["Use ergonomic measuring tools", "Take regular breaks", "Use knee pads when working at floor level"],
+          residualRisk: 3,
+          causeAgent: "Prolonged kneeling and reaching in bathroom spaces",
+          environmentalCondition: `${siteEnvironment} site with limited workspace`,
+          consequence: "Musculoskeletal strain and joint injury"
+        }],
+        ppe: ["Knee Pads", "Safety Glasses", "Steel Cap Boots"],
+        tools: ["Measuring tape", "Laser level", "Chalk line", "Square"],
+        trainingRequired: ["Measurement techniques", "Layout planning"]
+      },
+      {
+        name: "Substrate moisture testing and assessment",
+        description: "Perform comprehensive moisture content testing of substrates using electronic moisture meters to ensure suitable conditions for tiling and waterproofing",
+        riskScore: 3,
+        residualRisk: 2,
+        legislation: [`${state} WHS Regulation 2017 - Section 38`, "AS 3740-2021 Waterproofing of wet areas", "TCNA Handbook installation guidelines"],
+        hazards: [{
+          type: "Electrical",
+          description: "Electric shock risk from moisture meter use in wet environments",
+          riskRating: 6,
+          controlMeasures: ["Use battery-operated meters only", "Ensure hands are dry", "Check equipment before use"],
+          residualRisk: 2,
+          causeAgent: "Electronic moisture meter in damp conditions",
+          environmentalCondition: "Wet area testing with residual moisture",
+          consequence: "Electric shock and burns"
+        }],
+        ppe: ["Insulated Gloves", "Safety Glasses", "Dry Footwear"],
+        tools: ["Moisture meter", "Hygrothermal meter", "Test probes"],
+        trainingRequired: ["Moisture testing procedures", "Equipment calibration"]
+      },
+      {
+        name: "Adhesive mixing and application preparation",
+        description: "Prepare tile adhesives according to manufacturer specifications using appropriate mixing ratios and techniques for specific substrate and tile combinations",
+        riskScore: 5,
+        residualRisk: 3,
+        legislation: [`${state} WHS Regulation 2017 - Section 347`, "AS 4992.1 Ceramic tiles installation", "ACCC consumer product safety standards"],
+        hazards: [{
+          type: "Chemical",
+          description: "Dermatitis and respiratory irritation from adhesive powder and fumes during mixing",
+          riskRating: 7,
+          controlMeasures: ["Use mechanical mixing", "Ensure adequate ventilation", "Wear appropriate respirator"],
+          residualRisk: 3,
+          causeAgent: "Cement-based adhesive powder becoming airborne",
+          environmentalCondition: "Enclosed mixing area with poor ventilation",
+          consequence: "Skin sensitization and respiratory problems"
+        }],
+        ppe: ["P2 Respirator", "Chemical Gloves", "Safety Glasses", "Apron"],
+        tools: ["Mixing paddle", "Drill mixer", "Clean bucket", "Measuring cup"],
+        trainingRequired: ["Chemical handling", "Mixing procedures", "SDS interpretation"]
+      },
+      {
+        name: "Tile cutting and edge finishing operations",
+        description: "Execute precise tile cutting using wet saws and manual tools to achieve accurate fits around fixtures, corners, and irregular spaces",
+        riskScore: 8,
+        residualRisk: 4,
+        legislation: [`${state} WHS Regulation 2017 - Section 213`, "AS 2550.10 Safety of machinery", "Silica exposure prevention guidelines"],
+        hazards: [{
+          type: "Physical",
+          description: "Laceration injuries from tile shards and saw blade contact during cutting operations",
+          riskRating: 9,
+          controlMeasures: ["Use proper blade guards", "Maintain stable work surface", "Use push sticks for small pieces"],
+          residualRisk: 4,
+          causeAgent: "Wet saw blade and sharp ceramic tile edges",
+          environmentalCondition: "Wet cutting station with ceramic debris",
+          consequence: "Deep lacerations requiring medical treatment"
+        }],
+        ppe: ["Cut-resistant Gloves", "Safety Glasses", "Face Shield", "Apron"],
+        tools: ["Wet tile saw", "Tile nippers", "Diamond blade", "Measuring tools"],
+        trainingRequired: ["Power tool operation", "Cutting techniques", "First aid"]
+      },
+      {
+        name: "Quality control and final inspection procedures",
+        description: "Conduct comprehensive quality inspections of completed tiling work including adhesion testing, level checks, and waterproofing integrity verification",
+        riskScore: 3,
+        residualRisk: 1,
+        legislation: [`${state} WHS Regulation 2017 - Section 38`, "AS 3740-2021 Performance requirements", "Australian Building Codes Board standards"],
+        hazards: [{
+          type: "Physical",
+          description: "Slip hazard from water and testing materials on newly completed surfaces",
+          riskRating: 5,
+          controlMeasures: ["Use non-slip footwear", "Clean spills immediately", "Use warning signs"],
+          residualRisk: 2,
+          causeAgent: "Water spray testing on smooth tile surfaces",
+          environmentalCondition: "Newly completed wet area with test water",
+          consequence: "Slip and fall causing injury"
+        }],
+        ppe: ["Non-slip Boots", "Safety Glasses", "Hi-vis Vest"],
+        tools: ["Water spray bottle", "Level", "Measuring tape", "Camera"],
+        trainingRequired: ["Quality standards", "Testing procedures", "Documentation"]
+      }
+    ],
+    'Electrical': [
+      {
+        name: "Electrical isolation and lockout procedures",
+        description: "Implement comprehensive electrical isolation procedures including circuit identification, isolation verification, and lockout/tagout protocols",
+        riskScore: 9,
+        residualRisk: 3,
+        legislation: [`${state} WHS Regulation 2017 - Section 140`, "AS/NZS 4836 Safe working on or near low voltage electrical installations"],
+        hazards: [{
+          type: "Electrical",
+          description: "Electric shock from inadequate isolation of live electrical circuits",
+          riskRating: 15,
+          controlMeasures: ["Test circuits with approved tester", "Apply personal locks", "Verify zero energy state"],
+          residualRisk: 3
+        }],
+        ppe: ["Insulated Gloves", "Safety Glasses", "Arc Flash Suit"],
+        tools: ["Voltage tester", "Lockout devices", "Circuit tracer"],
+        trainingRequired: ["Electrical safety", "Lockout procedures"]
+      },
+      {
+        name: "Cable installation through conduits and cable trays",
+        description: "Install electrical cables through protective conduits and cable management systems ensuring proper routing and protection",
+        riskScore: 6,
+        residualRisk: 3,
+        legislation: [`${state} WHS Regulation 2017 - Section 213`, "AS/NZS 3000 Electrical installations"],
+        hazards: [{
+          type: "Physical",
+          description: "Back strain from pulling heavy cables through long conduit runs",
+          riskRating: 7,
+          controlMeasures: ["Use cable pulling equipment", "Team lifting", "Take regular breaks"],
+          residualRisk: 3
+        }],
+        ppe: ["Back Support", "Cut-resistant Gloves", "Safety Glasses"],
+        tools: ["Cable puller", "Fish tape", "Lubricant"],
+        trainingRequired: ["Cable installation techniques", "Manual handling"]
+      }
+    ],
+    'Plumbing': [
+      {
+        name: "Pipe cutting and joining operations",
+        description: "Execute precise pipe cutting and joining using appropriate techniques for different pipe materials including copper, PVC, and PEX",
+        riskScore: 6,
+        residualRisk: 3,
+        legislation: [`${state} WHS Regulation 2017 - Section 213`, "AS/NZS 3500 Plumbing and drainage"],
+        hazards: [{
+          type: "Physical",
+          description: "Burns from soldering operations and cuts from pipe cutting tools",
+          riskRating: 8,
+          controlMeasures: ["Use proper torch technique", "Maintain sharp cutting tools", "Use heat-resistant gloves"],
+          residualRisk: 3
+        }],
+        ppe: ["Heat-resistant Gloves", "Safety Glasses", "Apron"],
+        tools: ["Pipe cutter", "Soldering torch", "Flux", "Fittings"],
+        trainingRequired: ["Pipe joining techniques", "Soldering safety"]
+      },
+      {
+        name: "Pressure testing and leak detection",
+        description: "Conduct comprehensive pressure testing of plumbing systems to verify integrity and identify potential leak points",
+        riskScore: 7,
+        residualRisk: 2,
+        legislation: [`${state} WHS Regulation 2017 - Section 38`, "AS/NZS 3500.2 Sanitary plumbing and drainage"],
+        hazards: [{
+          type: "Physical",
+          description: "High pressure water burst causing injury from failed connections during testing",
+          riskRating: 9,
+          controlMeasures: ["Use appropriate test pressures", "Check all connections", "Stand clear during pressurization"],
+          residualRisk: 2
+        }],
+        ppe: ["Safety Glasses", "Gloves", "Hi-vis Vest"],
+        tools: ["Pressure gauge", "Test pump", "Leak detection equipment"],
+        trainingRequired: ["Pressure testing procedures", "System commissioning"]
+      }
+    ]
+  };
+  
+  const activities = tradeActivities[tradeType] || [];
+  return activities.slice(0, count);
+}
+
+// Helper functions from the main integration file
+function getTradeSpecificLegislation(tradeType: string, state: string, activityName: string): string[] {
+  return [
+    `${state} WHS Regulation 2017 - Section 213`,
+    "AS/NZS 3000 Electrical installations", 
+    "Code of Practice - Managing risks in construction work"
+  ];
+}
+
+function getTradeSpecificCause(activityName: string, tradeType: string): string {
+  return `${tradeType.toLowerCase()} equipment failure during ${activityName.toLowerCase()}`;
+}
+
+function getTradeSpecificConsequence(activityName: string, tradeType: string): string {
+  return `Injury requiring first aid treatment from ${activityName.toLowerCase()} operations`;
+}
+
+function getTradeSpecificEquipment(tradeType: string): any[] {
+  const equipment: { [key: string]: any[] } = {
+    'Tiling & Waterproofing': [
+      { name: 'Wet tile saw', type: 'Power tool', riskLevel: 'High', certification: 'Required' },
+      { name: 'Mixer drill', type: 'Power tool', riskLevel: 'Medium', certification: 'Not Required' }
+    ],
+    'Electrical': [
+      { name: 'Voltage tester', type: 'Testing equipment', riskLevel: 'Medium', certification: 'Required' },
+      { name: 'Cable puller', type: 'Manual tool', riskLevel: 'Low', certification: 'Not Required' }
+    ]
+  };
+  return equipment[tradeType] || [];
+}
+
+function getBasicEmergencyProcedures(): any[] {
+  return [
+    {
+      type: 'Medical Emergency',
+      procedure: 'Call 000, provide first aid, evacuate if necessary',
+      contactNumber: '000'
+    },
+    {
+      type: 'Fire Emergency', 
+      procedure: 'Activate alarm, evacuate, call fire brigade',
+      contactNumber: '000'
+    }
+  ];
 }
 
 function generateFallbackActivities(tradeType: string, jobDescription: string, state: string, siteEnvironment: string, hrcwCategories: number[], count: number): any[] {
@@ -272,149 +567,6 @@ function getTradeSpecificBaseActivities(tradeType: string): any[] {
       tools: ['Hand Truck', 'Lifting Equipment', 'Storage Racks'],
       training: ['Manual handling techniques', 'Material storage procedures'],
       permits: []
-    }
-  ];
-}
-
-function getTradeSpecificLegislation(tradeType: string, state: string, activityName: string): string[] {
-  const baseLegislation = [
-    `${state} WHS Regulation 2017 - Section 291 (Construction Work)`,
-    `${state} WHS Act 2011 - Section 19 (Primary Duty of Care)`
-  ];
-  
-  if (tradeType.includes('Tiling')) {
-    return [
-      ...baseLegislation,
-      `AS/NZS 4586:2013 - Slip resistance classification of new pedestrian surface materials`,
-      `AS 3958.1:2007 - Guide to the installation of ceramic tiles`,
-      `${state} Code of Practice - Construction Work`,
-      `${state} Code of Practice - Managing the risk of falls at workplaces`,
-      `AS/NZS 3972:2010 - Portland and blended cements`,
-      `AS 2357:2015 - Ceramic tiles - Selection and installation`
-    ];
-  }
-  
-  if (tradeType.includes('Electrical')) {
-    return [
-      ...baseLegislation,
-      `AS/NZS 3000:2018 - Electrical installations (Wiring Rules)`,
-      `${state} Electrical Safety Regulation 2013`,
-      `AS/NZS 4836:2011 - Safe working on low voltage electrical installations`,
-      `${state} Code of Practice - Electrical work`,
-      `AS/NZS 1768:2007 - Lightning protection`,
-      `${state} WHS Regulation 2017 - Section 164 (Electrical safety)`
-    ];
-  }
-  
-  if (tradeType.includes('Plumbing')) {
-    return [
-      ...baseLegislation,
-      `AS/NZS 3500:2018 - Plumbing and drainage`,
-      `${state} Plumbing and Drainage Regulation 2019`,
-      `AS/NZS 2566:1998 - Buried flexible pipelines`,
-      `${state} Code of Practice - Construction work involving asbestos`,
-      `AS 1428:2009 - Design for access and mobility`,
-      `${state} Water Supply Code`
-    ];
-  }
-  
-  if (tradeType.includes('Carpentry') || tradeType.includes('Construction')) {
-    return [
-      ...baseLegislation,
-      `AS 1684:2010 - Residential timber-framed construction`,
-      `AS/NZS 1720:2010 - Timber structures`,
-      `${state} Code of Practice - Managing the risk of falls at workplaces`,
-      `AS/NZS 4357:2005 - Structural laminated veneer lumber`,
-      `${state} Building Code - Structural requirements`,
-      `AS/NZS 1170:2011 - Structural design actions`
-    ];
-  }
-  
-  return [
-    ...baseLegislation,
-    `${state} Code of Practice - Construction Work`,
-    `AS/NZS 1891:2007 - Industrial fall-arrest systems`,
-    `${state} Code of Practice - Managing the risk of falls at workplaces`
-  ];
-}
-
-function getTradeSpecificCause(taskName: string, tradeType: string): string {
-  if (tradeType.includes('Tiling')) {
-    return taskName.toLowerCase().includes('cutting') ? 'tile cutter blade contact' :
-           taskName.toLowerCase().includes('grout') ? 'chemical adhesive exposure' :
-           'tile installation tool slippage';
-  }
-  if (tradeType.includes('Electrical')) {
-    return 'electrical contact with live conductors';
-  }
-  if (tradeType.includes('Plumbing')) {
-    return 'pressurized pipe system failure';
-  }
-  return 'tool or equipment malfunction';
-}
-
-function getTradeSpecificConsequence(taskName: string, tradeType: string): string {
-  if (tradeType.includes('Tiling')) {
-    return taskName.toLowerCase().includes('cutting') ? 'laceration to hands/fingers' :
-           taskName.toLowerCase().includes('grout') ? 'chemical burns to skin' :
-           'musculoskeletal strain';
-  }
-  if (tradeType.includes('Electrical')) {
-    return 'electric shock or electrocution';
-  }
-  if (tradeType.includes('Plumbing')) {
-    return 'scalding or drowning';
-  }
-  return 'physical injury';
-}
-
-function getTradeSpecificEquipment(tradeType: string): any[] {
-  if (tradeType.includes('Tiling')) {
-    return [
-      {
-        name: 'Tile Cutting Saw',
-        type: 'Equipment',
-        category: 'Cutting Tools',
-        certificationRequired: false,
-        inspectionStatus: 'Current',
-        riskLevel: 'Medium',
-        safetyRequirements: ['Blade guard', 'Water cooling system', 'Emergency stop']
-      },
-      {
-        name: 'Angle Grinder',
-        type: 'Equipment', 
-        category: 'Power Tools',
-        certificationRequired: false,
-        inspectionStatus: 'Current',
-        riskLevel: 'Medium',
-        safetyRequirements: ['Guard protection', 'Two-handed operation', 'Eye protection']
-      }
-    ];
-  }
-  return [
-    {
-      name: 'Hand Tools',
-      type: 'Equipment',
-      category: 'General Tools',
-      certificationRequired: false,
-      inspectionStatus: 'Current',
-      riskLevel: 'Low',
-      safetyRequirements: ['Good condition', 'Proper storage']
-    }
-  ];
-}
-
-function getBasicEmergencyProcedures(): any[] {
-  return [
-    {
-      scenario: 'Personal Injury',
-      response: 'Stop work immediately, provide first aid, call emergency services if required (000)',
-      contacts: ['Site Supervisor', 'Emergency Services: 000', 'Company Safety Officer']
-    },
-    {
-      scenario: 'Equipment Failure',
-      response: 'Isolate equipment, secure area, notify supervisor, arrange inspection',
-      contacts: ['Site Supervisor', 'Equipment Supplier', 'Safety Officer']
     }
   ];
 }
