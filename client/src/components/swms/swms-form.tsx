@@ -17,6 +17,7 @@ import PDFPrintSystem from "./pdf-print-system";
 import RiskValidationSystem from "./risk-validation-system";
 import PlantEquipmentSystem from "./plant-equipment-system";
 import ComprehensiveRiskComplianceTool from "./comprehensive-risk-compliance-tool";
+import EmbeddedCheckout from "../embedded-checkout";
 import { 
   MapPin, 
   Briefcase, 
@@ -165,6 +166,8 @@ interface SWMSFormProps {
 
 const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit, setIsProcessingCredit, userData }: StepContentProps) => {
   const { toast } = useToast();
+  const [showEmbeddedCheckout, setShowEmbeddedCheckout] = useState(false);
+  const [checkoutData, setCheckoutData] = useState<{amount: number, plan: string} | null>(null);
 
   const updateFormData = (updates: any) => {
     const newData = { 
@@ -1000,21 +1003,32 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
             <CardContent>
               <div className="space-y-4">
                 {/* Use Current Credits Option */}
-                <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                <div className={`p-4 border rounded-lg ${(userData?.swmsCredits || 0) > 0 ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
                   <div className="flex items-center justify-between mb-3">
                     <div>
-                      <p className="font-medium text-green-800">Use Current Credits</p>
-                      <p className="text-green-700 text-sm">You have {userData?.swmsCredits || 0} SWMS credits remaining from your subscription</p>
+                      <p className={`font-medium ${(userData?.swmsCredits || 0) > 0 ? 'text-green-800' : 'text-red-800'}`}>
+                        {(userData?.swmsCredits || 0) > 0 ? 'Use Current Credits' : 'No Credits Available'}
+                      </p>
+                      <p className={`text-sm ${(userData?.swmsCredits || 0) > 0 ? 'text-green-700' : 'text-red-700'}`}>
+                        {(userData?.swmsCredits || 0) > 0 
+                          ? `You have ${userData.swmsCredits} SWMS credits remaining from your subscription`
+                          : 'You need to purchase credits or use a payment option below to continue'
+                        }
+                      </p>
                     </div>
-                    <Badge className="bg-green-100 text-green-800">
+                    <Badge className={`${(userData?.swmsCredits || 0) > 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
                       {userData?.swmsCredits || 0} Credits
                     </Badge>
                   </div>
                   <Button 
                     size="lg"
-                    className="w-full bg-green-600 hover:bg-green-700"
-                    disabled={isProcessingCredit}
+                    className={`w-full ${(userData?.swmsCredits || 0) > 0 ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-400 cursor-not-allowed'}`}
+                    disabled={isProcessingCredit || (userData?.swmsCredits || 0) === 0}
                     onClick={async () => {
+                      if ((userData?.swmsCredits || 0) === 0) {
+                        alert('You have no credits available. Please purchase credits below.');
+                        return;
+                      }
                       if (isProcessingCredit) return; // Prevent double clicks
                       
                       setIsProcessingCredit?.(true);
@@ -1077,7 +1091,7 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
                       }
                     }}
                   >
-                    Use Current Credits (1 credit)
+                    {(userData?.swmsCredits || 0) > 0 ? 'Use Current Credits (1 credit)' : 'No Credits Available'}
                   </Button>
                 </div>
                 
@@ -1091,7 +1105,10 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
                     <Button 
                       variant="outline"
                       size="lg"
-                      onClick={() => window.location.href = '/payment?plan=one-off'}
+                      onClick={() => {
+                        setCheckoutData({ amount: 15, plan: 'one-off' });
+                        setShowEmbeddedCheckout(true);
+                      }}
                       className="border-blue-200 text-blue-700 hover:bg-blue-50"
                     >
                       <CreditCard className="mr-2 h-4 w-4" />
@@ -1100,11 +1117,14 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
                     <Button 
                       variant="outline" 
                       size="lg"
-                      onClick={() => window.location.href = '/payment?plan=credits'}
+                      onClick={() => {
+                        setCheckoutData({ amount: 60, plan: 'credits' });
+                        setShowEmbeddedCheckout(true);
+                      }}
                       className="border-orange-200 text-orange-700 hover:bg-orange-50"
                     >
                       <Zap className="mr-2 h-4 w-4" />
-                      Credit Pack ($65)
+                      Credit Pack ($60)
                     </Button>
                   </div>
                   
@@ -1129,6 +1149,35 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
               </div>
             </CardContent>
           </Card>
+          
+          {/* Embedded Checkout Modal */}
+          {showEmbeddedCheckout && checkoutData && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-white p-6 rounded-lg max-w-md w-full mx-4">
+                <EmbeddedCheckout
+                  amount={checkoutData.amount}
+                  plan={checkoutData.plan}
+                  onSuccess={() => {
+                    // Payment successful - refresh user data and proceed to next step
+                    setShowEmbeddedCheckout(false);
+                    setCheckoutData(null);
+                    updateFormData({ 
+                      paymentMethod: 'stripe', 
+                      paid: true,
+                      paidAccess: true 
+                    });
+                    if (onNext) {
+                      onNext();
+                    }
+                  }}
+                  onCancel={() => {
+                    setShowEmbeddedCheckout(false);
+                    setCheckoutData(null);
+                  }}
+                />
+              </div>
+            </div>
+          )}
         </div>
       );
 
