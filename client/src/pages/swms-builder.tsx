@@ -176,6 +176,7 @@ export default function SwmsBuilder() {
     plantEquipment: [],
     signatures: [],
     emergencyProcedures: [],
+    monitoringRequirements: "", // Monitoring & Review Requirements field
     generalRequirements: [],
     hrcwCategories: [], // Auto-detected High-Risk Construction Work categories
     ppeRequirements: [] // Auto-detected PPE requirements
@@ -458,7 +459,7 @@ export default function SwmsBuilder() {
           weatherEmergencyProcedures: data.weatherEmergencyProcedures || '',
           equipmentFailureProcedures: data.equipmentFailureProcedures || '',
           communicationProcedures: data.communicationProcedures || '',
-          monitoringRequirements: data.monitoringRequirements || [],
+          monitoringRequirements: data.monitoringRequirements || "",
           generalRequirements: data.generalRequirements || [],
           // Enhanced Safety Options (EXTREMELY IMPORTANT per user)
           siteEnvironment: data.siteEnvironment || '',
@@ -664,7 +665,8 @@ export default function SwmsBuilder() {
           const hasSignificantData = data.title || data.jobName || data.tradeType || 
                                     data.projectAddress || data.jobNumber || data.startDate ||
                                     data.swmsCreatorName || data.principalContractor ||
-                                    data.projectManager || data.siteSupervisor || data.projectDescription;
+                                    data.projectManager || data.siteSupervisor || data.projectDescription ||
+                                    data.monitoringRequirements;
           
           if (hasSignificantData) {
             console.log('Auto-saving with data:', Object.keys(data).filter(key => data[key]));
@@ -681,7 +683,8 @@ export default function SwmsBuilder() {
     const hasSignificantData = formData.title || formData.jobName || formData.tradeType || 
                               formData.projectAddress || formData.jobNumber || formData.startDate ||
                               formData.swmsCreatorName || formData.principalContractor ||
-                              formData.projectManager || formData.siteSupervisor || formData.projectDescription;
+                              formData.projectManager || formData.siteSupervisor || formData.projectDescription ||
+                              formData.monitoringRequirements;
                               
     if (hasSignificantData) {
       console.log('Auto-saving draft with form data:', formData);
