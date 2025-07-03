@@ -995,7 +995,9 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
               <div className="space-y-4">
                 {/* Use Current Credits Option */}
                 {(() => {
-                  const totalCredits = (userData?.swmsCredits || 0) + (userData?.subscriptionCredits || 0) + (userData?.addonCredits || 0);
+                  const totalCredits = userData?.credits || 0;
+                  const subscriptionCredits = userData?.subscriptionCredits || 0;
+                  const addonCredits = userData?.addonCredits || 0;
                   const hasCredits = totalCredits > 0;
                   
                   return (
@@ -1007,7 +1009,7 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
                           </p>
                           <p className={`text-sm ${hasCredits ? 'text-green-700' : 'text-red-700'}`}>
                             {hasCredits 
-                              ? `You have ${totalCredits} total credits available (${userData?.subscriptionCredits || 0} subscription + ${userData?.addonCredits || 0} add-on)`
+                              ? `You have ${totalCredits} total credits available (${subscriptionCredits} subscription + ${addonCredits} add-on)`
                               : 'You need to purchase credits or use a payment option below to continue'
                             }
                           </p>
@@ -1339,9 +1341,9 @@ export default function SWMSForm({ step, data = {}, onNext, onDataChange }: SWMS
   const [formData, setFormData] = useState(data);
   const [isProcessingCredit, setIsProcessingCredit] = useState(false);
 
-  // Fetch current user data for real-time credits
+  // Fetch current user billing data for real-time credits
   const { data: userData, refetch: refetchUserData } = useQuery({
-    queryKey: ['/api/user'],
+    queryKey: ['/api/user/billing'],
     enabled: step === 6, // Only fetch when on payment step
   });
 
