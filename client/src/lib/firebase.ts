@@ -2,11 +2,11 @@ import { initializeApp } from "firebase/app";
 import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyDfpdBt7cHNGp3XqJBEcWSd31s0u9IK18U",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: `${import.meta.env.VITE_FIREBASE_PROJECT_ID || "safety-sensei"}.firebaseapp.com`,
   projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "safety-sensei",
   storageBucket: `${import.meta.env.VITE_FIREBASE_PROJECT_ID || "safety-sensei"}.firebasestorage.app`,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:227678352261:web:6aa8d1d9f281565959caec",
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
 // Debug logging
