@@ -52,13 +52,38 @@ function CheckoutForm({ amount, plan, onSuccess, onCancel }: EmbeddedCheckoutPro
           variant: "destructive",
         });
       } else if (paymentIntent && paymentIntent.status === 'succeeded') {
-        // Payment succeeded without redirect
-        toast({
-          title: "Payment Successful",
-          description: "Your payment has been processed successfully!",
-        });
-        queryClient.invalidateQueries({ queryKey: ['/api/user/credits'] });
-        onSuccess();
+        // Payment succeeded without redirect - verify and complete
+        try {
+          const verifyResponse = await fetch('/api/verify-payment-intent', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ paymentIntentId: paymentIntent.id })
+          });
+          
+          if (verifyResponse.ok) {
+            const verifyData = await verifyResponse.json();
+            if (verifyData.success) {
+              toast({
+                title: "Payment Successful",
+                description: "Your payment has been processed successfully!",
+              });
+              queryClient.invalidateQueries({ queryKey: ['/api/user/credits'] });
+              onSuccess();
+            } else {
+              throw new Error('Payment verification failed');
+            }
+          } else {
+            throw new Error('Could not verify payment');
+          }
+        } catch (verifyError: any) {
+          console.error('Payment verification error:', verifyError);
+          toast({
+            title: "Payment Complete",
+            description: "Payment processed, but verification pending. Please continue.",
+          });
+          onSuccess(); // Still proceed in case of verification issues
+        }
       } else {
         // Payment processing or redirect will happen
         toast({
@@ -79,56 +104,58 @@ function CheckoutForm({ amount, plan, onSuccess, onCancel }: EmbeddedCheckoutPro
   };
 
   return (
-    <Card className="w-full max-w-md">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <CreditCard className="h-5 w-5" />
-          Complete Payment
-        </CardTitle>
-        <p className="text-sm text-gray-600">
-          {plan === 'one-off' ? 'One-Off SWMS' : 'Credit Pack'} - ${amount}
-        </p>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <PaymentElement />
-          
-          {error && (
-            <div className="p-3 bg-red-50 border border-red-200 rounded-md">
-              <p className="text-sm text-red-600">{error}</p>
-            </div>
-          )}
-          
-          <div className="flex gap-3">
-            <Button 
-              type="button" 
-              variant="outline" 
-              onClick={onCancel}
-              disabled={loading}
-              className="flex-1"
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Cancel
-            </Button>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-y-auto">
+      <Card className="w-full max-w-md max-h-[90vh] overflow-y-auto">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <CreditCard className="h-5 w-5" />
+            Complete Payment
+          </CardTitle>
+          <p className="text-sm text-gray-600">
+            {plan === 'one-off' ? 'One-Off SWMS' : 'Credit Pack'} - ${amount}
+          </p>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <PaymentElement />
             
-            <Button 
-              type="submit" 
-              disabled={!stripe || loading}
-              className="flex-1"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Processing...
-                </>
-              ) : (
-                `Pay $${amount}`
-              )}
-            </Button>
-          </div>
-        </form>
-      </CardContent>
-    </Card>
+            {error && (
+              <div className="p-3 bg-red-50 border border-red-200 rounded-md">
+                <p className="text-sm text-red-600">{error}</p>
+              </div>
+            )}
+            
+            <div className="flex gap-3">
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={onCancel}
+                disabled={loading}
+                className="flex-1"
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Cancel
+              </Button>
+              
+              <Button 
+                type="submit" 
+                disabled={!stripe || loading}
+                className="flex-1"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  `Pay $${amount}`
+                )}
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
 
@@ -168,39 +195,34 @@ export default function EmbeddedCheckout(props: EmbeddedCheckoutProps) {
 
   if (loading) {
     return (
-      <Card className="w-full max-w-md">
-        <CardContent className="p-8 text-center">
-          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
-          <p className="text-gray-600">Setting up payment...</p>
-        </CardContent>
-      </Card>
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <Card className="w-full max-w-md">
+          <CardContent className="p-8 text-center">
+            <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+            <p className="text-gray-600">Setting up payment...</p>
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 
   if (error) {
     return (
-      <Card className="w-full max-w-md">
-        <CardContent className="p-8 text-center">
-          <p className="text-red-600 mb-4">{error}</p>
-          <Button onClick={props.onCancel} variant="outline">
-            Go Back
-          </Button>
-        </CardContent>
-      </Card>
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <Card className="w-full max-w-md">
+          <CardContent className="p-8 text-center">
+            <p className="text-red-600 mb-4">{error}</p>
+            <Button onClick={props.onCancel} variant="outline">
+              Close
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 
   if (!clientSecret) {
-    return (
-      <Card className="w-full max-w-md">
-        <CardContent className="p-8 text-center">
-          <p className="text-gray-600 mb-4">Unable to initialize payment</p>
-          <Button onClick={props.onCancel} variant="outline">
-            Go Back
-          </Button>
-        </CardContent>
-      </Card>
-    );
+    return null;
   }
 
   const options = {

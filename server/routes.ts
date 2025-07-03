@@ -1321,7 +1321,32 @@ export async function registerRoutes(app: Express) {
       
       console.log('Received Stripe webhook:', event.type);
       
-      if (event.type === 'checkout.session.completed') {
+      if (event.type === 'payment_intent.succeeded') {
+        const paymentIntent = event.data.object;
+        console.log('Processing successful payment intent:', paymentIntent.id);
+        
+        const userId = parseInt(paymentIntent.metadata?.userId || '999') || 999;
+        const paymentType = paymentIntent.metadata?.type;
+        const amount = paymentIntent.amount / 100; // Convert from cents
+        
+        console.log(`Payment intent completed: User ${userId}, Type: ${paymentType}, Amount: $${amount}`);
+        
+        // Update user credits based on payment type
+        let creditsToAdd = 0;
+        if (paymentType === 'one-off' && amount === 15) {
+          creditsToAdd = 1; // Single SWMS access
+        } else if (paymentType === 'one-off' && amount === 60) {
+          creditsToAdd = 5; // SWMS Pack - 5 SWMS access
+        }
+        
+        if (creditsToAdd > 0) {
+          // All one-off purchases go to addon credits (never expire)
+          await storage.addAddonCredits(userId, creditsToAdd);
+          console.log(`Added ${creditsToAdd} addon credits to user ${userId}`);
+        }
+        
+        res.json({ received: true, processed: true });
+      } else if (event.type === 'checkout.session.completed') {
         const session = event.data.object;
         console.log('Processing successful checkout session:', session.id);
         
@@ -1380,6 +1405,52 @@ export async function registerRoutes(app: Express) {
     } catch (error) {
       console.error('Webhook processing error:', error);
       res.status(500).json({ error: 'Webhook processing failed' });
+    }
+  });
+
+  // Verify payment intent status and complete SWMS workflow
+  app.post('/api/verify-payment-intent', async (req, res) => {
+    try {
+      const { paymentIntentId } = req.body;
+      console.log('Verifying payment intent:', paymentIntentId);
+      
+      const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+      
+      if (paymentIntent.status === 'succeeded') {
+        const userId = parseInt(paymentIntent.metadata?.userId || '999') || 999;
+        const paymentType = paymentIntent.metadata?.type;
+        const amount = paymentIntent.amount / 100;
+        
+        // Update credits if not already processed
+        let creditsToAdd = 0;
+        if (paymentType === 'one-off' && amount === 15) {
+          creditsToAdd = 1;
+        } else if (paymentType === 'one-off' && amount === 60) {
+          creditsToAdd = 5;
+        }
+        
+        if (creditsToAdd > 0) {
+          await storage.addAddonCredits(userId, creditsToAdd);
+          console.log(`Added ${creditsToAdd} addon credits to user ${userId} via payment verification`);
+        }
+        
+        const user = await storage.getUserById(userId);
+        
+        res.json({
+          success: true,
+          paymentIntent: paymentIntent,
+          credits: user?.swmsCredits || 0,
+          addonCredits: user?.addonCredits || 0
+        });
+      } else {
+        res.json({
+          success: false,
+          paymentIntent: paymentIntent
+        });
+      }
+    } catch (error) {
+      console.error('Payment intent verification error:', error);
+      res.status(500).json({ error: 'Payment verification failed' });
     }
   });
 

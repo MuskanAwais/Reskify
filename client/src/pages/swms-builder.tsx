@@ -187,6 +187,41 @@ export default function SwmsBuilder() {
     const urlParams = new URLSearchParams(window.location.search);
     const editId = urlParams.get('edit');
     const isAdminMode = urlParams.get('admin') === 'true';
+    const stepParam = urlParams.get('step');
+    const paymentSuccess = urlParams.get('payment_success');
+    const paymentError = urlParams.get('payment_error');
+    
+    // Handle payment success/error
+    if (paymentSuccess === 'true') {
+      toast({
+        title: "Payment Successful",
+        description: "Your payment has been processed. Proceeding to next step.",
+      });
+      // Set step to 7 (Legal Disclaimer) after successful payment
+      setCurrentStep(7);
+      // Update form data to indicate payment completed
+      setFormData(prev => ({ ...prev, paidAccess: true }));
+      // Clean URL
+      const cleanUrl = window.location.pathname;
+      window.history.replaceState({}, '', cleanUrl + '?step=7');
+    } else if (paymentError === 'true') {
+      toast({
+        title: "Payment Issue",
+        description: "There was an issue with your payment. Please try again.",
+        variant: "destructive",
+      });
+      // Stay on payment step (6)
+      setCurrentStep(6);
+      // Clean URL
+      const cleanUrl = window.location.pathname;
+      window.history.replaceState({}, '', cleanUrl + '?step=6');
+    } else if (stepParam) {
+      // Set step from URL parameter
+      const stepNumber = parseInt(stepParam);
+      if (stepNumber >= 1 && stepNumber <= STEPS.length) {
+        setCurrentStep(stepNumber);
+      }
+    }
     
     if (editId) {
       // Load draft from database for editing (admin can edit completed documents)
