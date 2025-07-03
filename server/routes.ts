@@ -456,9 +456,10 @@ export async function registerRoutes(app: Express) {
       if (draft) {
         console.log('Draft found:', draft.title || 'Untitled');
         
-        // Map database field names (underscores) to frontend field names (camelCase)
+        // Comprehensive mapping of ALL database fields to frontend camelCase format
         const mappedDraft = {
           ...draft,
+          // Step 1 Fields - Project Information
           principalContractor: draft.principal_contractor || draft.principalContractor || '',
           projectManager: draft.project_manager || draft.projectManager || '',
           siteSupervisor: draft.site_supervisor || draft.siteSupervisor || '',
@@ -470,7 +471,55 @@ export async function registerRoutes(app: Express) {
           projectLocation: draft.project_location || draft.projectLocation || '',
           startDate: draft.start_date || draft.startDate || '',
           tradeType: draft.trade_type || draft.tradeType || '',
-          // Include activities and other important fields for step 2 data persistence
+          customTradeType: draft.custom_trade_type || draft.customTradeType || '',
+          workDescription: draft.project_description || draft.workDescription || '',
+          projectDescription: draft.project_description || draft.projectDescription || '',
+          // Company and signature fields
+          companyLogo: draft.company_logo || draft.companyLogo || '',
+          signatureMethod: draft.signature_method || draft.signatureMethod || '',
+          signatureImage: draft.signature_image || draft.signatureImage || '',
+          signatureText: draft.signature_text || draft.signatureText || '',
+          // Step 2 Fields - Activities and Risk Assessments (CRITICAL for data persistence)
+          activities: draft.activities || [],
+          workActivities: draft.work_activities || draft.workActivities || draft.activities || [],
+          selectedTasks: draft.activities || draft.work_activities || draft.selectedTasks || [],
+          riskAssessments: draft.risk_assessments || draft.riskAssessments || draft.workActivities || [],
+          safetyMeasures: draft.safety_measures || draft.safetyMeasures || [],
+          // Step 3 Fields - HRCW Categories
+          hrcwCategories: draft.hrcw_categories || draft.hrcwCategories || [],
+          // Step 4 Fields - PPE Requirements
+          ppeRequirements: draft.ppe_requirements || draft.ppeRequirements || [],
+          // Step 5 Fields - Plant Equipment
+          plantEquipment: draft.plant_equipment || draft.plantEquipment || [],
+          // Step 6 Fields - Emergency Procedures (CRITICAL)
+          emergencyProcedures: draft.emergency_procedures || draft.emergencyProcedures || {contacts: [], procedures: []},
+          emergencyContacts: draft.emergency_contacts || draft.emergencyContacts || [],
+          emergencyContactsList: draft.emergency_contacts_list || draft.emergencyContactsList || draft.emergency_contacts || [],
+          nearestHospital: draft.nearest_hospital || draft.nearestHospital || '',
+          firstAidArrangements: draft.first_aid_arrangements || draft.firstAidArrangements || '',
+          evacuationProcedures: draft.evacuation_procedures || draft.evacuationProcedures || '',
+          fireEmergencyProcedures: draft.fire_emergency_procedures || draft.fireEmergencyProcedures || '',
+          medicalEmergencyProcedures: draft.medical_emergency_procedures || draft.medicalEmergencyProcedures || '',
+          chemicalSpillProcedures: draft.chemical_spill_procedures || draft.chemicalSpillProcedures || '',
+          weatherEmergencyProcedures: draft.weather_emergency_procedures || draft.weatherEmergencyProcedures || '',
+          equipmentFailureProcedures: draft.equipment_failure_procedures || draft.equipmentFailureProcedures || '',
+          communicationProcedures: draft.communication_procedures || draft.communicationProcedures || '',
+          monitoringRequirements: draft.monitoring_requirements || draft.monitoringRequirements || [],
+          generalRequirements: draft.general_requirements || draft.generalRequirements || [],
+          // Enhanced Safety Options (EXTREMELY IMPORTANT per user directive)
+          siteEnvironment: draft.site_environment || draft.siteEnvironment || '',
+          selectedState: draft.selected_state || draft.selectedState || '',
+          stateSpecificRequirements: draft.state_specific_requirements || draft.stateSpecificRequirements || '',
+          // Payment and workflow fields
+          currentStep: draft.current_step || draft.currentStep || 1,
+          paymentMethod: draft.payment_method || draft.paymentMethod || '',
+          paid: draft.paid || false,
+          acceptedDisclaimer: draft.accepted_disclaimer || draft.acceptedDisclaimer || false,
+          signatures: draft.signatures || [],
+          // System fields
+          complianceCodes: draft.compliance_codes || draft.complianceCodes || [],
+          responsiblePersons: draft.responsible_persons || draft.responsiblePersons || [],
+          // Status fields for editing workflow
           // Prioritize workActivities (complex objects) over activities (simple strings)
           workActivities: (() => {
             try {

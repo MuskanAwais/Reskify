@@ -449,39 +449,70 @@ export class DatabaseStorage implements IStorage {
 
       const swmsData = {
         userId,
-        title,
-        jobName: title,
+        title: data.jobName || data.title || title,
+        // Step 1 fields - Preserve ALL form data with proper database field mapping
+        jobName: data.jobName || data.title || '',
         jobNumber: data.jobNumber || '',
         projectAddress: data.projectAddress || '',
-        projectLocation: data.projectAddress || '',
-        projectDescription: data.projectDescription || '',
+        projectLocation: data.projectLocation || data.projectAddress || '',
+        projectDescription: data.projectDescription || data.workDescription || '',
         principalContractor: data.principalContractor || '',
         projectManager: data.projectManager || '',
         siteSupervisor: data.siteSupervisor || '',
         swmsCreatorName: data.swmsCreatorName || '',
         swmsCreatorPosition: data.swmsCreatorPosition || '',
+        startDate: data.startDate || '',
         tradeType: data.tradeType || '',
+        customTradeType: data.customTradeType || '',
+        companyLogo: data.companyLogo || '',
+        signatureMethod: data.signatureMethod || '',
+        signatureImage: data.signatureImage || '',
+        signatureText: data.signatureText || '',
+        // Step 2 fields - Activities and risk assessments (CRITICAL)
         activities: Array.isArray(data.activities) && data.activities.length > 0 
-          ? data.activities.map((activity: any) => typeof activity === 'object' ? activity.name || activity.title || 'Activity' : activity)
-          : (data.selectedTasks || [data.tradeType || 'General Construction']),
-        workActivities: Array.isArray(data.activities) && data.activities.length > 0 
-          ? data.activities
-          : (data.workActivities || []),
-        riskAssessments: data.workActivities || [],
-        safetyMeasures: data.workActivities || [],
+          ? data.activities.map((activity: any) => typeof activity === 'object' ? activity.name || activity.task || activity.title || 'Activity' : activity)
+          : (data.selectedTasks || []),
+        workActivities: data.activities || data.workActivities || data.selectedTasks || [],
+        riskAssessments: data.riskAssessments || data.workActivities || [],
+        safetyMeasures: data.safetyMeasures || data.workActivities || [],
+        // Step 3 fields - HRCW Categories
+        hrcwCategories: data.hrcwCategories || [],
+        // Step 4 fields - PPE Requirements  
+        ppeRequirements: data.ppeRequirements || [],
+        // Step 5 fields - Plant Equipment
         plantEquipment: data.plantEquipment || [],
+        // Step 6 fields - Emergency Procedures (CRITICAL)
         emergencyProcedures: data.emergencyProcedures || {contacts: [], procedures: []},
         emergencyContacts: data.emergencyContactsList || data.emergencyContacts || [],
+        emergencyContactsList: data.emergencyContactsList || data.emergencyContacts || [],
         nearestHospital: data.nearestHospital || '',
         firstAidArrangements: data.firstAidArrangements || '',
-        hrcwCategories: data.hrcwCategories || [],
-        ppeRequirements: data.ppeRequirements || [],
-        complianceCodes: ['WHS Act 2011', 'WHS Regulation 2017'],
-        responsiblePersons: [{name: 'Site Supervisor', role: 'Supervisor'}],
+        evacuationProcedures: data.evacuationProcedures || '',
+        fireEmergencyProcedures: data.fireEmergencyProcedures || '',
+        medicalEmergencyProcedures: data.medicalEmergencyProcedures || '',
+        chemicalSpillProcedures: data.chemicalSpillProcedures || '',
+        weatherEmergencyProcedures: data.weatherEmergencyProcedures || '',
+        equipmentFailureProcedures: data.equipmentFailureProcedures || '',
+        communicationProcedures: data.communicationProcedures || '',
+        monitoringRequirements: data.monitoringRequirements || [],
+        generalRequirements: data.generalRequirements || [],
+        // Payment and workflow fields
         currentStep: data.currentStep || 1,
-        // Preserve existing status and paidAccess if updating an existing document
+        paymentMethod: data.paymentMethod || '',
+        paid: data.paid || false,
+        acceptedDisclaimer: data.acceptedDisclaimer || false,
+        signatures: data.signatures || [],
+        // Enhanced safety options preservation (EXTREMELY IMPORTANT per user)
+        siteEnvironment: data.siteEnvironment || '',
+        selectedState: data.selectedState || '',
+        stateSpecificRequirements: data.stateSpecificRequirements || '',
+        // System fields
+        complianceCodes: data.complianceCodes || ['WHS Act 2011', 'WHS Regulation 2017'],
+        responsiblePersons: data.responsiblePersons || [{name: 'Site Supervisor', role: 'Supervisor'}],
+        // Preserve existing status if updating an existing document
         status: existingDraft ? (existingDraft.status || 'draft') : (data.status || 'draft'),
-        paidAccess: existingDraft ? (existingDraft.paidAccess || false) : (data.paidAccess === true ? true : false)
+        // Additional metadata 
+        updatedAt: new Date()
       };
 
       if (existingDraft) {
