@@ -1098,6 +1098,7 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
                       size="lg"
                       onClick={async () => {
                         try {
+                          console.log('Creating checkout session for $15...');
                           const response = await fetch('/api/create-checkout-session', {
                             method: 'POST',
                             headers: {
@@ -1111,12 +1112,28 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
                             })
                           });
 
+                          console.log('Response status:', response.status);
+                          
                           if (response.ok) {
                             const data = await response.json();
-                            // Redirect to Stripe Checkout
-                            window.location.href = data.checkoutUrl;
+                            console.log('Checkout session response:', data);
+                            
+                            if (data.checkoutUrl) {
+                              console.log('Redirecting to:', data.checkoutUrl);
+                              // Try multiple redirect methods for better compatibility
+                              try {
+                                window.location.assign(data.checkoutUrl);
+                              } catch (redirectError) {
+                                console.error('Redirect failed, trying window.open:', redirectError);
+                                window.open(data.checkoutUrl, '_self');
+                              }
+                            } else {
+                              console.error('No checkout URL in response:', data);
+                              alert('Payment system error: No checkout URL received');
+                            }
                           } else {
-                            console.error('Failed to create checkout session');
+                            const errorData = await response.text();
+                            console.error('Checkout session failed:', response.status, errorData);
                             alert('Failed to create checkout session. Please try again.');
                           }
                         } catch (error) {
@@ -1134,6 +1151,7 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
                       size="lg"
                       onClick={async () => {
                         try {
+                          console.log('Creating checkout session for $60...');
                           const response = await fetch('/api/create-checkout-session', {
                             method: 'POST',
                             headers: {
@@ -1147,12 +1165,28 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
                             })
                           });
 
+                          console.log('Response status:', response.status);
+                          
                           if (response.ok) {
                             const data = await response.json();
-                            // Redirect to Stripe Checkout
-                            window.location.href = data.checkoutUrl;
+                            console.log('Checkout session response:', data);
+                            
+                            if (data.checkoutUrl) {
+                              console.log('Redirecting to:', data.checkoutUrl);
+                              // Try multiple redirect methods for better compatibility
+                              try {
+                                window.location.assign(data.checkoutUrl);
+                              } catch (redirectError) {
+                                console.error('Redirect failed, trying window.open:', redirectError);
+                                window.open(data.checkoutUrl, '_self');
+                              }
+                            } else {
+                              console.error('No checkout URL in response:', data);
+                              alert('Payment system error: No checkout URL received');
+                            }
                           } else {
-                            console.error('Failed to create checkout session');
+                            const errorData = await response.text();
+                            console.error('Checkout session failed:', response.status, errorData);
                             alert('Failed to create checkout session. Please try again.');
                           }
                         } catch (error) {
