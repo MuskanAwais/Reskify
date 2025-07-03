@@ -36,11 +36,12 @@ function CheckoutForm({ amount, plan, onSuccess, onCancel }: EmbeddedCheckoutPro
     setError(null);
 
     try {
-      const { error } = await stripe.confirmPayment({
+      const { error, paymentIntent } = await stripe.confirmPayment({
         elements,
         confirmParams: {
           return_url: `${window.location.origin}/payment-success?return_to=${encodeURIComponent(window.location.href)}`,
         },
+        redirect: 'if_required',
       });
 
       if (error) {
@@ -50,9 +51,16 @@ function CheckoutForm({ amount, plan, onSuccess, onCancel }: EmbeddedCheckoutPro
           description: error.message,
           variant: "destructive",
         });
+      } else if (paymentIntent && paymentIntent.status === 'succeeded') {
+        // Payment succeeded without redirect
+        toast({
+          title: "Payment Successful",
+          description: "Your payment has been processed successfully!",
+        });
+        queryClient.invalidateQueries({ queryKey: ['/api/user/credits'] });
+        onSuccess();
       } else {
-        // Payment succeeded - this won't execute because user is redirected
-        // But we'll handle success in the return URL
+        // Payment processing or redirect will happen
         toast({
           title: "Payment Processing",
           description: "Your payment is being processed...",
@@ -195,8 +203,16 @@ export default function EmbeddedCheckout(props: EmbeddedCheckoutProps) {
     );
   }
 
+  const options = {
+    clientSecret,
+    appearance: {
+      theme: 'stripe' as const,
+    },
+    loader: 'auto' as const,
+  };
+
   return (
-    <Elements stripe={stripePromise} options={{ clientSecret }}>
+    <Elements stripe={stripePromise} options={options}>
       <CheckoutForm {...props} />
     </Elements>
   );

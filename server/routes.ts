@@ -1451,6 +1451,9 @@ export async function registerRoutes(app: Express) {
       const paymentIntent = await stripe.paymentIntents.create({
         amount: Math.round(amount * 100), // Convert to cents
         currency: 'aud',
+        automatic_payment_methods: {
+          enabled: true,
+        },
         metadata: {
           type: type || 'one-off',
           userId: req.session?.userId || '999'
