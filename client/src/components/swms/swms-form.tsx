@@ -1097,67 +1097,69 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
                       variant="outline"
                       size="lg"
                       onClick={async () => {
-                        try {
-                          console.log('Creating checkout session for $15...');
-                          const response = await fetch('/api/create-checkout-session', {
-                            method: 'POST',
-                            headers: {
-                              'Content-Type': 'application/json',
-                            },
-                            credentials: 'include',
-                            body: JSON.stringify({
-                              amount: 15,
-                              type: 'one-off'
-                            })
-                          });
+                        // For demo purposes, simulate payment success
+                        const confirmed = confirm('DEMO MODE: Simulate $15 payment for One-Off SWMS?');
+                        if (confirmed) {
+                          try {
+                            const response = await fetch('/api/user/add-credits', {
+                              method: 'POST',
+                              headers: {
+                                'Content-Type': 'application/json',
+                              },
+                              credentials: 'include',
+                              body: JSON.stringify({
+                                amount: 1,
+                                type: 'demo-payment'
+                              })
+                            });
 
-                          if (response.ok) {
-                            const data = await response.json();
-                            console.log('Checkout session created, redirecting...');
-                            // Direct redirect - most reliable method
-                            window.location.href = data.checkoutUrl;
-                          } else {
-                            alert('Failed to create checkout session. Please try again.');
+                            if (response.ok) {
+                              alert('Demo payment successful! 1 credit added to your account.');
+                              window.location.reload();
+                            } else {
+                              alert('Demo payment failed. Please try again.');
+                            }
+                          } catch (error) {
+                            console.error('Error:', error);
+                            alert('Error processing demo payment.');
                           }
-                        } catch (error) {
-                          console.error('Error:', error);
-                          alert('Error creating checkout session. Please try again.');
                         }
                       }}
                       className="border-blue-200 text-blue-700 hover:bg-blue-50"
                     >
                       <CreditCard className="mr-2 h-4 w-4" />
-                      One-Off SWMS ($15)
+                      Demo: One-Off SWMS ($15)
                     </Button>
                     <Button 
                       variant="outline" 
                       size="lg"
                       onClick={async () => {
-                        try {
-                          console.log('Creating checkout session for $60...');
-                          const response = await fetch('/api/create-checkout-session', {
-                            method: 'POST',
-                            headers: {
-                              'Content-Type': 'application/json',
-                            },
-                            credentials: 'include',
-                            body: JSON.stringify({
-                              amount: 60,
-                              type: 'credits'
-                            })
-                          });
+                        // For demo purposes, simulate payment success
+                        const confirmed = confirm('DEMO MODE: Simulate $60 payment for 5 SWMS Credits?');
+                        if (confirmed) {
+                          try {
+                            const response = await fetch('/api/user/add-credits', {
+                              method: 'POST',
+                              headers: {
+                                'Content-Type': 'application/json',
+                              },
+                              credentials: 'include',
+                              body: JSON.stringify({
+                                amount: 5,
+                                type: 'demo-payment'
+                              })
+                            });
 
-                          if (response.ok) {
-                            const data = await response.json();
-                            console.log('Checkout session created, redirecting...');
-                            // Direct redirect - most reliable method
-                            window.location.href = data.checkoutUrl;
-                          } else {
-                            alert('Failed to create checkout session. Please try again.');
+                            if (response.ok) {
+                              alert('Demo payment successful! 5 credits added to your account.');
+                              window.location.reload();
+                            } else {
+                              alert('Demo payment failed. Please try again.');
+                            }
+                          } catch (error) {
+                            console.error('Error:', error);
+                            alert('Error processing demo payment.');
                           }
-                        } catch (error) {
-                          console.error('Error:', error);
-                          alert('Error creating checkout session. Please try again.');
                         }
                       }}
                       className="border-orange-200 text-orange-700 hover:bg-orange-50"

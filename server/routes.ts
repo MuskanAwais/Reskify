@@ -24,7 +24,7 @@ const upload = multer({
 
 // Initialize Stripe
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-  apiVersion: '2024-06-20',
+  apiVersion: '2023-10-16',
 });
 
 interface SessionData {
@@ -1239,6 +1239,31 @@ export async function registerRoutes(app: Express) {
     }
   });
 
+  // Demo credit addition endpoint (bypasses Stripe for testing)
+  app.post('/api/user/add-credits', async (req, res) => {
+    try {
+      const userId = req.session?.userId || 999; // Demo mode support
+      const { amount, type } = req.body;
+      
+      console.log(`Demo payment: Adding ${amount} credits to user ${userId}`);
+      
+      // Add credits to user account
+      await storage.addAddonCredits(userId, amount);
+      
+      res.json({ 
+        success: true,
+        message: `Added ${amount} credits successfully`,
+        type: type
+      });
+    } catch (error: any) {
+      console.error('Demo credit addition error:', error);
+      res.status(500).json({ 
+        error: 'Failed to add demo credits',
+        message: error.message 
+      });
+    }
+  });
+
   // Stripe checkout session endpoint
   app.post('/api/create-checkout-session', async (req, res) => {
     try {
@@ -1251,53 +1276,30 @@ export async function registerRoutes(app: Express) {
       const baseUrl = req.headers.origin || `https://${req.headers.host}` || 'https://localhost:5000';
       console.log('Using baseUrl:', baseUrl);
       
-      // Different configuration for subscription vs one-time payments
-      let sessionConfig: any = {
+      // Simplified checkout session configuration
+      const sessionConfig = {
         payment_method_types: ['card'],
-        success_url: `${baseUrl}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${baseUrl}/swms-builder?step=6`,
-        allow_promotion_codes: true,
-        billing_address_collection: 'auto',
-        metadata: {
-          type: type || 'one-off',
-          userId: req.session?.userId || '999'
-        }
-      };
-
-      if (type === 'subscription') {
-        // Recurring subscription
-        sessionConfig.mode = 'subscription';
-        sessionConfig.line_items = [{
-          price_data: {
-            currency: 'aud',
-            product_data: {
-              name: 'SWMS Monthly Subscription',
-              description: '10 SWMS documents per month with team collaboration',
-            },
-            unit_amount: Math.round(amount * 100), // Convert to cents
-            recurring: {
-              interval: 'month',
-            },
-          },
-          quantity: 1,
-        }];
-      } else {
-        // One-time payment
-        sessionConfig.mode = 'payment';
-        sessionConfig.line_items = [{
+        mode: 'payment',
+        line_items: [{
           price_data: {
             currency: 'aud',
             product_data: {
               name: type === 'credits' ? 'SWMS Credits' : 'One-off SWMS Access',
               description: type === 'credits' ? 
-                `${amount === 100 ? '10' : '5'} SWMS Credits (never expire)` : 
+                `${amount === 60 ? '5' : '1'} SWMS Credits (never expire)` : 
                 'Single SWMS Document Access',
             },
             unit_amount: Math.round(amount * 100), // Convert to cents
           },
           quantity: 1,
-        }];
-      }
+        }],
+        success_url: `${baseUrl}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${baseUrl}/swms-builder?step=6`,
+        metadata: {
+          type: type || 'one-off',
+          userId: req.session?.userId || '999'
+        }
+      };
       
       const session = await stripe.checkout.sessions.create(sessionConfig);
 
