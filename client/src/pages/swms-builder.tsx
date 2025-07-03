@@ -167,19 +167,24 @@ export default function SwmsBuilder() {
     hazards: [],
     riskAssessments: [],
     paidAccess: false, // Track if payment completed
+    paid: false, // Track if payment completed via any method
+    creditsUsed: false, // Track if credits were used for payment
+    paymentMethod: "", // Track payment method used
     safetyMeasures: [],
     complianceCodes: [],
     acceptedDisclaimer: false,
     selectedTasks: [],
     workDescription: "",
     projectDescription: "", // Added for Step 1 project description field
+    plainTextDescription: "", // Added for PPE detection
     plantEquipment: [],
     signatures: [],
     emergencyProcedures: [],
     monitoringRequirements: "", // Monitoring & Review Requirements field
     generalRequirements: [],
-    hrcwCategories: [], // Auto-detected High-Risk Construction Work categories
-    ppeRequirements: [] // Auto-detected PPE requirements
+    hrcwCategories: [] as number[], // Auto-detected High-Risk Construction Work categories
+    ppeRequirements: [] as string[], // Auto-detected PPE requirements
+    lastPaymentUpdate: 0 // Track payment updates
   });
 
   // Load saved data from localStorage on mount
@@ -888,8 +893,8 @@ export default function SwmsBuilder() {
     // Handle proceeding from payment step (step 6) - STRICT VALIDATION
     if (currentStep === 6) {
       // If this document already has paid access, skip payment step entirely
-      if (formData.paidAccess === true) {
-        console.log('Payment step skipped - document already has paid access');
+      if (formData.paidAccess === true || formData.paid === true || formData.creditsUsed === true) {
+        console.log('Payment step skipped - document already has paid access or payment completed');
         // Skip to step 7 (Legal Disclaimer)
         setCurrentStep(7);
         return;
@@ -897,12 +902,29 @@ export default function SwmsBuilder() {
       
       // Use current user data for real-time credit balance  
       const creditsRemaining = currentUser ? (currentUser as any).swmsCredits || 0 : 0;
+      const addonCredits = currentUser ? (currentUser as any).addonCredits || 0 : 0;
+      const subscriptionCredits = currentUser ? (currentUser as any).subscriptionCredits || 0 : 0;
+      const totalCredits = creditsRemaining + addonCredits + subscriptionCredits;
+      
       const hasProPlan = (subscription as any)?.plan === "Pro" || (subscription as any)?.plan === "Enterprise";
       const isAdminDemo = localStorage.getItem('adminDemoMode') === 'true';
       const isAppAdmin = localStorage.getItem('isAppAdmin') === 'true';
       
-      // STRICT: Only allow if user has credits, pro plan, or admin demo mode
-      if (!((isAppAdmin && isAdminDemo) || creditsRemaining > 0 || hasProPlan)) {
+      console.log('Payment validation check:', {
+        creditsRemaining,
+        addonCredits,
+        subscriptionCredits,
+        totalCredits,
+        hasProPlan,
+        isAdminDemo,
+        isAppAdmin,
+        paidAccess: formData.paidAccess,
+        paid: formData.paid,
+        creditsUsed: formData.creditsUsed
+      });
+      
+      // STRICT: Only allow if user has credits, pro plan, or admin demo mode, OR payment already completed
+      if (!((isAppAdmin && isAdminDemo) || totalCredits > 0 || hasProPlan || formData.paidAccess || formData.paid || formData.creditsUsed)) {
         toast({
           title: "Payment Required",
           description: "Please complete payment or use available credits to proceed.",
@@ -911,10 +933,10 @@ export default function SwmsBuilder() {
         return;
       }
       
-      // Allow admin to bypass payment in demo mode OR if user has credits
-      if ((isAppAdmin && isAdminDemo) || creditsRemaining > 0 || hasProPlan) {
-        // Admin demo mode or user has credits - skip payment validation
-        console.log('Payment validation bypassed - demo mode or credits available');
+      // Allow admin to bypass payment in demo mode OR if user has credits OR payment already completed
+      if ((isAppAdmin && isAdminDemo) || totalCredits > 0 || hasProPlan || formData.paidAccess || formData.paid || formData.creditsUsed) {
+        // Admin demo mode or user has credits or payment completed - skip payment validation
+        console.log('Payment validation bypassed - demo mode, credits available, or payment completed');
       } else {
         // Redirect to payment page if no credits and not in admin demo mode
         setLocation("/payment");

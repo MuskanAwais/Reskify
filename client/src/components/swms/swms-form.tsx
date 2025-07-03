@@ -1046,6 +1046,15 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
                               const result = await response.json();
                               console.log('Credit used successfully:', result);
                               
+                              // Immediately update form data to indicate payment is complete
+                              updateFormData({ 
+                                paymentMethod: 'credits', 
+                                paid: true,
+                                creditsUsed: true,
+                                paidAccess: true,  // This is what the step validation checks for
+                                lastPaymentUpdate: Date.now() // Force refresh
+                              });
+                              
                               // Invalidate cache to refresh ALL user-related data
                               await Promise.all([
                                 queryClient.invalidateQueries({ queryKey: ['/api/user'] }),
@@ -1055,22 +1064,18 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
                                 queryClient.invalidateQueries({ queryKey: ['/api/user/settings'] })
                               ]);
                               
-                              // Update form data to indicate payment is complete
-                              updateFormData({ 
-                                paymentMethod: 'credits', 
-                                paid: true,
-                                creditsUsed: true,
-                                paidAccess: true  // This is what the step validation checks for
-                              });
+                              // Wait a moment for state to update, then proceed
+                              setTimeout(() => {
+                                console.log('Form data updated, calling onNext()');
+                                // Trigger next step via the parent component
+                                if (onNext) {
+                                  console.log('Calling onNext to progress to next step');
+                                  onNext();
+                                } else {
+                                  console.log('WARNING: onNext is not available');
+                                }
+                              }, 100);
                               
-                              console.log('Form data updated, calling onNext()');
-                              // Trigger next step via the parent component
-                              if (onNext) {
-                                console.log('Calling onNext to progress to next step');
-                                onNext();
-                              } else {
-                                console.log('WARNING: onNext is not available');
-                              }
                             } else {
                               console.error('Failed to use credit:', response.statusText);
                               alert('Failed to process credit usage. Please try again.');
