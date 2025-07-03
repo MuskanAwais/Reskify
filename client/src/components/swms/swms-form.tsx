@@ -1107,37 +1107,20 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
                             credentials: 'include',
                             body: JSON.stringify({
                               amount: 15,
-                              type: 'one-off',
-                              return_to: window.location.href
+                              type: 'one-off'
                             })
                           });
 
-                          console.log('Response status:', response.status);
-                          
                           if (response.ok) {
                             const data = await response.json();
-                            console.log('Checkout session response:', data);
-                            
-                            if (data.checkoutUrl) {
-                              console.log('Redirecting to:', data.checkoutUrl);
-                              // Try multiple redirect methods for better compatibility
-                              try {
-                                window.location.assign(data.checkoutUrl);
-                              } catch (redirectError) {
-                                console.error('Redirect failed, trying window.open:', redirectError);
-                                window.open(data.checkoutUrl, '_self');
-                              }
-                            } else {
-                              console.error('No checkout URL in response:', data);
-                              alert('Payment system error: No checkout URL received');
-                            }
+                            console.log('Checkout session created, redirecting...');
+                            // Direct redirect - most reliable method
+                            window.location.href = data.checkoutUrl;
                           } else {
-                            const errorData = await response.text();
-                            console.error('Checkout session failed:', response.status, errorData);
                             alert('Failed to create checkout session. Please try again.');
                           }
                         } catch (error) {
-                          console.error('Error creating checkout session:', error);
+                          console.error('Error:', error);
                           alert('Error creating checkout session. Please try again.');
                         }
                       }}
@@ -1160,37 +1143,20 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
                             credentials: 'include',
                             body: JSON.stringify({
                               amount: 60,
-                              type: 'credits',
-                              return_to: window.location.href
+                              type: 'credits'
                             })
                           });
 
-                          console.log('Response status:', response.status);
-                          
                           if (response.ok) {
                             const data = await response.json();
-                            console.log('Checkout session response:', data);
-                            
-                            if (data.checkoutUrl) {
-                              console.log('Redirecting to:', data.checkoutUrl);
-                              // Try multiple redirect methods for better compatibility
-                              try {
-                                window.location.assign(data.checkoutUrl);
-                              } catch (redirectError) {
-                                console.error('Redirect failed, trying window.open:', redirectError);
-                                window.open(data.checkoutUrl, '_self');
-                              }
-                            } else {
-                              console.error('No checkout URL in response:', data);
-                              alert('Payment system error: No checkout URL received');
-                            }
+                            console.log('Checkout session created, redirecting...');
+                            // Direct redirect - most reliable method
+                            window.location.href = data.checkoutUrl;
                           } else {
-                            const errorData = await response.text();
-                            console.error('Checkout session failed:', response.status, errorData);
                             alert('Failed to create checkout session. Please try again.');
                           }
                         } catch (error) {
-                          console.error('Error creating checkout session:', error);
+                          console.error('Error:', error);
                           alert('Error creating checkout session. Please try again.');
                         }
                       }}
