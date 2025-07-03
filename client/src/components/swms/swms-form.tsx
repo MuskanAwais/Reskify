@@ -1119,8 +1119,12 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
                               queryClient.invalidateQueries({ queryKey: ["/api/user"] });
                               queryClient.invalidateQueries({ queryKey: ["dashboard"] });
                               queryClient.invalidateQueries({ queryKey: ["credits"] });
-                              // Force window refresh to ensure credit display updates
-                              window.location.reload();
+                              // Force re-render of payment step to show updated credits
+                              updateFormData({ lastPaymentUpdate: Date.now() });
+                              // Wait a moment then refetch user data
+                              setTimeout(() => {
+                                queryClient.refetchQueries({ queryKey: ["/api/user"] });
+                              }, 500);
                             } else {
                               alert('Demo payment failed. Please try again.');
                             }
@@ -1161,8 +1165,12 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
                               queryClient.invalidateQueries({ queryKey: ["/api/user"] });
                               queryClient.invalidateQueries({ queryKey: ["dashboard"] });
                               queryClient.invalidateQueries({ queryKey: ["credits"] });
-                              // Force window refresh to ensure credit display updates
-                              window.location.reload();
+                              // Force re-render of payment step to show updated credits
+                              updateFormData({ lastPaymentUpdate: Date.now() });
+                              // Wait a moment then refetch user data
+                              setTimeout(() => {
+                                queryClient.refetchQueries({ queryKey: ["/api/user"] });
+                              }, 500);
                             } else {
                               alert('Demo payment failed. Please try again.');
                             }
