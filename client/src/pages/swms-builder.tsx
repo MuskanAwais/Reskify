@@ -404,45 +404,89 @@ export default function SwmsBuilder() {
           return;
         }
         
-        // Map database fields to form structure, preserving all saved data
+        // Comprehensive mapping of ALL saved data back to form structure
         const mappedData = {
-          ...formData, // Keep existing form structure
-          id: data.id,
-          // Keep all Step 1 fields from saved draft
+          // Use the loaded data as the base, then add form structure fields
+          ...data,
+          // Ensure proper field mapping for all steps
+          // Step 1 - Project Information (CRITICAL)
           title: data.title || data.jobName || '',
-          jobName: data.jobName || '',
+          jobName: data.jobName || data.title || '',
           jobNumber: data.jobNumber || '',
           projectAddress: data.projectAddress || '',
-          projectLocation: data.projectLocation || '',
+          projectLocation: data.projectLocation || data.projectAddress || '',
           startDate: data.startDate || '',
           principalContractor: data.principalContractor || '',
           projectManager: data.projectManager || '',
           siteSupervisor: data.siteSupervisor || '',
           swmsCreatorName: data.swmsCreatorName || '',
           swmsCreatorPosition: data.swmsCreatorPosition || '',
-          workDescription: data.projectDescription || '',
-          // Keep other data from the saved draft
+          workDescription: data.projectDescription || data.workDescription || '',
+          projectDescription: data.projectDescription || data.workDescription || '',
           tradeType: data.tradeType || '',
           customTradeType: data.customTradeType || '',
-          responsiblePersons: data.responsiblePersons || [],
-          activities: data.activities || data.workActivities || [],
-          selectedTasks: data.activities || data.workActivities || [],
-          riskAssessments: data.riskAssessments || [],
-          safetyMeasures: data.safetyMeasures || [],
-          emergencyProcedures: data.emergencyProcedures || [],
-          complianceCodes: data.complianceCodes || [],
+          // Company and signature data
+          companyLogo: data.companyLogo || '',
+          signatureMethod: data.signatureMethod || '',
+          signatureImage: data.signatureImage || '',
+          signatureText: data.signatureText || '',
+          // Step 2 - Activities and Risk Assessments (CRITICAL)
+          activities: data.workActivities || data.activities || data.selectedTasks || [],
+          selectedTasks: data.workActivities || data.activities || data.selectedTasks || [],
+          workActivities: data.workActivities || data.activities || [],
+          riskAssessments: data.riskAssessments || data.workActivities || [],
+          safetyMeasures: data.safetyMeasures || data.workActivities || [],
+          // Step 3 - HRCW Categories
+          hrcwCategories: data.hrcwCategories || [],
+          // Step 4 - PPE Requirements
+          ppeRequirements: data.ppeRequirements || [],
+          // Step 5 - Plant Equipment
           plantEquipment: data.plantEquipment || [],
+          // Step 6 - Emergency Procedures (CRITICAL)
+          emergencyProcedures: data.emergencyProcedures || {contacts: [], procedures: []},
+          emergencyContacts: data.emergencyContacts || data.emergencyContactsList || [],
+          emergencyContactsList: data.emergencyContactsList || data.emergencyContacts || [],
+          nearestHospital: data.nearestHospital || '',
+          firstAidArrangements: data.firstAidArrangements || '',
+          evacuationProcedures: data.evacuationProcedures || '',
+          fireEmergencyProcedures: data.fireEmergencyProcedures || '',
+          medicalEmergencyProcedures: data.medicalEmergencyProcedures || '',
+          chemicalSpillProcedures: data.chemicalSpillProcedures || '',
+          weatherEmergencyProcedures: data.weatherEmergencyProcedures || '',
+          equipmentFailureProcedures: data.equipmentFailureProcedures || '',
+          communicationProcedures: data.communicationProcedures || '',
           monitoringRequirements: data.monitoringRequirements || [],
           generalRequirements: data.generalRequirements || [],
+          // Enhanced Safety Options (EXTREMELY IMPORTANT per user)
+          siteEnvironment: data.siteEnvironment || '',
+          selectedState: data.selectedState || '',
+          stateSpecificRequirements: data.stateSpecificRequirements || '',
+          // Payment and workflow fields
+          paymentMethod: data.paymentMethod || '',
+          paid: data.paid || false,
           acceptedDisclaimer: data.acceptedDisclaimer || false,
           signatures: data.signatures || [],
+          // System fields
+          complianceCodes: data.complianceCodes || [],
+          responsiblePersons: data.responsiblePersons || [],
+          // Draft management
+          id: data.id,
           draftId: data.id,
           paidAccess: hasPaidAccess,
-          hrcwCategories: data.hrcwCategories || [],
-          ppeRequirements: data.ppeRequirements || []
+          // Preserve timestamps
+          lastModified: new Date().toISOString()
         };
         
-        console.log('Mapped form data for editing (all data preserved):', mappedData);
+        console.log('Draft loading - Original data from database:', data);
+        console.log('Draft loading - Mapped form data (all data preserved):', mappedData);
+        console.log('Draft loading - Critical fields check:', {
+          jobName: mappedData.jobName,
+          projectAddress: mappedData.projectAddress,
+          activities: mappedData.activities?.length || 0,
+          emergencyProcedures: mappedData.emergencyProcedures,
+          tradeType: mappedData.tradeType
+        });
+        
         setFormData(mappedData);
         setDraftId(data.id);
         setIsDraft(true);
