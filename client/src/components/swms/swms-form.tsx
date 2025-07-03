@@ -1115,7 +1115,8 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
 
                             if (response.ok) {
                               alert('Demo payment successful! 1 credit added to your account.');
-                              window.location.reload();
+                              // Trigger a re-render by updating form data timestamp
+                              updateFormData({ lastPaymentUpdate: Date.now() });
                             } else {
                               alert('Demo payment failed. Please try again.');
                             }
@@ -1152,7 +1153,8 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
 
                             if (response.ok) {
                               alert('Demo payment successful! 5 credits added to your account.');
-                              window.location.reload();
+                              // Trigger a re-render by updating form data timestamp
+                              updateFormData({ lastPaymentUpdate: Date.now() });
                             } else {
                               alert('Demo payment failed. Please try again.');
                             }
