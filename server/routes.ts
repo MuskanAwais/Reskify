@@ -470,9 +470,11 @@ export async function registerRoutes(app: Express) {
           projectAddress: draft.project_address || draft.projectAddress || '',
           projectLocation: draft.project_location || draft.projectLocation || '',
           startDate: draft.start_date || draft.startDate || '',
+          duration: draft.duration || '',
+          authorisingSignature: draft.authorising_signature || draft.authorisingSignature || '',
           tradeType: draft.trade_type || draft.tradeType || '',
           customTradeType: draft.custom_trade_type || draft.customTradeType || '',
-          workDescription: draft.project_description || draft.workDescription || '',
+          workDescription: draft.work_description || draft.project_description || draft.workDescription || '',
           projectDescription: draft.project_description || draft.projectDescription || '',
           // Company and signature fields
           companyLogo: draft.company_logo || draft.companyLogo || '',

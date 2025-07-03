@@ -421,6 +421,8 @@ export default function SwmsBuilder() {
           siteSupervisor: data.siteSupervisor || '',
           swmsCreatorName: data.swmsCreatorName || '',
           swmsCreatorPosition: data.swmsCreatorPosition || '',
+          duration: data.duration || '',
+          authorisingSignature: data.authorisingSignature || '',
           workDescription: data.projectDescription || data.workDescription || '',
           projectDescription: data.projectDescription || data.workDescription || '',
           tradeType: data.tradeType || '',
@@ -482,6 +484,11 @@ export default function SwmsBuilder() {
         console.log('Draft loading - Critical fields check:', {
           jobName: mappedData.jobName,
           projectAddress: mappedData.projectAddress,
+          startDate: mappedData.startDate,
+          duration: mappedData.duration,
+          authorisingSignature: mappedData.authorisingSignature,
+          workDescription: mappedData.workDescription,
+          projectDescription: mappedData.projectDescription,
           activities: mappedData.activities?.length || 0,
           emergencyProcedures: mappedData.emergencyProcedures,
           tradeType: mappedData.tradeType
