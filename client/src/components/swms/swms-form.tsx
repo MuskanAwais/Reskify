@@ -344,11 +344,11 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
               </div>
 
               <div>
-                <Label htmlFor="description">Project Description</Label>
+                <Label htmlFor="projectDescription">Project Description</Label>
                 <Textarea
-                  id="description"
-                  value={formData.description || ""}
-                  onChange={(e) => updateFormData({ description: e.target.value })}
+                  id="projectDescription"
+                  value={formData.projectDescription || ""}
+                  onChange={(e) => updateFormData({ projectDescription: e.target.value })}
                   placeholder="Describe what tasks you'll be undertaking as part of this project"
                   rows={4}
                   className="placeholder:text-gray-400"
