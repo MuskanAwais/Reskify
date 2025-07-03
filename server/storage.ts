@@ -444,8 +444,30 @@ export class DatabaseStorage implements IStorage {
           ));
         existingDraft = document;
         console.log('Updating existing document:', data.draftId);
+      } else {
+        // Check for recent draft with similar title to prevent duplicates
+        const recentDrafts = await db
+          .select()
+          .from(swmsDocuments)
+          .where(and(
+            eq(swmsDocuments.userId, userId),
+            eq(swmsDocuments.status, 'draft'),
+            eq(swmsDocuments.title, title)
+          ))
+          .orderBy(desc(swmsDocuments.updatedAt))
+          .limit(1);
+        
+        if (recentDrafts.length > 0) {
+          const lastDraft = recentDrafts[0];
+          // If last draft was created within last 5 minutes, update it instead of creating new
+          const timeDiff = Date.now() - new Date(lastDraft.updatedAt).getTime();
+          if (timeDiff < 5 * 60 * 1000) { // 5 minutes
+            existingDraft = lastDraft;
+            console.log('Found recent draft, updating instead of creating new:', lastDraft.id);
+          }
+        }
       }
-      // If no draftId provided, always create a new document
+      // If no draftId provided and no recent draft found, create new document
 
       const swmsData = {
         userId,
