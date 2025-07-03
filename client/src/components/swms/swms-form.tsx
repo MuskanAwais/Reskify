@@ -546,38 +546,7 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
                 </div>
               </div>
 
-              {/* Duration and Project Description */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="duration">Duration</Label>
-                  <Input
-                    id="duration"
-                    value={formData.duration || ""}
-                    onChange={(e) => updateFormData({ duration: e.target.value })}
-                    placeholder="e.g., 2 weeks, 3 months"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="authorisingSignature">Authorising Signature</Label>
-                  <Input
-                    id="authorisingSignature"
-                    value={formData.authorisingSignature || ""}
-                    onChange={(e) => updateFormData({ authorisingSignature: e.target.value })}
-                    placeholder="Name of authorising person"
-                  />
-                </div>
-              </div>
 
-              <div>
-                <Label htmlFor="projectDescription">Project Description</Label>
-                <Textarea
-                  id="projectDescription"
-                  value={formData.projectDescription || ""}
-                  onChange={(e) => updateFormData({ projectDescription: e.target.value })}
-                  placeholder="Detailed description of the project and scope of work"
-                  rows={3}
-                />
-              </div>
             </CardContent>
           </Card>
         </div>
