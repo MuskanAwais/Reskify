@@ -1036,9 +1036,27 @@ export default function GPTTaskSelection({
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <h3 className="text-lg font-semibold">Generated Tasks (Editable)</h3>
-                    <Button onClick={finalizeEditedTasks} variant="outline">
-                      Finalize Tasks
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button 
+                        onClick={() => {
+                          // Clear existing tasks and force regeneration
+                          setGeneratedTasks([]);
+                          setIsEditing(false);
+                          toast({
+                            title: "Tasks Cleared",
+                            description: "Ready for fresh task generation",
+                          });
+                        }} 
+                        variant="outline" 
+                        className="border-orange-200 text-orange-700 hover:bg-orange-50"
+                      >
+                        <Bot className="h-4 w-4 mr-2" />
+                        Regenerate Tasks
+                      </Button>
+                      <Button onClick={finalizeEditedTasks} variant="outline">
+                        Finalize Tasks
+                      </Button>
+                    </div>
                   </div>
                   
                   <div className="space-y-4">

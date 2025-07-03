@@ -20,30 +20,35 @@ HRCW Categories: ${hrcwCategories.join(', ') || 'None selected'}
 
 CRITICAL REQUIREMENTS:
 - Generate EXACTLY 8-10 activities (not 3-6)
-- Each activity MUST be COMPLETELY DIFFERENT from all others
-- NO DUPLICATE or SIMILAR tasks - each must be a unique work phase/process
-- Cover the FULL workflow from start to finish with diverse tasks
-- Each activity MUST have comprehensive legislation references including:
-  * ${state} WHS Regulation 2017 (specific sections)
-  * Relevant Australian Standards (AS/NZS codes)
-  * Applicable Codes of Practice documents
-  * Trade-specific regulatory requirements
+- Each activity MUST have a UNIQUE NAME that differs from all others
+- NO DUPLICATE NAMES OR DESCRIPTIONS - Validate each task name is different
+- Cover COMPLETE workflow with DISTINCT phases of work
+- Each activity MUST have comprehensive legislation references
 
-TASK DIVERSITY REQUIREMENT FOR ${tradeType}:
-${tradeType === 'Tiling & Waterproofing' ? `
-1. Site preparation and surface assessment
-2. Substrate preparation and cleaning
-3. Waterproofing membrane application
-4. Waterproofing testing and validation
-5. Tile layout and measurement planning
-6. Tile cutting and preparation
-7. Adhesive application and tile installation
-8. Grouting and joint finishing
-9. Sealing and protective coating application
-10. Quality inspection and final cleanup
-EACH TASK MUST BE DIFFERENT - NO DUPLICATES` : `
-Generate 8-10 different phases of ${tradeType} work covering preparation, installation, testing, and completion phases.
-EACH TASK MUST BE A UNIQUE WORK PROCESS - NO REPETITIVE TASKS`}
+MANDATORY TASK UNIQUENESS FOR ${tradeType}:
+${tradeType.includes('Fire Protection') ? `
+REQUIRED UNIQUE TASKS - Each MUST have different names and purposes:
+1. "Fire Protection System Design and Planning" - Initial system layout and compliance verification
+2. "Underground Service Location and Marking" - Identifying existing utilities before excavation
+3. "Pipe Installation and Threading Operations" - Installing and connecting pipe sections
+4. "Sprinkler Head Installation and Positioning" - Mounting sprinkler heads in designated locations
+5. "Pump Room Equipment Installation" - Installing pumps, controllers, and monitoring systems
+6. "Fire Alarm Integration and Testing" - Connecting and testing alarm system components
+7. "System Pressure Testing and Commissioning" - Hydrostatic testing and system validation
+8. "Final Inspection and Certification" - Compliance checks and authority approvals
+EACH TASK NAME MUST BE COMPLETELY DIFFERENT` : tradeType.includes('Tiling') ? `
+REQUIRED UNIQUE TASKS - Each MUST have different names and purposes:
+1. "Surface Assessment and Substrate Preparation" - Evaluating and preparing work surfaces
+2. "Waterproofing Membrane Installation" - Applying protective membrane systems
+3. "Tile Layout and Measurement Planning" - Setting out tile patterns and cutting lists
+4. "Tile Cutting and Edge Preparation" - Cutting tiles to size and finishing edges
+5. "Adhesive Application and Tile Installation" - Applying adhesive and setting tiles
+6. "Grouting and Joint Sealing Operations" - Filling joints and applying sealers
+7. "Surface Cleaning and Protection" - Final cleaning and protective treatments
+8. "Quality Control and Final Inspection" - Checking work quality and compliance
+EACH TASK NAME MUST BE COMPLETELY DIFFERENT` : `
+Generate 8-10 UNIQUE tasks for ${tradeType} with DIFFERENT NAMES covering complete workflow.
+VALIDATE: No two tasks can have same or similar names - each must be distinct work phase`}
 
 Return JSON with this exact structure:
 {
@@ -221,6 +226,168 @@ function generateDiverseFallbackActivities(
   console.log(`🚀 GENERATING ${count} DIVERSE FALLBACK ACTIVITIES FOR ${tradeType}`);
   
   const tradeActivities: { [key: string]: any[] } = {
+    'Fire Protection Systems': [
+      {
+        name: "Fire Protection System Design Review and Planning",
+        description: "Review architectural plans and conduct site assessment to determine optimal sprinkler system layout, water supply requirements, and compliance with AS 2118 standards",
+        riskScore: 4,
+        residualRisk: 2,
+        legislation: [`${state} WHS Regulation 2017 - Section 291`, "AS 2118.1 Fire sprinkler systems", "Building Code of Australia - Fire safety provisions"],
+        hazards: [{
+          type: "Physical",
+          description: "Eye strain and neck injury from prolonged review of technical drawings and ceiling inspections",
+          riskRating: 4,
+          controlMeasures: ["Use proper lighting", "Take regular breaks", "Use adjustable work surfaces"],
+          residualRisk: 2,
+          causeAgent: "Extended technical document review",
+          environmentalCondition: `${siteEnvironment} site office environment`,
+          consequence: "Repetitive strain injury and eye fatigue"
+        }],
+        ppe: ["Safety Glasses", "Hard Hat"],
+        tools: ["Plans", "Measuring tape", "Laser measure", "Calculator"],
+        trainingRequired: ["Plan reading", "AS 2118 standards"]
+      },
+      {
+        name: "Underground Service Location and Dial Before You Dig",
+        description: "Locate and mark existing underground utilities using electromagnetic detection equipment before any excavation for fire system main connections",
+        riskScore: 7,
+        residualRisk: 3,
+        legislation: [`${state} WHS Regulation 2017 - Section 306`, "AS 5488 Classification of subsurface utility information", "Dial Before You Dig protocols"],
+        hazards: [{
+          type: "Physical",
+          description: "Strike existing gas, electrical or water services during excavation causing explosion, electrocution or flooding",
+          riskRating: 9,
+          controlMeasures: ["Use cable/pipe locator", "Hand dig within 300mm of located services", "Obtain clearances from authorities"],
+          residualRisk: 3,
+          causeAgent: "Excavation near unidentified underground services",
+          environmentalCondition: "Underground utility corridor areas",
+          consequence: "Explosion, electrocution or major service damage"
+        }],
+        ppe: ["Hard Hat", "Hi-Vis Vest", "Steel Cap Boots", "Gloves"],
+        tools: ["Cable locator", "Spade", "Marking spray", "Detection flags"],
+        trainingRequired: ["Service location", "Excavation safety"]
+      },
+      {
+        name: "Fire Main Pipe Installation and Threading",
+        description: "Install and connect fire main pipes using mechanical joints and threading equipment, ensuring proper grade and support according to hydraulic calculations",
+        riskScore: 6,
+        residualRisk: 3,
+        legislation: [`${state} WHS Regulation 2017 - Section 213`, "AS 2118.1 Fire sprinkler systems", "AS 1074 Steel tubes and tubulars"],
+        hazards: [{
+          type: "Physical",
+          description: "Crushing injury from heavy pipe handling and cuts from sharp threading operations",
+          riskRating: 7,
+          controlMeasures: ["Use mechanical lifting aids", "Wear cut-resistant gloves", "Ensure proper pipe support"],
+          residualRisk: 3,
+          causeAgent: "Heavy pipe sections and threading equipment",
+          environmentalCondition: "Confined ceiling space installation",
+          consequence: "Crushing injuries and lacerations"
+        }],
+        ppe: ["Hard Hat", "Cut-resistant Gloves", "Steel Cap Boots", "Eye Protection"],
+        tools: ["Pipe threader", "Pipe cutter", "Chain hoist", "Pipe wrench"],
+        trainingRequired: ["Pipe threading", "Manual handling"]
+      },
+      {
+        name: "Sprinkler Head Installation and Heat Response Testing",
+        description: "Install sprinkler heads at calculated spacings and conduct heat response testing to verify activation temperatures and spray patterns comply with design specifications",
+        riskScore: 5,
+        residualRisk: 2,
+        legislation: [`${state} WHS Regulation 2017 - Section 39`, "AS 2118.4 Sprinkler installation", "AS 2118.6 Combined sprinkler and hydrant systems"],
+        hazards: [{
+          type: "Physical",
+          description: "Falls from height during ceiling-mounted sprinkler head installation in elevated areas",
+          riskRating: 8,
+          controlMeasures: ["Use scaffolding or EWP", "Install fall arrest systems", "Maintain three points of contact"],
+          residualRisk: 3,
+          causeAgent: "Working at height on ladders or platforms",
+          environmentalCondition: "Elevated ceiling installation areas",
+          consequence: "Fall injuries and fractures"
+        }],
+        ppe: ["Hard Hat", "Safety Harness", "Steel Cap Boots", "Gloves"],
+        tools: ["Sprinkler wrench", "Torque wrench", "Heat gun", "Test gauges"],
+        trainingRequired: ["Height work", "Sprinkler installation"]
+      },
+      {
+        name: "Fire Pump and Controller Installation",
+        description: "Install fire pumps, jockey pumps, and electronic controllers in designated pump room, ensuring proper electrical connections and flow testing procedures",
+        riskScore: 7,
+        residualRisk: 3,
+        legislation: [`${state} WHS Regulation 2017 - Section 164`, "AS 2941 Fixed fire protection installations", "AS 3000 Electrical installations"],
+        hazards: [{
+          type: "Electrical",
+          description: "Electrical shock from high voltage pump motor connections and control panel wiring",
+          riskRating: 8,
+          controlMeasures: ["Licensed electrician for connections", "Lockout/tagout procedures", "Use insulated tools"],
+          residualRisk: 2,
+          causeAgent: "High voltage electrical equipment",
+          environmentalCondition: "Pump room with electrical hazards",
+          consequence: "Electrical shock and burns"
+        }],
+        ppe: ["Insulated Gloves", "Arc Flash Protection", "Safety Glasses", "Hard Hat"],
+        tools: ["Multimeter", "Insulated tools", "Lifting equipment", "Torque wrench"],
+        trainingRequired: ["Electrical safety", "Pump installation"]
+      },
+      {
+        name: "Fire Alarm Integration and Communication Testing",
+        description: "Connect fire sprinkler system to building fire alarm panel and conduct communication testing to ensure proper alarm activation and emergency response coordination",
+        riskScore: 4,
+        residualRisk: 2,
+        legislation: [`${state} WHS Regulation 2017 - Section 43`, "AS 1670.1 Fire detection and alarm systems", "AS 2118.5 Sprinkler system commissioning"],
+        hazards: [{
+          type: "Electrical",
+          description: "Low voltage electrical shock during alarm panel connections and signal testing",
+          riskRating: 5,
+          controlMeasures: ["Turn off power during connections", "Use proper test equipment", "Follow manufacturer procedures"],
+          residualRisk: 2,
+          causeAgent: "Low voltage alarm system wiring",
+          environmentalCondition: "Electrical control room environment",
+          consequence: "Minor electrical shock"
+        }],
+        ppe: ["Safety Glasses", "Insulated Gloves"],
+        tools: ["Multimeter", "Wire strippers", "Terminal screwdriver", "Test equipment"],
+        trainingRequired: ["Fire alarm systems", "Electrical testing"]
+      },
+      {
+        name: "System Pressure Testing and Flow Validation",
+        description: "Conduct hydrostatic pressure testing of complete sprinkler system and validate flow rates at design pressure to ensure system performance meets AS 2118 requirements",
+        riskScore: 6,
+        residualRisk: 3,
+        legislation: [`${state} WHS Regulation 2017 - Section 39`, "AS 2118.5 System commissioning", "AS 2419.1 Water supply for fire fighting"],
+        hazards: [{
+          type: "Physical",
+          description: "High pressure water release causing injury from failed joints or fittings during pressure testing",
+          riskRating: 7,
+          controlMeasures: ["Gradual pressure increase", "Clear test area of personnel", "Use pressure relief valves"],
+          residualRisk: 3,
+          causeAgent: "High pressure water in test system",
+          environmentalCondition: "Pressurized pipe system testing",
+          consequence: "Impact injuries and water damage"
+        }],
+        ppe: ["Safety Glasses", "Waterproof Clothing", "Steel Cap Boots"],
+        tools: ["Pressure gauges", "Flow meters", "Test pump", "Pressure relief valves"],
+        trainingRequired: ["Pressure testing", "Flow measurement"]
+      },
+      {
+        name: "Authority Inspection and System Certification",
+        description: "Coordinate with fire authority inspectors and obtain final certification for completed fire protection system installation according to building approval requirements",
+        riskScore: 3,
+        residualRisk: 1,
+        legislation: [`${state} WHS Regulation 2017 - Section 291`, "AS 2118.6 System acceptance", "Building Code of Australia compliance"],
+        hazards: [{
+          type: "Administrative",
+          description: "Non-compliance penalties and project delays from inadequate documentation or system deficiencies",
+          riskRating: 4,
+          controlMeasures: ["Complete all test documentation", "Address deficiencies promptly", "Maintain compliance records"],
+          residualRisk: 1,
+          causeAgent: "Incomplete compliance documentation",
+          environmentalCondition: "Regulatory inspection process",
+          consequence: "Project delays and penalties"
+        }],
+        ppe: ["Hi-Vis Vest", "Hard Hat"],
+        tools: ["Documentation", "Test results", "Compliance certificates", "Camera"],
+        trainingRequired: ["Compliance procedures", "Documentation"]
+      }
+    ],
     'Tiling & Waterproofing': [
       {
         name: "Site measurement and layout planning",
