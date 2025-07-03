@@ -238,6 +238,7 @@ export default function GPTTaskSelection({
   const [isEditing, setIsEditing] = useState(false);
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
   const [editingTask, setEditingTask] = useState<any>(null);
+  const [forceRegenerate, setForceRegenerate] = useState(false);
 
   // Initialize component with saved data when available
   useEffect(() => {
@@ -245,17 +246,19 @@ export default function GPTTaskSelection({
       setPlainTextDescription(savedWorkDescription);
       console.log('Restored job description:', savedWorkDescription);
     }
-    // Always restore saved activities if they exist, regardless of current generated tasks
-    if (savedActivities && savedActivities.length > 0) {
+    // Only restore saved activities if NOT forcing regeneration
+    if (savedActivities && savedActivities.length > 0 && !forceRegenerate) {
       console.log('Step 2 - Restoring saved activities:', savedActivities);
       console.log('Step 2 - Current generated tasks count (before update):', generatedTasks.length);
       setGeneratedTasks(savedActivities);
       setIsEditing(true); // Enable editing mode to display the restored activities
       console.log('Step 2 - Activities restored successfully, setting isEditing to true');
+    } else if (forceRegenerate) {
+      console.log('Step 2 - Skipping saved activities due to force regenerate flag');
     } else {
       console.log('Step 2 - No saved activities to restore');
     }
-  }, [savedWorkDescription, savedActivities]);
+  }, [savedWorkDescription, savedActivities, forceRegenerate]);
 
 
 
@@ -398,6 +401,8 @@ export default function GPTTaskSelection({
           console.log('CRITICAL FIX: State setter called for isEditing');
           return true;
         });
+        // Reset force regenerate flag when new tasks are generated
+        setForceRegenerate(false);
         
         // Call the callback immediately to update parent state
         console.log('CRITICAL FIX: Calling onActivitiesGenerated callback');
@@ -1042,9 +1047,12 @@ export default function GPTTaskSelection({
                           // Clear existing tasks and force regeneration
                           setGeneratedTasks([]);
                           setIsEditing(false);
+                          setForceRegenerate(true);
+                          // Reset to "plain-text" method to allow new generation
+                          setSelectedMethod("plain-text");
                           toast({
                             title: "Tasks Cleared",
-                            description: "Ready for fresh task generation",
+                            description: "Ready for fresh task generation. Use 'Generate SWMS' button below.",
                           });
                         }} 
                         variant="outline" 

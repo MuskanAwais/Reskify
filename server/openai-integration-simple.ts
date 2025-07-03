@@ -12,11 +12,15 @@ export async function generateSWMSFromTaskSimple(request: TaskGenerationRequest)
   console.log(`🚀 SIMPLE AI GENERATION - Trade: ${tradeType}, Job: ${plainTextDescription}`);
   console.log(`🚀 SITE: ${siteEnvironment}, STATE: ${state}, HRCW: ${hrcwCategories.join(',')}`);
 
+  // Add timestamp to force uniqueness
+  const timestamp = Date.now();
+  
   // Comprehensive prompt for 8-10 UNIQUE tasks with detailed legislation
   const systemMessage = `You are a professional Australian construction safety expert. Generate EXACTLY 8-10 COMPLETELY DIFFERENT ${tradeType} activities for: "${plainTextDescription}"
 
 Environment: ${siteEnvironment} site in ${state}
 HRCW Categories: ${hrcwCategories.join(', ') || 'None selected'}
+Generation ID: ${timestamp}
 
 CRITICAL REQUIREMENTS:
 - Generate EXACTLY 8-10 activities (not 3-6)
@@ -24,6 +28,7 @@ CRITICAL REQUIREMENTS:
 - NO DUPLICATE NAMES OR DESCRIPTIONS - Validate each task name is different
 - Cover COMPLETE workflow with DISTINCT phases of work
 - Each activity MUST have comprehensive legislation references
+- FORCE DIFFERENT TASK NAMES: Never use same activity name twice
 
 MANDATORY TASK UNIQUENESS FOR ${tradeType}:
 ${tradeType.includes('Fire Protection') ? `
@@ -143,7 +148,20 @@ MANDATORY: Generate EXACTLY 8-10 activities with comprehensive legislation array
     let finalActivities = parsedResult.activities || [];
     
     // Check for task uniqueness - ensure no duplicates or very similar tasks
-    const uniqueActivities = ensureTaskUniqueness(finalActivities, tradeType);
+    let uniqueActivities = ensureTaskUniqueness(finalActivities, tradeType);
+    
+    // Additional check for exact duplicates that bypass normalization
+    const exactDuplicateCheck = uniqueActivities.filter((activity, index, arr) => {
+      const exactMatches = arr.filter(a => a.name === activity.name);
+      if (exactMatches.length > 1) {
+        console.log(`🚨 EXACT DUPLICATE FOUND: "${activity.name}" appears ${exactMatches.length} times`);
+        return index === arr.findIndex(a => a.name === activity.name); // Keep only first occurrence
+      }
+      return true;
+    });
+    
+    uniqueActivities = exactDuplicateCheck;
+    console.log(`🚀 AFTER EXACT DUPLICATE CHECK: ${exactDuplicateCheck.length} unique activities`);
     
     if (uniqueActivities.length < 8) {
       console.log(`🚀 Only ${uniqueActivities.length} unique activities generated, adding diverse fallback activities to reach 8-10`);
@@ -205,13 +223,16 @@ function ensureTaskUniqueness(activities: any[], tradeType: string): any[] {
   return uniqueActivities;
 }
 
-// Normalize task names to detect duplicates (remove common words, lowercase, etc.)
+// Enhanced normalize task names to detect duplicates
 function normalizeTaskName(name: string): string {
-  return name
+  const normalized = name
     .toLowerCase()
-    .replace(/\b(and|the|of|for|with|using|apply|application|install|installation)\b/g, '')
+    .replace(/\b(and|the|of|for|with|using|apply|application|install|installation|site|setup|tool|preparation|fire|protection|system)\b/g, '')
     .replace(/[^a-z]/g, '')
     .trim();
+  
+  console.log(`🚀 NORMALIZED TASK: "${name}" → "${normalized}"`);
+  return normalized;
 }
 
 // Generate diverse fallback activities specific to the trade
