@@ -1254,8 +1254,8 @@ export async function registerRoutes(app: Express) {
       // Different configuration for subscription vs one-time payments
       let sessionConfig: any = {
         payment_method_types: ['card'],
-        success_url: `${baseUrl}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${baseUrl}/payment?cancelled=true`,
+        success_url: `${baseUrl}/payment-success?session_id={CHECKOUT_SESSION_ID}&return_to=${encodeURIComponent(baseUrl + '/swms-builder?step=7')}`,
+        cancel_url: `${baseUrl}/swms-builder?step=6&payment_cancelled=true`,
         metadata: {
           type: type || 'one-off',
           userId: req.session?.userId || '999'

@@ -190,8 +190,9 @@ export default function SwmsBuilder() {
     const stepParam = urlParams.get('step');
     const paymentSuccess = urlParams.get('payment_success');
     const paymentError = urlParams.get('payment_error');
+    const paymentCancelled = urlParams.get('payment_cancelled');
     
-    // Handle payment success/error
+    // Handle payment success/error/cancellation
     if (paymentSuccess === 'true') {
       toast({
         title: "Payment Successful",
@@ -208,6 +209,17 @@ export default function SwmsBuilder() {
       toast({
         title: "Payment Issue",
         description: "There was an issue with your payment. Please try again.",
+        variant: "destructive",
+      });
+      // Stay on payment step (6)
+      setCurrentStep(6);
+      // Clean URL
+      const cleanUrl = window.location.pathname;
+      window.history.replaceState({}, '', cleanUrl + '?step=6');
+    } else if (paymentCancelled === 'true') {
+      toast({
+        title: "Payment Cancelled",
+        description: "Payment was cancelled. You can try again when ready.",
         variant: "destructive",
       });
       // Stay on payment step (6)
