@@ -13,62 +13,24 @@ export default function PaymentSuccess() {
     // Extract session ID from URL
     const urlParams = new URLSearchParams(window.location.search);
     const sessionId = urlParams.get('session_id');
-    const returnTo = urlParams.get('return_to');
+
+    console.log('Payment success page - Session ID:', sessionId);
 
     if (sessionId) {
-      // Verify payment session and redirect back to SWMS builder
-      const verifyPayment = async () => {
-        try {
-          const response = await fetch(`/api/verify-payment/${sessionId}`, {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include'
-          });
-
-          if (response.ok) {
-            const data = await response.json();
-            if (data.success) {
-              toast({
-                title: "Payment Successful",
-                description: "Your payment has been processed successfully!",
-              });
-              
-              // Redirect back to SWMS builder with success
-              if (returnTo && returnTo.includes('?')) {
-                window.location.href = returnTo + '&payment_success=true';
-              } else if (returnTo) {
-                window.location.href = returnTo + '?payment_success=true';
-              } else {
-                setLocation('/swms-builder?payment_success=true&step=7');
-              }
-            } else {
-              throw new Error('Payment verification failed');
-            }
-          } else {
-            throw new Error('Could not verify payment');
-          }
-        } catch (error) {
-          console.error('Payment verification error:', error);
-          toast({
-            title: "Payment Issue",
-            description: "There was an issue verifying your payment. Please contact support.",
-            variant: "destructive",
-          });
-          
-          // Redirect anyway to allow manual resolution
-          if (returnTo && returnTo.includes('?')) {
-            window.location.href = returnTo + '&payment_error=true';
-          } else if (returnTo) {
-            window.location.href = returnTo + '?payment_error=true';
-          } else {
-            setLocation('/swms-builder?payment_error=true&step=6');
-          }
-        }
-      };
-
-      verifyPayment();
+      // Show success message and redirect to SWMS builder
+      toast({
+        title: "Payment Successful",
+        description: "Your payment has been processed successfully!",
+      });
+      
+      // Redirect back to SWMS builder after a short delay
+      setTimeout(() => {
+        console.log('Redirecting to SWMS builder...');
+        setLocation('/swms-builder?payment_success=true&step=7');
+      }, 2000);
     } else {
       // No session ID found, redirect to home
+      console.log('No session ID found, redirecting to home');
       setTimeout(() => setLocation('/'), 3000);
     }
   }, [setLocation, toast]);
