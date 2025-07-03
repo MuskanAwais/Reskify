@@ -399,6 +399,8 @@ export async function registerRoutes(app: Express) {
       const swmsData = req.body;
       
       console.log('Saving SWMS draft for user:', userId, 'Project:', swmsData.projectName || 'Untitled');
+      console.log('DEBUG - projectDescription field:', swmsData.projectDescription);
+      console.log('DEBUG - workDescription field:', swmsData.workDescription);
       
       // If no project name but has jobName or tradeType, use those
       const title = swmsData.projectName || swmsData.jobName || swmsData.tradeType || 'Draft SWMS';

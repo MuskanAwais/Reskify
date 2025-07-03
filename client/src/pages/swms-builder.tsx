@@ -172,6 +172,7 @@ export default function SwmsBuilder() {
     acceptedDisclaimer: false,
     selectedTasks: [],
     workDescription: "",
+    projectDescription: "", // Added for Step 1 project description field
     plantEquipment: [],
     signatures: [],
     emergencyProcedures: [],
@@ -663,7 +664,7 @@ export default function SwmsBuilder() {
           const hasSignificantData = data.title || data.jobName || data.tradeType || 
                                     data.projectAddress || data.jobNumber || data.startDate ||
                                     data.swmsCreatorName || data.principalContractor ||
-                                    data.projectManager || data.siteSupervisor;
+                                    data.projectManager || data.siteSupervisor || data.projectDescription;
           
           if (hasSignificantData) {
             console.log('Auto-saving with data:', Object.keys(data).filter(key => data[key]));
@@ -680,7 +681,7 @@ export default function SwmsBuilder() {
     const hasSignificantData = formData.title || formData.jobName || formData.tradeType || 
                               formData.projectAddress || formData.jobNumber || formData.startDate ||
                               formData.swmsCreatorName || formData.principalContractor ||
-                              formData.projectManager || formData.siteSupervisor;
+                              formData.projectManager || formData.siteSupervisor || formData.projectDescription;
                               
     if (hasSignificantData) {
       console.log('Auto-saving draft with form data:', formData);
