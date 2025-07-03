@@ -994,111 +994,113 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
             <CardContent>
               <div className="space-y-4">
                 {/* Use Current Credits Option */}
-                {(() => {
-                  const totalCredits = userData?.credits || 0;
-                  const subscriptionCredits = userData?.subscriptionCredits || 0;
-                  const addonCredits = userData?.addonCredits || 0;
-                  const hasCredits = totalCredits > 0;
-                  
-                  return (
-                    <div className={`p-4 border rounded-lg ${hasCredits ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
-                      <div className="flex items-center justify-between mb-3">
-                        <div>
-                          <p className={`font-medium ${hasCredits ? 'text-green-800' : 'text-red-800'}`}>
-                            {hasCredits ? 'Use Current Credits' : 'No Credits Available'}
-                          </p>
-                          <p className={`text-sm ${hasCredits ? 'text-green-700' : 'text-red-700'}`}>
-                            {hasCredits 
-                              ? `You have ${totalCredits} total credits available (${subscriptionCredits} subscription + ${addonCredits} add-on)`
-                              : 'You need to purchase credits or use a payment option below to continue'
-                            }
-                          </p>
-                        </div>
-                        <Badge className={`${hasCredits ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                          {totalCredits} Credits
-                        </Badge>
+                {isLoadingCredits ? (
+                  <div className="p-4 border rounded-lg bg-blue-50 border-blue-200">
+                    <div className="flex items-center justify-between mb-3">
+                      <div>
+                        <p className="font-medium text-blue-800">Loading Credits...</p>
+                        <p className="text-sm text-blue-700">Checking your available credits</p>
                       </div>
-                      <Button 
-                        size="lg"
-                        className={`w-full ${hasCredits ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-400 cursor-not-allowed'}`}
-                        disabled={isProcessingCredit || !hasCredits}
-                        onClick={async () => {
-                          if (!hasCredits) {
-                            alert('You have no credits available. Please purchase credits below.');
-                            return;
-                          }
-                          if (isProcessingCredit) return; // Prevent double clicks
-                      
-                          setIsProcessingCredit?.(true);
-                          console.log('Credit button clicked - starting process');
-                          
-                          try {
-                            // Call the credit usage API with admin demo headers
-                            const response = await fetch('/api/user/use-credit', {
-                              method: 'POST',
-                              headers: {
-                                'Content-Type': 'application/json',
-                                'x-admin-demo': localStorage.getItem('adminDemoMode') || 'false',
-                                'x-app-admin': localStorage.getItem('isAppAdmin') || 'false',
-                              },
-                              credentials: 'include',
-                            });
-
-                            if (response.ok) {
-                              const result = await response.json();
-                              console.log('Credit used successfully:', result);
-                              
-                              // Immediately update form data to indicate payment is complete
-                              updateFormData({ 
-                                paymentMethod: 'credits', 
-                                paid: true,
-                                creditsUsed: true,
-                                paidAccess: true,  // This is what the step validation checks for
-                                lastPaymentUpdate: Date.now() // Force refresh
-                              });
-                              
-                              // Invalidate cache to refresh ALL user-related data
-                              await Promise.all([
-                                queryClient.invalidateQueries({ queryKey: ['/api/user'] }),
-                                queryClient.invalidateQueries({ queryKey: ['/api/user/subscription'] }),
-                                queryClient.invalidateQueries({ queryKey: ['/api/dashboard/999'] }),
-                                queryClient.invalidateQueries({ queryKey: ['/api/user/billing'] }),
-                                queryClient.invalidateQueries({ queryKey: ['/api/user/settings'] })
-                              ]);
-                              
-                              // Wait a moment for state to update, then proceed
-                              setTimeout(() => {
-                                console.log('Form data updated, calling onNext()');
-                                // Trigger next step via the parent component
-                                if (onNext) {
-                                  console.log('Calling onNext to progress to next step');
-                                  onNext();
-                                } else {
-                                  console.log('WARNING: onNext is not available');
-                                }
-                              }, 100);
-                              
-                            } else {
-                              console.error('Failed to use credit:', response.statusText);
-                              alert('Failed to process credit usage. Please try again.');
-                            }
-                          } catch (error) {
-                            console.error('Error using credit:', error);
-                            // Show more helpful error message
-                            if (onNext) {
-                              console.log('Error occurred, calling onNext anyway for demo');
-                              onNext(); // Allow progression anyway for demo
-                            }
-                          } finally {
-                            setIsProcessingCredit?.(false);
-                          }
-                        }}
-                      >
-                        {hasCredits ? 'Use Current Credits (1 credit)' : 'No Credits Available'}
-                      </Button>
                     </div>
-                  );
-                })()}
+                  </div>
+                ) : (
+                  <div className={`p-4 border rounded-lg ${hasCredits ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
+                    <div className="flex items-center justify-between mb-3">
+                      <div>
+                        <p className={`font-medium ${hasCredits ? 'text-green-800' : 'text-red-800'}`}>
+                          {hasCredits ? 'Use Current Credits' : 'No Credits Available'}
+                        </p>
+                        <p className={`text-sm ${hasCredits ? 'text-green-700' : 'text-red-700'}`}>
+                          {hasCredits 
+                            ? `You have ${totalCredits} total credits available (${subscriptionCredits} subscription + ${addonCredits} add-on)`
+                            : 'You need to purchase credits or use a payment option below to continue'
+                          }
+                        </p>
+                      </div>
+                      <Badge className={`${hasCredits ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                        {totalCredits} Credits
+                      </Badge>
+                    </div>
+                    <Button 
+                      size="lg"
+                      className={`w-full ${hasCredits ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-400 cursor-not-allowed'}`}
+                      disabled={isProcessingCredit || !hasCredits}
+                      onClick={async () => {
+                        if (!hasCredits) {
+                          alert('You have no credits available. Please purchase credits below.');
+                          return;
+                        }
+                        if (isProcessingCredit) return; // Prevent double clicks
+                    
+                        setIsProcessingCredit?.(true);
+                        console.log('Credit button clicked - starting process');
+                        
+                        try {
+                          // Call the credit usage API with admin demo headers
+                          const response = await fetch('/api/user/use-credit', {
+                            method: 'POST',
+                            headers: {
+                              'Content-Type': 'application/json',
+                              'x-admin-demo': localStorage.getItem('adminDemoMode') || 'false',
+                              'x-app-admin': localStorage.getItem('isAppAdmin') || 'false',
+                            },
+                            credentials: 'include',
+                          });
+
+                          if (response.ok) {
+                            const result = await response.json();
+                            console.log('Credit used successfully:', result);
+                            
+                            // Immediately update form data to indicate payment is complete
+                            updateFormData({ 
+                              paymentMethod: 'credits', 
+                              paid: true,
+                              creditsUsed: true,
+                              paidAccess: true,  // This is what the step validation checks for
+                              lastPaymentUpdate: Date.now() // Force refresh
+                            });
+                            
+                            // Invalidate cache to refresh ALL user-related data
+                            await Promise.all([
+                              queryClient.invalidateQueries({ queryKey: ['/api/user'] }),
+                              queryClient.invalidateQueries({ queryKey: ['/api/user/subscription'] }),
+                              queryClient.invalidateQueries({ queryKey: ['/api/dashboard/999'] }),
+                              queryClient.invalidateQueries({ queryKey: ['/api/user/billing'] }),
+                              queryClient.invalidateQueries({ queryKey: ['/api/user/settings'] })
+                            ]);
+                            
+                            // Wait a moment for state to update, then proceed
+                            setTimeout(() => {
+                              console.log('Form data updated, calling onNext()');
+                              // Trigger next step via the parent component
+                              if (onNext) {
+                                console.log('Calling onNext to progress to next step');
+                                onNext();
+                              } else {
+                                console.log('WARNING: onNext is not available');
+                              }
+                            }, 100);
+                            
+                          } else {
+                            console.error('Failed to use credit:', response.statusText);
+                            alert('Failed to process credit usage. Please try again.');
+                          }
+                        } catch (error) {
+                          console.error('Error using credit:', error);
+                          // Show more helpful error message
+                          if (onNext) {
+                            console.log('Error occurred, calling onNext anyway for demo');
+                            onNext(); // Allow progression anyway for demo
+                          }
+                        } finally {
+                          setIsProcessingCredit?.(false);
+                        }
+                      }}
+                    >
+                      {hasCredits ? 'Use Current Credits (1 credit)' : 'No Credits Available'}
+                    </Button>
+                  </div>
+                )}
                 
                 <div className="text-center">
                   <p className="text-gray-600 mb-4">
@@ -1341,11 +1343,57 @@ export default function SWMSForm({ step, data = {}, onNext, onDataChange }: SWMS
   const [formData, setFormData] = useState(data);
   const [isProcessingCredit, setIsProcessingCredit] = useState(false);
 
-  // Fetch current user billing data for real-time credits
-  const { data: userData, refetch: refetchUserData } = useQuery({
+  // Fetch current user billing data for real-time credits with better error handling
+  const { data: userData, refetch: refetchUserData, isLoading: isLoadingCredits, error: creditsError } = useQuery({
     queryKey: ['/api/user/billing'],
     enabled: step === 6, // Only fetch when on payment step
+    retry: 3,
+    staleTime: 1000 * 60 * 5, // 5 minutes
   });
+
+  // Fallback state for manual credit fetching
+  const [fallbackCredits, setFallbackCredits] = useState<any>(null);
+  const [isManualFetch, setIsManualFetch] = useState(false);
+
+  // Compute credit data outside the JSX for consistent access
+  const creditData = userData || fallbackCredits;
+  const totalCredits = creditData?.credits || 0;
+  const subscriptionCredits = creditData?.subscriptionCredits || 0;
+  const addonCredits = creditData?.addonCredits || 0;
+  const hasCredits = totalCredits > 0;
+
+  // Debug logging for credit data
+  useEffect(() => {
+    if (step === 6) {
+      console.log('Payment step - Credit data:', { userData, isLoadingCredits, creditsError });
+      
+      // If React Query fails, try manual fetch
+      if (creditsError && !isManualFetch) {
+        console.log('React Query failed, attempting manual fetch...');
+        setIsManualFetch(true);
+        
+        fetch('/api/user/billing', {
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        })
+        .then(response => {
+          if (response.ok) {
+            return response.json();
+          }
+          throw new Error(`HTTP ${response.status}`);
+        })
+        .then(data => {
+          console.log('Manual fetch successful:', data);
+          setFallbackCredits(data);
+        })
+        .catch(error => {
+          console.error('Manual fetch also failed:', error);
+        });
+      }
+    }
+  }, [step, userData, isLoadingCredits, creditsError, isManualFetch]);
 
   const updateFormData = (updates: any) => {
     const newData = { 
