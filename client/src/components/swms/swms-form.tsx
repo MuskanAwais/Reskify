@@ -17,7 +17,7 @@ import PDFPrintSystem from "./pdf-print-system";
 import RiskValidationSystem from "./risk-validation-system";
 import PlantEquipmentSystem from "./plant-equipment-system";
 import ComprehensiveRiskComplianceTool from "./comprehensive-risk-compliance-tool";
-import EmbeddedCheckout from "../embedded-checkout";
+
 import { 
   MapPin, 
   Briefcase, 
@@ -166,8 +166,7 @@ interface SWMSFormProps {
 
 const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit, setIsProcessingCredit, userData }: StepContentProps) => {
   const { toast } = useToast();
-  const [showEmbeddedCheckout, setShowEmbeddedCheckout] = useState(false);
-  const [checkoutData, setCheckoutData] = useState<{amount: number, plan: string} | null>(null);
+
 
   const updateFormData = (updates: any) => {
     const newData = { 
@@ -1097,9 +1096,33 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
                     <Button 
                       variant="outline"
                       size="lg"
-                      onClick={() => {
-                        setCheckoutData({ amount: 15, plan: 'one-off' });
-                        setShowEmbeddedCheckout(true);
+                      onClick={async () => {
+                        try {
+                          const response = await fetch('/api/create-checkout-session', {
+                            method: 'POST',
+                            headers: {
+                              'Content-Type': 'application/json',
+                            },
+                            credentials: 'include',
+                            body: JSON.stringify({
+                              amount: 15,
+                              type: 'one-off',
+                              return_to: window.location.href
+                            })
+                          });
+
+                          if (response.ok) {
+                            const data = await response.json();
+                            // Redirect to Stripe Checkout
+                            window.location.href = data.checkoutUrl;
+                          } else {
+                            console.error('Failed to create checkout session');
+                            alert('Failed to create checkout session. Please try again.');
+                          }
+                        } catch (error) {
+                          console.error('Error creating checkout session:', error);
+                          alert('Error creating checkout session. Please try again.');
+                        }
                       }}
                       className="border-blue-200 text-blue-700 hover:bg-blue-50"
                     >
@@ -1109,9 +1132,33 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
                     <Button 
                       variant="outline" 
                       size="lg"
-                      onClick={() => {
-                        setCheckoutData({ amount: 60, plan: 'credits' });
-                        setShowEmbeddedCheckout(true);
+                      onClick={async () => {
+                        try {
+                          const response = await fetch('/api/create-checkout-session', {
+                            method: 'POST',
+                            headers: {
+                              'Content-Type': 'application/json',
+                            },
+                            credentials: 'include',
+                            body: JSON.stringify({
+                              amount: 60,
+                              type: 'credits',
+                              return_to: window.location.href
+                            })
+                          });
+
+                          if (response.ok) {
+                            const data = await response.json();
+                            // Redirect to Stripe Checkout
+                            window.location.href = data.checkoutUrl;
+                          } else {
+                            console.error('Failed to create checkout session');
+                            alert('Failed to create checkout session. Please try again.');
+                          }
+                        } catch (error) {
+                          console.error('Error creating checkout session:', error);
+                          alert('Error creating checkout session. Please try again.');
+                        }
                       }}
                       className="border-orange-200 text-orange-700 hover:bg-orange-50"
                     >
@@ -1142,34 +1189,7 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
             </CardContent>
           </Card>
           
-          {/* Embedded Checkout Modal */}
-          {showEmbeddedCheckout && checkoutData && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-              <div className="bg-white p-6 rounded-lg max-w-md w-full mx-4">
-                <EmbeddedCheckout
-                  amount={checkoutData.amount}
-                  plan={checkoutData.plan}
-                  onSuccess={() => {
-                    // Payment successful - refresh user data and proceed to next step
-                    setShowEmbeddedCheckout(false);
-                    setCheckoutData(null);
-                    updateFormData({ 
-                      paymentMethod: 'stripe', 
-                      paid: true,
-                      paidAccess: true 
-                    });
-                    if (onNext) {
-                      onNext();
-                    }
-                  }}
-                  onCancel={() => {
-                    setShowEmbeddedCheckout(false);
-                    setCheckoutData(null);
-                  }}
-                />
-              </div>
-            </div>
-          )}
+
         </div>
       );
 
