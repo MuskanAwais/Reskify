@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import SWMSForm from "@/components/swms/swms-form";
 import DocumentPreview from "@/components/swms/document-preview";
 import { SimplifiedTableEditor } from "@/components/swms/simplified-table-editor";
-import EmbeddedPDFEditor from "@/components/swms/embedded-pdf-editor";
+
 import CreditCounter from "@/components/ui/credit-counter";
 
 import { ArrowLeft, ArrowRight, FileText, Shield, CheckCircle, Save, X, Plus } from "lucide-react";
@@ -1264,25 +1264,16 @@ export default function SwmsBuilder() {
           </CardHeader>
           <CardContent>
             {/* Step Content */}
-            {currentStep === 9 ? (
-              <EmbeddedPDFEditor
-                formData={formData}
-                onDataChange={handleFormDataChange}
-                onNext={handleNext}
-                onBack={handlePrevious}
-              />
-            ) : (
-              <>
-                <SWMSForm 
-                  step={currentStep}
-                  data={formData}
-                  onDataChange={handleFormDataChange}
-                  onNext={handleNext}
-                  userData={currentUser}
-                  isLoadingCredits={isLoadingCredits}
-                  creditsError={creditsError}
-                  setIsProcessingCredit={setIsProcessingCredit}
-                />
+            <SWMSForm 
+              step={currentStep}
+              data={formData}
+              onDataChange={handleFormDataChange}
+              onNext={handleNext}
+              userData={currentUser}
+              isLoadingCredits={isLoadingCredits}
+              creditsError={creditsError}
+              setIsProcessingCredit={setIsProcessingCredit}
+            />
                 
                 {/* Navigation - Hidden on step 9 (automatic PDF generation) */}
                 {currentStep !== 9 && (
@@ -1311,8 +1302,6 @@ export default function SwmsBuilder() {
                     )}
                   </div>
                 )}
-              </>
-            )}
           </CardContent>
         </Card>
         
