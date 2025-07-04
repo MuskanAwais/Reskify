@@ -1078,10 +1078,14 @@ export default function SwmsBuilder() {
       tradeType: "",
       swmsCreatorName: "",
       swmsCreatorPosition: "",
+      principalContractor: "",
+      projectManager: "",
+      siteSupervisor: "",
       activities: [],
       hazards: [],
       riskAssessments: [],
       paidAccess: false,
+      paid: false,
       safetyMeasures: [],
       complianceCodes: [],
       acceptedDisclaimer: false,
@@ -1092,7 +1096,13 @@ export default function SwmsBuilder() {
       emergencyProcedures: [],
       generalRequirements: [],
       hrcwCategories: [],
-      ppeRequirements: []
+      ppeRequirements: [],
+      creditsUsed: 0,
+      paymentMethod: "",
+      projectDescription: "",
+      plainTextDescription: "",
+      monitoringRequirements: "",
+      lastPaymentUpdate: 0
     });
     
     // Clear localStorage
@@ -1143,6 +1153,9 @@ export default function SwmsBuilder() {
         startDate: "",
         swmsCreatorName: "",
         swmsCreatorPosition: "",
+        principalContractor: "",
+        projectManager: "",
+        siteSupervisor: "",
         workDescription: "",
         activities: [],
         hazards: [],
@@ -1153,8 +1166,18 @@ export default function SwmsBuilder() {
         signatures: [],
         emergencyProcedures: [],
         generalRequirements: [],
+        hrcwCategories: [],
+        ppeRequirements: [],
         acceptedDisclaimer: false,
-        selectedTasks: []
+        selectedTasks: [],
+        paidAccess: false,
+        paid: false,
+        creditsUsed: 0,
+        paymentMethod: "",
+        projectDescription: "",
+        plainTextDescription: "",
+        monitoringRequirements: "",
+        lastPaymentUpdate: 0
       });
     }
   }, []);

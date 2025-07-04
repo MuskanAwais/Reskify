@@ -161,49 +161,94 @@ const AutomaticPDFGeneration = ({ formData, onDataChange }: { formData: any; onD
           workDescription: formData.workDescription || ''
         };
 
-        // Send data to SWMSprint PDF generation system
-        setCurrentMessage('Sending data to SWMSprint PDF generator...');
-        setProgress(95);
+        // Enhanced SWMSprint integration with comprehensive data mapping
+        setCurrentMessage('Mapping all SWMS builder data to SWMSprint...');
+        setProgress(85);
         
-        const response = await fetch('https://swmsprint.replit.app/api/swms', {
+        // Comprehensive data mapping for SWMSprint
+        const enhancedPdfData = {
+          ...pdfData,
+          // Additional mapping for better PDF quality
+          document: {
+            type: 'SWMS',
+            title: formData.jobName || formData.title || 'Safe Work Method Statement',
+            version: '1.0',
+            generatedDate: new Date().toLocaleDateString('en-AU'),
+            generatedTime: new Date().toLocaleTimeString('en-AU')
+          },
+          // Enhanced activities with risk details
+          workActivities: (formData.workActivities || []).map((activity: any) => ({
+            ...activity,
+            riskLevel: activity.riskLevel || 'Medium',
+            legislation: activity.legislation || ['WHS Act 2011', 'WHS Regulation 2017']
+          })),
+          // Company branding
+          company: {
+            name: formData.companyName || 'Construction Company',
+            logo: formData.companyLogo || null,
+            abn: formData.abn || ''
+          },
+          // Compliance and safety
+          compliance: {
+            australianStandards: true,
+            whsCompliant: true,
+            riskMatrix: 'Australian Standard',
+            lastReviewed: new Date().toLocaleDateString('en-AU')
+          }
+        };
+        
+        setCurrentMessage('Connecting to SWMSprint PDF generator...');
+        setProgress(90);
+        
+        const response = await fetch('https://swmsprint.replit.app/api/generate-pdf', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'Accept': 'application/pdf'
           },
-          body: JSON.stringify(pdfData)
+          body: JSON.stringify(enhancedPdfData)
         });
 
         if (response.ok) {
-          // PDF generated successfully
-          setProgress(100);
-          setCurrentMessage('Document generated successfully!');
-          setStatus('completed');
+          setProgress(95);
+          setCurrentMessage('Processing PDF through SWMSprint...');
           
-          // Create download blob
+          // Get the PDF blob
           const pdfBlob = await response.blob();
-          const pdfUrl = URL.createObjectURL(pdfBlob);
-          setPdfUrl(pdfUrl);
           
-          // Auto-download the PDF
-          const link = document.createElement('a');
-          link.href = pdfUrl;
-          link.download = `${formData.jobName || 'SWMS'}-${Date.now()}.pdf`;
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          
-          // Mark SWMS as completed
-          if (onDataChange) {
-            onDataChange({ status: 'completed', paidAccess: true });
+          if (pdfBlob.size > 0) {
+            const pdfUrl = URL.createObjectURL(pdfBlob);
+            setPdfUrl(pdfUrl);
+            
+            setProgress(100);
+            setCurrentMessage('SWMS document generated successfully!');
+            setStatus('completed');
+            
+            // Auto-download the PDF to user's computer
+            const link = document.createElement('a');
+            link.href = pdfUrl;
+            link.download = `${formData.jobName || 'SWMS'}-${new Date().toISOString().split('T')[0]}.pdf`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // Mark SWMS as completed and save to database
+            if (onDataChange) {
+              onDataChange({ 
+                ...formData,
+                status: 'completed', 
+                paidAccess: true,
+                completedAt: new Date().toISOString(),
+                pdfGenerated: true,
+                pdfSize: pdfBlob.size
+              });
+            }
+          } else {
+            throw new Error('Empty PDF received from SWMSprint');
           }
-
-          toast({
-            title: "SWMS Generated Successfully",
-            description: "Your professional SWMS document has been downloaded.",
-          });
-          
         } else {
-          throw new Error('PDF generation failed');
+          const errorText = await response.text();
+          throw new Error(`SWMSprint API error ${response.status}: ${errorText}`);
         }
         
       } catch (error) {
@@ -214,7 +259,7 @@ const AutomaticPDFGeneration = ({ formData, onDataChange }: { formData: any; onD
         
         toast({
           title: "Generation Failed",
-          description: "There was an issue generating your PDF. Please try again.",
+          description: "There was an issue generating your PDF through SWMSprint. Please try again.",
           variant: "destructive"
         });
       }
@@ -1698,59 +1743,7 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
       );
 
     case 9:
-      // Direct return of simple Step 9 component to bypass runtime errors
-      return (
-        <div className="space-y-6">
-          <div className="text-center">
-            {getStepIcon(9)}
-            <h3 className="text-xl font-semibold mb-2">Document Generation</h3>
-            <p className="text-gray-600 text-sm">
-              Generating your professional SWMS document with SWMSprint
-            </p>
-          </div>
-          <div className="text-center">
-            <Loader2 className="mx-auto h-16 w-16 text-blue-500 animate-spin mb-4" />
-            <h3 className="text-xl font-semibold mb-2">Document Generation</h3>
-            <p className="text-gray-600 text-sm mb-6">
-              Processing your SWMS document with SWMSprint background service...
-            </p>
-            <Progress value={85} className="w-full max-w-md mx-auto" />
-            <p className="text-sm text-gray-500 mt-2">Background PDF processing active</p>
-          </div>
-          
-          <Card>
-            <CardContent className="pt-6">
-              <div className="space-y-4">
-                <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                  <div className="flex items-center space-x-3">
-                    <FileText className="h-8 w-8 text-blue-600" />
-                    <div>
-                      <p className="font-medium text-blue-800">SWMSprint Integration Active</p>
-                      <p className="text-blue-600 text-sm">Professional PDF generation in progress</p>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="text-center pt-4">
-                  <Button 
-                    onClick={() => {
-                      // Simulate SWMSprint PDF generation
-                      if (onDataChange) {
-                        onDataChange({ status: 'completed', paidAccess: true });
-                      }
-                      window.location.href = '/dashboard';
-                    }}
-                    className="w-full"
-                  >
-                    <Download className="mr-2 h-4 w-4" />
-                    Complete Generation & Return to Dashboard
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      );
+      return <AutomaticPDFGeneration formData={formData} onDataChange={onDataChange} />;
 
     default:
       return (
