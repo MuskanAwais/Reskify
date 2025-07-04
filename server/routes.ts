@@ -679,6 +679,7 @@ export async function registerRoutes(app: Express) {
       
       await db.update(swmsDocuments)
         .set({
+          status: 'deleted',
           deletedAt: now,
           permanentDeleteAt: permanentDeleteDate,
           updatedAt: now

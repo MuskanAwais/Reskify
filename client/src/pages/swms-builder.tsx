@@ -1248,21 +1248,17 @@ export default function SwmsBuilder() {
       {/* Main Content */}
       <div className="max-w-5xl mx-auto">
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <div className="flex items-center">
-                <FileText className="mr-2 h-5 w-5" />
-                {STEPS[currentStep - 1].title}
-              </div>
-              {localStorage.getItem('swms-admin-mode') === 'true' && (
-                <Badge variant="destructive" className="ml-2">
+          <CardContent className="pt-6">
+            {/* Admin Mode Badge */}
+            {localStorage.getItem('swms-admin-mode') === 'true' && (
+              <div className="mb-4">
+                <Badge variant="destructive" className="flex items-center w-fit">
                   <Shield className="mr-1 h-3 w-3" />
                   ADMIN MODE
                 </Badge>
-              )}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+              </div>
+            )}
+            
             {/* Step Content */}
             <SWMSForm 
               step={currentStep}

@@ -635,9 +635,29 @@ export class DatabaseStorage implements IStorage {
   async restoreSwmsDocument(id: number, userId: number): Promise<any> {
     try {
       console.log(`Restoring SWMS document ${id} for user ${userId}`);
+      
+      // First get the document to check its current status
+      const [existingDoc] = await db
+        .select()
+        .from(swmsDocuments)
+        .where(and(
+          eq(swmsDocuments.id, id),
+          eq(swmsDocuments.userId, userId),
+          eq(swmsDocuments.status, 'deleted')
+        ));
+      
+      if (!existingDoc) {
+        throw new Error('Document not found or not deleted');
+      }
+      
+      // Determine the appropriate status to restore to
+      // If document was previously completed, restore as completed, otherwise as draft
+      const restoredStatus = existingDoc.creditsCost && existingDoc.creditsCost > 0 ? 'completed' : 'draft';
+      
       const [restoredDoc] = await db
         .update(swmsDocuments)
         .set({
+          status: restoredStatus,
           deletedAt: null,
           permanentDeleteAt: null,
           updatedAt: new Date()
@@ -648,6 +668,7 @@ export class DatabaseStorage implements IStorage {
         ))
         .returning();
       
+      console.log(`Document ${id} restored with status: ${restoredStatus}`);
       return restoredDoc;
     } catch (error) {
       console.error('Error restoring SWMS document:', error);
