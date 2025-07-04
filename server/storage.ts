@@ -459,25 +459,23 @@ export class DatabaseStorage implements IStorage {
           console.log('Updating session draft:', data.sessionDraftId);
         }
       } else {
-        // ONLY create new draft if explicitly requested or if this is the first save
-        // Look for very recent drafts (within last 5 minutes) to prevent auto-save spam
-        const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
-        const recentDrafts = await db
+        // CRITICAL: Prevent duplicate creation by finding ANY existing draft for this user
+        // Only create new if this is truly the first save or explicitly requested
+        const existingDrafts = await db
           .select()
           .from(swmsDocuments)
           .where(and(
             eq(swmsDocuments.userId, userId),
-            eq(swmsDocuments.status, 'draft'),
-            gte(swmsDocuments.updatedAt, fiveMinutesAgo)
+            eq(swmsDocuments.status, 'draft')
           ))
           .orderBy(desc(swmsDocuments.updatedAt))
           .limit(1);
         
-        if (recentDrafts.length > 0) {
-          existingDraft = recentDrafts[0];
-          console.log('Found recent draft (within 5 minutes), updating instead of creating new:', existingDraft.id);
+        if (existingDrafts.length > 0) {
+          existingDraft = existingDrafts[0];
+          console.log('Found existing draft for user, updating instead of creating new:', existingDraft.id);
         } else {
-          console.log('No recent draft found, creating new document');
+          console.log('No existing draft found for user, creating new document');
         }
       }
       // If no draftId provided and no recent draft found, create new document

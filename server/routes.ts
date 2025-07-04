@@ -310,6 +310,38 @@ export async function registerRoutes(app: Express) {
     }
   });
 
+  // Create new SWMS draft - force new document creation
+  app.post("/api/swms/new", async (req, res) => {
+    try {
+      const userId = req.session?.userId || 999;
+      
+      // Create a minimal new draft document
+      const newDraft = {
+        userId,
+        title: 'New SWMS Document',
+        jobName: '',
+        status: 'draft',
+        currentStep: 1,
+        activities: [],
+        workActivities: [],
+        plantEquipment: [],
+        ppeRequirements: [],
+        hrcwCategories: [],
+        emergencyProcedures: { contacts: [], procedures: [] },
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+      
+      const [savedDoc] = await db.insert(swmsDocuments).values(newDraft).returning();
+      console.log('New SWMS draft created:', savedDoc.id);
+      
+      res.json({ success: true, id: savedDoc.id, message: 'New SWMS created' });
+    } catch (error) {
+      console.error('New SWMS creation error:', error);
+      res.status(500).json({ error: 'Failed to create new SWMS' });
+    }
+  });
+
   // Clean up duplicate test drafts
   app.post("/api/cleanup-test-drafts", async (req, res) => {
     try {
