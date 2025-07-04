@@ -809,7 +809,10 @@ export default function SwmsBuilder() {
       errors.push("Please select a Trade Type from the dropdown");
     }
     
-    if (!formData.swmsCreatorName?.trim()) {
+    // SWMS Creator Name is only required for new documents, not when editing existing drafts
+    const urlParams = new URLSearchParams(window.location.search);
+    const editId = urlParams.get('edit');
+    if (!formData.swmsCreatorName?.trim() && !editId) {
       errors.push("Please enter the SWMS Creator Name");
     }
     
