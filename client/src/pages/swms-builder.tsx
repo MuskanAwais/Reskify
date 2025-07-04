@@ -335,7 +335,7 @@ export default function SwmsBuilder() {
       // Handle different activity object structures
       const activityText = `
         ${activity.task || activity.name || activity.description || ''} 
-        ${activity.hazards?.map(h => h.description || h).join(' ') || ''} 
+        ${activity.hazards?.map((h: any) => h.description || h).join(' ') || ''} 
         ${activity.controlMeasures?.join(' ') || ''} 
         ${activity.ppe?.join(' ') || ''}
         ${activity.tools?.join(' ') || ''}
@@ -786,8 +786,7 @@ export default function SwmsBuilder() {
                               formData.projectAddress || formData.jobNumber || formData.startDate ||
                               formData.swmsCreatorName || formData.principalContractor ||
                               formData.projectManager || formData.siteSupervisor || formData.projectDescription ||
-                              formData.monitoringRequirements || formData.emergencyProcedures ||
-                              (formData.emergencyContactsList && formData.emergencyContactsList.length > 0);
+                              formData.monitoringRequirements || formData.emergencyProcedures;
                               
     if (hasSignificantData) {
       console.log('Auto-saving draft with form data:', formData);
@@ -805,8 +804,7 @@ export default function SwmsBuilder() {
                               formData.projectAddress || formData.jobNumber || formData.startDate ||
                               formData.swmsCreatorName || formData.principalContractor ||
                               formData.projectManager || formData.siteSupervisor ||
-                              formData.emergencyProcedures || formData.monitoringRequirements ||
-                              (formData.emergencyContactsList && formData.emergencyContactsList.length > 0);
+                              formData.emergencyProcedures || formData.monitoringRequirements;
     
     if (!hasSignificantData) {
       return;
