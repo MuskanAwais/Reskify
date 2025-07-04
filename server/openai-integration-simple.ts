@@ -194,12 +194,31 @@ GENERATE AT LEAST ${minimumTasks} ACTIVITIES - NO EXCEPTIONS.`;
     uniqueActivities = exactDuplicateCheck;
     console.log(`🚀 AFTER EXACT DUPLICATE CHECK: ${exactDuplicateCheck.length} unique activities`);
     
+    // CRITICAL FIX: Always ensure minimum tasks regardless of AI output
+    console.log(`🚀 ENFORCING MINIMUM TASKS: Current ${uniqueActivities.length}, Required ${minimumTasks}`);
+    
     if (uniqueActivities.length < minimumTasks) {
-      console.log(`🚀 Only ${uniqueActivities.length} unique activities generated, adding diverse fallback activities to reach ${minimumTasks}`);
+      console.log(`🚀 INSUFFICIENT TASKS - Adding ${minimumTasks - uniqueActivities.length} fallback activities`);
       const additionalActivities = generateDiverseFallbackActivities(tradeType, plainTextDescription || '', state, siteEnvironment, hrcwCategories, minimumTasks - uniqueActivities.length);
       finalActivities = [...uniqueActivities, ...additionalActivities];
+      console.log(`🚀 FINAL TASK COUNT: ${finalActivities.length} (${uniqueActivities.length} AI + ${additionalActivities.length} fallback)`);
     } else {
+      console.log(`🚀 SUFFICIENT TASKS: Using ${uniqueActivities.length} AI-generated activities`);
       finalActivities = uniqueActivities;
+    }
+
+    // Double-check final count and force minimum if still insufficient
+    if (finalActivities.length < minimumTasks) {
+      console.log(`🚨 EMERGENCY FALLBACK: Still only ${finalActivities.length} tasks, generating emergency fallback to reach ${minimumTasks}`);
+      const emergencyActivities = generateEmergencyFallbackActivities(tradeType, minimumTasks - finalActivities.length);
+      finalActivities = [...finalActivities, ...emergencyActivities];
+    }
+
+    console.log(`🚀 GUARANTEED MINIMUM TASKS: Final count ${finalActivities.length} (minimum ${minimumTasks} required)`);
+    
+    // Ensure we never return less than minimum
+    if (finalActivities.length < minimumTasks) {
+      throw new Error(`CRITICAL ERROR: Unable to generate minimum ${minimumTasks} tasks for ${tradeType}. Only generated ${finalActivities.length}.`);
     }
 
     // Enhanced activities with comprehensive legislation
@@ -264,6 +283,48 @@ function normalizeTaskName(name: string): string {
   
   console.log(`🚀 NORMALIZED TASK: "${name}" → "${normalized}"`);
   return normalized;
+}
+
+// Emergency fallback for when all other generation fails
+function generateEmergencyFallbackActivities(tradeType: string, count: number): any[] {
+  console.log(`🚨 GENERATING ${count} EMERGENCY FALLBACK ACTIVITIES FOR ${tradeType}`);
+  
+  const emergencyActivities = [];
+  const baseNames = [
+    "Site preparation and access setup",
+    "Material delivery and storage organization", 
+    "Quality control inspection procedures",
+    "Work area cleaning and maintenance",
+    "Tool and equipment preparation",
+    "Safety briefing and risk assessment review",
+    "Progress documentation and reporting",
+    "Final cleanup and site restoration"
+  ];
+  
+  for (let i = 0; i < count && i < baseNames.length; i++) {
+    emergencyActivities.push({
+      name: `${baseNames[i]} - ${tradeType}`,
+      description: `Perform ${baseNames[i].toLowerCase()} specific to ${tradeType} work requirements and safety protocols`,
+      riskScore: 5,
+      residualRisk: 3,
+      legislation: [`NSW WHS Regulation 2017 - Section 39`, `Australian Standard AS 1885`, `Code of Practice - Construction Work`],
+      hazards: [{
+        type: "Physical",
+        description: `General workplace hazards during ${baseNames[i].toLowerCase()} activities`,
+        riskRating: 5,
+        controlMeasures: ["Follow safe work procedures", "Use appropriate PPE", "Maintain housekeeping standards"],
+        residualRisk: 3,
+        causeAgent: "General workplace conditions",
+        environmentalCondition: "Construction work environment",
+        consequence: "Minor injury potential"
+      }],
+      ppe: ["Hard Hat", "Hi-Vis Vest", "Steel Cap Boots", "Safety Glasses"],
+      tools: ["Basic hand tools", "Measuring equipment"],
+      trainingRequired: ["General safety induction", "Trade-specific training"]
+    });
+  }
+  
+  return emergencyActivities;
 }
 
 // Generate diverse fallback activities specific to the trade

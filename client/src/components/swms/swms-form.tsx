@@ -1116,26 +1116,20 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
                               lastPaymentUpdate: Date.now() // Force refresh
                             });
                             
-                            // Invalidate cache to refresh ALL user-related data
-                            await Promise.all([
-                              queryClient.invalidateQueries({ queryKey: ['/api/user'] }),
-                              queryClient.invalidateQueries({ queryKey: ['/api/user/subscription'] }),
-                              queryClient.invalidateQueries({ queryKey: ['/api/dashboard/999'] }),
-                              queryClient.invalidateQueries({ queryKey: ['/api/user/billing'] }),
-                              queryClient.invalidateQueries({ queryKey: ['/api/user/settings'] })
-                            ]);
+                            // Proceed immediately - don't wait for cache invalidation
+                            console.log('Payment completed successfully with credits - proceeding to next step immediately');
+                            if (onNext) {
+                              onNext();
+                            } else {
+                              console.log('WARNING: onNext is not available');
+                            }
                             
-                            // Wait a moment for state to update, then proceed
+                            // Invalidate cache in background for next time (don't await)
                             setTimeout(() => {
-                              console.log('Form data updated, calling onNext()');
-                              // Trigger next step via the parent component
-                              if (onNext) {
-                                console.log('Calling onNext to progress to next step');
-                                onNext();
-                              } else {
-                                console.log('WARNING: onNext is not available');
-                              }
-                            }, 100);
+                              queryClient.invalidateQueries({ queryKey: ['/api/user'] });
+                              queryClient.invalidateQueries({ queryKey: ['/api/dashboard/999'] });
+                              queryClient.invalidateQueries({ queryKey: ['/api/user/billing'] });
+                            }, 0);
                             
                           } else {
                             console.error('Failed to use credit:', response.statusText);
