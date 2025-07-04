@@ -66,7 +66,7 @@ const AutomaticPDFGeneration = ({ formData, onDataChange }: { formData: any; onD
   const loadingMessages = [
     'Initializing document generation...',
     'Processing SWMS data and formatting...',
-    'Connecting to PDF template system...',
+    'Building professional PDF template...',
     'Applying Australian WHS compliance standards...',
     'Generating risk assessment matrices...',
     'Processing plant equipment specifications...',
@@ -124,11 +124,11 @@ const AutomaticPDFGeneration = ({ formData, onDataChange }: { formData: any; onD
           workDescription: formData.workDescription || ''
         };
 
-        // Simulate PDF generation API call to RiskTemplateBuilder
-        setCurrentMessage('Sending data to PDF template system...');
+        // Send data to SWMSprint PDF generation system
+        setCurrentMessage('Sending data to SWMSprint PDF generator...');
         setProgress(95);
         
-        const response = await fetch('https://risktemplatebuilder.replit.app/api/swms', {
+        const response = await fetch('https://swmsprint.replit.app/api/swms', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -301,7 +301,7 @@ const AutomaticPDFGeneration = ({ formData, onDataChange }: { formData: any; onD
                 <Info className="h-5 w-5 text-blue-600 mt-0.5" />
                 <div className="text-sm text-blue-800">
                   <p className="font-medium mb-1">Background Processing</p>
-                  <p>Your SWMS data is being automatically processed through our PDF template system. No manual input required.</p>
+                  <p>Your SWMS data is being automatically processed through SWMSprint PDF generator. No manual input required.</p>
                 </div>
               </div>
             </div>
@@ -692,118 +692,7 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
                     </div>
                   </div>
                   
-                  {/* Signature Section */}
-                  <div className="border-t border-blue-200 pt-4">
-                    <Label className="text-blue-900 font-medium mb-3 block">Authorising Signature</Label>
-                    <div className="space-y-4">
-                      {/* Signature Method Selection */}
-                      <div className="flex flex-wrap gap-2">
-                        <button
-                          type="button"
-                          onClick={() => updateFormData({ signatureMethod: 'upload' })}
-                          className={`px-3 py-2 text-sm rounded-lg border ${
-                            formData.signatureMethod === 'upload'
-                              ? 'bg-blue-600 text-white border-blue-600'
-                              : 'bg-white text-blue-600 border-blue-300 hover:bg-blue-50'
-                          }`}
-                        >
-                          Upload Signature
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => updateFormData({ signatureMethod: 'type' })}
-                          className={`px-3 py-2 text-sm rounded-lg border ${
-                            formData.signatureMethod === 'type'
-                              ? 'bg-blue-600 text-white border-blue-600'
-                              : 'bg-white text-blue-600 border-blue-300 hover:bg-blue-50'
-                          }`}
-                        >
-                          Type Name
-                        </button>
-                      </div>
 
-                      {/* Upload Signature Option */}
-                      {formData.signatureMethod === 'upload' && (
-                        <div>
-                          <Label htmlFor="signatureUpload" className="text-sm text-gray-700">
-                            Upload signature image (PNG, JPG, GIF - Max 2MB)
-                          </Label>
-                          <input
-                            id="signatureUpload"
-                            type="file"
-                            accept="image/png,image/jpg,image/jpeg,image/gif"
-                            onChange={(e) => {
-                              const file = e.target.files?.[0];
-                              if (file) {
-                                if (file.size > 2 * 1024 * 1024) {
-                                  alert('File size must be less than 2MB');
-                                  return;
-                                }
-                                const reader = new FileReader();
-                                reader.onload = (event) => {
-                                  updateFormData({ 
-                                    signatureImage: event.target?.result as string,
-                                    signatureText: null
-                                  });
-                                };
-                                reader.readAsDataURL(file);
-                              }
-                            }}
-                            className="mt-2 block w-full text-sm text-gray-500 
-                              file:mr-4 file:py-2 file:px-4 
-                              file:rounded-lg file:border-0 
-                              file:text-sm file:font-medium 
-                              file:bg-blue-50 file:text-blue-700 
-                              hover:file:bg-blue-100"
-                          />
-                          {formData.signatureImage && (
-                            <div className="mt-3 p-3 bg-white border border-blue-200 rounded-lg">
-                              <p className="text-sm text-green-600 mb-2">✓ Signature uploaded successfully</p>
-                              <img 
-                                src={formData.signatureImage} 
-                                alt="Uploaded signature" 
-                                className="max-h-16 border border-gray-200 rounded"
-                              />
-                              <button
-                                type="button"
-                                onClick={() => updateFormData({ signatureImage: null })}
-                                className="mt-2 text-xs text-red-600 hover:text-red-800"
-                              >
-                                Remove signature
-                              </button>
-                            </div>
-                          )}
-                        </div>
-                      )}
-
-                      {/* Type Name Option */}
-                      {formData.signatureMethod === 'type' && (
-                        <div>
-                          <Label htmlFor="signatureText" className="text-sm text-gray-700">
-                            Type your full name as signature
-                          </Label>
-                          <Input
-                            id="signatureText"
-                            value={formData.signatureText || ""}
-                            onChange={(e) => updateFormData({ 
-                              signatureText: e.target.value,
-                              signatureImage: null
-                            })}
-                            placeholder="Enter your full name"
-                            className="mt-2 font-serif text-lg italic"
-                          />
-                          {formData.signatureText && (
-                            <div className="mt-2 p-3 bg-white border border-blue-200 rounded-lg">
-                              <p className="text-sm text-gray-600 mb-1">Signature preview:</p>
-                              <div className="font-serif text-xl italic text-blue-900 border-b border-gray-300 pb-1 inline-block">
-                                {formData.signatureText}
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -1272,6 +1161,211 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
       );
 
     case 6:
+      return (
+        <div className="space-y-6">
+          <div className="text-center">
+            <PenTool className="mx-auto h-12 w-12 text-primary mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Digital Signatures</h3>
+            <p className="text-gray-600 text-sm">
+              Add authorizing signatures for document validation and compliance.
+            </p>
+          </div>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Document Authorization</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {/* Person Creating and Authorising SWMS */}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                <h4 className="text-md font-medium text-blue-900 mb-3">Person Creating and Authorising SWMS</h4>
+                
+                {/* Signature Section */}
+                <div className="border-t border-blue-200 pt-4">
+                  <Label className="text-blue-900 font-medium mb-3 block">Authorising Signature</Label>
+                  <div className="space-y-4">
+                    {/* Signature Method Selection */}
+                    <div className="flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        onClick={() => updateFormData({ signatureMethod: 'upload' })}
+                        className={`px-3 py-2 text-sm rounded-lg border ${
+                          formData.signatureMethod === 'upload'
+                            ? 'bg-blue-600 text-white border-blue-600'
+                            : 'bg-white text-blue-600 border-blue-300 hover:bg-blue-50'
+                        }`}
+                      >
+                        Upload Signature
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => updateFormData({ signatureMethod: 'type' })}
+                        className={`px-3 py-2 text-sm rounded-lg border ${
+                          formData.signatureMethod === 'type'
+                            ? 'bg-blue-600 text-white border-blue-600'
+                            : 'bg-white text-blue-600 border-blue-300 hover:bg-blue-50'
+                        }`}
+                      >
+                        Type Name
+                      </button>
+                    </div>
+
+                    {/* Upload Signature Option */}
+                    {formData.signatureMethod === 'upload' && (
+                      <div>
+                        <Label htmlFor="signatureUpload" className="text-sm text-gray-700">
+                          Upload signature image (PNG, JPG, GIF - Max 2MB)
+                        </Label>
+                        <input
+                          id="signatureUpload"
+                          type="file"
+                          accept="image/png,image/jpg,image/jpeg,image/gif"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              if (file.size > 2 * 1024 * 1024) {
+                                alert('File size must be less than 2MB');
+                                return;
+                              }
+                              const reader = new FileReader();
+                              reader.onload = (event) => {
+                                updateFormData({ 
+                                  signatureImage: event.target?.result as string,
+                                  signatureText: null
+                                });
+                              };
+                              reader.readAsDataURL(file);
+                            }
+                          }}
+                          className="mt-2 block w-full text-sm text-gray-500 
+                            file:mr-4 file:py-2 file:px-4 
+                            file:rounded-lg file:border-0 
+                            file:text-sm file:font-medium 
+                            file:bg-blue-50 file:text-blue-700 
+                            hover:file:bg-blue-100"
+                        />
+                        {formData.signatureImage && (
+                          <div className="mt-3 p-3 bg-white border border-blue-200 rounded-lg">
+                            <p className="text-sm text-green-600 mb-2">✓ Signature uploaded successfully</p>
+                            <img 
+                              src={formData.signatureImage} 
+                              alt="Uploaded signature" 
+                              className="max-h-16 border border-gray-200 rounded"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => updateFormData({ signatureImage: null })}
+                              className="mt-2 text-xs text-red-600 hover:text-red-800"
+                            >
+                              Remove signature
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Type Name Option */}
+                    {formData.signatureMethod === 'type' && (
+                      <div>
+                        <Label htmlFor="signatureText" className="text-sm text-gray-700">
+                          Type your full name as signature
+                        </Label>
+                        <Input
+                          id="signatureText"
+                          value={formData.signatureText || ""}
+                          onChange={(e) => updateFormData({ 
+                            signatureText: e.target.value,
+                            signatureImage: null
+                          })}
+                          placeholder="Enter your full name"
+                          className="mt-2 font-serif text-lg italic"
+                        />
+                        {formData.signatureText && (
+                          <div className="mt-2 p-3 bg-white border border-blue-200 rounded-lg">
+                            <p className="text-sm text-gray-600 mb-1">Signature preview:</p>
+                            <div className="font-serif text-xl italic text-blue-900 border-b border-gray-300 pb-1 inline-block">
+                              {formData.signatureText}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      );
+
+    case 7:
+      return (
+        <div className="space-y-6">
+          <div className="text-center">
+            <Shield className="mx-auto h-12 w-12 text-primary mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Legal Disclaimer</h3>
+            <p className="text-gray-600 text-sm">
+              Review and accept the terms and conditions for SWMS creation.
+            </p>
+          </div>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Terms and Conditions</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                <h4 className="font-semibold text-amber-800 mb-2">Important Notice</h4>
+                <p className="text-amber-700 text-sm">
+                  This SWMS is a template and must be reviewed, adapted, and approved by a competent person 
+                  before use. The user is responsible for ensuring compliance with all applicable workplace 
+                  health and safety legislation.
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                <div className="flex items-start space-x-3">
+                  <Checkbox 
+                    id="terms1"
+                    checked={formData.acceptTerms1 || false}
+                    onCheckedChange={(checked) => updateFormData({ acceptTerms1: checked })}
+                  />
+                  <Label htmlFor="terms1" className="text-sm leading-relaxed">
+                    I acknowledge that this SWMS template requires review and adaptation to specific 
+                    workplace conditions and hazards before implementation.
+                  </Label>
+                </div>
+
+                <div className="flex items-start space-x-3">
+                  <Checkbox 
+                    id="terms2"
+                    checked={formData.acceptTerms2 || false}
+                    onCheckedChange={(checked) => updateFormData({ acceptTerms2: checked })}
+                  />
+                  <Label htmlFor="terms2" className="text-sm leading-relaxed">
+                    I understand that compliance with workplace health and safety legislation is my responsibility 
+                    and that this template does not guarantee compliance.
+                  </Label>
+                </div>
+
+                <div className="flex items-start space-x-3">
+                  <Checkbox 
+                    id="terms3"
+                    checked={formData.acceptTerms3 || false}
+                    onCheckedChange={(checked) => updateFormData({ acceptTerms3: checked })}
+                  />
+                  <Label htmlFor="terms3" className="text-sm leading-relaxed">
+                    I accept that the use of this SWMS template is at my own risk and that I will ensure 
+                    appropriate consultation with workers and safety professionals.
+                  </Label>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      );
+
+    case 8:
       return (
         <div className="space-y-6">
           <div className="text-center">

@@ -129,14 +129,14 @@ const HRCW_CATEGORIES = [
 ];
 
 const getSteps = () => [
-  { id: 1, title: "Project & Contractor Details", description: "Project information, contractor details, and high-risk work identification" },
-  { id: 2, title: "Work Activities & Risk Assessment", description: "Generate tasks with HRCW selection and manage comprehensive risk assessments" },
-  { id: 3, title: "Personal Protective Equipment", description: "Select required PPE based on work activities and risks" },
-  { id: 4, title: "Plant, Equipment & Training", description: "Equipment specifications, training requirements, and permits" },
-  { id: 5, title: "Emergency & Monitoring", description: "Emergency procedures and review/monitoring processes" },
-  { id: 6, title: "Payment & Access", description: "Select payment option to complete SWMS generation" },
+  { id: 1, title: "Project & Contractor Details", description: "Enter project information and contractor details" },
+  { id: 2, title: "Work Activities & Risk Assessment", description: "Generate tasks with high-risk work selection and manage comprehensive risk assessments" },
+  { id: 3, title: "Personal Protective Equipment", description: "Select required PPE based on work activities and risk requirements" },
+  { id: 4, title: "Plant, Equipment & Training", description: "Specify equipment, training requirements, and permit needs" },
+  { id: 5, title: "Emergency & Monitoring", description: "Define emergency procedures and monitoring processes" },
+  { id: 6, title: "Signatures", description: "Add authorizing signatures for document validation" },
   { id: 7, title: "Legal Disclaimer", description: "Accept terms and liability disclaimer" },
-  { id: 8, title: "Digital Signatures", description: "Add authorizing signatures for document validation" },
+  { id: 8, title: "Payment & Access", description: "Select payment option to complete SWMS generation" },
   { id: 9, title: "Document Generation", description: "Generating your professional SWMS document" }
 ];
 
