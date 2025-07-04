@@ -787,7 +787,7 @@ export default function SwmsBuilder() {
     debouncedAutoSave(formData);
   }, [formData, debouncedAutoSave]);
 
-  // Validation function for step 1 - More flexible for editing existing documents
+  // Validation function for step 1 - Clear error messages for missing fields
   const validateStep1 = () => {
     const errors: string[] = [];
     
@@ -802,24 +802,33 @@ export default function SwmsBuilder() {
     
     // Essential fields that must be present
     if (!formData.jobName?.trim()) {
-      errors.push("Job Name is required");
+      errors.push("Please enter a Job Name");
     }
     
-    // Optional fields for editing - only warn if all are missing
+    if (!formData.tradeType?.trim()) {
+      errors.push("Please select a Trade Type from the dropdown");
+    }
+    
+    if (!formData.swmsCreatorName?.trim()) {
+      errors.push("Please enter the SWMS Creator Name");
+    }
+    
+    // Check for project information
     const hasProjectInfo = formData.projectAddress?.trim() || 
                           formData.projectLocation?.trim() ||
                           formData.jobNumber?.trim();
     
+    if (!hasProjectInfo) {
+      errors.push("Please enter at least one of: Job Number, Project Address, or Project Location");
+    }
+    
+    // Check for personnel information
     const hasPersonnelInfo = formData.principalContractor?.trim() || 
                             formData.projectManager?.trim() || 
                             formData.siteSupervisor?.trim();
     
-    if (!hasProjectInfo) {
-      errors.push("At least one project detail (Job Number, Project Address, or Location) is required");
-    }
-    
     if (!hasPersonnelInfo) {
-      errors.push("At least one personnel field (Principal Contractor, Project Manager, or Site Supervisor) is required");
+      errors.push("Please enter at least one of: Principal Contractor, Project Manager, or Site Supervisor");
     }
     
     console.log('Step 1 validation errors:', errors);
@@ -834,7 +843,7 @@ export default function SwmsBuilder() {
                      (formData.activities && formData.activities.length > 0);
     
     if (!hasTasks) {
-      errors.push("At least one work activity must be selected");
+      errors.push("Please create work activities using either AI generation or manual entry");
     }
     return errors;
   };
@@ -893,9 +902,13 @@ export default function SwmsBuilder() {
     }
 
     if (errors.length > 0) {
+      const errorMessage = errors.length === 1 
+        ? errors[0] 
+        : `Please complete the following required fields:\n• ${errors.join('\n• ')}`;
+      
       toast({
-        title: "Missing Required Information",
-        description: "Please complete all required fields: " + errors.join(", "),
+        title: "Cannot Continue",
+        description: errorMessage,
         variant: "destructive",
       });
       return;
