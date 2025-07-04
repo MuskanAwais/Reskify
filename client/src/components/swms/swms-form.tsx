@@ -222,6 +222,94 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
         </div>
       );
 
+    case 2:
+      return (
+        <div className="space-y-6">
+          <div className="text-center">
+            <AlertTriangle className="mx-auto h-12 w-12 text-primary mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Work Activities & Risk Assessment</h3>
+            <p className="text-gray-600 text-sm">
+              Generate tasks with high-risk work selection and manage comprehensive risk assessments
+            </p>
+          </div>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Activity Generation</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p>Work activities and risk assessment content will be loaded here...</p>
+            </CardContent>
+          </Card>
+        </div>
+      );
+
+    case 3:
+      return (
+        <div className="space-y-6">
+          <div className="text-center">
+            <User className="mx-auto h-12 w-12 text-primary mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Personal Protective Equipment</h3>
+            <p className="text-gray-600 text-sm">
+              Select appropriate PPE for identified risks
+            </p>
+          </div>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>PPE Requirements</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p>PPE selection interface will be loaded here...</p>
+            </CardContent>
+          </Card>
+        </div>
+      );
+
+    case 4:
+      return (
+        <div className="space-y-6">
+          <div className="text-center">
+            <Wrench className="mx-auto h-12 w-12 text-primary mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Plant Equipment & Training</h3>
+            <p className="text-gray-600 text-sm">
+              Specify equipment requirements and training needs
+            </p>
+          </div>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Equipment Register</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p>Plant equipment and training content will be loaded here...</p>
+            </CardContent>
+          </Card>
+        </div>
+      );
+
+    case 5:
+      return (
+        <div className="space-y-6">
+          <div className="text-center">
+            <Phone className="mx-auto h-12 w-12 text-primary mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Emergency & Monitoring</h3>
+            <p className="text-gray-600 text-sm">
+              Configure emergency procedures and monitoring requirements
+            </p>
+          </div>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Emergency Procedures</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p>Emergency and monitoring procedures will be loaded here...</p>
+            </CardContent>
+          </Card>
+        </div>
+      );
+
     case 6:
       return (
         <div className="space-y-6">
@@ -533,6 +621,37 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
                     )}
                   </div>
                 )}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      );
+
+    case 9:
+      return (
+        <div className="space-y-6">
+          <div className="text-center">
+            <CheckCircle className="mx-auto h-12 w-12 text-primary mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Document Generation</h3>
+            <p className="text-gray-600 text-sm">
+              Your SWMS is being generated and will be available for download
+            </p>
+          </div>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>SWMS Complete</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center space-y-4">
+                <CheckCircle className="mx-auto h-16 w-16 text-green-600" />
+                <h4 className="text-lg font-semibold text-green-800">SWMS Generated Successfully!</h4>
+                <p className="text-gray-600">
+                  Your Safe Work Method Statement has been created and is ready for use.
+                </p>
+                <Button size="lg" className="mt-4">
+                  Download PDF
+                </Button>
               </div>
             </CardContent>
           </Card>
