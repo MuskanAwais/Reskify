@@ -514,7 +514,7 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
         <div className="space-y-6">
           <div className="text-center">
             <MapPin className="mx-auto h-12 w-12 text-primary mb-4" />
-            <h3 className="text-lg font-semibold mb-2">{translate("projectDetails")}</h3>
+            <h3 className="text-xl font-semibold mb-2">{translate("projectDetails")}</h3>
             <p className="text-gray-600 text-sm">
               {translate("projectDetailsDesc")}
             </p>
