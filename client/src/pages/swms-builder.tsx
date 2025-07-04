@@ -150,6 +150,7 @@ export default function SwmsBuilder() {
   const [isDraft, setIsDraft] = useState(false);
   const [draftId, setDraftId] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [isProcessingCredit, setIsProcessingCredit] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
     jobName: "",
@@ -1262,6 +1263,7 @@ export default function SwmsBuilder() {
                   userData={currentUser}
                   isLoadingCredits={isLoadingCredits}
                   creditsError={creditsError}
+                  setIsProcessingCredit={setIsProcessingCredit}
                 />
                 
                 {/* Navigation */}

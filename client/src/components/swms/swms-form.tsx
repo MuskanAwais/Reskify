@@ -171,6 +171,7 @@ interface SWMSFormProps {
   userData?: any;
   isLoadingCredits?: boolean;
   creditsError?: any;
+  setIsProcessingCredit?: (processing: boolean) => void;
 }
 
 const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit, setIsProcessingCredit, userData, isLoadingCredits, creditsError, userBillingData, isLoadingUserCredits, userCreditsError }: StepContentProps) => {
@@ -1539,9 +1540,10 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
   }
 };
 
-export default function SWMSForm({ step, data = {}, onNext, onDataChange, userData, isLoadingCredits, creditsError }: SWMSFormProps) {
+export default function SWMSForm({ step, data = {}, onNext, onDataChange, userData, isLoadingCredits, creditsError, setIsProcessingCredit }: SWMSFormProps) {
   const [formData, setFormData] = useState(data);
-  const [isProcessingCredit, setIsProcessingCredit] = useState(false);
+  // Use parent's setIsProcessingCredit instead of local state
+  const isProcessingCredit = false; // This will be managed by parent component
 
   // Fetch current user billing data for real-time credits with better error handling
   const { data: userBillingData, refetch: refetchUserData, isLoading: isLoadingUserCredits, error: userCreditsError } = useQuery({
