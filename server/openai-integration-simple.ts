@@ -91,10 +91,10 @@ Return JSON with this exact structure:
       "riskScore": 6,
       "residualRisk": 3,
       "legislation": [
-        "${state} WHS Regulation 2017 - Section XXX",
-        "AS/NZS XXXX:YYYY - Relevant standard",
-        "Code of Practice - Specific document name",
-        "Additional trade-specific regulation"
+        "${state} WHS Regulation 2017 - Section XXX (TASK-SPECIFIC section number)",
+        "AS/NZS XXXX:YYYY - Standard SPECIFIC to this task only",
+        "Code of Practice - Document SPECIFIC to this activity",
+        "Trade regulation UNIQUE to this particular task"
       ],
       "hazards": [
         {
@@ -127,8 +127,16 @@ CRITICAL REQUIREMENTS:
 - MINIMUM ${minimumTasks} activities required (never less than ${minimumTasks})
 - Each activity must have unique name and distinct work phase
 - Cover complete workflow from start to finish
-- Comprehensive legislation arrays required for each activity
-GENERATE AT LEAST ${minimumTasks} ACTIVITIES - NO EXCEPTIONS.`;
+- TASK-SPECIFIC legislation for each activity (NO REPETITION between tasks)
+- Legislation must be SPECIFIC to each individual task, not generic trade legislation
+- Each task requires DIFFERENT sections, standards, and codes relevant to that specific activity
+GENERATE AT LEAST ${minimumTasks} ACTIVITIES - NO EXCEPTIONS.
+
+LEGISLATION REQUIREMENTS PER TASK:
+- Each task must reference DIFFERENT WHS Regulation sections
+- Each task must cite DIFFERENT Australian Standards (AS/NZS)
+- Each task must reference DIFFERENT Codes of Practice
+- NO DUPLICATE legislation between tasks unless genuinely applicable to multiple activities`;
 
   try {
     console.log(`🚀 SENDING SIMPLE REQUEST WITH TIMEOUT...`);

@@ -1517,11 +1517,22 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
             <CardHeader>
               <CardTitle>Payment (Demo Mode)</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-4">
               <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg text-center">
                 <p className="text-blue-800 text-sm">
                   Payment processing is skipped in demo mode. Click Continue to proceed to document generation.
                 </p>
+              </div>
+              
+              <div className="flex justify-end">
+                <Button 
+                  onClick={onNext}
+                  size="lg"
+                  className="bg-green-600 hover:bg-green-700 text-white"
+                >
+                  <FileText className="mr-2 h-4 w-4" />
+                  Generate SWMS Document
+                </Button>
               </div>
             </CardContent>
           </Card>
