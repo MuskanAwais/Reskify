@@ -674,7 +674,7 @@ export default function GPTTaskSelection({
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-lg font-semibold">
             <Bot className="h-5 w-5 text-primary" />
             Choose Your SWMS Generation Method
           </CardTitle>

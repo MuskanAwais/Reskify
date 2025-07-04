@@ -522,7 +522,7 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
 
           <Card>
             <CardHeader>
-              <CardTitle>Project Information</CardTitle>
+              <CardTitle className="text-lg font-semibold">Project Information</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
