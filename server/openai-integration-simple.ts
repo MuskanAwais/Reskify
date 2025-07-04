@@ -49,7 +49,8 @@ HRCW Categories: ${hrcwCategories.join(', ') || 'None selected'}
 Generation ID: ${timestamp}
 
 CRITICAL REQUIREMENTS:
-- Generate EXACTLY 8-10 activities (not 3-6)
+- Generate EXACTLY ${minimumTasks}-${minimumTasks + 2} activities (MINIMUM ${minimumTasks} REQUIRED)
+- NEVER GENERATE LESS THAN ${minimumTasks} ACTIVITIES - THIS IS MANDATORY
 - Each activity MUST have a UNIQUE NAME that differs from all others
 - NO DUPLICATE NAMES OR DESCRIPTIONS - Validate each task name is different
 - Cover COMPLETE workflow with DISTINCT phases of work

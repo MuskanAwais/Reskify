@@ -1216,9 +1216,6 @@ export default function SwmsBuilder() {
                         ? 'text-green-600'
                         : 'text-gray-400'
                     }`}>{step.title}</p>
-                    <p className={`text-xs text-center leading-tight ${
-                      step.id <= currentStep ? 'text-gray-600' : 'text-gray-400'
-                    }`}>{step.description}</p>
                   </div>
                 </div>
               ))}
@@ -1246,7 +1243,7 @@ export default function SwmsBuilder() {
           </CardHeader>
           <CardContent>
             {/* Step Content */}
-            {currentStep === 8 ? (
+            {currentStep === 9 ? (
               <EmbeddedPDFEditor
                 formData={formData}
                 onDataChange={handleFormDataChange}

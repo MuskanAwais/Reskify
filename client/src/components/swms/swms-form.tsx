@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useToast } from "@/hooks/use-toast";
 import RiskComplianceChecker from "./risk-compliance-checker";
-import DigitalSignatureSystem from "./digital-signature-system";
+
 import PDFPrintSystem from "./pdf-print-system";
 import RiskValidationSystem from "./risk-validation-system";
 import PlantEquipmentSystem from "./plant-equipment-system";
@@ -42,7 +42,11 @@ import {
   Scale,
   Zap,
   Package,
-  Loader2
+  Loader2,
+  User,
+  Users,
+  Download,
+  AlertCircle
 } from "lucide-react";
 import { SimplifiedTableEditor } from "./simplified-table-editor";
 import GPTTaskSelection from "./gpt-task-selection";
@@ -1834,35 +1838,266 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
       return (
         <div className="space-y-6">
           <div className="text-center">
-            <FileText className="mx-auto h-12 w-12 text-primary mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Digital Signatures</h3>
+            <PenTool className="mx-auto h-12 w-12 text-primary mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Signatures</h3>
             <p className="text-gray-600 text-sm">
               Add authorizing signatures for document validation
             </p>
           </div>
 
+          {/* Person Creating and Authorizing SWMS */}
           <Card>
             <CardHeader>
-              <CardTitle>Digital Signature Collection (Optional)</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <User className="h-5 w-5" />
+                Person Creating and Authorising SWMS
+              </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                <p className="text-blue-800 font-medium mb-2">Optional Step</p>
-                <p className="text-gray-600">
-                  Digital signatures are optional. You can proceed directly to generate your SWMS document.
-                </p>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="creatorName">Full Name *</Label>
+                  <Input
+                    id="creatorName"
+                    value={formData.swmsCreatorName || ''}
+                    onChange={(e) => updateFormData({ swmsCreatorName: e.target.value })}
+                    placeholder="Enter full name"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="creatorPhone">Phone Number *</Label>
+                  <Input
+                    id="creatorPhone"
+                    value={formData.creatorPhone || ''}
+                    onChange={(e) => updateFormData({ creatorPhone: e.target.value })}
+                    placeholder="Enter phone number"
+                  />
+                </div>
+              </div>
+              
+              {/* Signature Method */}
+              <div className="space-y-3">
+                <Label>Authorising Signature</Label>
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant={formData.signatureMethod === 'upload' ? 'default' : 'outline'}
+                    onClick={() => updateFormData({ signatureMethod: 'upload' })}
+                    size="sm"
+                  >
+                    Upload Signature
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={formData.signatureMethod === 'type' ? 'default' : 'outline'}
+                    onClick={() => updateFormData({ signatureMethod: 'type' })}
+                    size="sm"
+                  >
+                    Type Name
+                  </Button>
+                </div>
+
+                {formData.signatureMethod === 'upload' && (
+                  <div className="space-y-3">
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onload = (event) => {
+                            updateFormData({ signatureImage: event.target?.result as string });
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                    />
+                    {formData.signatureImage && (
+                      <div className="border rounded-lg p-4 bg-gray-50">
+                        <p className="text-sm text-gray-600 mb-2">Signature preview:</p>
+                        <img
+                          src={formData.signatureImage}
+                          alt="Signature"
+                          className="max-h-16 border rounded"
+                        />
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {formData.signatureMethod === 'type' && (
+                  <div className="space-y-3">
+                    <Label htmlFor="typedSignature">Type your full name as signature</Label>
+                    <Input
+                      id="typedSignature"
+                      value={formData.signatureText || ''}
+                      onChange={(e) => updateFormData({ signatureText: e.target.value })}
+                      placeholder="Type your full name"
+                    />
+                    {formData.signatureText && (
+                      <div className="border rounded-lg p-4 bg-gray-50">
+                        <p className="text-sm text-gray-600 mb-2">Signature preview:</p>
+                        <p className="font-cursive text-2xl text-primary">
+                          {formData.signatureText}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
 
-          <DigitalSignatureSystem
-            swmsId={formData.draftId || `draft-${Date.now()}`}
-            swmsTitle={formData.jobName || 'SWMS Document'}
-            isCompliant={formData.complianceStatus?.isCompliant || false}
-            onSignaturesUpdate={(signatures) => {
-              updateFormData({ signatures });
-            }}
-          />
+          {/* People Signing onto the SWMS */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Users className="h-5 w-5" />
+                People Signing onto this SWMS
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* List existing signatories */}
+              {(formData.signatories || []).map((signatory: any, index: number) => (
+                <div key={index} className="border rounded-lg p-4 bg-gray-50">
+                  <div className="flex justify-between items-start mb-3">
+                    <div>
+                      <h4 className="font-medium">{signatory.name}</h4>
+                      <p className="text-sm text-gray-600">{signatory.phone}</p>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        const newSignatories = (formData.signatories || []).filter((_: any, i: number) => i !== index);
+                        updateFormData({ signatories: newSignatories });
+                      }}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  
+                  {signatory.signatureImage && (
+                    <div className="mt-2">
+                      <p className="text-xs text-gray-500 mb-1">Signature:</p>
+                      <img
+                        src={signatory.signatureImage}
+                        alt="Signature"
+                        className="max-h-12 border rounded"
+                      />
+                    </div>
+                  )}
+                  
+                  {signatory.signatureText && (
+                    <div className="mt-2">
+                      <p className="text-xs text-gray-500 mb-1">Signature:</p>
+                      <p className="font-cursive text-xl text-primary">
+                        {signatory.signatureText}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              ))}
+
+              {/* Add new signatory form */}
+              <div className="border rounded-lg p-4 bg-blue-50">
+                <h4 className="font-medium mb-3">Add New Signatory</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                  <Input
+                    placeholder="Full name"
+                    value={formData.newSignatoryName || ''}
+                    onChange={(e) => updateFormData({ newSignatoryName: e.target.value })}
+                  />
+                  <Input
+                    placeholder="Phone number"
+                    value={formData.newSignatoryPhone || ''}
+                    onChange={(e) => updateFormData({ newSignatoryPhone: e.target.value })}
+                  />
+                </div>
+
+                {/* Signature method for new signatory */}
+                <div className="space-y-3">
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      variant={formData.newSignatoryMethod === 'upload' ? 'default' : 'outline'}
+                      onClick={() => updateFormData({ newSignatoryMethod: 'upload' })}
+                      size="sm"
+                    >
+                      Upload Signature
+                    </Button>
+                    <Button
+                      type="button"
+                      variant={formData.newSignatoryMethod === 'type' ? 'default' : 'outline'}
+                      onClick={() => updateFormData({ newSignatoryMethod: 'type' })}
+                      size="sm"
+                    >
+                      Type Name
+                    </Button>
+                  </div>
+
+                  {formData.newSignatoryMethod === 'upload' && (
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onload = (event) => {
+                            updateFormData({ newSignatoryImage: event.target?.result as string });
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                    />
+                  )}
+
+                  {formData.newSignatoryMethod === 'type' && (
+                    <Input
+                      placeholder="Type full name as signature"
+                      value={formData.newSignatoryText || ''}
+                      onChange={(e) => updateFormData({ newSignatoryText: e.target.value })}
+                    />
+                  )}
+
+                  <Button
+                    type="button"
+                    onClick={() => {
+                      if (!formData.newSignatoryName || !formData.newSignatoryPhone) {
+                        alert('Please enter name and phone number');
+                        return;
+                      }
+
+                      const newSignatory = {
+                        name: formData.newSignatoryName,
+                        phone: formData.newSignatoryPhone,
+                        signatureImage: formData.newSignatoryImage || null,
+                        signatureText: formData.newSignatoryText || null,
+                        signedAt: new Date().toISOString()
+                      };
+
+                      const existingSignatories = formData.signatories || [];
+                      updateFormData({
+                        signatories: [...existingSignatories, newSignatory],
+                        newSignatoryName: '',
+                        newSignatoryPhone: '',
+                        newSignatoryImage: null,
+                        newSignatoryText: '',
+                        newSignatoryMethod: undefined
+                      });
+                    }}
+                    className="w-full"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Signatory
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       );
 
