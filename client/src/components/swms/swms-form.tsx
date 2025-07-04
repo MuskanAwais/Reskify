@@ -178,22 +178,29 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
   const [isManualFetch, setIsManualFetch] = useState(false);
   const [fallbackCreditsState, setFallbackCredits] = useState(fallbackCredits);
   
-  // Compute credit data outside the JSX for consistent access
-  const creditData = userData || fallbackCreditsState;
+  // Prioritize billing data if available, then userData, then fallback
+  const creditData = userBillingData || userData || fallbackCredits || fallbackCreditsState;
   const totalCredits = creditData?.credits || 0;
   const subscriptionCredits = creditData?.subscriptionCredits || 0;
   const addonCredits = creditData?.addonCredits || 0;
   const hasCredits = totalCredits > 0;
   
-  // DEBUG: Log credit data when on payment step
+  // ENHANCED DEBUG: Log all credit sources when on payment step
   if (step === 6) {
-    console.log('PAYMENT STEP CREDIT DEBUG:');
+    console.log('🔍 PAYMENT STEP COMPREHENSIVE CREDIT DEBUG:');
+    console.log('userBillingData:', userBillingData);
     console.log('userData:', userData);
-    console.log('creditData:', creditData);
+    console.log('fallbackCredits:', fallbackCredits);
+    console.log('fallbackCreditsState:', fallbackCreditsState);
+    console.log('SELECTED creditData:', creditData);
     console.log('totalCredits:', totalCredits);
     console.log('subscriptionCredits:', subscriptionCredits);
     console.log('addonCredits:', addonCredits);
     console.log('hasCredits:', hasCredits);
+    console.log('isLoadingUserCredits:', isLoadingUserCredits);
+    console.log('userCreditsError:', userCreditsError);
+    console.log('isLoadingCredits:', isLoadingCredits);
+    console.log('creditsError:', creditsError);
   }
 
   const updateFormData = (updates: any) => {
@@ -1054,12 +1061,20 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
                       className={`w-full ${hasCredits ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-400 cursor-not-allowed'}`}
                       disabled={isProcessingCredit || !hasCredits}
                       onClick={async (e) => {
-                        console.log('=== USE CREDIT BUTTON CLICKED ===');
+                        console.log('🎯 === USE CREDIT BUTTON CLICKED ===');
                         console.log('Event object:', e);
                         console.log('hasCredits:', hasCredits);
                         console.log('isProcessingCredit:', isProcessingCredit);
                         console.log('Button disabled state:', isProcessingCredit || !hasCredits);
                         console.log('Button element:', e.target);
+                        console.log('Credit check - totalCredits:', totalCredits);
+                        console.log('Credit check - creditData:', creditData);
+                        
+                        // If button is disabled, prevent execution
+                        if (isProcessingCredit || !hasCredits) {
+                          console.log('❌ Button execution blocked - disabled state');
+                          return;
+                        }
                         
                         if (!hasCredits) {
                           alert('You have no credits available. Please purchase credits below.');
