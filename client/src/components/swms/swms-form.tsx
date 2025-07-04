@@ -30,6 +30,7 @@ import {
   Layers,
   Shield,
   FileText,
+  ClipboardList,
   Wrench,
   Eye,
   Info,
@@ -467,6 +468,34 @@ interface SWMSFormProps {
   setIsProcessingCredit?: (processing: boolean) => void;
 }
 
+// Helper function to get step icon
+const getStepIcon = (step: number) => {
+  const iconClasses = "mx-auto h-12 w-12 text-primary mb-4";
+  
+  switch (step) {
+    case 1:
+      return <FileText className={iconClasses} />;
+    case 2:
+      return <ClipboardList className={iconClasses} />;
+    case 3:
+      return <Shield className={iconClasses} />;
+    case 4:
+      return <Wrench className={iconClasses} />;
+    case 5:
+      return <AlertTriangle className={iconClasses} />;
+    case 6:
+      return <PenTool className={iconClasses} />;
+    case 7:
+      return <Scale className={iconClasses} />;
+    case 8:
+      return <CreditCard className={iconClasses} />;
+    case 9:
+      return <Download className={iconClasses} />;
+    default:
+      return <FileText className={iconClasses} />;
+  }
+};
+
 const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit, setIsProcessingCredit, userData, isLoadingCredits, creditsError, userBillingData, isLoadingUserCredits, userCreditsError }: StepContentProps) => {
   const { toast } = useToast();
 
@@ -513,7 +542,7 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
       return (
         <div className="space-y-6">
           <div className="text-center">
-            <MapPin className="mx-auto h-12 w-12 text-primary mb-4" />
+            {getStepIcon(1)}
             <h3 className="text-xl font-semibold mb-2">{translate("projectDetails")}</h3>
             <p className="text-gray-600 text-sm">
               {translate("projectDetailsDesc")}
@@ -1439,7 +1468,7 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
       return (
         <div className="space-y-6">
           <div className="text-center">
-            <CreditCard className="mx-auto h-12 w-12 text-primary mb-4" />
+            {getStepIcon(8)}
             <h3 className="text-lg font-semibold mb-2">Payment & Access</h3>
             <p className="text-gray-600 text-sm">
               Complete payment to generate your professional SWMS document.

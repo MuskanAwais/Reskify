@@ -140,20 +140,34 @@ const getSteps = () => [
   { id: 9, title: "Document Generation", description: "Generating your professional SWMS document", icon: "Download" }
 ];
 
-// Icon mapping function
-const getStepIcon = (iconName: string) => {
-  const icons = {
-    FileText,
-    ClipboardList,
-    Shield,
-    Wrench,
-    AlertTriangle,
-    PenTool,
-    Scale,
-    CreditCard,
-    Download
-  };
-  return icons[iconName as keyof typeof icons] || FileText;
+// Render step icon function
+const renderStepIcon = (step: any, currentStep: number) => {
+  const baseClasses = "h-4 w-4";
+  const opacityClass = step.id === currentStep ? "" : "opacity-60";
+  const iconClasses = `${baseClasses} ${opacityClass}`;
+
+  switch (step.icon) {
+    case 'FileText':
+      return <FileText className={iconClasses} />;
+    case 'ClipboardList':
+      return <ClipboardList className={iconClasses} />;
+    case 'Shield':
+      return <Shield className={iconClasses} />;
+    case 'Wrench':
+      return <Wrench className={iconClasses} />;
+    case 'AlertTriangle':
+      return <AlertTriangle className={iconClasses} />;
+    case 'PenTool':
+      return <PenTool className={iconClasses} />;
+    case 'Scale':
+      return <Scale className={iconClasses} />;
+    case 'CreditCard':
+      return <CreditCard className={iconClasses} />;
+    case 'Download':
+      return <Download className={iconClasses} />;
+    default:
+      return <FileText className={iconClasses} />;
+  }
 };
 
 export default function SwmsBuilder() {
@@ -1251,10 +1265,8 @@ export default function SwmsBuilder() {
                   >
                     {step.id < currentStep ? (
                       <CheckCircle className="h-4 w-4" />
-                    ) : step.id === currentStep ? (
-                      React.createElement(getStepIcon(step.icon), { className: "h-4 w-4" })
                     ) : (
-                      React.createElement(getStepIcon(step.icon), { className: "h-4 w-4 opacity-60" })
+                      renderStepIcon(step, currentStep)
                     )}
                   </button>
                   <div className="text-center hidden md:block px-2">
