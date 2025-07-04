@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -9,7 +9,7 @@ import { SimplifiedTableEditor } from "@/components/swms/simplified-table-editor
 
 import CreditCounter from "@/components/ui/credit-counter";
 
-import { ArrowLeft, ArrowRight, FileText, Shield, CheckCircle, Save, X, Plus } from "lucide-react";
+import { ArrowLeft, ArrowRight, FileText, Shield, CheckCircle, Save, X, Plus, ClipboardList, Wrench, AlertTriangle, PenTool, Scale, CreditCard, Download } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
@@ -129,16 +129,32 @@ const HRCW_CATEGORIES = [
 ];
 
 const getSteps = () => [
-  { id: 1, title: "Project & Contractor Details", description: "Enter project information and contractor details" },
-  { id: 2, title: "Work Activities & Risk Assessment", description: "Generate tasks with high-risk work selection and manage comprehensive risk assessments" },
-  { id: 3, title: "Personal Protective Equipment", description: "Select required PPE based on work activities and risk requirements" },
-  { id: 4, title: "Plant, Equipment & Training", description: "Specify equipment, training requirements, and permit needs" },
-  { id: 5, title: "Emergency & Monitoring", description: "Define emergency procedures and monitoring processes" },
-  { id: 6, title: "Signatures", description: "Add authorizing signatures for document validation" },
-  { id: 7, title: "Legal Disclaimer", description: "Accept terms and liability disclaimer" },
-  { id: 8, title: "Payment & Access", description: "Select payment option to complete SWMS generation" },
-  { id: 9, title: "Document Generation", description: "Generating your professional SWMS document" }
+  { id: 1, title: "Project & Contractor Details", description: "Enter project information and contractor details", icon: "FileText" },
+  { id: 2, title: "Work Activities & Risk Assessment", description: "Generate tasks with high-risk work selection and manage comprehensive risk assessments", icon: "ClipboardList" },
+  { id: 3, title: "Personal Protective Equipment", description: "Select required PPE based on work activities and risk requirements", icon: "Shield" },
+  { id: 4, title: "Plant, Equipment & Training", description: "Specify equipment, training requirements, and permit needs", icon: "Wrench" },
+  { id: 5, title: "Emergency & Monitoring", description: "Define emergency procedures and monitoring processes", icon: "AlertTriangle" },
+  { id: 6, title: "Signatures", description: "Add authorizing signatures for document validation", icon: "PenTool" },
+  { id: 7, title: "Legal Disclaimer", description: "Accept terms and liability disclaimer", icon: "Scale" },
+  { id: 8, title: "Payment & Access", description: "Select payment option to complete SWMS generation", icon: "CreditCard" },
+  { id: 9, title: "Document Generation", description: "Generating your professional SWMS document", icon: "Download" }
 ];
+
+// Icon mapping function
+const getStepIcon = (iconName: string) => {
+  const icons = {
+    FileText,
+    ClipboardList,
+    Shield,
+    Wrench,
+    AlertTriangle,
+    PenTool,
+    Scale,
+    CreditCard,
+    Download
+  };
+  return icons[iconName as keyof typeof icons] || FileText;
+};
 
 export default function SwmsBuilder() {
   const STEPS = getSteps();
@@ -1235,8 +1251,10 @@ export default function SwmsBuilder() {
                   >
                     {step.id < currentStep ? (
                       <CheckCircle className="h-4 w-4" />
+                    ) : step.id === currentStep ? (
+                      React.createElement(getStepIcon(step.icon), { className: "h-4 w-4" })
                     ) : (
-                      step.id
+                      React.createElement(getStepIcon(step.icon), { className: "h-4 w-4 opacity-60" })
                     )}
                   </button>
                   <div className="text-center hidden md:block px-2">

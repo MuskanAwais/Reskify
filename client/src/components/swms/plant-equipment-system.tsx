@@ -74,15 +74,11 @@ export default function PlantEquipmentSystem({ plantEquipment, onUpdate }: Plant
   });
 
   useEffect(() => {
-    if (JSON.stringify(equipment) !== JSON.stringify(plantEquipment || [])) {
-      setEquipment(plantEquipment || []);
-    }
+    setEquipment(plantEquipment || []);
   }, [plantEquipment]);
 
   useEffect(() => {
-    if (JSON.stringify(equipment) !== JSON.stringify(plantEquipment || [])) {
-      onUpdate(equipment);
-    }
+    onUpdate(equipment);
   }, [equipment, onUpdate]);
 
   const addEquipment = () => {
