@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import SwmsForm from "@/components/swms/swms-form";
+import SWMSForm from "@/components/swms/swms-form";
 import DocumentPreview from "@/components/swms/document-preview";
 import { SimplifiedTableEditor } from "@/components/swms/simplified-table-editor";
 import EmbeddedPDFEditor from "@/components/swms/embedded-pdf-editor";
@@ -1252,7 +1252,7 @@ export default function SwmsBuilder() {
               />
             ) : (
               <>
-                <SwmsForm 
+                <SWMSForm 
                   step={currentStep}
                   data={formData}
                   onDataChange={handleFormDataChange}
