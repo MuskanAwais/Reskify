@@ -11,7 +11,7 @@ import {
   FileText, 
   Shield, 
   Copy, 
-  Bot, 
+  Coins, 
   Search,
   ExternalLink,
   MoreVertical,
@@ -107,7 +107,7 @@ export default function Dashboard() {
                 <p className="text-xs text-gray-500 mt-1">Available SWMS generations</p>
               </div>
               <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <Bot className="text-blue-600 text-xl" />
+                <Coins className="text-blue-600 text-xl" />
               </div>
             </div>
           </CardContent>

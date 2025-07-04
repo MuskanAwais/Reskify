@@ -804,12 +804,6 @@ export default function SwmsBuilder() {
     if (!formData.jobName?.trim()) {
       errors.push("Job Name is required");
     }
-    if (!formData.tradeType?.trim()) {
-      errors.push("Trade Type is required");
-    }
-    if (!formData.swmsCreatorName?.trim()) {
-      errors.push("SWMS Creator Name is required");
-    }
     
     // Optional fields for editing - only warn if all are missing
     const hasProjectInfo = formData.projectAddress?.trim() || 
