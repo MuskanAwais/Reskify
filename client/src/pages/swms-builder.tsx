@@ -713,12 +713,13 @@ export default function SwmsBuilder() {
       return (data: any) => {
         clearTimeout(timeoutId);
         timeoutId = setTimeout(() => {
-          // More inclusive condition for Step 1 fields to ensure auto-save triggers
+          // More inclusive condition for Step 1 fields AND emergency step fields to ensure auto-save triggers
           const hasSignificantData = data.title || data.jobName || data.tradeType || 
                                     data.projectAddress || data.jobNumber || data.startDate ||
                                     data.swmsCreatorName || data.principalContractor ||
                                     data.projectManager || data.siteSupervisor || data.projectDescription ||
-                                    data.monitoringRequirements;
+                                    data.monitoringRequirements || data.emergencyProcedures ||
+                                    (data.emergencyContactsList && data.emergencyContactsList.length > 0);
           
           if (hasSignificantData) {
             console.log('Auto-saving with data:', Object.keys(data).filter(key => data[key]));
@@ -736,7 +737,8 @@ export default function SwmsBuilder() {
                               formData.projectAddress || formData.jobNumber || formData.startDate ||
                               formData.swmsCreatorName || formData.principalContractor ||
                               formData.projectManager || formData.siteSupervisor || formData.projectDescription ||
-                              formData.monitoringRequirements;
+                              formData.monitoringRequirements || formData.emergencyProcedures ||
+                              (formData.emergencyContactsList && formData.emergencyContactsList.length > 0);
                               
     if (hasSignificantData) {
       console.log('Auto-saving draft with form data:', formData);
@@ -749,11 +751,13 @@ export default function SwmsBuilder() {
   // Auto-save when form data changes (debounced to prevent excessive API calls)
   useEffect(() => {
     // Skip auto-save on initial mount or if no significant data exists
-    // Include more Step 1 fields to ensure proper auto-save triggers
+    // Include more Step 1 fields AND emergency step fields to ensure proper auto-save triggers
     const hasSignificantData = formData.jobName || formData.title || formData.tradeType || 
                               formData.projectAddress || formData.jobNumber || formData.startDate ||
                               formData.swmsCreatorName || formData.principalContractor ||
-                              formData.projectManager || formData.siteSupervisor;
+                              formData.projectManager || formData.siteSupervisor ||
+                              formData.emergencyProcedures || formData.monitoringRequirements ||
+                              (formData.emergencyContactsList && formData.emergencyContactsList.length > 0);
     
     if (!hasSignificantData) {
       return;

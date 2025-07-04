@@ -184,6 +184,17 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
   const subscriptionCredits = creditData?.subscriptionCredits || 0;
   const addonCredits = creditData?.addonCredits || 0;
   const hasCredits = totalCredits > 0;
+  
+  // DEBUG: Log credit data when on payment step
+  if (step === 6) {
+    console.log('PAYMENT STEP CREDIT DEBUG:');
+    console.log('userData:', userData);
+    console.log('creditData:', creditData);
+    console.log('totalCredits:', totalCredits);
+    console.log('subscriptionCredits:', subscriptionCredits);
+    console.log('addonCredits:', addonCredits);
+    console.log('hasCredits:', hasCredits);
+  }
 
   const updateFormData = (updates: any) => {
     const newData = { 
@@ -1042,10 +1053,13 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
                       size="lg"
                       className={`w-full ${hasCredits ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-400 cursor-not-allowed'}`}
                       disabled={isProcessingCredit || !hasCredits}
-                      onClick={async () => {
-                        console.log('USE CREDIT BUTTON CLICKED');
+                      onClick={async (e) => {
+                        console.log('=== USE CREDIT BUTTON CLICKED ===');
+                        console.log('Event object:', e);
                         console.log('hasCredits:', hasCredits);
                         console.log('isProcessingCredit:', isProcessingCredit);
+                        console.log('Button disabled state:', isProcessingCredit || !hasCredits);
+                        console.log('Button element:', e.target);
                         
                         if (!hasCredits) {
                           alert('You have no credits available. Please purchase credits below.');
