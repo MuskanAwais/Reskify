@@ -338,7 +338,7 @@ export class DatabaseStorage implements IStorage {
         .from(swmsDocuments)
         .where(and(
           eq(swmsDocuments.userId, userId),
-          isNull(swmsDocuments.deletedAt) // Only get non-deleted documents
+          not(eq(swmsDocuments.status, 'deleted')) // Only get non-deleted documents based on status
         ))
         .orderBy(desc(swmsDocuments.createdAt));
       
@@ -614,15 +614,15 @@ export class DatabaseStorage implements IStorage {
   async getDeletedSwms(userId: number): Promise<any[]> {
     try {
       console.log(`Querying deleted SWMS documents for user ${userId}...`);
-      // Fetch only deleted documents for the user
+      // Fetch only deleted documents for the user based on status
       const deletedDocuments = await db
         .select()
         .from(swmsDocuments)
         .where(and(
           eq(swmsDocuments.userId, userId),
-          not(isNull(swmsDocuments.deletedAt)) // Only get deleted documents
+          eq(swmsDocuments.status, 'deleted') // Only get deleted documents based on status
         ))
-        .orderBy(desc(swmsDocuments.deletedAt));
+        .orderBy(desc(swmsDocuments.updatedAt));
       
       console.log(`Found ${deletedDocuments.length} deleted SWMS documents for user ${userId}`);
       return deletedDocuments;
