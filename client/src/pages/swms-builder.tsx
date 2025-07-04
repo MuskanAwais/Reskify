@@ -846,25 +846,34 @@ export default function SwmsBuilder() {
       errors.push("Please enter the SWMS Creator Name");
     }
     
-    // Check for project information
-    const hasProjectInfo = formData.projectAddress?.trim() || 
-                          formData.projectLocation?.trim() ||
-                          formData.jobNumber?.trim();
+    // Check for project information - more flexible validation
+    const hasProjectInfo = Boolean(
+      formData.projectAddress?.trim() || 
+      formData.projectLocation?.trim() ||
+      formData.jobNumber?.trim()
+    );
     
     if (!hasProjectInfo) {
       errors.push("Please enter at least one of: Job Number, Project Address, or Project Location");
     }
     
-    // Check for personnel information
-    const hasPersonnelInfo = formData.principalContractor?.trim() || 
-                            formData.projectManager?.trim() || 
-                            formData.siteSupervisor?.trim();
+    // Check for personnel information - more flexible validation
+    const hasPersonnelInfo = Boolean(
+      formData.principalContractor?.trim() || 
+      formData.projectManager?.trim() || 
+      formData.siteSupervisor?.trim()
+    );
     
     if (!hasPersonnelInfo) {
       errors.push("Please enter at least one of: Principal Contractor, Project Manager, or Site Supervisor");
     }
     
-    console.log('Step 1 validation errors:', errors);
+    console.log('Step 1 validation result:', {
+      hasErrors: errors.length > 0,
+      errors: errors,
+      canProceed: errors.length === 0
+    });
+    
     return errors;
   };
 
@@ -917,6 +926,12 @@ export default function SwmsBuilder() {
   };
 
   const handleNext = async () => {
+    // Prevent double-clicks and multiple rapid submissions
+    if (saveDraftMutation.isPending || autoSaveMutation.isPending) {
+      console.log('Button click ignored - save in progress');
+      return;
+    }
+
     // Validate current step before proceeding
     let errors: string[] = [];
     
@@ -1020,10 +1035,11 @@ export default function SwmsBuilder() {
       return;
     }
     
-    // Auto-save before moving to next step
+    // Auto-save before moving to next step (but don't wait for it to complete)
     if (formData.title || formData.jobName || formData.tradeType) {
       try {
-        await autoSaveMutation.mutateAsync(formData);
+        // Don't await this to prevent blocking navigation
+        autoSaveMutation.mutate(formData);
       } catch (error) {
         console.error('Error saving draft:', error);
       }
@@ -1327,9 +1343,9 @@ export default function SwmsBuilder() {
                       <Button 
                         onClick={handleNext} 
                         className="bg-primary hover:bg-primary/90"
-                        disabled={saveDraftMutation.isPending || (currentStep === 2 && (!formData.selectedTasks || formData.selectedTasks.length === 0))}
+                        disabled={saveDraftMutation.isPending || autoSaveMutation.isPending || isSaving}
                       >
-                        {saveDraftMutation.isPending ? "Saving..." : 
+                        {(saveDraftMutation.isPending || autoSaveMutation.isPending || isSaving) ? "Processing..." : 
                          currentStep === 8 ? "Generate SWMS Document" : "Continue"}
                         <ArrowRight className="ml-2 h-4 w-4" />
                       </Button>
