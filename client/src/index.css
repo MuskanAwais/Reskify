@@ -4,6 +4,11 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Custom cursive font for signatures */
+.font-cursive {
+  font-family: 'Dancing Script', cursive;
+}
+
 /* Mobile and Tablet Optimizations */
 @layer base {
   html {
