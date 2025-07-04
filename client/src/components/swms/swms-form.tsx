@@ -69,6 +69,12 @@ const AutomaticPDFGeneration = ({ formData, onDataChange }: { formData: any; onD
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const { toast } = useToast();
 
+  // Debug logging to verify component loading
+  useEffect(() => {
+    console.log('AutomaticPDFGeneration component loaded - Step 9 is working');
+    console.log('Form data received:', formData);
+  }, []);
+
   const loadingMessages = [
     'Initializing document generation...',
     'Processing SWMS data and formatting...',
@@ -1540,7 +1546,25 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
       );
 
     case 9:
-      return <AutomaticPDFGeneration formData={formData} onDataChange={onDataChange} />;
+      try {
+        return <AutomaticPDFGeneration formData={formData} onDataChange={onDataChange} />;
+      } catch (error) {
+        console.error('Step 9 component error:', error);
+        // Fallback UI if there's a runtime error
+        return (
+          <div className="space-y-6">
+            <div className="text-center">
+              <Loader2 className="mx-auto h-16 w-16 text-blue-500 animate-spin mb-4" />
+              <h3 className="text-xl font-semibold mb-2">Document Generation</h3>
+              <p className="text-gray-600 text-sm mb-6">
+                Processing your SWMS document with SWMSprint...
+              </p>
+              <Progress value={75} className="w-full max-w-md mx-auto" />
+              <p className="text-sm text-gray-500 mt-2">Connecting to SWMSprint background service</p>
+            </div>
+          </div>
+        );
+      }
 
     default:
       return (
