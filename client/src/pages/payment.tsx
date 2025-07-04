@@ -579,12 +579,6 @@ export default function Payment() {
           </Button>
           
           <div className="flex space-x-4">
-            {(mockSubscription as any).creditsRemaining > 0 && (
-              <Button variant="outline" onClick={handleContinue}>
-                Use Existing Credit
-              </Button>
-            )}
-            
             {!clientSecret && selectedPlan && (
               <Button 
                 onClick={() => handlePurchase(selectedPlan)}
