@@ -697,7 +697,7 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
 
               {/* Project Personnel Details */}
               <div className="border-t pt-6">
-                <h3 className="text-lg font-semibold mb-4">Project Personnel</h3>
+                <h2 className="text-xl font-semibold mb-4">Project Personnel</h2>
                 
 
 
@@ -881,7 +881,7 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
               <div className="space-y-6">
                 {/* Standard PPE */}
                 <div>
-                  <h4 className="font-medium text-gray-900 mb-3 flex items-center">
+                  <h4 className="text-lg font-semibold text-gray-900 mb-3 flex items-center">
                     <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
                     Standard PPE Items (General Use)
                   </h4>
@@ -942,7 +942,7 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
 
                 {/* Task-Specific PPE */}
                 <div>
-                  <h4 className="font-medium text-gray-900 mb-3 flex items-center">
+                  <h4 className="text-lg font-semibold text-gray-900 mb-3 flex items-center">
                     <AlertTriangle className="h-4 w-4 text-yellow-600 mr-2" />
                     Task-Specific PPE
                   </h4>
