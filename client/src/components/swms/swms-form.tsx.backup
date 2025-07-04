@@ -909,7 +909,7 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
                           onClick={() => {
                             const currentPPE = formData.ppeRequirements || [];
                             const updatedPPE = isSelected
-                              ? currentPPE.filter((id: string) => id !== ppe.id)
+                              ? currentPPE.filter(id => id !== ppe.id)
                               : [...currentPPE, ppe.id];
                             updateFormData({ ppeRequirements: updatedPPE });
                           }}
@@ -975,7 +975,7 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
                           onClick={() => {
                             const currentPPE = formData.ppeRequirements || [];
                             const updatedPPE = isSelected
-                              ? currentPPE.filter((id: string) => id !== ppe.id)
+                              ? currentPPE.filter(id => id !== ppe.id)
                               : [...currentPPE, ppe.id];
                             updateFormData({ ppeRequirements: updatedPPE });
                           }}
@@ -1179,7 +1179,482 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
         </div>
       );
 
+    case 7:
+      return (
+        <div className="space-y-6">
+          <div className="text-center">
+            <Shield className="mx-auto h-12 w-12 text-primary mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Legal Disclaimer</h3>
+            <p className="text-gray-600 text-sm">
+              Review and accept the terms and conditions for SWMS creation.
+            </p>
+          </div>
 
+          <Card>
+            <CardHeader>
+              <CardTitle>Terms and Conditions</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                <h4 className="font-semibold text-amber-800 mb-2">Important Notice</h4>
+                <p className="text-amber-700 text-sm">
+                  This SWMS is a template and must be reviewed, adapted, and approved by a competent person 
+                  before use. The user is responsible for ensuring compliance with all applicable workplace 
+                  health and safety legislation.
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                <div className="flex items-start space-x-3">
+                  <Checkbox 
+                    id="terms1"
+                    checked={formData.acceptTerms1 || false}
+                    onCheckedChange={(checked) => updateFormData({ acceptTerms1: checked })}
+                  />
+                  <Label htmlFor="terms1" className="text-sm leading-relaxed">
+                    I acknowledge that this SWMS template requires review and adaptation to specific 
+                    workplace conditions and hazards before implementation.
+                  </Label>
+                </div>
+
+                <div className="flex items-start space-x-3">
+                  <Checkbox 
+                    id="terms2"
+                    checked={formData.acceptTerms2 || false}
+                    onCheckedChange={(checked) => updateFormData({ acceptTerms2: checked })}
+                  />
+                  <Label htmlFor="terms2" className="text-sm leading-relaxed">
+                    I understand that compliance with workplace health and safety legislation is my responsibility 
+                    and that this template does not guarantee compliance.
+                  </Label>
+                </div>
+
+                <div className="flex items-start space-x-3">
+                  <Checkbox 
+                    id="terms3"
+                    checked={formData.acceptTerms3 || false}
+                    onCheckedChange={(checked) => updateFormData({ acceptTerms3: checked })}
+                  />
+                  <Label htmlFor="terms3" className="text-sm leading-relaxed">
+                    I accept that the use of this SWMS template is at my own risk and that I will ensure 
+                    appropriate consultation with workers and safety professionals.
+                  </Label>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      );
+
+    case 8:
+      return (
+        <div className="space-y-6">
+          <div className="text-center">
+            <CreditCard className="mx-auto h-12 w-12 text-primary mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Payment & Access</h3>
+            <p className="text-gray-600 text-sm">
+              Complete your payment to finalize and download your SWMS document.
+            </p>
+          </div>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Payment Options</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {/* Use Current Credits Option */}
+                {isLoadingCredits ? (
+                  <div className="p-4 border rounded-lg bg-blue-50 border-blue-200">
+                    <div className="flex items-center justify-between mb-3">
+                      <div>
+                        <p className="font-medium text-blue-800">Loading Credits...</p>
+                        <p className="text-sm text-blue-700">Checking your available credits</p>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className={`p-4 border rounded-lg ${hasCredits ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
+                    <div className="flex items-center justify-between mb-3">
+                      <div>
+                        <p className={`font-medium ${hasCredits ? 'text-green-800' : 'text-red-800'}`}>
+                          {hasCredits ? 'Use Current Credits' : 'No Credits Available'}
+                        </p>
+                        <p className={`text-sm ${hasCredits ? 'text-green-700' : 'text-red-700'}`}>
+                          {hasCredits 
+                            ? `You have ${totalCredits} total credits available (${subscriptionCredits} subscription + ${addonCredits} add-on)`
+                            : 'You need to purchase credits or use a payment option below to continue'
+                          }
+                        </p>
+                      </div>
+                      <Badge className={`${hasCredits ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                        {totalCredits} Credits
+                      </Badge>
+                    </div>
+                    <Button 
+                      size="lg"
+                      className={`w-full ${hasCredits ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-400 cursor-not-allowed'}`}
+                      disabled={isProcessingCredit || !hasCredits}
+                      onClick={async (e) => {
+                        console.log('🎯 === USE CREDIT BUTTON CLICKED ===');
+                        console.log('Event object:', e);
+                        console.log('hasCredits:', hasCredits);
+                        console.log('isProcessingCredit:', isProcessingCredit);
+                        console.log('Button disabled state:', isProcessingCredit || !hasCredits);
+                        console.log('Button element:', e.target);
+                        console.log('Credit check - totalCredits:', totalCredits);
+                        console.log('Credit check - creditData:', creditData);
+                        
+                        // If button is disabled, prevent execution
+                        if (isProcessingCredit || !hasCredits) {
+                          console.log('❌ Button execution blocked - disabled state');
+                          return;
+                        }
+                        
+                        if (!hasCredits) {
+                          alert('You have no credits available. Please purchase credits below.');
+                          return;
+                        }
+                        if (isProcessingCredit) return; // Prevent double clicks
+                    
+                        setIsProcessingCredit?.(true);
+                        console.log('Credit button clicked - starting process');
+                        
+                        try {
+                          // Call the credit usage API with admin demo headers
+                          const response = await fetch('/api/user/use-credit', {
+                            method: 'POST',
+                            headers: {
+                              'Content-Type': 'application/json',
+                              'x-admin-demo': localStorage.getItem('adminDemoMode') || 'false',
+                              'x-app-admin': localStorage.getItem('isAppAdmin') || 'false',
+                            },
+                            credentials: 'include',
+                          });
+
+                          console.log('Credit API response status:', response.status);
+                          const result = await response.json();
+                          console.log('Credit API response:', result);
+
+                          if (response.ok) {
+                            console.log('Credit used successfully:', result);
+                            
+                            // Immediately update form data to indicate payment is complete
+                            updateFormData({ 
+                              paymentMethod: 'credits', 
+                              paid: true,
+                              creditsUsed: true,
+                              paidAccess: true,  // This is what the step validation checks for
+                              lastPaymentUpdate: Date.now() // Force refresh
+                            });
+                            
+                            // Proceed immediately - don't wait for cache invalidation
+                            console.log('Payment completed successfully with credits - proceeding to next step immediately');
+                            if (onNext) {
+                              onNext();
+                            } else {
+                              console.log('WARNING: onNext is not available');
+                            }
+                            
+                            // Invalidate cache in background for next time (don't await)
+                            setTimeout(() => {
+                              queryClient.invalidateQueries({ queryKey: ['/api/user'] });
+                              queryClient.invalidateQueries({ queryKey: ['/api/dashboard/999'] });
+                              queryClient.invalidateQueries({ queryKey: ['/api/user/billing'] });
+                            }, 0);
+                            
+                          } else {
+                            console.error('Failed to use credit:', response.statusText);
+                            alert('Failed to process credit usage. Please try again.');
+                          }
+                        } catch (error) {
+                          console.error('Error using credit:', error);
+                          // Show more helpful error message
+                          if (onNext) {
+                            console.log('Error occurred, calling onNext anyway for demo');
+                            onNext(); // Allow progression anyway for demo
+                          }
+                        } finally {
+                          setIsProcessingCredit?.(false);
+                        }
+                      }}
+                    >
+                      {hasCredits ? 'Use Current Credits (1 credit)' : 'No Credits Available'}
+                    </Button>
+                  </div>
+                )}
+                
+                <div className="text-center">
+                  <p className="text-gray-600 mb-4">
+                    Or purchase additional credits or upgrade:
+                  </p>
+                  
+                  {/* Real Stripe Payment Options */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    {/* One-off SWMS Purchase */}
+                    <Button 
+                      variant="outline"
+                      size="lg"
+                      onClick={async () => {
+                        try {
+                          const response = await fetch('/api/create-payment-intent', {
+                            method: 'POST',
+                            headers: {
+                              'Content-Type': 'application/json',
+                            },
+                            credentials: 'include',
+                            body: JSON.stringify({
+                              amount: 1500, // $15.00 in cents
+                              currency: 'aud',
+                              product: 'One-off SWMS',
+                              quantity: 1
+                            })
+                          });
+
+                          if (response.ok) {
+                            const { url } = await response.json();
+                            window.open(url, '_blank');
+                          } else {
+                            toast({
+                              title: "Payment Error",
+                              description: "Unable to create payment session. Please try again.",
+                              variant: "destructive",
+                            });
+                          }
+                        } catch (error) {
+                          console.error('Payment error:', error);
+                          toast({
+                            title: "Payment Error", 
+                            description: "Something went wrong. Please try again.",
+                            variant: "destructive",
+                          });
+                        }
+                      }}
+                      className="border-blue-200 text-blue-700 hover:bg-blue-50"
+                    >
+                      <CreditCard className="mr-2 h-4 w-4" />
+                      One SWMS - $15
+                    </Button>
+
+                    {/* Credit Pack Purchase */}
+                    <Button 
+                      variant="outline" 
+                      size="lg"
+                      onClick={async () => {
+                        try {
+                          const response = await fetch('/api/create-payment-intent', {
+                            method: 'POST',
+                            headers: {
+                              'Content-Type': 'application/json',
+                            },
+                            credentials: 'include',
+                            body: JSON.stringify({
+                              amount: 6000, // $60.00 in cents
+                              currency: 'aud',
+                              product: '5 SWMS Credit Pack',
+                              quantity: 1
+                            })
+                          });
+
+                          if (response.ok) {
+                            const { url } = await response.json();
+                            window.open(url, '_blank');
+                          } else {
+                            toast({
+                              title: "Payment Error",
+                              description: "Unable to create payment session. Please try again.",
+                              variant: "destructive",
+                            });
+                          }
+                        } catch (error) {
+                          console.error('Payment error:', error);
+                          toast({
+                            title: "Payment Error",
+                            description: "Something went wrong. Please try again.",
+                            variant: "destructive",
+                          });
+                        }
+                      }}
+                      className="border-orange-200 text-orange-700 hover:bg-orange-50"
+                    >
+                      <Package className="mr-2 h-4 w-4" />
+                      5 Credits - $60
+                    </Button>
+
+                    {/* Subscription Option */}
+                    <Button 
+                      variant="outline" 
+                      size="lg"
+                      onClick={async () => {
+                        try {
+                          const response = await fetch('/api/create-payment-intent', {
+                            method: 'POST',
+                            headers: {
+                              'Content-Type': 'application/json',
+                            },
+                            credentials: 'include',
+                            body: JSON.stringify({
+                              amount: 4900, // $49.00 in cents
+                              currency: 'aud',
+                              product: 'Pro Monthly Subscription',
+                              quantity: 1,
+                              subscription: true
+                            })
+                          });
+
+                          if (response.ok) {
+                            const { url } = await response.json();
+                            window.open(url, '_blank');
+                          } else {
+                            toast({
+                              title: "Payment Error",
+                              description: "Unable to create payment session. Please try again.",
+                              variant: "destructive",
+                            });
+                          }
+                        } catch (error) {
+                          console.error('Payment error:', error);
+                          toast({
+                            title: "Payment Error",
+                            description: "Something went wrong. Please try again.",
+                            variant: "destructive",
+                          });
+                        }
+                      }}
+                      className="border-green-200 text-green-700 hover:bg-green-50"
+                    >
+                      <Shield className="mr-2 h-4 w-4" />
+                      Pro Plan - $49/mo
+                    </Button>
+                  </div>
+
+                  {/* Demo Payment Options */}
+                  <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                    <p className="text-sm text-gray-600 mb-3 font-medium">Demo Mode (Testing Only):</p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <Button 
+                      variant="outline"
+                      size="lg"
+                      onClick={async () => {
+                        console.log('DEMO $15 BUTTON CLICKED');
+                        // For demo purposes, simulate payment success
+                        const confirmed = confirm('DEMO MODE: Simulate $15 payment for One-Off SWMS?');
+                        console.log('User confirmed demo payment:', confirmed);
+                        if (confirmed) {
+                          try {
+                            console.log('Making demo payment API call...');
+                            const response = await fetch('/api/user/add-credits', {
+                              method: 'POST',
+                              headers: {
+                                'Content-Type': 'application/json',
+                              },
+                              credentials: 'include',
+                              body: JSON.stringify({
+                                amount: 1,
+                                type: 'demo-payment'
+                              })
+                            });
+
+                            if (response.ok) {
+                              alert('Demo payment successful! 1 credit added to your account.');
+                              // Invalidate all user-related queries to refresh credit balance
+                              queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+                              queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+                              queryClient.invalidateQueries({ queryKey: ["credits"] });
+                              // Force re-render of payment step to show updated credits
+                              updateFormData({ lastPaymentUpdate: Date.now() });
+                              // Wait a moment then refetch user data
+                              setTimeout(() => {
+                                queryClient.refetchQueries({ queryKey: ["/api/user"] });
+                              }, 500);
+                            } else {
+                              alert('Demo payment failed. Please try again.');
+                            }
+                          } catch (error) {
+                            console.error('Error:', error);
+                            alert('Error processing demo payment.');
+                          }
+                        }
+                      }}
+                      className="border-blue-200 text-blue-700 hover:bg-blue-50"
+                    >
+                      <CreditCard className="mr-2 h-4 w-4" />
+                      Demo: One-Off SWMS ($15)
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="lg"
+                      onClick={async () => {
+                        // For demo purposes, simulate payment success
+                        const confirmed = confirm('DEMO MODE: Simulate $60 payment for 5 SWMS Credits?');
+                        if (confirmed) {
+                          try {
+                            const response = await fetch('/api/user/add-credits', {
+                              method: 'POST',
+                              headers: {
+                                'Content-Type': 'application/json',
+                              },
+                              credentials: 'include',
+                              body: JSON.stringify({
+                                amount: 5,
+                                type: 'demo-payment'
+                              })
+                            });
+
+                            if (response.ok) {
+                              alert('Demo payment successful! 5 credits added to your account.');
+                              // Invalidate all user-related queries to refresh credit balance
+                              queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+                              queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+                              queryClient.invalidateQueries({ queryKey: ["credits"] });
+                              // Force re-render of payment step to show updated credits
+                              updateFormData({ lastPaymentUpdate: Date.now() });
+                              // Wait a moment then refetch user data
+                              setTimeout(() => {
+                                queryClient.refetchQueries({ queryKey: ["/api/user"] });
+                              }, 500);
+                            } else {
+                              alert('Demo payment failed. Please try again.');
+                            }
+                          } catch (error) {
+                            console.error('Error:', error);
+                            alert('Error processing demo payment.');
+                          }
+                        }
+                      }}
+                      className="border-orange-200 text-orange-700 hover:bg-orange-50"
+                    >
+                      <Zap className="mr-2 h-4 w-4" />
+                      Credit Pack ($60)
+                    </Button>
+                  </div>
+                  
+                  {/* Admin Demo Toggle - Only visible to admin */}
+                  {localStorage.getItem('isAppAdmin') === 'true' && (
+                    <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                      <p className="text-red-800 text-sm font-medium mb-2">Admin Demo Mode</p>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          localStorage.setItem('adminDemoMode', 'true');
+                          updateFormData({ adminDemoBypass: true });
+                        }}
+                        className="border-red-300 text-red-700 hover:bg-red-100"
+                      >
+                        Proceed with Demo Access
+                      </Button>
+                    </div>
+                  )}
+                </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+
+        </div>
+      );
 
     case 7:
       return (
