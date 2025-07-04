@@ -744,13 +744,6 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
     case 2:
       return (
         <div className="space-y-6">
-          <div className="text-center">
-            <AlertTriangle className="mx-auto h-12 w-12 text-primary mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Work Activities & Task Selection</h3>
-            <p className="text-gray-600 text-sm">
-              Choose how to add tasks to your SWMS - generate with AI or create custom tasks
-            </p>
-          </div>
 
           <GPTTaskSelection
             projectDetails={{
@@ -838,13 +831,6 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
     case 3:
       return (
         <div className="space-y-6">
-          <div className="text-center">
-            <Shield className="mx-auto h-12 w-12 text-blue-600 mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Personal Protective Equipment (PPE)</h3>
-            <p className="text-gray-600 text-sm">
-              Select required PPE based on your work activities and identified risks
-            </p>
-          </div>
 
           <Card>
             <CardHeader>
@@ -1027,13 +1013,6 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
     case 4:
       return (
         <div className="space-y-6">
-          <div className="text-center">
-            <Wrench className="mx-auto h-12 w-12 text-primary mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Plant & Equipment</h3>
-            <p className="text-gray-600 text-sm">
-              Add any plant, equipment, or tools required for this project. This section is optional and will only appear in your SWMS if you add items.
-            </p>
-          </div>
 
           <PlantEquipmentSystem
             plantEquipment={formData.plantEquipment || []}
@@ -1045,13 +1024,6 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
     case 5:
       return (
         <div className="space-y-6">
-          <div className="text-center">
-            <Shield className="mx-auto h-12 w-12 text-primary mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Emergency & Monitoring</h3>
-            <p className="text-gray-600 text-sm">
-              Add emergency procedures and monitoring processes for your project.
-            </p>
-          </div>
 
           <Card>
             <CardContent className="space-y-4 pt-6">
@@ -1146,13 +1118,6 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
     case 6:
       return (
         <div className="space-y-6">
-          <div className="text-center">
-            <PenTool className="mx-auto h-12 w-12 text-primary mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Digital Signatures</h3>
-            <p className="text-gray-600 text-sm">
-              Add signatures for the person creating and authorizing this SWMS, plus any additional project signatories.
-            </p>
-          </div>
 
           {/* Person Creating and Authorising SWMS Section */}
           <Card>
@@ -1425,13 +1390,6 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
     case 7:
       return (
         <div className="space-y-6">
-          <div className="text-center">
-            <Scale className="mx-auto h-12 w-12 text-primary mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Legal Disclaimer</h3>
-            <p className="text-gray-600 text-sm">
-              Review and accept the terms and liability disclaimer to proceed.
-            </p>
-          </div>
 
           <Card>
             <CardHeader>
