@@ -41,7 +41,8 @@ import {
   X,
   Scale,
   Zap,
-  Package
+  Package,
+  Loader2
 } from "lucide-react";
 import { SimplifiedTableEditor } from "./simplified-table-editor";
 import GPTTaskSelection from "./gpt-task-selection";
@@ -155,6 +156,8 @@ interface StepContentProps {
   isProcessingCredit?: boolean;
   setIsProcessingCredit?: (value: boolean) => void;
   userData?: any;
+  isLoadingCredits?: boolean;
+  creditsError?: any;
 }
 
 interface SWMSFormProps {
@@ -162,11 +165,25 @@ interface SWMSFormProps {
   data?: any;
   onNext?: () => void;
   onDataChange?: (data: any) => void;
+  userData?: any;
+  isLoadingCredits?: boolean;
+  creditsError?: any;
 }
 
-const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit, setIsProcessingCredit, userData }: StepContentProps) => {
+const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit, setIsProcessingCredit, userData, isLoadingCredits, creditsError }: StepContentProps) => {
   const { toast } = useToast();
 
+  // Define credit variables for payment step
+  const fallbackCredits = { credits: 0, subscriptionCredits: 0, addonCredits: 0 };
+  const [isManualFetch, setIsManualFetch] = useState(false);
+  const [fallbackCreditsState, setFallbackCredits] = useState(fallbackCredits);
+  
+  // Compute credit data outside the JSX for consistent access
+  const creditData = userData || fallbackCreditsState;
+  const totalCredits = creditData?.credits || 0;
+  const subscriptionCredits = creditData?.subscriptionCredits || 0;
+  const addonCredits = creditData?.addonCredits || 0;
+  const hasCredits = totalCredits > 0;
 
   const updateFormData = (updates: any) => {
     const newData = { 
@@ -1107,8 +1124,149 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
                     Or purchase additional credits or upgrade:
                   </p>
                   
-                  {/* Show only One-Off SWMS and Credit Pack for subscription users */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                  {/* Real Stripe Payment Options */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    {/* One-off SWMS Purchase */}
+                    <Button 
+                      variant="outline"
+                      size="lg"
+                      onClick={async () => {
+                        try {
+                          const response = await fetch('/api/create-payment-intent', {
+                            method: 'POST',
+                            headers: {
+                              'Content-Type': 'application/json',
+                            },
+                            credentials: 'include',
+                            body: JSON.stringify({
+                              amount: 1500, // $15.00 in cents
+                              currency: 'aud',
+                              product: 'One-off SWMS',
+                              quantity: 1
+                            })
+                          });
+
+                          if (response.ok) {
+                            const { url } = await response.json();
+                            window.open(url, '_blank');
+                          } else {
+                            toast({
+                              title: "Payment Error",
+                              description: "Unable to create payment session. Please try again.",
+                              variant: "destructive",
+                            });
+                          }
+                        } catch (error) {
+                          console.error('Payment error:', error);
+                          toast({
+                            title: "Payment Error", 
+                            description: "Something went wrong. Please try again.",
+                            variant: "destructive",
+                          });
+                        }
+                      }}
+                      className="border-blue-200 text-blue-700 hover:bg-blue-50"
+                    >
+                      <CreditCard className="mr-2 h-4 w-4" />
+                      One SWMS - $15
+                    </Button>
+
+                    {/* Credit Pack Purchase */}
+                    <Button 
+                      variant="outline" 
+                      size="lg"
+                      onClick={async () => {
+                        try {
+                          const response = await fetch('/api/create-payment-intent', {
+                            method: 'POST',
+                            headers: {
+                              'Content-Type': 'application/json',
+                            },
+                            credentials: 'include',
+                            body: JSON.stringify({
+                              amount: 6000, // $60.00 in cents
+                              currency: 'aud',
+                              product: '5 SWMS Credit Pack',
+                              quantity: 1
+                            })
+                          });
+
+                          if (response.ok) {
+                            const { url } = await response.json();
+                            window.open(url, '_blank');
+                          } else {
+                            toast({
+                              title: "Payment Error",
+                              description: "Unable to create payment session. Please try again.",
+                              variant: "destructive",
+                            });
+                          }
+                        } catch (error) {
+                          console.error('Payment error:', error);
+                          toast({
+                            title: "Payment Error",
+                            description: "Something went wrong. Please try again.",
+                            variant: "destructive",
+                          });
+                        }
+                      }}
+                      className="border-orange-200 text-orange-700 hover:bg-orange-50"
+                    >
+                      <Package className="mr-2 h-4 w-4" />
+                      5 Credits - $60
+                    </Button>
+
+                    {/* Subscription Option */}
+                    <Button 
+                      variant="outline" 
+                      size="lg"
+                      onClick={async () => {
+                        try {
+                          const response = await fetch('/api/create-payment-intent', {
+                            method: 'POST',
+                            headers: {
+                              'Content-Type': 'application/json',
+                            },
+                            credentials: 'include',
+                            body: JSON.stringify({
+                              amount: 4900, // $49.00 in cents
+                              currency: 'aud',
+                              product: 'Pro Monthly Subscription',
+                              quantity: 1,
+                              subscription: true
+                            })
+                          });
+
+                          if (response.ok) {
+                            const { url } = await response.json();
+                            window.open(url, '_blank');
+                          } else {
+                            toast({
+                              title: "Payment Error",
+                              description: "Unable to create payment session. Please try again.",
+                              variant: "destructive",
+                            });
+                          }
+                        } catch (error) {
+                          console.error('Payment error:', error);
+                          toast({
+                            title: "Payment Error",
+                            description: "Something went wrong. Please try again.",
+                            variant: "destructive",
+                          });
+                        }
+                      }}
+                      className="border-green-200 text-green-700 hover:bg-green-50"
+                    >
+                      <Shield className="mr-2 h-4 w-4" />
+                      Pro Plan - $49/mo
+                    </Button>
+                  </div>
+
+                  {/* Demo Payment Options */}
+                  <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                    <p className="text-sm text-gray-600 mb-3 font-medium">Demo Mode (Testing Only):</p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <Button 
                       variant="outline"
                       size="lg"
@@ -1220,6 +1378,7 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
                       </Button>
                     </div>
                   )}
+                </div>
                 </div>
               </div>
             </CardContent>
@@ -1339,12 +1498,12 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
   }
 };
 
-export default function SWMSForm({ step, data = {}, onNext, onDataChange }: SWMSFormProps) {
+export default function SWMSForm({ step, data = {}, onNext, onDataChange, userData, isLoadingCredits, creditsError }: SWMSFormProps) {
   const [formData, setFormData] = useState(data);
   const [isProcessingCredit, setIsProcessingCredit] = useState(false);
 
   // Fetch current user billing data for real-time credits with better error handling
-  const { data: userData, refetch: refetchUserData, isLoading: isLoadingCredits, error: creditsError } = useQuery({
+  const { data: userBillingData, refetch: refetchUserData, isLoading: isLoadingUserCredits, error: userCreditsError } = useQuery({
     queryKey: ['/api/user/billing'],
     enabled: step === 6, // Only fetch when on payment step
     retry: 3,
@@ -1356,7 +1515,7 @@ export default function SWMSForm({ step, data = {}, onNext, onDataChange }: SWMS
   const [isManualFetch, setIsManualFetch] = useState(false);
 
   // Compute credit data outside the JSX for consistent access
-  const creditData = userData || fallbackCredits;
+  const creditData = userBillingData || userData || fallbackCredits;
   const totalCredits = creditData?.credits || 0;
   const subscriptionCredits = creditData?.subscriptionCredits || 0;
   const addonCredits = creditData?.addonCredits || 0;
@@ -1365,10 +1524,10 @@ export default function SWMSForm({ step, data = {}, onNext, onDataChange }: SWMS
   // Debug logging for credit data
   useEffect(() => {
     if (step === 6) {
-      console.log('Payment step - Credit data:', { userData, isLoadingCredits, creditsError });
+      console.log('Payment step - Credit data:', { userBillingData, userData, isLoadingCredits, creditsError });
       
       // If React Query fails, try manual fetch
-      if (creditsError && !isManualFetch) {
+      if ((userCreditsError || creditsError) && !isManualFetch) {
         console.log('React Query failed, attempting manual fetch...');
         setIsManualFetch(true);
         
@@ -1420,6 +1579,8 @@ export default function SWMSForm({ step, data = {}, onNext, onDataChange }: SWMS
         isProcessingCredit={isProcessingCredit}
         setIsProcessingCredit={setIsProcessingCredit}
         userData={userData}
+        isLoadingCredits={isLoadingCredits}
+        creditsError={creditsError}
       />
     </div>
   );

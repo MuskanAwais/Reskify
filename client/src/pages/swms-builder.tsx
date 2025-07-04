@@ -586,7 +586,7 @@ export default function SwmsBuilder() {
   });
 
   // Get current user data for real-time credit balance
-  const { data: currentUser } = useQuery({
+  const { data: currentUser, isLoading: isLoadingCredits, error: creditsError } = useQuery({
     queryKey: ['/api/user']
   });
 
@@ -1246,6 +1246,9 @@ export default function SwmsBuilder() {
                   data={formData}
                   onDataChange={handleFormDataChange}
                   onNext={handleNext}
+                  userData={currentUser}
+                  isLoadingCredits={isLoadingCredits}
+                  creditsError={creditsError}
                 />
                 
                 {/* Navigation */}

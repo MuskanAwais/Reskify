@@ -1516,6 +1516,62 @@ export async function registerRoutes(app: Express) {
     }
   });
 
+  // Payment verification endpoint for payment success page
+  app.post('/api/verify-payment', async (req, res) => {
+    try {
+      const { sessionId } = req.body;
+      console.log('Verifying payment session:', sessionId);
+      
+      const session = await stripe.checkout.sessions.retrieve(sessionId);
+      
+      if (session.payment_status === 'paid') {
+        const userId = parseInt(session.metadata?.userId || '999') || 999;
+        const paymentType = session.metadata?.type;
+        const amount = session.amount_total || 0;
+        
+        // Calculate credits based on payment type
+        let creditsToAdd = 0;
+        let productName = 'SWMS Credits';
+        
+        if (amount === 1500) { // $15
+          creditsToAdd = 1;
+          productName = 'One-off SWMS';
+        } else if (amount === 6000) { // $60
+          creditsToAdd = 5;
+          productName = '5 SWMS Credit Pack';
+        } else if (amount === 4900) { // $49
+          creditsToAdd = 10;
+          productName = 'Pro Monthly Subscription';
+        }
+        
+        // Update user credits
+        if (creditsToAdd > 0) {
+          await storage.addAddonCredits(userId, creditsToAdd);
+          console.log(`Added ${creditsToAdd} addon credits to user ${userId} via payment verification`);
+        }
+        
+        const user = await storage.getUserById(userId);
+        
+        res.json({
+          success: true,
+          product: productName,
+          amount: amount,
+          credits: creditsToAdd,
+          totalCredits: (user?.swmsCredits || 0) + (user?.addonCredits || 0),
+          session: session
+        });
+      } else {
+        res.json({
+          success: false,
+          session: session
+        });
+      }
+    } catch (error) {
+      console.error('Payment verification error:', error);
+      res.status(500).json({ error: 'Payment verification failed' });
+    }
+  });
+
   // Legacy payment intent endpoint (keep for backward compatibility)
   app.post('/api/create-payment-intent', async (req, res) => {
     try {
