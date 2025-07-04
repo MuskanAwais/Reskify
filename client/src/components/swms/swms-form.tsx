@@ -158,6 +158,9 @@ interface StepContentProps {
   userData?: any;
   isLoadingCredits?: boolean;
   creditsError?: any;
+  userBillingData?: any;
+  isLoadingUserCredits?: boolean;
+  userCreditsError?: any;
 }
 
 interface SWMSFormProps {
@@ -170,7 +173,7 @@ interface SWMSFormProps {
   creditsError?: any;
 }
 
-const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit, setIsProcessingCredit, userData, isLoadingCredits, creditsError }: StepContentProps) => {
+const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit, setIsProcessingCredit, userData, isLoadingCredits, creditsError, userBillingData, isLoadingUserCredits, userCreditsError }: StepContentProps) => {
   const { toast } = useToast();
 
   // Define credit variables for payment step
@@ -178,8 +181,8 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
   const [isManualFetch, setIsManualFetch] = useState(false);
   const [fallbackCreditsState, setFallbackCredits] = useState(fallbackCredits);
   
-  // Prioritize billing data if available, then userData, then fallback
-  const creditData = userBillingData || userData || fallbackCredits || fallbackCreditsState;
+  // Use userBillingData, then userData, then fallback
+  const creditData = userBillingData || userData || fallbackCreditsState;
   const totalCredits = creditData?.credits || 0;
   const subscriptionCredits = creditData?.subscriptionCredits || 0;
   const addonCredits = creditData?.addonCredits || 0;
@@ -190,7 +193,6 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
     console.log('🔍 PAYMENT STEP COMPREHENSIVE CREDIT DEBUG:');
     console.log('userBillingData:', userBillingData);
     console.log('userData:', userData);
-    console.log('fallbackCredits:', fallbackCredits);
     console.log('fallbackCreditsState:', fallbackCreditsState);
     console.log('SELECTED creditData:', creditData);
     console.log('totalCredits:', totalCredits);
@@ -1620,6 +1622,9 @@ export default function SWMSForm({ step, data = {}, onNext, onDataChange, userDa
         userData={userData}
         isLoadingCredits={isLoadingCredits}
         creditsError={creditsError}
+        userBillingData={userBillingData}
+        isLoadingUserCredits={isLoadingUserCredits}
+        userCreditsError={userCreditsError}
       />
     </div>
   );
