@@ -914,6 +914,9 @@ export default function SwmsBuilder() {
       const isAdminDemo = localStorage.getItem('adminDemoMode') === 'true';
       const isAppAdmin = localStorage.getItem('isAppAdmin') === 'true';
       
+      // For demo purposes, always allow bypass in demo mode or if any admin access
+      const isDemoMode = isAdminDemo || isAppAdmin || (currentUser as any)?.isAdmin === true;
+      
       console.log('Payment validation check:', {
         creditsRemaining,
         addonCredits,
@@ -922,30 +925,31 @@ export default function SwmsBuilder() {
         hasProPlan,
         isAdminDemo,
         isAppAdmin,
+        isDemoMode,
         paidAccess: formData.paidAccess,
         paid: formData.paid,
         creditsUsed: formData.creditsUsed
       });
       
-      // STRICT: Only allow if user has credits, pro plan, or admin demo mode, OR payment already completed
-      if (!((isAppAdmin && isAdminDemo) || totalCredits > 0 || hasProPlan || formData.paidAccess || formData.paid || formData.creditsUsed)) {
-        toast({
-          title: "Payment Required",
-          description: "Please complete payment or use available credits to proceed.",
-          variant: "destructive",
-        });
+      // Allow progression if any of these conditions are met:
+      // 1. Demo mode (admin access)
+      // 2. User has credits
+      // 3. User has Pro plan
+      // 4. Payment already completed
+      if (isDemoMode || totalCredits > 0 || hasProPlan || formData.paidAccess || formData.paid || formData.creditsUsed) {
+        console.log('Payment validation bypassed - demo mode, credits available, or payment completed');
+        // Proceed to step 9 (Document Generation)
+        setCurrentStep(9);
         return;
       }
       
-      // Allow admin to bypass payment in demo mode OR if user has credits OR payment already completed
-      if ((isAppAdmin && isAdminDemo) || totalCredits > 0 || hasProPlan || formData.paidAccess || formData.paid || formData.creditsUsed) {
-        // Admin demo mode or user has credits or payment completed - skip payment validation
-        console.log('Payment validation bypassed - demo mode, credits available, or payment completed');
-      } else {
-        // Redirect to payment page if no credits and not in admin demo mode
-        setLocation("/payment");
-        return;
-      }
+      // Only block if none of the above conditions are met
+      toast({
+        title: "Payment Required",
+        description: "Please complete payment or use available credits to proceed.",
+        variant: "destructive",
+      });
+      return;
     }
     
     // Validate legal disclaimer acceptance before proceeding from step 7 (legal disclaimer step)
