@@ -773,6 +773,13 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
     case 2:
       return (
         <div className="space-y-6">
+          <div className="text-center">
+            {getStepIcon(2)}
+            <h3 className="text-xl font-semibold mb-2">Work Activities & Risk Assessment</h3>
+            <p className="text-gray-600 text-sm">
+              Generate tasks with high-risk work selection and manage comprehensive risk assessments
+            </p>
+          </div>
 
           <GPTTaskSelection
             projectDetails={{
@@ -860,6 +867,13 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
     case 3:
       return (
         <div className="space-y-6">
+          <div className="text-center">
+            {getStepIcon(3)}
+            <h3 className="text-xl font-semibold mb-2">High-Risk Construction Work</h3>
+            <p className="text-gray-600 text-sm">
+              Select applicable HRCW categories from WHS Regulations 2011
+            </p>
+          </div>
 
           <Card>
             <CardHeader>
@@ -1042,6 +1056,13 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
     case 4:
       return (
         <div className="space-y-6">
+          <div className="text-center">
+            {getStepIcon(4)}
+            <h3 className="text-xl font-semibold mb-2">Personal Protective Equipment</h3>
+            <p className="text-gray-600 text-sm">
+              Select required PPE based on work activities and risk assessments
+            </p>
+          </div>
 
           <PlantEquipmentSystem
             plantEquipment={formData.plantEquipment || []}
@@ -1053,6 +1074,13 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
     case 5:
       return (
         <div className="space-y-6">
+          <div className="text-center">
+            {getStepIcon(5)}
+            <h3 className="text-xl font-semibold mb-2">Plant & Equipment Register</h3>
+            <p className="text-gray-600 text-sm">
+              Manage plant, equipment, and tools with inspection schedules
+            </p>
+          </div>
 
           <Card>
             <CardContent className="space-y-4 pt-6">
@@ -1147,6 +1175,13 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
     case 6:
       return (
         <div className="space-y-6">
+          <div className="text-center">
+            {getStepIcon(6)}
+            <h3 className="text-xl font-semibold mb-2">Emergency Procedures & Monitoring</h3>
+            <p className="text-gray-600 text-sm">
+              Configure emergency protocols and safety monitoring requirements
+            </p>
+          </div>
 
           {/* Person Creating and Authorising SWMS Section */}
           <Card>
@@ -1419,6 +1454,13 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
     case 7:
       return (
         <div className="space-y-6">
+          <div className="text-center">
+            {getStepIcon(7)}
+            <h3 className="text-xl font-semibold mb-2">Legal Disclaimer & Compliance</h3>
+            <p className="text-gray-600 text-sm">
+              Review and acknowledge Australian WHS compliance requirements
+            </p>
+          </div>
 
           <Card>
             <CardHeader>
@@ -1505,6 +1547,13 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
       // Direct return of simple Step 9 component to bypass runtime errors
       return (
         <div className="space-y-6">
+          <div className="text-center">
+            {getStepIcon(9)}
+            <h3 className="text-xl font-semibold mb-2">Document Generation</h3>
+            <p className="text-gray-600 text-sm">
+              Generating your professional SWMS document with SWMSprint
+            </p>
+          </div>
           <div className="text-center">
             <Loader2 className="mx-auto h-16 w-16 text-blue-500 animate-spin mb-4" />
             <h3 className="text-xl font-semibold mb-2">Document Generation</h3>
