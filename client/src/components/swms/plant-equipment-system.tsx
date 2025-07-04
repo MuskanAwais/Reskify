@@ -149,7 +149,7 @@ export default function PlantEquipmentSystem({ plantEquipment, onUpdate }: Plant
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center justify-between">
+          <CardTitle className="flex items-center justify-between text-lg font-semibold">
             <div className="flex items-center gap-2">
               <Wrench className="h-5 w-5" />
               Plant & Equipment Register

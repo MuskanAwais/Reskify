@@ -851,7 +851,7 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
 
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center">
+              <CardTitle className="flex items-center text-lg font-semibold">
                 <Shield className="mr-2 h-5 w-5 text-blue-600" />
                 PPE Requirements
               </CardTitle>
@@ -1038,17 +1038,10 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
             </p>
           </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Plant, Equipment & Tools</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <PlantEquipmentSystem
-                plantEquipment={formData.plantEquipment || []}
-                onUpdate={(equipment) => updateFormData({ plantEquipment: equipment })}
-              />
-            </CardContent>
-          </Card>
+          <PlantEquipmentSystem
+            plantEquipment={formData.plantEquipment || []}
+            onUpdate={(equipment) => updateFormData({ plantEquipment: equipment })}
+          />
         </div>
       );
 
@@ -1065,7 +1058,7 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
 
           <Card>
             <CardHeader>
-              <CardTitle>Emergency Procedures</CardTitle>
+              <CardTitle className="text-lg font-semibold">Emergency Procedures</CardTitle>
             </CardHeader>
             <CardContent>
 
@@ -1171,7 +1164,7 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
           {/* Person Creating and Authorising SWMS Section */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
+              <CardTitle className="flex items-center space-x-2 text-lg font-semibold">
                 <Crown className="h-5 w-5 text-amber-500" />
                 <span>Person Creating and Authorising SWMS</span>
               </CardTitle>
@@ -1264,7 +1257,7 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
           {/* Additional Signatories Section */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
+              <CardTitle className="flex items-center space-x-2 text-lg font-semibold">
                 <Users className="h-5 w-5 text-blue-500" />
                 <span>Additional Project Signatories</span>
               </CardTitle>
