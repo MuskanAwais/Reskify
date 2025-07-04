@@ -849,9 +849,8 @@ export default function SwmsBuilder() {
 
   const validateStep6 = () => {
     const errors: string[] = [];
-    if (!formData.emergencyProcedures || formData.emergencyProcedures.length === 0) {
-      errors.push("Emergency procedures must be defined");
-    }
+    // Step 6 is signatures - signatures are optional, so no validation required
+    // Users can proceed to the next step without mandatory signatures
     return errors;
   };
 
@@ -895,13 +894,13 @@ export default function SwmsBuilder() {
       // Emergency procedures are optional - proceed normally
     }
     
-    // Handle proceeding from payment step (step 6) - STRICT VALIDATION
-    if (currentStep === 6) {
+    // Handle proceeding from payment step (step 8) - STRICT VALIDATION
+    if (currentStep === 8) {
       // If this document already has paid access, skip payment step entirely
       if (formData.paidAccess === true || formData.paid === true || formData.creditsUsed === true) {
         console.log('Payment step skipped - document already has paid access or payment completed');
-        // Skip to step 7 (Legal Disclaimer)
-        setCurrentStep(7);
+        // Proceed to step 9 (Document Generation)
+        setCurrentStep(9);
         return;
       }
       
