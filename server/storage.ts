@@ -430,7 +430,7 @@ export class DatabaseStorage implements IStorage {
       
 
       
-      // CRITICAL FIX: Check for existing draft to prevent duplicate creation
+      // CRITICAL FIX: Proper session-based draft management
       let existingDraft = null;
       
       if (data.draftId) {
@@ -444,21 +444,40 @@ export class DatabaseStorage implements IStorage {
           ));
         existingDraft = document;
         console.log('Updating existing document:', data.draftId);
+      } else if (data.sessionDraftId) {
+        // Update based on session draft ID
+        const [sessionDraft] = await db
+          .select()
+          .from(swmsDocuments)
+          .where(and(
+            eq(swmsDocuments.id, data.sessionDraftId),
+            eq(swmsDocuments.userId, userId),
+            eq(swmsDocuments.status, 'draft')
+          ));
+        if (sessionDraft) {
+          existingDraft = sessionDraft;
+          console.log('Updating session draft:', data.sessionDraftId);
+        }
       } else {
-        // Find ANY existing draft for this user to prevent duplicate creation
+        // ONLY create new draft if explicitly requested or if this is the first save
+        // Look for very recent drafts (within last 5 minutes) to prevent auto-save spam
+        const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
         const recentDrafts = await db
           .select()
           .from(swmsDocuments)
           .where(and(
             eq(swmsDocuments.userId, userId),
-            eq(swmsDocuments.status, 'draft')
+            eq(swmsDocuments.status, 'draft'),
+            gte(swmsDocuments.updatedAt, fiveMinutesAgo)
           ))
           .orderBy(desc(swmsDocuments.updatedAt))
           .limit(1);
         
         if (recentDrafts.length > 0) {
           existingDraft = recentDrafts[0];
-          console.log('Found existing draft, updating instead of creating new:', existingDraft.id);
+          console.log('Found recent draft (within 5 minutes), updating instead of creating new:', existingDraft.id);
+        } else {
+          console.log('No recent draft found, creating new document');
         }
       }
       // If no draftId provided and no recent draft found, create new document

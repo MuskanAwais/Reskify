@@ -149,6 +149,7 @@ export default function SwmsBuilder() {
   const [currentStep, setCurrentStep] = useState(1);
   const [isDraft, setIsDraft] = useState(false);
   const [draftId, setDraftId] = useState(null);
+  const [sessionDraftId, setSessionDraftId] = useState(null); // Track current session draft
   const [isSaving, setIsSaving] = useState(false);
   const [isProcessingCredit, setIsProcessingCredit] = useState(false);
   const [formData, setFormData] = useState({
@@ -615,12 +616,15 @@ export default function SwmsBuilder() {
           lastModified: new Date().toISOString()
         };
         
-        // Only include draftId if it exists (for updates)
+        // Include session draft ID for proper session tracking
         if (draftId) {
           requestData.draftId = draftId;
           console.log('Auto-save using existing draftId:', draftId);
+        } else if (sessionDraftId) {
+          requestData.sessionDraftId = sessionDraftId;
+          console.log('Auto-save using sessionDraftId:', sessionDraftId);
         } else {
-          console.log('Auto-save creating new document (no draftId)');
+          console.log('Auto-save creating new document (no draftId or sessionDraftId)');
         }
         
         const response = await apiRequest("POST", "/api/swms/draft", requestData);
@@ -633,10 +637,16 @@ export default function SwmsBuilder() {
       }
     },
     onSuccess: (data: any) => {
-      // Set draftId on first save to update same document during session
-      if (data?.id && !draftId) {
-        setDraftId(data.id);
-        setIsDraft(true);
+      // Set session draft ID on first save to update same document during session
+      if (data?.id) {
+        if (!sessionDraftId && !draftId) {
+          setSessionDraftId(data.id);
+          console.log('Set sessionDraftId for auto-save:', data.id);
+        }
+        if (!draftId) {
+          setDraftId(data.id);
+          setIsDraft(true);
+        }
       }
       // Invalidate both possible query keys to ensure refresh
       queryClient.invalidateQueries({ queryKey: ["/api/swms"] });
@@ -668,9 +678,11 @@ export default function SwmsBuilder() {
           lastModified: new Date().toISOString()
         };
         
-        // Include draftId if it exists
+        // Include draftId or sessionDraftId for proper session tracking
         if (draftId) {
           requestData.draftId = draftId;
+        } else if (sessionDraftId) {
+          requestData.sessionDraftId = sessionDraftId;
         }
         
         const response = await apiRequest("POST", "/api/swms/draft", requestData);
@@ -683,10 +695,16 @@ export default function SwmsBuilder() {
       }
     },
     onSuccess: (data: any) => {
-      // Set draftId on first save to update same document during session
-      if (data?.id && !draftId) {
-        setDraftId(data.id);
-        setIsDraft(true);
+      // Set session draft ID and draftId on first save to update same document during session
+      if (data?.id) {
+        if (!sessionDraftId && !draftId) {
+          setSessionDraftId(data.id);
+          console.log('Set sessionDraftId for manual save:', data.id);
+        }
+        if (!draftId) {
+          setDraftId(data.id);
+          setIsDraft(true);
+        }
       }
       toast({
         title: "Draft Saved",
