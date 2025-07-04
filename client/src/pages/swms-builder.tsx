@@ -136,8 +136,8 @@ const getSteps = () => [
   { id: 5, title: "Emergency & Monitoring", description: "Emergency procedures and review/monitoring processes" },
   { id: 6, title: "Payment & Access", description: "Select payment option to complete SWMS generation" },
   { id: 7, title: "Legal Disclaimer", description: "Accept terms and liability disclaimer" },
-  { id: 8, title: "PDF Template Editor", description: "Review and edit your SWMS document template before final generation" },
-  { id: 9, title: "Digital Signatures & PDF", description: "Generate complete SWMS document with optional signatures" }
+  { id: 8, title: "Digital Signatures", description: "Add authorizing signatures for document validation" },
+  { id: 9, title: "Document Generation", description: "Generating your professional SWMS document" }
 ];
 
 export default function SwmsBuilder() {
@@ -1266,30 +1266,33 @@ export default function SwmsBuilder() {
                   setIsProcessingCredit={setIsProcessingCredit}
                 />
                 
-                {/* Navigation */}
-                <div className="flex justify-between mt-8">
-                  <Button 
-                    variant="outline" 
-                    onClick={handlePrevious}
-                    disabled={currentStep === 1}
-                  >
-                    <ArrowLeft className="mr-2 h-4 w-4" />
-                    Previous
-                  </Button>
-                  
-                  {currentStep < STEPS.length ? (
+                {/* Navigation - Hidden on step 9 (automatic PDF generation) */}
+                {currentStep !== 9 && (
+                  <div className="flex justify-between mt-8">
                     <Button 
-                      onClick={handleNext} 
-                      className="bg-primary hover:bg-primary/90"
-                      disabled={saveDraftMutation.isPending || (currentStep === 2 && (!formData.selectedTasks || formData.selectedTasks.length === 0))}
+                      variant="outline" 
+                      onClick={handlePrevious}
+                      disabled={currentStep === 1}
                     >
-                      {saveDraftMutation.isPending ? "Saving..." : "Continue"}
-                      <ArrowRight className="ml-2 h-4 w-4" />
+                      <ArrowLeft className="mr-2 h-4 w-4" />
+                      Previous
                     </Button>
-                  ) : (
-                    <DocumentPreview formData={formData} />
-                  )}
-                </div>
+                    
+                    {currentStep < STEPS.length ? (
+                      <Button 
+                        onClick={handleNext} 
+                        className="bg-primary hover:bg-primary/90"
+                        disabled={saveDraftMutation.isPending || (currentStep === 2 && (!formData.selectedTasks || formData.selectedTasks.length === 0))}
+                      >
+                        {saveDraftMutation.isPending ? "Saving..." : 
+                         currentStep === 8 ? "Generate SWMS Document" : "Continue"}
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    ) : (
+                      <DocumentPreview formData={formData} />
+                    )}
+                  </div>
+                )}
               </>
             )}
           </CardContent>
