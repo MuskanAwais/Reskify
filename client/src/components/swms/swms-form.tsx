@@ -7,6 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
+import TaskSelectionWithAI from "./task-selection-with-ai";
+import { PlantEquipmentManager } from "./plant-equipment-manager";
 import { 
   Building, 
   MapPin, 
@@ -235,10 +237,16 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
 
           <Card>
             <CardHeader>
-              <CardTitle>Activity Generation</CardTitle>
+              <CardTitle>Work Activities</CardTitle>
             </CardHeader>
-            <CardContent>
-              <p>Work activities and risk assessment content will be loaded here...</p>
+            <CardContent className="space-y-4">
+              <TaskSelectionWithAI
+                tradeType={formData.tradeType || 'General'}
+                onTasksUpdate={(tasks) => onDataChange({ selectedTasks: tasks })}
+                onWorkDescriptionUpdate={(description) => onDataChange({ workDescription: description })}
+                selectedTasks={formData.selectedTasks || []}
+                workDescription={formData.workDescription || ""}
+              />
             </CardContent>
           </Card>
         </div>
@@ -277,14 +285,10 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
             </p>
           </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Equipment Register</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p>Plant equipment and training content will be loaded here...</p>
-            </CardContent>
-          </Card>
+          <PlantEquipmentManager
+            formData={formData}
+            onDataChange={onDataChange}
+          />
         </div>
       );
 
