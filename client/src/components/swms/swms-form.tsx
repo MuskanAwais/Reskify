@@ -521,10 +521,7 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
           </div>
 
           <Card>
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold">Project Information</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 pt-6">
               <div>
                 <Label htmlFor="jobName">Job Name *</Label>
                 <Input
@@ -1057,12 +1054,8 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
           </div>
 
           <Card>
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold">Emergency Procedures</CardTitle>
-            </CardHeader>
-            <CardContent>
-
-
+            <CardContent className="space-y-4 pt-6">
+              <h3 className="text-lg font-semibold mb-4">Emergency Procedures</h3>
               <div className="space-y-4">
                 <div>
                   <Label>Emergency Contacts</Label>
@@ -1163,13 +1156,11 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
 
           {/* Person Creating and Authorising SWMS Section */}
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2 text-lg font-semibold">
+            <CardContent className="space-y-4 pt-6">
+              <div className="flex items-center space-x-2 mb-4">
                 <Crown className="h-5 w-5 text-amber-500" />
-                <span>Person Creating and Authorising SWMS</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
+                <h3 className="text-lg font-semibold">Person Creating and Authorising SWMS</h3>
+              </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="swmsCreatorName">Full Name</Label>

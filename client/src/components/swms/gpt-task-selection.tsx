@@ -673,13 +673,11 @@ export default function GPTTaskSelection({
   return (
     <div className="space-y-6">
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg font-semibold">
+        <CardContent className="pt-6">
+          <div className="flex items-center gap-2 mb-4">
             <Bot className="h-5 w-5 text-primary" />
-            Choose Your SWMS Generation Method
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+            <h3 className="text-lg font-semibold">Choose Your SWMS Generation Method</h3>
+          </div>
           <Tabs value={selectedMethod} onValueChange={handleMethodSelection}>
             <TabsList className="grid w-full grid-cols-1 sm:grid-cols-2 gap-2 h-auto p-2">
               <TabsTrigger value="plain-text" className="flex items-center gap-2 text-xs sm:text-sm px-2 py-3">

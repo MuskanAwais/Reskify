@@ -148,19 +148,17 @@ export default function PlantEquipmentSystem({ plantEquipment, onUpdate }: Plant
   return (
     <div className="space-y-6">
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between text-lg font-semibold">
+        <CardContent className="pt-6">
+          <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Wrench className="h-5 w-5" />
-              Plant & Equipment Register
+              <h3 className="text-lg font-semibold">Plant & Equipment Register</h3>
             </div>
             <Button onClick={() => setIsAddingEquipment(true)}>
               <Plus className="h-4 w-4 mr-2" />
               Add Equipment
             </Button>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
             <div className="text-center p-4 bg-blue-50 rounded-lg">
               <Wrench className="h-8 w-8 text-blue-600 mx-auto mb-2" />
