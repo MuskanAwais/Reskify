@@ -5,6 +5,28 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+// Determine minimum tasks based on trade complexity
+function getMinimumTasksForTrade(tradeType: string): number {
+  const complexTrades = [
+    'Electrical', 'Plumbing', 'HVAC', 'Structural Steel', 'Concrete', 
+    'Scaffolding', 'Roofing', 'Fire Protection Systems', 'Mechanical',
+    'Civil Works', 'Demolition', 'Excavation'
+  ];
+  
+  const moderateTrades = [
+    'Carpentry', 'Flooring', 'Tiling', 'Plastering', 'Insulation',
+    'Glazing', 'Waterproofing', 'Landscaping'
+  ];
+  
+  if (complexTrades.some(trade => tradeType.includes(trade))) {
+    return 10; // Complex trades get 10-12 tasks
+  } else if (moderateTrades.some(trade => tradeType.includes(trade))) {
+    return 9; // Moderate trades get 9-10 tasks  
+  } else {
+    return 8; // Simple trades get 8-9 tasks
+  }
+}
+
 export async function generateSWMSFromTaskSimple(request: TaskGenerationRequest): Promise<GeneratedSWMSData> {
   const { projectDetails, plainTextDescription } = request;
   const { tradeType, location, state = 'NSW', siteEnvironment = 'Commercial', hrcwCategories = [] } = projectDetails;
@@ -12,11 +34,15 @@ export async function generateSWMSFromTaskSimple(request: TaskGenerationRequest)
   console.log(`🚀 SIMPLE AI GENERATION - Trade: ${tradeType}, Job: ${plainTextDescription}`);
   console.log(`🚀 SITE: ${siteEnvironment}, STATE: ${state}, HRCW: ${hrcwCategories.join(',')}`);
 
+  // Determine minimum tasks based on trade complexity
+  const minimumTasks = getMinimumTasksForTrade(tradeType);
+  console.log(`🚀 MINIMUM TASKS REQUIRED: ${minimumTasks} for ${tradeType}`);
+
   // Add timestamp to force uniqueness
   const timestamp = Date.now();
   
-  // Comprehensive prompt for 8-10 UNIQUE tasks with detailed legislation
-  const systemMessage = `You are a professional Australian construction safety expert. Generate EXACTLY 8-10 COMPLETELY DIFFERENT ${tradeType} activities for: "${plainTextDescription}"
+  // Comprehensive prompt for minimum required UNIQUE tasks with detailed legislation
+  const systemMessage = `You are a professional Australian construction safety expert. Generate EXACTLY ${minimumTasks}-${minimumTasks + 2} COMPLETELY DIFFERENT ${tradeType} activities for: "${plainTextDescription}"
 
 Environment: ${siteEnvironment} site in ${state}
 HRCW Categories: ${hrcwCategories.join(', ') || 'None selected'}
@@ -96,7 +122,12 @@ Return JSON with this exact structure:
   ]
 }
 
-MANDATORY: Generate EXACTLY 8-10 activities with comprehensive legislation arrays for each activity.`;
+CRITICAL REQUIREMENTS:
+- MINIMUM ${minimumTasks} activities required (never less than ${minimumTasks})
+- Each activity must have unique name and distinct work phase
+- Cover complete workflow from start to finish
+- Comprehensive legislation arrays required for each activity
+GENERATE AT LEAST ${minimumTasks} ACTIVITIES - NO EXCEPTIONS.`;
 
   try {
     console.log(`🚀 SENDING SIMPLE REQUEST WITH TIMEOUT...`);
@@ -163,9 +194,9 @@ MANDATORY: Generate EXACTLY 8-10 activities with comprehensive legislation array
     uniqueActivities = exactDuplicateCheck;
     console.log(`🚀 AFTER EXACT DUPLICATE CHECK: ${exactDuplicateCheck.length} unique activities`);
     
-    if (uniqueActivities.length < 8) {
-      console.log(`🚀 Only ${uniqueActivities.length} unique activities generated, adding diverse fallback activities to reach 8-10`);
-      const additionalActivities = generateDiverseFallbackActivities(tradeType, plainTextDescription || '', state, siteEnvironment, hrcwCategories, 10 - uniqueActivities.length);
+    if (uniqueActivities.length < minimumTasks) {
+      console.log(`🚀 Only ${uniqueActivities.length} unique activities generated, adding diverse fallback activities to reach ${minimumTasks}`);
+      const additionalActivities = generateDiverseFallbackActivities(tradeType, plainTextDescription || '', state, siteEnvironment, hrcwCategories, minimumTasks - uniqueActivities.length);
       finalActivities = [...uniqueActivities, ...additionalActivities];
     } else {
       finalActivities = uniqueActivities;
