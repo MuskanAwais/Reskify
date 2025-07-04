@@ -1132,7 +1132,16 @@ export default function SwmsBuilder() {
   };
 
   const handleFormDataChange = (data: any) => {
+    console.log('=== HANDLE FORM DATA CHANGE ===');
+    console.log('Received data from SWMSForm:', Object.keys(data).filter(key => data[key]));
+    console.log('projectDescription in received data:', data.projectDescription);
+    console.log('workDescription in received data:', data.workDescription);
+    
     const newFormData = { ...formData, ...data };
+    console.log('New formData after merge:', Object.keys(newFormData).filter(key => newFormData[key]));
+    console.log('projectDescription in newFormData:', newFormData.projectDescription);
+    console.log('workDescription in newFormData:', newFormData.workDescription);
+    
     setFormData(newFormData);
     
     // Silent auto-save with debouncing

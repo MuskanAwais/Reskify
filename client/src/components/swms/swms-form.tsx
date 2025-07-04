@@ -1596,13 +1596,28 @@ export default function SWMSForm({ step, data = {}, onNext, onDataChange, userDa
   }, [step, userData, isLoadingCredits, creditsError, isManualFetch]);
 
   const updateFormData = (updates: any) => {
+    console.log('=== SWMSForm updateFormData CALLED ===');
+    console.log('Updates received:', Object.keys(updates).filter(key => updates[key]));
+    console.log('projectDescription in updates:', updates.projectDescription);
+    console.log('workDescription in updates:', updates.workDescription);
+    
     const newData = { 
       ...formData, 
       ...updates,
       lastModified: new Date().toISOString()
     };
+    
+    console.log('New data to send to parent:', Object.keys(newData).filter(key => newData[key]));
+    console.log('projectDescription in newData:', newData.projectDescription);
+    console.log('workDescription in newData:', newData.workDescription);
+    
     setFormData(newData);
-    if (onDataChange) onDataChange(newData);
+    if (onDataChange) {
+      console.log('Calling onDataChange with data...');
+      onDataChange(newData);
+    } else {
+      console.log('No onDataChange callback provided!');
+    }
   };
 
   useEffect(() => {
