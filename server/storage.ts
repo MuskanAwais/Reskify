@@ -42,6 +42,9 @@ export interface IStorage {
   deleteSafetyLibraryDocument(id: number): Promise<void>;
   getAllUsersForAdmin(): Promise<User[]>;
   getAllSWMSForAdmin(): Promise<any[]>;
+  getDeletedSwms(userId: number): Promise<any[]>;
+  restoreSwmsDocument(id: number, userId: number): Promise<any>;
+  permanentlyDeleteSwms(id: number, userId: number): Promise<boolean>;
 }
 
 export class DatabaseStorage implements IStorage {
