@@ -1616,7 +1616,6 @@ export async function registerRoutes(app: Express) {
       }
       
       const { generateSWMSFromTaskSimple } = await import('./openai-integration-simple.js');
-      const { generateFallbackSWMS } = await import('./fallback-generation.js');
       
       console.log('🎯 SWMS GENERATION - Preserving Enhanced Safety Options:', req.body);
       
@@ -1637,18 +1636,10 @@ export async function registerRoutes(app: Express) {
       
       console.log(`🎯 Enhanced Safety Options - Site: ${transformedRequest.projectDetails.siteEnvironment}, State: ${transformedRequest.projectDetails.state}, HRCW: ${transformedRequest.projectDetails.hrcwCategories.join(',')}`);
       
-      let result;
-      
-      // Use enhanced AI generation with comprehensive legislation and 8-10 tasks
-      console.log('🎯 USING ENHANCED AI GENERATION - With comprehensive Australian legislation and 8-10 tasks');
-      try {
-        result = await generateSWMSFromTaskSimple(transformedRequest);
-        console.log('🎯 AI GENERATION SUCCESSFUL - Enhanced safety options and comprehensive legislation included');
-      } catch (error) {
-        console.error('AI generation failed, using fallback:', error);
-        result = generateFallbackSWMS(transformedRequest);
-        console.log('🎯 FALLBACK GENERATION USED');
-      }
+      // GUARANTEED AI GENERATION - No fallback system, always minimum 8+ tasks
+      console.log('🎯 GUARANTEED AI GENERATION - Always minimum 8+ tasks with comprehensive legislation');
+      const result = await generateSWMSFromTaskSimple(transformedRequest);
+      console.log('🎯 AI GENERATION SUCCESSFUL - Enhanced safety options and comprehensive legislation included');
       
       res.json({
         success: true,

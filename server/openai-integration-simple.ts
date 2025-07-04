@@ -133,28 +133,41 @@ GENERATE AT LEAST ${minimumTasks} ACTIVITIES - NO EXCEPTIONS.`;
   try {
     console.log(`🚀 SENDING SIMPLE REQUEST WITH TIMEOUT...`);
     
-    // Create timeout promise
+    // Extended timeout for guaranteed generation - no fallback allowed
     const timeoutPromise = new Promise((_, reject) => {
-      setTimeout(() => reject(new Error('OpenAI request timed out after 30 seconds')), 30000);
+      setTimeout(() => reject(new Error('OpenAI request timed out after 60 seconds')), 60000);
     });
     
     console.log('🚀 SENDING REQUEST TO OPENAI:');
     console.log('System Message Length:', systemMessage.length);
     console.log('User Message:', `Generate tasks for ${tradeType} work: ${plainTextDescription}`);
     
-    // Race between OpenAI request and timeout
-    const response = await Promise.race([
-      openai.chat.completions.create({
-        model: 'gpt-4o',
-        messages: [
-          { role: 'system', content: systemMessage },
-          { role: 'user', content: `Generate tasks for ${tradeType} work: ${plainTextDescription}` }
-        ],
-        max_tokens: 3000,
-        temperature: 0.3,
-      }),
-      timeoutPromise
-    ]) as any;
+    // Enhanced AI request with retry logic
+    let retryCount = 0;
+    let response;
+    
+    while (retryCount < 3) {
+      try {
+        response = await Promise.race([
+          openai.chat.completions.create({
+            model: 'gpt-4o',
+            messages: [
+              { role: 'system', content: systemMessage },
+              { role: 'user', content: `Generate EXACTLY ${minimumTasks}+ tasks for ${tradeType} work: ${plainTextDescription}. CRITICAL: Return minimum ${minimumTasks} unique activities.` }
+            ],
+            max_tokens: 4000,
+            temperature: 0.2,
+          }),
+          timeoutPromise
+        ]) as any;
+        break;
+      } catch (error) {
+        retryCount++;
+        console.log(`🚀 RETRY ${retryCount}/3 - Previous attempt failed:`, error.message);
+        if (retryCount >= 3) throw error;
+        await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds before retry
+      }
+    }
 
     console.log(`🚀 RECEIVED RESPONSE`);
     
