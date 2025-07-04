@@ -1064,10 +1064,177 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
             </p>
           </div>
 
-          <PlantEquipmentSystem
-            plantEquipment={formData.plantEquipment || []}
-            onUpdate={(equipment) => updateFormData({ plantEquipment: equipment })}
-          />
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center text-lg font-semibold">
+                <Shield className="mr-2 h-5 w-5 text-blue-600" />
+                PPE Requirements
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {formData.ppeRequirements && formData.ppeRequirements.length > 0 ? (
+                <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <div className="flex items-center mb-2">
+                    <Info className="h-4 w-4 text-blue-600 mr-2" />
+                    <span className="font-medium text-blue-800">
+                      {formData.ppeRequirements.length} PPE Items Auto-Selected
+                    </span>
+                  </div>
+                  <p className="text-blue-700 text-sm">
+                    PPE has been automatically selected based on your work activities and risk assessment. Review and adjust as needed.
+                  </p>
+                </div>
+              ) : (
+                <div className="mb-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                  <div className="flex items-center mb-2">
+                    <Info className="h-4 w-4 text-gray-600 mr-2" />
+                    <span className="font-medium text-gray-800">Select Required PPE</span>
+                  </div>
+                  <p className="text-gray-700 text-sm">
+                    Select the personal protective equipment required for your work activities.
+                  </p>
+                </div>
+              )}
+
+              <div className="space-y-6">
+                {/* Standard PPE */}
+                <div>
+                  <h4 className="text-lg font-semibold text-gray-900 mb-3 flex items-center">
+                    <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
+                    Standard PPE Items (General Use)
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {[
+                      { id: 'hard-hat', title: 'Hard Hat', description: 'Head protection from falling objects' },
+                      { id: 'hi-vis-vest', title: 'Hi-Vis Vest/Shirt', description: 'Visibility on site' },
+                      { id: 'steel-cap-boots', title: 'Steel Cap Boots', description: 'Foot protection from impact or puncture' },
+                      { id: 'safety-glasses', title: 'Safety Glasses', description: 'Eye protection' },
+                      { id: 'gloves', title: 'Gloves', description: 'General hand protection' },
+                      { id: 'hearing-protection', title: 'Hearing Protection', description: 'Earplugs or earmuffs' },
+                      { id: 'long-pants', title: 'Long Pants', description: 'Protection from abrasions and minor cuts' },
+                      { id: 'long-sleeve-shirt', title: 'Long Sleeve Shirt', description: 'General body protection' },
+                      { id: 'dust-mask', title: 'Dust Mask', description: 'Basic airborne dust protection' },
+                      { id: 'sun-protection', title: 'Sun Protection', description: 'Hat, sunscreen - UV exposure control' }
+                    ].map((ppe) => {
+                      const isSelected = (formData.ppeRequirements || []).includes(ppe.id);
+                      return (
+                        <div 
+                          key={ppe.id} 
+                          className={`cursor-pointer transition-all duration-200 border-2 rounded-lg p-3 hover:shadow-md ${
+                            isSelected 
+                              ? 'border-green-500 bg-green-50 shadow-md' 
+                              : 'border-gray-200 bg-white hover:border-gray-300'
+                          }`}
+                          onClick={() => {
+                            const currentPPE = formData.ppeRequirements || [];
+                            const updatedPPE = isSelected
+                              ? currentPPE.filter((id: string) => id !== ppe.id)
+                              : [...currentPPE, ppe.id];
+                            onDataChange({ ppeRequirements: updatedPPE });
+                          }}
+                        >
+                          <div className="flex items-start space-x-3">
+                            <div className={`w-5 h-5 rounded border-2 flex items-center justify-center mt-0.5 ${
+                              isSelected 
+                                ? 'bg-green-500 border-green-500' 
+                                : 'border-gray-300'
+                            }`}>
+                              {isSelected && (
+                                <CheckCircle className="h-3 w-3 text-white" />
+                              )}
+                            </div>
+                            <div className="flex-1">
+                              <div className="font-medium text-sm text-gray-900 leading-tight">
+                                {ppe.title}
+                              </div>
+                              <p className="text-xs text-gray-600 mt-1 leading-tight">
+                                {ppe.description}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Task-Specific PPE */}
+                <div>
+                  <h4 className="text-lg font-semibold text-gray-900 mb-3 flex items-center">
+                    <AlertTriangle className="h-4 w-4 text-yellow-600 mr-2" />
+                    Task-Specific PPE (For Specialized Work)
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {[
+                      { id: 'respiratory-protection', title: 'Respiratory Protection', description: 'Chemical/dust exposure areas' },
+                      { id: 'chemical-resistant-gloves', title: 'Chemical-Resistant Gloves', description: 'Handling chemicals/solvents' },
+                      { id: 'face-shield', title: 'Face Shield', description: 'Grinding, cutting, chemical splash protection' },
+                      { id: 'welding-helmet', title: 'Welding Helmet', description: 'Welding and hot work operations' },
+                      { id: 'insulated-gloves', title: 'Insulated Gloves', description: 'Live electrical work' },
+                      { id: 'fire-retardant-clothing', title: 'Fire-Retardant Clothing', description: 'Hot works / fire risk areas' },
+                      { id: 'knee-pads', title: 'Knee Pads', description: 'Prolonged kneeling (e.g. flooring work)' },
+                      { id: 'non-slip-footwear', title: 'Non-slip Footwear', description: 'Wet/slippery environments' },
+                      { id: 'safety-harness-lanyard', title: 'Safety Harness & Lanyard', description: 'Elevated work or boom lift' },
+                      { id: 'ear-canal-protectors', title: 'Ear Canal Protectors', description: 'High-decibel machinery use' },
+                      { id: 'impact-goggles', title: 'Impact Goggles', description: 'Demolition or grinding tasks' }
+                    ].map((ppe) => {
+                      const isSelected = (formData.ppeRequirements || []).includes(ppe.id);
+                      return (
+                        <div 
+                          key={ppe.id} 
+                          className={`cursor-pointer transition-all duration-200 border-2 rounded-lg p-3 hover:shadow-md ${
+                            isSelected 
+                              ? 'border-yellow-500 bg-yellow-50 shadow-md' 
+                              : 'border-gray-200 bg-white hover:border-gray-300'
+                          }`}
+                          onClick={() => {
+                            const currentPPE = formData.ppeRequirements || [];
+                            const updatedPPE = isSelected
+                              ? currentPPE.filter((id: string) => id !== ppe.id)
+                              : [...currentPPE, ppe.id];
+                            onDataChange({ ppeRequirements: updatedPPE });
+                          }}
+                        >
+                          <div className="flex items-start space-x-3">
+                            <div className={`w-5 h-5 rounded border-2 flex items-center justify-center mt-0.5 ${
+                              isSelected 
+                                ? 'bg-yellow-500 border-yellow-500' 
+                                : 'border-gray-300'
+                            }`}>
+                              {isSelected && (
+                                <CheckCircle className="h-3 w-3 text-white" />
+                              )}
+                            </div>
+                            <div className="flex-1">
+                              <div className="font-medium text-sm text-gray-900 leading-tight">
+                                {ppe.title}
+                              </div>
+                              <p className="text-xs text-gray-600 mt-1 leading-tight">
+                                {ppe.description}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+
+              {(formData.ppeRequirements || []).length > 0 && (
+                <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <div className="flex items-center mb-2">
+                    <Info className="h-4 w-4 text-blue-600 mr-2" />
+                    <span className="font-medium text-blue-800">PPE Compliance</span>
+                  </div>
+                  <p className="text-blue-700 text-sm">
+                    Ensure all selected PPE meets Australian Standards and is properly maintained, inspected, and worn correctly. 
+                    Provide appropriate training for specialized PPE equipment.
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
       );
 
@@ -1082,93 +1249,10 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
             </p>
           </div>
 
-          <Card>
-            <CardContent className="space-y-4 pt-6">
-              <h3 className="text-lg font-semibold mb-4">Emergency Procedures</h3>
-              <div className="space-y-4">
-                <div>
-                  <Label>Emergency Contacts</Label>
-                  <div className="space-y-3 mt-2">
-                    {(formData.emergencyContactsList || []).map((contact: any, index: number) => (
-                      <div key={index} className="p-3 border rounded-lg bg-gray-50">
-                        <div className="flex justify-between items-center mb-2">
-                          <h5 className="font-medium text-sm">Contact {index + 1}</h5>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              const updated = (formData.emergencyContactsList || []).filter((_: any, i: number) => i !== index);
-                              updateFormData({ emergencyContactsList: updated });
-                            }}
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                          <Input
-                            placeholder="Contact Name/Organization"
-                            value={contact.name || ""}
-                            onChange={(e) => {
-                              const updated = [...(formData.emergencyContactsList || [])];
-                              updated[index] = { ...updated[index], name: e.target.value };
-                              updateFormData({ emergencyContactsList: updated });
-                            }}
-                          />
-                          <Input
-                            placeholder="Phone Number"
-                            value={contact.phone || ""}
-                            onChange={(e) => {
-                              const updated = [...(formData.emergencyContactsList || [])];
-                              updated[index] = { ...updated[index], phone: e.target.value };
-                              updateFormData({ emergencyContactsList: updated });
-                            }}
-                          />
-                        </div>
-                      </div>
-                    ))}
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => {
-                        const newContact = { name: "", phone: "" };
-                        const updated = [...(formData.emergencyContactsList || []), newContact];
-                        updateFormData({ emergencyContactsList: updated });
-                      }}
-                      className="w-full"
-                    >
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add Emergency Contact
-                    </Button>
-                    
-
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="emergencyProcedures">Emergency Response Procedures</Label>
-                  <Textarea
-                    id="emergencyProcedures"
-                    placeholder="Describe emergency response procedures, evacuation routes, assembly points..."
-                    value={formData.emergencyProcedures || ""}
-                    onChange={(e) => updateFormData({ emergencyProcedures: e.target.value })}
-                    rows={4}
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="monitoringRequirements">Monitoring & Review Requirements</Label>
-                  <Textarea
-                    id="monitoringRequirements"
-                    placeholder="Describe monitoring requirements, review schedules, compliance checks..."
-                    value={formData.monitoringRequirements || ""}
-                    onChange={(e) => updateFormData({ monitoringRequirements: e.target.value })}
-                    rows={3}
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <PlantEquipmentSystem
+            plantEquipment={formData.plantEquipment || []}
+            onUpdate={(equipment) => onDataChange({ plantEquipment: equipment })}
+          />
         </div>
       );
 
@@ -1507,6 +1591,19 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
       );
 
     case 8:
+      // Check if user already has paid access
+      const hasPaidAccess = formData.paidAccess === true || formData.paid === true || formData.creditsUsed === true;
+      
+      // Calculate total credits available
+      const creditBalance = (userBillingData?.credits || userData?.credits || 0) + 
+                           (userBillingData?.subscriptionCredits || userData?.subscriptionCredits || 0) + 
+                           (userBillingData?.addonCredits || userData?.addonCredits || 0);
+      
+      // Check for admin/demo access
+      const isAdmin = localStorage.getItem('isAppAdmin') === 'true' || 
+                     localStorage.getItem('adminDemoMode') === 'true' ||
+                     userData?.isAdmin === true;
+      
       return (
         <div className="space-y-6">
           <div className="text-center">
@@ -1519,25 +1616,82 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
 
           <Card>
             <CardHeader>
-              <CardTitle>Payment (Demo Mode)</CardTitle>
+              <CardTitle>
+                {hasPaidAccess ? "Document Ready" : 
+                 isAdmin ? "Payment (Admin Mode)" : 
+                 creditBalance > 0 ? "Use Credits" : "Payment Required"}
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg text-center">
-                <p className="text-blue-800 text-sm">
-                  Payment processing is skipped in demo mode. Click Continue to proceed to document generation.
-                </p>
-              </div>
+              {hasPaidAccess ? (
+                <div className="p-4 bg-green-50 border border-green-200 rounded-lg text-center">
+                  <CheckCircle className="h-8 w-8 text-green-600 mx-auto mb-2" />
+                  <p className="text-green-800 font-medium">Payment Complete</p>
+                  <p className="text-green-600 text-sm">Ready to generate your SWMS document</p>
+                </div>
+              ) : isAdmin ? (
+                <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg text-center">
+                  <Crown className="h-8 w-8 text-blue-600 mx-auto mb-2" />
+                  <p className="text-blue-800 font-medium">Admin Access</p>
+                  <p className="text-blue-600 text-sm">Payment processing bypassed in admin mode</p>
+                </div>
+              ) : creditBalance > 0 ? (
+                <div className="space-y-4">
+                  <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-medium text-amber-800">Available Credits: {creditBalance}</p>
+                        <p className="text-amber-600 text-sm">Use 1 credit to generate this SWMS</p>
+                      </div>
+                      <CreditCard className="h-8 w-8 text-amber-600" />
+                    </div>
+                  </div>
+                  <div className="flex justify-end">
+                    <Button 
+                      onClick={() => {
+                        // Mark as credit used and proceed
+                        onDataChange({ creditsUsed: true, paidAccess: true });
+                        // Call onNext to proceed to document generation
+                        if (onNext) onNext();
+                      }}
+                      size="lg"
+                      className="bg-amber-600 hover:bg-amber-700 text-white"
+                      disabled={isProcessingCredit}
+                    >
+                      {isProcessingCredit ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Processing...
+                        </>
+                      ) : (
+                        <>
+                          <CreditCard className="mr-2 h-4 w-4" />
+                          Use 1 Credit
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-center">
+                  <AlertCircle className="h-8 w-8 text-red-600 mx-auto mb-2" />
+                  <p className="text-red-800 font-medium">Payment Required</p>
+                  <p className="text-red-600 text-sm">Please purchase credits or subscribe to continue</p>
+                </div>
+              )}
               
-              <div className="flex justify-end">
-                <Button 
-                  onClick={onNext}
-                  size="lg"
-                  className="bg-green-600 hover:bg-green-700 text-white"
-                >
-                  <FileText className="mr-2 h-4 w-4" />
-                  Generate SWMS Document
-                </Button>
-              </div>
+              {(hasPaidAccess || isAdmin) && (
+                <div className="flex justify-end">
+                  <Button 
+                    onClick={onNext}
+                    size="lg"
+                    className="bg-green-600 hover:bg-green-700 text-white"
+                  >
+                    <FileText className="mr-2 h-4 w-4" />
+                    Generate SWMS Document
+                  </Button>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
