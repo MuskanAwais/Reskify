@@ -1043,6 +1043,10 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
                       className={`w-full ${hasCredits ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-400 cursor-not-allowed'}`}
                       disabled={isProcessingCredit || !hasCredits}
                       onClick={async () => {
+                        console.log('USE CREDIT BUTTON CLICKED');
+                        console.log('hasCredits:', hasCredits);
+                        console.log('isProcessingCredit:', isProcessingCredit);
+                        
                         if (!hasCredits) {
                           alert('You have no credits available. Please purchase credits below.');
                           return;
@@ -1064,8 +1068,11 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
                             credentials: 'include',
                           });
 
+                          console.log('Credit API response status:', response.status);
+                          const result = await response.json();
+                          console.log('Credit API response:', result);
+
                           if (response.ok) {
-                            const result = await response.json();
                             console.log('Credit used successfully:', result);
                             
                             // Immediately update form data to indicate payment is complete
@@ -1271,10 +1278,13 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
                       variant="outline"
                       size="lg"
                       onClick={async () => {
+                        console.log('DEMO $15 BUTTON CLICKED');
                         // For demo purposes, simulate payment success
                         const confirmed = confirm('DEMO MODE: Simulate $15 payment for One-Off SWMS?');
+                        console.log('User confirmed demo payment:', confirmed);
                         if (confirmed) {
                           try {
+                            console.log('Making demo payment API call...');
                             const response = await fetch('/api/user/add-credits', {
                               method: 'POST',
                               headers: {
