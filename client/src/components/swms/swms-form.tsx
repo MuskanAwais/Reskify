@@ -702,34 +702,7 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
               <div className="border-t pt-6">
                 <h3 className="text-lg font-semibold mb-4">Project Personnel</h3>
                 
-                {/* Person creating and authorising SWMS */}
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-                  <h4 className="text-md font-medium text-blue-900 mb-3">Person Creating and Authorising SWMS</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <div>
-                      <Label htmlFor="swmsCreatorName">Name *</Label>
-                      <Input
-                        id="swmsCreatorName"
-                        value={formData.swmsCreatorName || ""}
-                        onChange={(e) => updateFormData({ swmsCreatorName: e.target.value })}
-                        placeholder="Full name of person creating SWMS"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="swmsCreatorPosition">Position *</Label>
-                      <Input
-                        id="swmsCreatorPosition"
-                        value={formData.swmsCreatorPosition || ""}
-                        onChange={(e) => updateFormData({ swmsCreatorPosition: e.target.value })}
-                        placeholder="Job title/position"
-                        required
-                      />
-                    </div>
-                  </div>
-                  
 
-                </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
@@ -778,7 +751,7 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
             <AlertTriangle className="mx-auto h-12 w-12 text-primary mb-4" />
             <h3 className="text-lg font-semibold mb-2">Work Activities & Task Selection</h3>
             <p className="text-gray-600 text-sm">
-              Choose how to add tasks to your SWMS - search existing tasks, generate with AI, or create custom tasks
+              Choose how to add tasks to your SWMS - generate with AI or create custom tasks
             </p>
           </div>
 
@@ -1059,7 +1032,7 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
         <div className="space-y-6">
           <div className="text-center">
             <Wrench className="mx-auto h-12 w-12 text-primary mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Plant & Equipment (Optional)</h3>
+            <h3 className="text-lg font-semibold mb-2">Plant & Equipment</h3>
             <p className="text-gray-600 text-sm">
               Add any plant, equipment, or tools required for this project. This section is optional and will only appear in your SWMS if you add items.
             </p>
@@ -1084,9 +1057,9 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
         <div className="space-y-6">
           <div className="text-center">
             <Shield className="mx-auto h-12 w-12 text-primary mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Emergency & Monitoring (Optional)</h3>
+            <h3 className="text-lg font-semibold mb-2">Emergency & Monitoring</h3>
             <p className="text-gray-600 text-sm">
-              Emergency procedures and monitoring processes are optional. You can skip this step if not required for your project.
+              Add emergency procedures and monitoring processes for your project.
             </p>
           </div>
 
@@ -1095,12 +1068,7 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
               <CardTitle>Emergency Procedures</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="mb-6 p-4 bg-orange-50 rounded-lg border border-orange-200">
-                <p className="text-orange-800 font-medium mb-2">Optional Step</p>
-                <p className="text-gray-600">
-                  Emergency procedures and monitoring are optional. This section will only appear in your SWMS if you add content.
-                </p>
-              </div>
+
 
               <div className="space-y-4">
                 <div>
@@ -1158,14 +1126,7 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
                       Add Emergency Contact
                     </Button>
                     
-                    {(!formData.emergencyContactsList || formData.emergencyContactsList.length === 0) && (
-                      <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
-                        <p className="text-amber-800 text-sm font-medium mb-1">Optional Step</p>
-                        <p className="text-amber-700 text-sm">
-                          Emergency contacts are optional. This section will only appear in your SWMS if you add content.
-                        </p>
-                      </div>
-                    )}
+
                   </div>
                 </div>
 

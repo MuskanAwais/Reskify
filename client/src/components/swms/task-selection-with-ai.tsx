@@ -352,7 +352,7 @@ export default function TaskSelectionWithAI({
                   />
                 </div>
                 <div>
-                  <Label htmlFor="custom-category">Category (optional)</Label>
+                  <Label htmlFor="custom-category">Category</Label>
                   <Input
                     id="custom-category"
                     value={customTask.category}

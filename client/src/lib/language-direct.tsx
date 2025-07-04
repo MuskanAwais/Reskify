@@ -70,7 +70,7 @@ const translations = {
     // Placeholder texts
     "placeholder.selectTrade": "Select your trade",
     "placeholder.jobName": "e.g., Office Tower Construction",
-    "placeholder.jobNumber": "e.g., JOB-2025-001 (optional)",
+    "placeholder.jobNumber": "e.g., JOB-2025-001",
     "placeholder.projectAddress": "Enter the complete project address",
     "placeholder.projectLocation": "e.g., Level 5 Office Fitout, Main Building",
     "placeholder.swmsTitle": "e.g., Electrical Installation - Office Fitout"
@@ -143,7 +143,7 @@ const translations = {
     // Placeholder texts
     "placeholder.selectTrade": "选择您的工种",
     "placeholder.jobName": "例如：办公大楼建设",
-    "placeholder.jobNumber": "例如：JOB-2025-001（可选）",
+    "placeholder.jobNumber": "例如：JOB-2025-001",
     "placeholder.projectAddress": "输入完整的项目地址",
     "placeholder.projectLocation": "例如：5楼办公室装修，主楼",
     "placeholder.swmsTitle": "例如：电气安装 - 办公室装修"

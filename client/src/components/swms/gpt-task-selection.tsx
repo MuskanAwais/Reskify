@@ -742,7 +742,7 @@ export default function GPTTaskSelection({
                 <div className="flex items-center gap-2 p-4 bg-green-50 rounded-lg border border-green-200">
                   <Edit className="h-5 w-5 text-green-600" />
                   <span className="text-green-800 font-medium">
-                    Describe the job and we'll generate 10+ tasks automatically (Job Mode)
+                    Describe the job and we'll generate 10+ tasks automatically
                   </span>
                 </div>
 
