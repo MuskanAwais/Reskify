@@ -1275,7 +1275,10 @@ export async function registerRoutes(app: Express) {
   // Demo credit addition endpoint (bypasses Stripe for testing)
   app.post('/api/user/add-credits', async (req, res) => {
     try {
-      const userId = req.session?.userId || 999; // Demo mode support
+      const userId = req.session?.userId;
+      if (!userId) {
+        return res.status(401).json({ error: 'Authentication required' });
+      }
       const { amount, type } = req.body;
       
       console.log(`Demo payment: Adding ${amount} credits to user ${userId}`);
@@ -2254,9 +2257,13 @@ export async function registerRoutes(app: Express) {
       const totalDocuments = swmsDocuments.length;
       const documentsThisMonth = swmsDocuments.filter(d => d.createdAt && new Date(d.createdAt) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)).length;
       
-      // Trade distribution from real data
+      // Trade distribution from real data with proper capitalization
       const tradeDistribution = swmsDocuments.reduce((acc: any, doc: any) => {
-        const trade = doc.tradeType || 'Unknown';
+        const rawTrade = doc.tradeType || 'Unknown';
+        // Capitalize trade names properly
+        const trade = rawTrade.split(' ').map((word: string) => 
+          word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+        ).join(' ');
         acc[trade] = (acc[trade] || 0) + 1;
         return acc;
       }, {});
@@ -2766,7 +2773,7 @@ export async function registerRoutes(app: Express) {
           timestamp: new Date(swms.createdAt || Date.now()).toLocaleString()
         }));
 
-      // Top risks from activities
+      // Top risks from activities with proper capitalization
       const riskFrequency: Record<string, number> = {};
       filteredSwms.forEach((swms: any) => {
         if (swms.workActivities && Array.isArray(swms.workActivities)) {
@@ -2787,7 +2794,11 @@ export async function registerRoutes(app: Express) {
                   
                   const cleanHazard = hazardStr.trim();
                   if (cleanHazard && cleanHazard !== '[object Object]') {
-                    riskFrequency[cleanHazard] = (riskFrequency[cleanHazard] || 0) + 1;
+                    // Capitalize first letter of each word for professional display
+                    const capitalizedHazard = cleanHazard.split(' ').map(word => 
+                      word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+                    ).join(' ');
+                    riskFrequency[capitalizedHazard] = (riskFrequency[capitalizedHazard] || 0) + 1;
                   }
                 } catch (error) {
                   console.error('Error processing hazard:', hazard, typeof hazard, error);
@@ -2954,7 +2965,12 @@ export async function registerRoutes(app: Express) {
         topHazards: Object.entries(hazardFrequency)
           .sort(([,a], [,b]) => (b as number) - (a as number))
           .slice(0, 10)
-          .map(([hazard, count]) => ({ hazard, count })),
+          .map(([hazard, count]) => ({ 
+            hazard: hazard.split(' ').map(word => 
+              word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+            ).join(' '), 
+            count 
+          })),
         hrcwFrequency: Object.entries(hrcwFrequency)
           .sort(([,a], [,b]) => (b as number) - (a as number))
           .slice(0, 8)
@@ -2962,15 +2978,30 @@ export async function registerRoutes(app: Express) {
         topLocations: Object.entries(locationFrequency)
           .sort(([,a], [,b]) => (b as number) - (a as number))
           .slice(0, 8)
-          .map(([location, count]) => ({ location, count })),
+          .map(([location, count]) => ({ 
+            location: location.split(' ').map(word => 
+              word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+            ).join(' '), 
+            count 
+          })),
         topEquipment: Object.entries(equipmentFrequency)
           .sort(([,a], [,b]) => (b as number) - (a as number))
           .slice(0, 10)
-          .map(([equipment, count]) => ({ equipment, count })),
+          .map(([equipment, count]) => ({ 
+            equipment: equipment.split(' ').map(word => 
+              word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+            ).join(' '), 
+            count 
+          })),
         topPPE: Object.entries(ppeFrequency)
           .sort(([,a], [,b]) => (b as number) - (a as number))
           .slice(0, 10)
-          .map(([ppe, count]) => ({ ppe, count })),
+          .map(([ppe, count]) => ({ 
+            ppe: ppe.split(' ').map(word => 
+              word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+            ).join(' '), 
+            count 
+          })),
         averageCompleteness,
         averageUpdateDays,
         
@@ -2984,15 +3015,15 @@ export async function registerRoutes(app: Express) {
     }
   });
 
-  // User endpoint - requires authentication
+  // User endpoint - Live authentication with demo mode removed
   app.get("/api/user", async (req, res) => {
     try {
-      // Check if user is authenticated
+      // Require proper authentication - no demo mode
       if (!req.session?.userId) {
         return res.status(401).json({ error: "Authentication required" });
       }
 
-      // Get real user data from database
+      // Get live user data from database
       const user = await storage.getUserById(req.session.userId);
       
       if (!user) {

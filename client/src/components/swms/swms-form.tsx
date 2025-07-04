@@ -184,7 +184,7 @@ const AutomaticPDFGeneration = ({ formData, onDataChange }: { formData: any; onD
           })),
           // Company branding
           company: {
-            name: formData.companyName || 'Construction Company',
+            name: formData.companyName || '',
             logo: formData.companyLogo || null,
             abn: formData.abn || ''
           },
