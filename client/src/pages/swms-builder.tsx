@@ -762,6 +762,12 @@ export default function SwmsBuilder() {
       return (data: any) => {
         clearTimeout(timeoutId);
         timeoutId = setTimeout(() => {
+          // Additional check to prevent auto-save during ongoing operations
+          if (isSaving || autoSaveMutation.isPending || saveDraftMutation.isPending) {
+            console.log('Auto-save skipped - operation in progress');
+            return;
+          }
+          
           // More inclusive condition for Step 1 fields AND emergency step fields to ensure auto-save triggers
           const hasSignificantData = data.title || data.jobName || data.tradeType || 
                                     data.projectAddress || data.jobNumber || data.startDate ||
@@ -774,10 +780,10 @@ export default function SwmsBuilder() {
             console.log('Auto-saving with data:', Object.keys(data).filter(key => data[key]));
             autoSaveMutation.mutate(data);
           }
-        }, 1000); // Save after 1 second of inactivity
+        }, 3000); // Save after 3 seconds of inactivity to prevent rapid calls
       };
     })(),
-    [autoSaveMutation]
+    [autoSaveMutation, isSaving, saveDraftMutation]
   );
 
   // Auto-save when moving between steps
@@ -798,6 +804,12 @@ export default function SwmsBuilder() {
 
   // Auto-save when form data changes (debounced to prevent excessive API calls)
   useEffect(() => {
+    // Skip auto-save during save operations to prevent loops
+    if (isSaving || autoSaveMutation.isPending || saveDraftMutation.isPending) {
+      console.log('Auto-save skipped - save operation in progress');
+      return;
+    }
+    
     // Skip auto-save on initial mount or if no significant data exists
     // Include more Step 1 fields AND emergency step fields to ensure proper auto-save triggers
     const hasSignificantData = formData.jobName || formData.title || formData.tradeType || 
@@ -813,7 +825,7 @@ export default function SwmsBuilder() {
     // Trigger debounced auto-save whenever form data changes
     console.log('Form data changed, triggering auto-save...');
     debouncedAutoSave(formData);
-  }, [formData, debouncedAutoSave]);
+  }, [formData, debouncedAutoSave, isSaving, autoSaveMutation.isPending, saveDraftMutation.isPending]);
 
   // Validation function for step 1 - Clear error messages for missing fields
   const validateStep1 = () => {
