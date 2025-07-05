@@ -313,7 +313,10 @@ export async function registerRoutes(app: Express) {
   // Create new SWMS draft - force new document creation
   app.post("/api/swms/new", async (req, res) => {
     try {
-      const userId = req.session?.userId || 999;
+      const userId = req.session?.userId;
+      if (!userId) {
+        return res.status(401).json({ error: 'Authentication required' });
+      }
       
       // Create a minimal new draft document
       const newDraft = {
@@ -345,7 +348,10 @@ export async function registerRoutes(app: Express) {
   // Clean up duplicate test drafts
   app.post("/api/cleanup-test-drafts", async (req, res) => {
     try {
-      const userId = req.session?.userId || 999;
+      const userId = req.session?.userId;
+      if (!userId) {
+        return res.status(401).json({ error: 'Authentication required' });
+      }
       
       // Delete test drafts with partial names like 'te', 'tes', 'test ', etc.
       const testNames = ['te', 'tes', 'test', 'test ', 'test 1', 'test 2', 'test 3', 'test 4', 'test 5', 'test 6', 'test 7', 'test 8'];
@@ -369,7 +375,10 @@ export async function registerRoutes(app: Express) {
   // Dashboard data with live recent SWMS
   app.get("/api/dashboard/:userId?", async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId) || req.session?.userId || 999;
+      const userId = parseInt(req.params.userId) || req.session?.userId;
+      if (!userId) {
+        return res.status(401).json({ error: 'Authentication required' });
+      }
       
       console.log(`Dashboard API called for user: ${userId}`);
       
@@ -426,11 +435,22 @@ export async function registerRoutes(app: Express) {
   // Save SWMS draft - unified endpoint for auto-save and manual save
   app.post("/api/swms/draft", async (req, res) => {
     try {
-      // Handle both session-based and direct userId
-      const userId = req.session?.userId || req.body.userId || 999;
+      // Require proper authentication - check for demo mode or logged in user
+      const userId = req.session?.userId || req.body.userId;
+      const isDemoMode = req.body.demoMode === true;
+      
+      if (!userId && !isDemoMode) {
+        return res.status(401).json({ error: 'Authentication required' });
+      }
+      
+      // For demo mode, use a specific demo user ID
+      const effectiveUserId = userId || (isDemoMode ? 9999 : null);
+      if (!effectiveUserId) {
+        return res.status(401).json({ error: 'Authentication required' });
+      }
       const swmsData = req.body;
       
-      console.log('Saving SWMS draft for user:', userId, 'Project:', swmsData.projectName || 'Untitled');
+      console.log('Saving SWMS draft for user:', effectiveUserId, 'Project:', swmsData.projectName || 'Untitled', 'Demo mode:', isDemoMode);
       console.log('DEBUG - projectDescription field:', swmsData.projectDescription);
       console.log('DEBUG - workDescription field:', swmsData.workDescription);
       
@@ -440,7 +460,7 @@ export async function registerRoutes(app: Express) {
       const savedDraft = await storage.saveSWMSDraft({
         ...swmsData,
         projectName: title,
-        userId,
+        userId: effectiveUserId,
         status: 'draft',
         updatedAt: new Date()
       });
@@ -456,8 +476,11 @@ export async function registerRoutes(app: Express) {
   // Legacy save-draft endpoint for compatibility
   app.post("/api/swms/save-draft", async (req, res) => {
     try {
-      // Handle both session-based and direct userId
-      const userId = req.session?.userId || req.body.userId || 999;
+      // Require proper authentication - no fallback
+      const userId = req.session?.userId || req.body.userId;
+      if (!userId) {
+        return res.status(401).json({ error: 'Authentication required' });
+      }
       const swmsData = req.body;
       
       // Ensure required fields
@@ -632,7 +655,10 @@ export async function registerRoutes(app: Express) {
   // Get user SWMS documents
   app.get("/api/swms/my-swms", async (req, res) => {
     try {
-      const userId = req.session.userId || 999;
+      const userId = req.session?.userId;
+      if (!userId) {
+        return res.status(401).json({ error: 'Authentication required' });
+      }
       const swmsList = await storage.getUserSwms(userId);
       res.json(swmsList || []);
     } catch (error) {
@@ -644,7 +670,10 @@ export async function registerRoutes(app: Express) {
   // Get user SWMS documents - frontend compatibility endpoint
   app.get("/api/swms", async (req, res) => {
     try {
-      const userId = req.session?.userId || 999;
+      const userId = req.session?.userId;
+      if (!userId) {
+        return res.status(401).json({ error: 'Authentication required' });
+      }
       console.log('Fetching SWMS for user:', userId);
       const swmsList = await storage.getUserSwms(userId);
       console.log('Found SWMS documents:', swmsList.length);

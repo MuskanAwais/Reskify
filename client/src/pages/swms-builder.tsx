@@ -637,7 +637,7 @@ export default function SwmsBuilder() {
       try {
         const requestData = {
           ...data,
-          userId: 999, // Demo user ID
+          demoMode: true, // Use demo mode for non-authenticated users
           status: "draft",
           currentStep,
           projectName: data.jobName || data.title || "Untitled SWMS",
@@ -699,7 +699,7 @@ export default function SwmsBuilder() {
       try {
         const requestData = {
           ...data,
-          userId: 999, // Demo user ID
+          demoMode: true, // Use demo mode for non-authenticated users
           status: "draft",
           currentStep,
           projectName: data.jobName || data.title || "Untitled SWMS",
