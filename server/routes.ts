@@ -444,7 +444,7 @@ export async function registerRoutes(app: Express) {
       }
       
       // For demo mode, use a specific demo user ID
-      const effectiveUserId = userId || (isDemoMode ? 9999 : null);
+      const effectiveUserId = userId || (isDemoMode ? 999 : null);
       if (!effectiveUserId) {
         return res.status(401).json({ error: 'Authentication required' });
       }
