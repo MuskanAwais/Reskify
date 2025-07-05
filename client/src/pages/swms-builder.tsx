@@ -777,8 +777,8 @@ export default function SwmsBuilder() {
                                     (data.emergencyContactsList && data.emergencyContactsList.length > 0);
           
           if (hasSignificantData) {
-            console.log('Auto-saving with data:', Object.keys(data).filter(key => data[key]));
-            autoSaveMutation.mutate(data);
+            console.log('Auto-save disabled - data would be saved:', Object.keys(data).filter(key => data[key]));
+            // autoSaveMutation.mutate(data); // DISABLED - temporarily disabled
           }
         }, 3000); // Save after 3 seconds of inactivity to prevent rapid calls
       };
@@ -802,30 +802,12 @@ export default function SwmsBuilder() {
     }
   };
 
-  // Auto-save when form data changes (debounced to prevent excessive API calls)
+  // DISABLED: Auto-save temporarily disabled to prevent loop issues
+  // Auto-save will only happen when user manually saves or navigates between steps
   useEffect(() => {
-    // Skip auto-save during save operations to prevent loops
-    if (isSaving || autoSaveMutation.isPending || saveDraftMutation.isPending) {
-      console.log('Auto-save skipped - save operation in progress');
-      return;
-    }
-    
-    // Skip auto-save on initial mount or if no significant data exists
-    // Include more Step 1 fields AND emergency step fields to ensure proper auto-save triggers
-    const hasSignificantData = formData.jobName || formData.title || formData.tradeType || 
-                              formData.projectAddress || formData.jobNumber || formData.startDate ||
-                              formData.swmsCreatorName || formData.principalContractor ||
-                              formData.projectManager || formData.siteSupervisor ||
-                              formData.emergencyProcedures || formData.monitoringRequirements;
-    
-    if (!hasSignificantData) {
-      return;
-    }
-    
-    // Trigger debounced auto-save whenever form data changes
-    console.log('Form data changed, triggering auto-save...');
-    debouncedAutoSave(formData);
-  }, [formData, debouncedAutoSave, isSaving, autoSaveMutation.isPending, saveDraftMutation.isPending]);
+    console.log('Auto-save disabled - manual save only');
+    // Auto-save functionality temporarily disabled to resolve loop issues
+  }, [formData]);
 
   // Validation function for step 1 - Clear error messages for missing fields
   const validateStep1 = () => {
@@ -1045,15 +1027,15 @@ export default function SwmsBuilder() {
       return;
     }
     
-    // Auto-save before moving to next step (but don't wait for it to complete)
-    if (formData.title || formData.jobName || formData.tradeType) {
-      try {
-        // Don't await this to prevent blocking navigation
-        autoSaveMutation.mutate(formData);
-      } catch (error) {
-        console.error('Error saving draft:', error);
-      }
-    }
+    // DISABLED: Auto-save before moving to next step (temporarily disabled)
+    // if (formData.title || formData.jobName || formData.tradeType) {
+    //   try {
+    //     // Don't await this to prevent blocking navigation
+    //     autoSaveMutation.mutate(formData);
+    //   } catch (error) {
+    //     console.error('Error saving draft:', error);
+    //   }
+    // }
     
     if (currentStep < STEPS.length) {
       const nextStep = currentStep + 1;
@@ -1195,14 +1177,14 @@ export default function SwmsBuilder() {
   }, []);
 
   const handlePrevious = async () => {
-    // Auto-save before moving to previous step
-    if (formData.title || formData.jobName || formData.tradeType) {
-      try {
-        await autoSaveMutation.mutateAsync(formData);
-      } catch (error) {
-        console.error('Error saving draft:', error);
-      }
-    }
+    // DISABLED: Auto-save before moving to previous step (temporarily disabled)
+    // if (formData.title || formData.jobName || formData.tradeType) {
+    //   try {
+    //     await autoSaveMutation.mutateAsync(formData);
+    //   } catch (error) {
+    //     console.error('Error saving draft:', error);
+    //   }
+    // }
     
     if (currentStep > 1) {
       const newStep = currentStep - 1;
@@ -1214,14 +1196,14 @@ export default function SwmsBuilder() {
   const handleStepClick = async (stepId: number) => {
     // Allow backward navigation to any completed step
     if (stepId <= currentStep) {
-      // Auto-save before step change
-      if (formData.title || formData.jobName || formData.tradeType) {
-        try {
-          await autoSaveMutation.mutateAsync(formData);
-        } catch (error) {
-          console.error('Error saving draft:', error);
-        }
-      }
+      // DISABLED: Auto-save before step change (temporarily disabled)
+      // if (formData.title || formData.jobName || formData.tradeType) {
+      //   try {
+      //     await autoSaveMutation.mutateAsync(formData);
+      //   } catch (error) {
+      //     console.error('Error saving draft:', error);
+      //   }
+      // }
       
       setCurrentStep(stepId);
       setLocation(`/swms-builder?step=${stepId}`);
