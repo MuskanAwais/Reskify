@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, timestamp, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, bigint, boolean, timestamp, jsonb } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -37,7 +37,7 @@ export const users = pgTable("users", {
 });
 
 export const swmsDocuments = pgTable("swms_documents", {
-  id: serial("id").primaryKey(),
+  id: bigint("id", { mode: "number" }).primaryKey(),
   userId: integer("user_id").references(() => users.id).notNull(),
   
   // 1. Project and Document Details
