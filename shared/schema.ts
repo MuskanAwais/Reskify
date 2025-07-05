@@ -100,10 +100,11 @@ export const swmsDocuments = pgTable("swms_documents", {
   nearestHospital: text("nearest_hospital"),
   emergencyContacts: jsonb("emergency_contacts"),
   firstAidArrangements: text("first_aid_arrangements"),
+  emergencyResponseProcedures: text("emergency_response_procedures"),
   
   // 10. Review and Monitoring
   reviewProcess: jsonb("review_process"),
-  monitoringRequirements: jsonb("monitoring_requirements"),
+  monitoringRequirements: text("monitoring_requirements"),
   
   // System fields
   safetyMeasures: jsonb("safety_measures").notNull(),

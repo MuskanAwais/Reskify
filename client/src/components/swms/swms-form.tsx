@@ -49,7 +49,8 @@ import {
   Users,
   Download,
   AlertCircle,
-  Crown
+  Crown,
+  Phone
 } from "lucide-react";
 import { SimplifiedTableEditor } from "./simplified-table-editor";
 import GPTTaskSelection from "./gpt-task-selection";
@@ -1121,13 +1122,111 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
         <div className="space-y-6">
           <div className="text-center">
             {getStepIcon(5)}
-            <h3 className="text-xl font-semibold mb-2">Emergency & Monitoring</h3>
+            <h3 className="text-xl font-semibold mb-2">Emergency Information</h3>
             <p className="text-gray-600 text-sm">
-              Configure emergency protocols and safety monitoring requirements
+              Configure emergency contacts and safety procedures
             </p>
           </div>
 
-          {/* Emergency Contact Information */}
+          {/* Emergency Contacts Section */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center text-lg font-semibold">
+                <Phone className="mr-2 h-5 w-5 text-red-600" />
+                Emergency Contacts
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {(!formData.emergencyContacts || formData.emergencyContacts.length === 0) && (
+                <div className="space-y-4">
+                  {/* Default 3 emergency contacts */}
+                  {[1, 2, 3].map((num) => (
+                    <div key={num} className="grid grid-cols-2 gap-4 p-3 border border-gray-200 rounded-lg">
+                      <div>
+                        <Label htmlFor={`emergency-name-${num}`}>Emergency Contact 0{num} Name</Label>
+                        <Input
+                          id={`emergency-name-${num}`}
+                          placeholder="Contact name"
+                          value={formData.emergencyContacts?.[num-1]?.name || ""}
+                          onChange={(e) => {
+                            const contacts = [...(formData.emergencyContacts || [])];
+                            while (contacts.length < num) contacts.push({ name: "", phone: "" });
+                            contacts[num-1] = { ...contacts[num-1], name: e.target.value };
+                            updateFormData({ emergencyContacts: contacts });
+                          }}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor={`emergency-phone-${num}`}>Phone Number</Label>
+                        <Input
+                          id={`emergency-phone-${num}`}
+                          placeholder="0499 999 999"
+                          value={formData.emergencyContacts?.[num-1]?.phone || ""}
+                          onChange={(e) => {
+                            const contacts = [...(formData.emergencyContacts || [])];
+                            while (contacts.length < num) contacts.push({ name: "", phone: "" });
+                            contacts[num-1] = { ...contacts[num-1], phone: e.target.value };
+                            updateFormData({ emergencyContacts: contacts });
+                          }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {formData.emergencyContacts && formData.emergencyContacts.length > 0 && (
+                <div className="space-y-4">
+                  {formData.emergencyContacts.map((contact: any, index: number) => (
+                    <div key={index} className="grid grid-cols-2 gap-4 p-3 border border-gray-200 rounded-lg">
+                      <div>
+                        <Label htmlFor={`emergency-name-${index}`}>Emergency Contact 0{index + 1} Name</Label>
+                        <Input
+                          id={`emergency-name-${index}`}
+                          placeholder="Contact name"
+                          value={contact.name || ""}
+                          onChange={(e) => {
+                            const contacts = [...formData.emergencyContacts];
+                            contacts[index] = { ...contacts[index], name: e.target.value };
+                            updateFormData({ emergencyContacts: contacts });
+                          }}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor={`emergency-phone-${index}`}>Phone Number</Label>
+                        <Input
+                          id={`emergency-phone-${index}`}
+                          placeholder="0499 999 999"
+                          value={contact.phone || ""}
+                          onChange={(e) => {
+                            const contacts = [...formData.emergencyContacts];
+                            contacts[index] = { ...contacts[index], phone: e.target.value };
+                            updateFormData({ emergencyContacts: contacts });
+                          }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  const contacts = [...(formData.emergencyContacts || [])];
+                  contacts.push({ name: "", phone: "" });
+                  updateFormData({ emergencyContacts: contacts });
+                }}
+                className="w-full flex items-center space-x-2"
+              >
+                <Plus className="h-4 w-4" />
+                <span>Add Emergency Contact</span>
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Emergency Response Procedures */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center text-lg font-semibold">
@@ -1136,101 +1235,32 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <div>
-                    <Label htmlFor="emergencyContact">Emergency Contact</Label>
-                    <Input
-                      id="emergencyContact"
-                      value={formData.emergencyProcedures?.emergency_contact || "000"}
-                      onChange={(e) => onDataChange({ 
-                        emergencyProcedures: { 
-                          ...formData.emergencyProcedures,
-                          emergency_contact: e.target.value 
-                        }
-                      })}
-                      placeholder="000 (Police/Fire/Ambulance)"
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="siteSupervisor">Site Supervisor</Label>
-                    <Input
-                      id="siteSupervisor"
-                      value={formData.emergencyProcedures?.site_supervisor || ""}
-                      onChange={(e) => onDataChange({ 
-                        emergencyProcedures: { 
-                          ...formData.emergencyProcedures,
-                          site_supervisor: e.target.value 
-                        }
-                      })}
-                      placeholder="On-site supervisor contact"
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="assemblyPoint">Assembly Point</Label>
-                    <Input
-                      id="assemblyPoint"
-                      value={formData.emergencyProcedures?.assembly_point || ""}
-                      onChange={(e) => onDataChange({ 
-                        emergencyProcedures: { 
-                          ...formData.emergencyProcedures,
-                          assembly_point: e.target.value 
-                        }
-                      })}
-                      placeholder="Main site entrance"
-                    />
-                  </div>
-                </div>
-                
-                <div className="space-y-4">
-                  <div>
-                    <Label htmlFor="nearestHospital">Nearest Hospital</Label>
-                    <Input
-                      id="nearestHospital"
-                      value={formData.emergencyProcedures?.nearest_hospital || ""}
-                      onChange={(e) => onDataChange({ 
-                        emergencyProcedures: { 
-                          ...formData.emergencyProcedures,
-                          nearest_hospital: e.target.value 
-                        }
-                      })}
-                      placeholder="Local hospital"
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="evacuationRoute">Evacuation Route</Label>
-                    <Input
-                      id="evacuationRoute"
-                      value={formData.emergencyProcedures?.evacuation_route || ""}
-                      onChange={(e) => onDataChange({ 
-                        emergencyProcedures: { 
-                          ...formData.emergencyProcedures,
-                          evacuation_route: e.target.value 
-                        }
-                      })}
-                      placeholder="Via main access road"
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="fireEquipment">Fire Equipment</Label>
-                    <Input
-                      id="fireEquipment"
-                      value={formData.emergencyProcedures?.fire_equipment || ""}
-                      onChange={(e) => onDataChange({ 
-                        emergencyProcedures: { 
-                          ...formData.emergencyProcedures,
-                          fire_equipment: e.target.value 
-                        }
-                      })}
-                      placeholder="Site office and work areas"
-                    />
-                  </div>
-                </div>
-              </div>
+              <Textarea
+                placeholder="Enter detailed emergency response procedures here..."
+                value={formData.emergencyResponseProcedures || ""}
+                onChange={(e) => updateFormData({ emergencyResponseProcedures: e.target.value })}
+                rows={6}
+                className="w-full"
+              />
+            </CardContent>
+          </Card>
+
+          {/* Monitoring & Review Requirements */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center text-lg font-semibold">
+                <Eye className="mr-2 h-5 w-5 text-blue-600" />
+                Monitoring & Review Requirements
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Textarea
+                placeholder="Enter monitoring and review requirements here..."
+                value={formData.monitoringRequirements || ""}
+                onChange={(e) => updateFormData({ monitoringRequirements: e.target.value })}
+                rows={6}
+                className="w-full"
+              />
             </CardContent>
           </Card>
         </div>

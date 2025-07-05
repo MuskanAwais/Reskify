@@ -526,6 +526,7 @@ export class DatabaseStorage implements IStorage {
         emergencyContactsList: data.emergencyContactsList || data.emergencyContacts || [],
         nearestHospital: data.nearestHospital || '',
         firstAidArrangements: data.firstAidArrangements || '',
+        emergencyResponseProcedures: data.emergencyResponseProcedures || '',
         evacuationProcedures: data.evacuationProcedures || '',
         fireEmergencyProcedures: data.fireEmergencyProcedures || '',
         medicalEmergencyProcedures: data.medicalEmergencyProcedures || '',
