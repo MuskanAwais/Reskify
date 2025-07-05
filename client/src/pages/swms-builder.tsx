@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -777,8 +777,8 @@ export default function SwmsBuilder() {
                                     (data.emergencyContactsList && data.emergencyContactsList.length > 0);
           
           if (hasSignificantData) {
-            console.log('Auto-save disabled - data would be saved:', Object.keys(data).filter(key => data[key]));
-            // autoSaveMutation.mutate(data); // DISABLED - temporarily disabled
+            console.log('Auto-saving with data:', Object.keys(data).filter(key => data[key]));
+            autoSaveMutation.mutate(data);
           }
         }, 3000); // Save after 3 seconds of inactivity to prevent rapid calls
       };
@@ -802,12 +802,49 @@ export default function SwmsBuilder() {
     }
   };
 
-  // DISABLED: Auto-save temporarily disabled to prevent loop issues
-  // Auto-save will only happen when user manually saves or navigates between steps
+  // Auto-save when form data changes (with improved loop prevention)
+  const isAutoSaving = useRef(false);
+  const lastAutoSaveData = useRef<string>('');
+  
   useEffect(() => {
-    console.log('Auto-save disabled - manual save only');
-    // Auto-save functionality temporarily disabled to resolve loop issues
-  }, [formData]);
+    // Skip auto-save during save operations to prevent loops
+    if (isSaving || autoSaveMutation.isPending || saveDraftMutation.isPending || isAutoSaving.current) {
+      console.log('Auto-save skipped - save operation in progress');
+      return;
+    }
+    
+    // Skip auto-save if data hasn't actually changed
+    const currentDataString = JSON.stringify(formData);
+    if (currentDataString === lastAutoSaveData.current) {
+      return;
+    }
+    
+    // Skip auto-save on initial mount or if no significant data exists
+    const hasSignificantData = formData.jobName || formData.title || formData.tradeType || 
+                              formData.projectAddress || formData.jobNumber || formData.startDate ||
+                              formData.swmsCreatorName || formData.principalContractor ||
+                              formData.projectManager || formData.siteSupervisor ||
+                              formData.emergencyProcedures || formData.monitoringRequirements;
+    
+    if (!hasSignificantData) {
+      return;
+    }
+    
+    // Update the last auto-save data reference
+    lastAutoSaveData.current = currentDataString;
+    
+    // Set auto-saving flag
+    isAutoSaving.current = true;
+    
+    // Trigger debounced auto-save whenever form data changes
+    console.log('Form data changed, triggering auto-save...');
+    debouncedAutoSave(formData);
+    
+    // Clear auto-saving flag after debounce delay
+    setTimeout(() => {
+      isAutoSaving.current = false;
+    }, 4000); // Clear flag after debounce delay + buffer
+  }, [formData, debouncedAutoSave, isSaving, autoSaveMutation.isPending, saveDraftMutation.isPending]);
 
   // Validation function for step 1 - Clear error messages for missing fields
   const validateStep1 = () => {
@@ -1177,14 +1214,14 @@ export default function SwmsBuilder() {
   }, []);
 
   const handlePrevious = async () => {
-    // DISABLED: Auto-save before moving to previous step (temporarily disabled)
-    // if (formData.title || formData.jobName || formData.tradeType) {
-    //   try {
-    //     await autoSaveMutation.mutateAsync(formData);
-    //   } catch (error) {
-    //     console.error('Error saving draft:', error);
-    //   }
-    // }
+    // Auto-save before moving to previous step
+    if (formData.title || formData.jobName || formData.tradeType) {
+      try {
+        await autoSaveMutation.mutateAsync(formData);
+      } catch (error) {
+        console.error('Error saving draft:', error);
+      }
+    }
     
     if (currentStep > 1) {
       const newStep = currentStep - 1;
@@ -1196,14 +1233,14 @@ export default function SwmsBuilder() {
   const handleStepClick = async (stepId: number) => {
     // Allow backward navigation to any completed step
     if (stepId <= currentStep) {
-      // DISABLED: Auto-save before step change (temporarily disabled)
-      // if (formData.title || formData.jobName || formData.tradeType) {
-      //   try {
-      //     await autoSaveMutation.mutateAsync(formData);
-      //   } catch (error) {
-      //     console.error('Error saving draft:', error);
-      //   }
-      // }
+      // Auto-save before step change
+      if (formData.title || formData.jobName || formData.tradeType) {
+        try {
+          await autoSaveMutation.mutateAsync(formData);
+        } catch (error) {
+          console.error('Error saving draft:', error);
+        }
+      }
       
       setCurrentStep(stepId);
       setLocation(`/swms-builder?step=${stepId}`);
