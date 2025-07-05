@@ -78,8 +78,10 @@ export default function PlantEquipmentSystem({ plantEquipment, onUpdate }: Plant
   }, [plantEquipment]);
 
   useEffect(() => {
-    onUpdate(equipment);
-  }, [equipment, onUpdate]);
+    if (JSON.stringify(equipment) !== JSON.stringify(plantEquipment)) {
+      onUpdate(equipment);
+    }
+  }, [equipment]);
 
   const addEquipment = () => {
     if (!newEquipment.name || !newEquipment.type) return;

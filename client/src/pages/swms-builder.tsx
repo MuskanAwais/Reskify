@@ -849,14 +849,39 @@ export default function SwmsBuilder() {
   }, [formData, debouncedAutoSave, isSaving, autoSaveMutation.isPending, saveDraftMutation.isPending]);
   */
 
-  // Validation function for step 1 - TEMPORARILY DISABLED FOR DEBUGGING
+  // Validation function for step 1 - Comprehensive mandatory field validation
   const validateStep1 = () => {
     const errors: string[] = [];
     
-    // VALIDATION COMPLETELY DISABLED TO FIX CONTINUOUS TRIGGERING
-    console.log('validateStep1 called - but validation disabled to fix button flashing');
+    // Mandatory fields that must always be present
+    if (!formData.jobName?.trim()) {
+      errors.push("Job Name is required");
+    }
     
-    // Return empty errors to allow progression for debugging
+    if (!formData.tradeType?.trim()) {
+      errors.push("Trade Type is required");
+    }
+    
+    if (!formData.swmsCreatorName?.trim()) {
+      errors.push("SWMS Creator Name is required");
+    }
+    
+    if (!formData.principalContractor?.trim()) {
+      errors.push("Principal Contractor is required");
+    }
+    
+    if (!formData.projectManager?.trim()) {
+      errors.push("Project Manager is required");
+    }
+    
+    if (!formData.siteSupervisor?.trim()) {
+      errors.push("Site Supervisor is required");
+    }
+    
+    if (!formData.projectAddress?.trim()) {
+      errors.push("Project Address is required");
+    }
+    
     return errors;
   };
 
@@ -895,8 +920,27 @@ export default function SwmsBuilder() {
 
   const validateStep6 = () => {
     const errors: string[] = [];
-    // Step 6 is signatures - signatures are optional, so no validation required
-    // Users can proceed to the next step without mandatory signatures
+    
+    // Mandatory signature fields
+    if (!formData.swmsCreatorName?.trim()) {
+      errors.push("SWMS Creator Name is required");
+    }
+    
+    if (!formData.swmsCreatorPosition?.trim()) {
+      errors.push("SWMS Creator Position/Title is required");
+    }
+    
+    if (!formData.signatureMethod) {
+      errors.push("Signature Method is required");
+    } else {
+      // Validate based on signature method chosen
+      if (formData.signatureMethod === 'type' && !formData.signatureText?.trim()) {
+        errors.push("Typed signature is required when using Type Name method");
+      } else if (formData.signatureMethod === 'upload' && !formData.signatureImage) {
+        errors.push("Signature image is required when using Upload Image method");
+      }
+    }
+    
     return errors;
   };
 

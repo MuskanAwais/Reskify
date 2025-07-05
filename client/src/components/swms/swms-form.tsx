@@ -914,9 +914,9 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
         <div className="space-y-6">
           <div className="text-center">
             {getStepIcon(3)}
-            <h3 className="text-xl font-semibold mb-2">High-Risk Construction Work</h3>
+            <h3 className="text-xl font-semibold mb-2">Personal Protective Equipment</h3>
             <p className="text-gray-600 text-sm">
-              Select applicable HRCW categories from WHS Regulations 2011
+              Select required PPE based on work activities and risk assessments
             </p>
           </div>
 
@@ -1103,192 +1103,7 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
         <div className="space-y-6">
           <div className="text-center">
             {getStepIcon(4)}
-            <h3 className="text-xl font-semibold mb-2">Personal Protective Equipment</h3>
-            <p className="text-gray-600 text-sm">
-              Select required PPE based on work activities and risk assessments
-            </p>
-          </div>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center text-lg font-semibold">
-                <Shield className="mr-2 h-5 w-5 text-blue-600" />
-                PPE Requirements
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {formData.ppeRequirements && formData.ppeRequirements.length > 0 ? (
-                <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                  <div className="flex items-center mb-2">
-                    <Info className="h-4 w-4 text-blue-600 mr-2" />
-                    <span className="font-medium text-blue-800">
-                      {formData.ppeRequirements.length} PPE Items Auto-Selected
-                    </span>
-                  </div>
-                  <p className="text-blue-700 text-sm">
-                    PPE has been automatically selected based on your work activities and risk assessment. Review and adjust as needed.
-                  </p>
-                </div>
-              ) : (
-                <div className="mb-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
-                  <div className="flex items-center mb-2">
-                    <Info className="h-4 w-4 text-gray-600 mr-2" />
-                    <span className="font-medium text-gray-800">Select Required PPE</span>
-                  </div>
-                  <p className="text-gray-700 text-sm">
-                    Select the personal protective equipment required for your work activities.
-                  </p>
-                </div>
-              )}
-
-              <div className="space-y-6">
-                {/* Standard PPE */}
-                <div>
-                  <h4 className="text-lg font-semibold text-gray-900 mb-3 flex items-center">
-                    <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
-                    Standard PPE Items (General Use)
-                  </h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                    {[
-                      { id: 'hard-hat', title: 'Hard Hat', description: 'Head protection from falling objects' },
-                      { id: 'hi-vis-vest', title: 'Hi-Vis Vest/Shirt', description: 'Visibility on site' },
-                      { id: 'steel-cap-boots', title: 'Steel Cap Boots', description: 'Foot protection from impact or puncture' },
-                      { id: 'safety-glasses', title: 'Safety Glasses', description: 'Eye protection' },
-                      { id: 'gloves', title: 'Gloves', description: 'General hand protection' },
-                      { id: 'hearing-protection', title: 'Hearing Protection', description: 'Earplugs or earmuffs' },
-                      { id: 'long-pants', title: 'Long Pants', description: 'Protection from abrasions and minor cuts' },
-                      { id: 'long-sleeve-shirt', title: 'Long Sleeve Shirt', description: 'General body protection' },
-                      { id: 'dust-mask', title: 'Dust Mask', description: 'Basic airborne dust protection' },
-                      { id: 'sun-protection', title: 'Sun Protection', description: 'Hat, sunscreen - UV exposure control' }
-                    ].map((ppe) => {
-                      const isSelected = (formData.ppeRequirements || []).includes(ppe.id);
-                      return (
-                        <div 
-                          key={ppe.id} 
-                          className={`cursor-pointer transition-all duration-200 border-2 rounded-lg p-3 hover:shadow-md ${
-                            isSelected 
-                              ? 'border-green-500 bg-green-50 shadow-md' 
-                              : 'border-gray-200 bg-white hover:border-gray-300'
-                          }`}
-                          onClick={() => {
-                            const currentPPE = formData.ppeRequirements || [];
-                            const updatedPPE = isSelected
-                              ? currentPPE.filter((id: string) => id !== ppe.id)
-                              : [...currentPPE, ppe.id];
-                            onDataChange({ ppeRequirements: updatedPPE });
-                          }}
-                        >
-                          <div className="flex items-start space-x-3">
-                            <div className={`w-5 h-5 rounded border-2 flex items-center justify-center mt-0.5 ${
-                              isSelected 
-                                ? 'bg-green-500 border-green-500' 
-                                : 'border-gray-300'
-                            }`}>
-                              {isSelected && (
-                                <CheckCircle className="h-3 w-3 text-white" />
-                              )}
-                            </div>
-                            <div className="flex-1">
-                              <div className="font-medium text-sm text-gray-900 leading-tight">
-                                {ppe.title}
-                              </div>
-                              <p className="text-xs text-gray-600 mt-1 leading-tight">
-                                {ppe.description}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Task-Specific PPE */}
-                <div>
-                  <h4 className="text-lg font-semibold text-gray-900 mb-3 flex items-center">
-                    <AlertTriangle className="h-4 w-4 text-yellow-600 mr-2" />
-                    Task-Specific PPE (For Specialized Work)
-                  </h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                    {[
-                      { id: 'respiratory-protection', title: 'Respiratory Protection', description: 'Chemical/dust exposure areas' },
-                      { id: 'chemical-resistant-gloves', title: 'Chemical-Resistant Gloves', description: 'Handling chemicals/solvents' },
-                      { id: 'face-shield', title: 'Face Shield', description: 'Grinding, cutting, chemical splash protection' },
-                      { id: 'welding-helmet', title: 'Welding Helmet', description: 'Welding and hot work operations' },
-                      { id: 'insulated-gloves', title: 'Insulated Gloves', description: 'Live electrical work' },
-                      { id: 'fire-retardant-clothing', title: 'Fire-Retardant Clothing', description: 'Hot works / fire risk areas' },
-                      { id: 'knee-pads', title: 'Knee Pads', description: 'Prolonged kneeling (e.g. flooring work)' },
-                      { id: 'non-slip-footwear', title: 'Non-slip Footwear', description: 'Wet/slippery environments' },
-                      { id: 'safety-harness-lanyard', title: 'Safety Harness & Lanyard', description: 'Elevated work or boom lift' },
-                      { id: 'ear-canal-protectors', title: 'Ear Canal Protectors', description: 'High-decibel machinery use' },
-                      { id: 'impact-goggles', title: 'Impact Goggles', description: 'Demolition or grinding tasks' }
-                    ].map((ppe) => {
-                      const isSelected = (formData.ppeRequirements || []).includes(ppe.id);
-                      return (
-                        <div 
-                          key={ppe.id} 
-                          className={`cursor-pointer transition-all duration-200 border-2 rounded-lg p-3 hover:shadow-md ${
-                            isSelected 
-                              ? 'border-yellow-500 bg-yellow-50 shadow-md' 
-                              : 'border-gray-200 bg-white hover:border-gray-300'
-                          }`}
-                          onClick={() => {
-                            const currentPPE = formData.ppeRequirements || [];
-                            const updatedPPE = isSelected
-                              ? currentPPE.filter((id: string) => id !== ppe.id)
-                              : [...currentPPE, ppe.id];
-                            onDataChange({ ppeRequirements: updatedPPE });
-                          }}
-                        >
-                          <div className="flex items-start space-x-3">
-                            <div className={`w-5 h-5 rounded border-2 flex items-center justify-center mt-0.5 ${
-                              isSelected 
-                                ? 'bg-yellow-500 border-yellow-500' 
-                                : 'border-gray-300'
-                            }`}>
-                              {isSelected && (
-                                <CheckCircle className="h-3 w-3 text-white" />
-                              )}
-                            </div>
-                            <div className="flex-1">
-                              <div className="font-medium text-sm text-gray-900 leading-tight">
-                                {ppe.title}
-                              </div>
-                              <p className="text-xs text-gray-600 mt-1 leading-tight">
-                                {ppe.description}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-
-              {(formData.ppeRequirements || []).length > 0 && (
-                <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                  <div className="flex items-center mb-2">
-                    <Info className="h-4 w-4 text-blue-600 mr-2" />
-                    <span className="font-medium text-blue-800">PPE Compliance</span>
-                  </div>
-                  <p className="text-blue-700 text-sm">
-                    Ensure all selected PPE meets Australian Standards and is properly maintained, inspected, and worn correctly. 
-                    Provide appropriate training for specialized PPE equipment.
-                  </p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-      );
-
-    case 5:
-      return (
-        <div className="space-y-6">
-          <div className="text-center">
-            {getStepIcon(5)}
-            <h3 className="text-xl font-semibold mb-2">Plant & Equipment Register</h3>
+            <h3 className="text-xl font-semibold mb-2">Plant, Equipment & Training</h3>
             <p className="text-gray-600 text-sm">
               Manage plant, equipment, and tools with inspection schedules
             </p>
@@ -1298,6 +1113,126 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
             plantEquipment={formData.plantEquipment || []}
             onUpdate={(equipment) => onDataChange({ plantEquipment: equipment })}
           />
+        </div>
+      );
+
+    case 5:
+      return (
+        <div className="space-y-6">
+          <div className="text-center">
+            {getStepIcon(5)}
+            <h3 className="text-xl font-semibold mb-2">Emergency & Monitoring</h3>
+            <p className="text-gray-600 text-sm">
+              Configure emergency protocols and safety monitoring requirements
+            </p>
+          </div>
+
+          {/* Emergency Contact Information */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center text-lg font-semibold">
+                <AlertTriangle className="mr-2 h-5 w-5 text-orange-600" />
+                Emergency Response Procedures
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="emergencyContact">Emergency Contact</Label>
+                    <Input
+                      id="emergencyContact"
+                      value={formData.emergencyProcedures?.emergency_contact || "000"}
+                      onChange={(e) => onDataChange({ 
+                        emergencyProcedures: { 
+                          ...formData.emergencyProcedures,
+                          emergency_contact: e.target.value 
+                        }
+                      })}
+                      placeholder="000 (Police/Fire/Ambulance)"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="siteSupervisor">Site Supervisor</Label>
+                    <Input
+                      id="siteSupervisor"
+                      value={formData.emergencyProcedures?.site_supervisor || ""}
+                      onChange={(e) => onDataChange({ 
+                        emergencyProcedures: { 
+                          ...formData.emergencyProcedures,
+                          site_supervisor: e.target.value 
+                        }
+                      })}
+                      placeholder="On-site supervisor contact"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="assemblyPoint">Assembly Point</Label>
+                    <Input
+                      id="assemblyPoint"
+                      value={formData.emergencyProcedures?.assembly_point || ""}
+                      onChange={(e) => onDataChange({ 
+                        emergencyProcedures: { 
+                          ...formData.emergencyProcedures,
+                          assembly_point: e.target.value 
+                        }
+                      })}
+                      placeholder="Main site entrance"
+                    />
+                  </div>
+                </div>
+                
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="nearestHospital">Nearest Hospital</Label>
+                    <Input
+                      id="nearestHospital"
+                      value={formData.emergencyProcedures?.nearest_hospital || ""}
+                      onChange={(e) => onDataChange({ 
+                        emergencyProcedures: { 
+                          ...formData.emergencyProcedures,
+                          nearest_hospital: e.target.value 
+                        }
+                      })}
+                      placeholder="Local hospital"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="evacuationRoute">Evacuation Route</Label>
+                    <Input
+                      id="evacuationRoute"
+                      value={formData.emergencyProcedures?.evacuation_route || ""}
+                      onChange={(e) => onDataChange({ 
+                        emergencyProcedures: { 
+                          ...formData.emergencyProcedures,
+                          evacuation_route: e.target.value 
+                        }
+                      })}
+                      placeholder="Via main access road"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="fireEquipment">Fire Equipment</Label>
+                    <Input
+                      id="fireEquipment"
+                      value={formData.emergencyProcedures?.fire_equipment || ""}
+                      onChange={(e) => onDataChange({ 
+                        emergencyProcedures: { 
+                          ...formData.emergencyProcedures,
+                          fire_equipment: e.target.value 
+                        }
+                      })}
+                      placeholder="Site office and work areas"
+                    />
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       );
 
@@ -1321,27 +1256,29 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="swmsCreatorName">Full Name</Label>
+                  <Label htmlFor="swmsCreatorName">Full Name <span className="text-red-500">*</span></Label>
                   <Input
                     id="swmsCreatorName"
                     placeholder="Enter creator/authorizer name"
                     value={formData.swmsCreatorName || ""}
                     onChange={(e) => updateFormData({ swmsCreatorName: e.target.value })}
+                    required
                   />
                 </div>
                 <div>
-                  <Label htmlFor="swmsCreatorPosition">Position/Title</Label>
+                  <Label htmlFor="swmsCreatorPosition">Position/Title <span className="text-red-500">*</span></Label>
                   <Input
                     id="swmsCreatorPosition"
                     placeholder="Enter position or title"
                     value={formData.swmsCreatorPosition || ""}
                     onChange={(e) => updateFormData({ swmsCreatorPosition: e.target.value })}
+                    required
                   />
                 </div>
               </div>
 
               <div>
-                <Label>Signature Method</Label>
+                <Label>Signature Method <span className="text-red-500">*</span></Label>
                 <div className="flex space-x-4 mt-2">
                   <Button
                     type="button"
