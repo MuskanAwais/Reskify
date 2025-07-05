@@ -1292,8 +1292,8 @@ export default function SwmsBuilder() {
     
     setFormData(newFormData);
     
-    // Silent auto-save with debouncing
-    debouncedAutoSave(newFormData);
+    // AUTO-SAVE DISABLED - Will save on Continue button click instead
+    // debouncedAutoSave(newFormData);
   };
 
   return (
