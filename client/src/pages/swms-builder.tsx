@@ -806,6 +806,8 @@ export default function SwmsBuilder() {
   const isAutoSaving = useRef(false);
   const lastAutoSaveData = useRef<string>('');
   
+  // AUTO-SAVE DISABLED - Will save on Continue button click instead to prevent flashing
+  /*
   useEffect(() => {
     // Skip auto-save during save operations to prevent loops
     if (isSaving || autoSaveMutation.isPending || saveDraftMutation.isPending || isAutoSaving.current) {
@@ -845,6 +847,7 @@ export default function SwmsBuilder() {
       isAutoSaving.current = false;
     }, 4000); // Clear flag after debounce delay + buffer
   }, [formData, debouncedAutoSave, isSaving, autoSaveMutation.isPending, saveDraftMutation.isPending]);
+  */
 
   // Validation function for step 1 - Clear error messages for missing fields
   const validateStep1 = () => {
@@ -956,7 +959,7 @@ export default function SwmsBuilder() {
 
   const handleNext = async () => {
     // Prevent double-clicks and multiple rapid submissions
-    if (saveDraftMutation.isPending || autoSaveMutation.isPending) {
+    if (saveDraftMutation.isPending || autoSaveMutation.isPending || isSaving) {
       console.log('Button click ignored - save in progress');
       return;
     }
@@ -986,6 +989,21 @@ export default function SwmsBuilder() {
       toast({
         title: "Cannot Continue",
         description: errorMessage,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // SAVE DATA BEFORE PROCEEDING - Replace auto-save functionality
+    try {
+      console.log('Saving current step data before proceeding...');
+      await saveDraftMutation.mutateAsync(formData);
+      console.log('Step data saved successfully');
+    } catch (error) {
+      console.error('Failed to save step data:', error);
+      toast({
+        title: "Save Error",
+        description: "Failed to save your progress. Please try again.",
         variant: "destructive",
       });
       return;
