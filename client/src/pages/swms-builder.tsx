@@ -809,8 +809,7 @@ export default function SwmsBuilder() {
   const isAutoSaving = useRef(false);
   const lastAutoSaveData = useRef<string>('');
   
-  // AUTO-SAVE DISABLED - Will save on Continue button click instead to prevent flashing
-  /*
+  // AUTO-SAVE ENABLED - Saves drafts automatically as user fills form
   useEffect(() => {
     // Skip auto-save during save operations to prevent loops
     if (isSaving || autoSaveMutation.isPending || saveDraftMutation.isPending || isAutoSaving.current) {
@@ -850,7 +849,6 @@ export default function SwmsBuilder() {
       isAutoSaving.current = false;
     }, 4000); // Clear flag after debounce delay + buffer
   }, [formData, debouncedAutoSave, isSaving, autoSaveMutation.isPending, saveDraftMutation.isPending]);
-  */
 
   // Validation function for step 1 - Only validate fields that are actually on Step 1
   const validateStep1 = () => {
