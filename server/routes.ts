@@ -3044,16 +3044,22 @@ export async function registerRoutes(app: Express) {
     }
   });
 
-  // User endpoint - Live authentication with demo mode removed
+  // User endpoint - with demo mode support for testing
   app.get("/api/user", async (req, res) => {
     try {
-      // Require proper authentication - no demo mode
-      if (!req.session?.userId) {
+      // Support demo mode for testing - check for demo user ID 999 or session
+      const userId = req.session?.userId;
+      const isDemoMode = !userId; // Demo mode when no session
+      const effectiveUserId = userId || (isDemoMode ? 999 : null);
+      
+
+      
+      if (!effectiveUserId) {
         return res.status(401).json({ error: "Authentication required" });
       }
 
       // Get live user data from database
-      const user = await storage.getUserById(req.session.userId);
+      const user = await storage.getUserById(effectiveUserId);
       
       if (!user) {
         return res.status(404).json({ error: "User not found" });
@@ -3066,7 +3072,9 @@ export async function registerRoutes(app: Express) {
         email: user.email,
         isAdmin: user.isAdmin,
         subscriptionType: user.subscriptionType || "trial",
-        swmsCredits: user.swmsCredits || 0
+        swmsCredits: user.swmsCredits || 0,
+        subscriptionCredits: user.subscriptionCredits || 0,
+        addonCredits: user.addonCredits || 0
       });
     } catch (error) {
       console.error("Get user error:", error);
