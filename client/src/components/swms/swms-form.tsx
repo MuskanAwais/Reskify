@@ -1668,40 +1668,52 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
 
           <Card>
             <CardHeader>
-              <CardTitle>Legal Disclaimer and Terms</CardTitle>
+              <CardTitle>Terms and Conditions</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
-                <div className="text-sm text-gray-700 mb-4 space-y-3">
-                  <p className="font-semibold">IMPORTANT LEGAL DISCLAIMER AND LIMITATION OF LIABILITY</p>
-                  
-                  <p>This Safe Work Method Statement (SWMS) is generated as a template using artificial intelligence and automated systems. By using this document, you acknowledge and agree that:</p>
-                  
-                  <ul className="list-disc pl-5 space-y-1">
-                    <li><strong>Professional Review Required:</strong> This SWMS template must be thoroughly reviewed, customized, and approved by qualified safety professionals, competent persons, or licensed practitioners before any implementation or use on site.</li>
-                    
-                    <li><strong>Site-Specific Adaptation:</strong> You are solely responsible for ensuring this document is appropriately modified to reflect actual site conditions, specific hazards, applicable regulations, and industry standards relevant to your workplace and jurisdiction.</li>
-                    
-                    <li><strong>Compliance Responsibility:</strong> You acknowledge that compliance with all applicable workplace health and safety laws, regulations, codes of practice, and industry standards is your sole responsibility.</li>
-                    
-                    <li><strong>No Warranties:</strong> This service and document are provided "as is" without any express or implied warranties of accuracy, completeness, fitness for purpose, or compliance with specific regulatory requirements.</li>
-                    
-                    <li><strong>Limitation of Liability:</strong> To the maximum extent permitted by law, our company, its directors, employees, and affiliates shall not be liable for any direct, indirect, consequential, special, or punitive damages arising from the use or inability to use this document, including but not limited to workplace injuries, regulatory penalties, or business losses.</li>
-                    
-                    <li><strong>Indemnification:</strong> You agree to indemnify and hold harmless our company from any claims, damages, losses, or expenses arising from your use of this SWMS document.</li>
-                  </ul>
-                  
-                  <p className="font-medium">This document does not constitute professional safety advice. Always consult qualified safety professionals for workplace-specific guidance.</p>
-                </div>
+              <div className="p-4 bg-yellow-50 rounded-lg border border-yellow-200 mb-4">
+                <h4 className="font-semibold text-amber-800 mb-2">Important Notice</h4>
+                <p className="text-sm text-amber-700">
+                  This SWMS is a template and must be reviewed, adapted, and approved by a competent person before 
+                  use. The user is responsible for ensuring compliance with all applicable workplace health and safety 
+                  legislation.
+                </p>
+              </div>
+              
+              <div className="space-y-3">
                 <div className="flex items-start space-x-2">
                   <Checkbox
-                    id="disclaimer"
+                    id="disclaimer1"
                     checked={formData.acceptedDisclaimer || false}
                     onCheckedChange={(checked) => updateFormData({ acceptedDisclaimer: checked })}
-                    className="mt-1"
                   />
-                  <Label htmlFor="disclaimer" className="text-sm leading-relaxed">
-                    I have read, understood, and accept these terms and conditions. I acknowledge that this document requires professional review and site-specific customization before use, and I understand the limitations of liability outlined above.
+                  <Label htmlFor="disclaimer1" className="text-sm">
+                    I acknowledge that this SWMS template requires review and adaptation to specific workplace conditions 
+                    and hazards before implementation.
+                  </Label>
+                </div>
+                
+                <div className="flex items-start space-x-2">
+                  <Checkbox
+                    id="disclaimer2"
+                    checked={formData.acceptedDisclaimer || false}
+                    onCheckedChange={(checked) => updateFormData({ acceptedDisclaimer: checked })}
+                  />
+                  <Label htmlFor="disclaimer2" className="text-sm">
+                    I understand that compliance with workplace health and safety legislation is my responsibility and that 
+                    this template does not guarantee compliance.
+                  </Label>
+                </div>
+                
+                <div className="flex items-start space-x-2">
+                  <Checkbox
+                    id="disclaimer3"
+                    checked={formData.acceptedDisclaimer || false}
+                    onCheckedChange={(checked) => updateFormData({ acceptedDisclaimer: checked })}
+                  />
+                  <Label htmlFor="disclaimer3" className="text-sm">
+                    I accept that the use of this SWMS template is at my own risk and that I will ensure appropriate 
+                    consultation with safety professionals.
                   </Label>
                 </div>
               </div>
