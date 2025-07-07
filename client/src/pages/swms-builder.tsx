@@ -200,7 +200,7 @@ export default function SwmsBuilder() {
     riskAssessments: [],
     paidAccess: false, // Track if payment completed
     paid: false, // Track if payment completed via any method
-    creditsUsed: false, // Track if credits were used for payment
+    creditsUsed: 0, // Track number of credits used for payment
     paymentMethod: "", // Track payment method used
     safetyMeasures: [],
     complianceCodes: [],

@@ -106,7 +106,9 @@ export class IntegratedSWMSprintGenerator {
     // Create watermark pattern
     for (let x = 0; x < pageWidth; x += 150) {
       for (let y = 0; y < doc.page.height; y += 100) {
-        doc.text('RISKIFY', x, y, { rotation: 45 });
+        doc.rotate(45, { origin: [x, y] })
+           .text('RISKIFY', x, y)
+           .rotate(-45, { origin: [x, y] });
       }
     }
     doc.restore();

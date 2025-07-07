@@ -361,6 +361,68 @@ interface StepContentProps {
   userCreditsError?: any;
 }
 
+export interface SwmsFormData {
+  id?: number;
+  projectName?: string;
+  jobName?: string;
+  jobNumber?: string;
+  projectAddress?: string;
+  projectLocation?: string;
+  startDate?: string;
+  duration?: string;
+  projectDescription?: string;
+  workDescription?: string;
+  swmsCreatorName?: string;
+  swmsCreatorPosition?: string;
+  principalContractor?: string;
+  principalContractorAbn?: string;
+  projectManager?: string;
+  siteSupervisor?: string;
+  subcontractor?: string;
+  subcontractorAbn?: string;
+  responsiblePersons?: string[];
+  authorisingSignature?: string;
+  licenseNumber?: string;
+  documentVersion?: string;
+  signatureMethod?: string;
+  signatureImage?: string;
+  signatureText?: string;
+  signatureSection?: any;
+  signatures?: any[];
+  tradeType?: string;
+  activities?: string[];
+  workActivities?: any[];
+  riskAssessments?: any[];
+  isHighRiskWork?: boolean;
+  highRiskActivities?: string[];
+  whsRegulations?: string[];
+  highRiskJustification?: string;
+  hrcwCategories?: string[];
+  ppeRequirements?: string[];
+  plantEquipment?: any[];
+  trainingRequirements?: string[];
+  competencyRequirements?: string[];
+  permitsRequired?: string[];
+  emergencyProcedures?: string[];
+  nearestHospital?: string;
+  generalRequirements?: string[];
+  acceptedDisclaimer?: boolean;
+  selectedTasks?: string[];
+  paidAccess?: boolean;
+  paid?: boolean;
+  creditsUsed?: number; // This should be a number, not boolean
+  paymentMethod?: string;
+  plainTextDescription?: string;
+  monitoringRequirements?: string;
+  lastPaymentUpdate?: number;
+  lastModified?: string;
+  companyLogo?: string;
+  companyName?: string;
+  abn?: string;
+  status?: string;
+  currentStep?: number;
+}
+
 interface SWMSFormProps {
   step: number;
   data?: any;
@@ -845,7 +907,7 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
                           onClick={() => {
                             const currentPPE = formData.ppeRequirements || [];
                             const updatedPPE = isSelected
-                              ? currentPPE.filter(id => id !== ppe.id)
+                              ? currentPPE.filter((id: string) => id !== ppe.id)
                               : [...currentPPE, ppe.id];
                             updateFormData({ ppeRequirements: updatedPPE });
                           }}
@@ -911,7 +973,7 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
                           onClick={() => {
                             const currentPPE = formData.ppeRequirements || [];
                             const updatedPPE = isSelected
-                              ? currentPPE.filter(id => id !== ppe.id)
+                              ? currentPPE.filter((id: string) => id !== ppe.id)
                               : [...currentPPE, ppe.id];
                             updateFormData({ ppeRequirements: updatedPPE });
                           }}
@@ -1279,7 +1341,7 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
                             updateFormData({ 
                               paymentMethod: 'credits', 
                               paid: true,
-                              creditsUsed: true,
+                              creditsUsed: 1,
                               paidAccess: true,  // This is what the step validation checks for
                               lastPaymentUpdate: Date.now() // Force refresh
                             });
