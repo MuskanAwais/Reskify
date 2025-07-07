@@ -30,7 +30,6 @@ import {
   Layers,
   Shield,
   FileText,
-  ClipboardList,
   Wrench,
   Eye,
   Info,
@@ -48,10 +47,7 @@ import {
   User,
   Users,
   Download,
-  AlertCircle,
-  Crown,
-  Phone,
-  ExternalLink
+  AlertCircle
 } from "lucide-react";
 import { SimplifiedTableEditor } from "./simplified-table-editor";
 import GPTTaskSelection from "./gpt-task-selection";
@@ -64,7 +60,7 @@ import { RiskAssessmentMatrix } from "./risk-assessment-matrix";
 
 const TOTAL_STEPS = 9;
 
-// Automatic PDF Generation Component with Fixed Hook Order
+// Automatic PDF Generation Component
 const AutomaticPDFGeneration = ({ formData, onDataChange }: { formData: any; onDataChange: any }) => {
   const [status, setStatus] = useState('initializing');
   const [currentMessage, setCurrentMessage] = useState('Initializing document generation...');
@@ -86,9 +82,6 @@ const AutomaticPDFGeneration = ({ formData, onDataChange }: { formData: any; onD
   ];
 
   useEffect(() => {
-    console.log('AutomaticPDFGeneration component loaded - Step 9 is working');
-    console.log('Form data received:', formData);
-    
     const generatePDF = async () => {
       try {
         setStatus('processing');
@@ -136,148 +129,60 @@ const AutomaticPDFGeneration = ({ formData, onDataChange }: { formData: any; onD
           workDescription: formData.workDescription || ''
         };
 
-        // Enhanced SWMSprint integration with comprehensive data mapping
-        setCurrentMessage('Mapping all SWMS builder data to SWMSprint...');
-        setProgress(85);
+        // Send data to SWMSprint PDF generation system
+        setCurrentMessage('Sending data to SWMSprint PDF generator...');
+        setProgress(95);
         
-        // Comprehensive data mapping for SWMSprint
-        const enhancedPdfData = {
-          ...pdfData,
-          // Additional mapping for better PDF quality
-          document: {
-            type: 'SWMS',
-            title: formData.jobName || formData.title || 'Safe Work Method Statement',
-            version: '1.0',
-            generatedDate: new Date().toLocaleDateString('en-AU'),
-            generatedTime: new Date().toLocaleTimeString('en-AU')
-          },
-          // Enhanced activities with risk details
-          workActivities: (formData.workActivities || []).map((activity: any) => ({
-            ...activity,
-            riskLevel: activity.riskLevel || 'Medium',
-            legislation: activity.legislation || ['WHS Act 2011', 'WHS Regulation 2017']
-          })),
-          // Company branding
-          company: {
-            name: formData.companyName || '',
-            logo: formData.companyLogo || null,
-            abn: formData.abn || ''
-          },
-          // Compliance and safety
-          compliance: {
-            australianStandards: true,
-            whsCompliant: true,
-            riskMatrix: 'Australian Standard',
-            lastReviewed: new Date().toLocaleDateString('en-AU')
-          }
-        };
-        
-        setCurrentMessage('Testing SWMSprint connection...');
-        setProgress(88);
-        
-        // First test if SWMSprint is accessible
-        console.log('Testing SWMSprint API connection...');
-        const healthCheck = await fetch('https://79937ff1-cac5-4736-b2b2-1df5354fb4b3-00-1bbtav2oqagxg.spock.replit.dev/api/health', {
-          method: 'GET',
-          headers: { 'Accept': 'application/json' }
-        });
-        
-        console.log('Health check response:', {
-          status: healthCheck.status,
-          ok: healthCheck.ok,
-          headers: Object.fromEntries(healthCheck.headers.entries())
-        });
-        
-        // Check if SWMSprint app is sleeping/not running
-        if (healthCheck.status === 404) {
-          const responseText = await healthCheck.text();
-          if (responseText.includes('Run this app to see the results here')) {
-            setStatus('error');
-            setCurrentMessage('SWMSprint app is not running. Please start your SWMSprint app first.');
-            throw new Error('SWMSprint app is sleeping or not running. Please start the app at: https://79937ff1-cac5-4736-b2b2-1df5354fb4b3-00-1bbtav2oqagxg.spock.replit.dev');
-          }
-        }
-        
-        setCurrentMessage('Connecting to SWMSprint PDF generator...');
-        setProgress(90);
-        
-        console.log('Sending PDF generation request with data:', {
-          dataKeys: Object.keys(enhancedPdfData),
-          jobName: enhancedPdfData.jobName,
-          activitiesCount: enhancedPdfData.workActivities?.length || 0
-        });
-        
-        const response = await fetch('https://79937ff1-cac5-4736-b2b2-1df5354fb4b3-00-1bbtav2oqagxg.spock.replit.dev/api/swms/generate-pdf', {
+        const response = await fetch('https://swmsprint.replit.app/api/swms', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Accept': 'application/pdf'
           },
-          body: JSON.stringify(enhancedPdfData)
-        });
-        
-        console.log('PDF generation response:', {
-          status: response.status,
-          ok: response.ok,
-          headers: Object.fromEntries(response.headers.entries())
+          body: JSON.stringify(pdfData)
         });
 
         if (response.ok) {
-          setProgress(95);
-          setCurrentMessage('Processing PDF through SWMSprint...');
+          // PDF generated successfully
+          setProgress(100);
+          setCurrentMessage('Document generated successfully!');
+          setStatus('completed');
           
-          // Get the PDF blob
+          // Create download blob
           const pdfBlob = await response.blob();
+          const pdfUrl = URL.createObjectURL(pdfBlob);
+          setPdfUrl(pdfUrl);
           
-          if (pdfBlob.size > 0) {
-            const pdfUrl = URL.createObjectURL(pdfBlob);
-            setPdfUrl(pdfUrl);
-            
-            setProgress(100);
-            setCurrentMessage('SWMS document generated successfully!');
-            setStatus('completed');
-            
-            // Auto-download the PDF to user's computer
-            const link = document.createElement('a');
-            link.href = pdfUrl;
-            link.download = `${formData.jobName || 'SWMS'}-${new Date().toISOString().split('T')[0]}.pdf`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            
-            // Mark SWMS as completed and save to database
-            if (onDataChange) {
-              onDataChange({ 
-                ...formData,
-                status: 'completed', 
-                paidAccess: true,
-                completedAt: new Date().toISOString(),
-                pdfGenerated: true,
-                pdfSize: pdfBlob.size
-              });
-            }
-          } else {
-            throw new Error('Empty PDF received from SWMSprint');
+          // Auto-download the PDF
+          const link = document.createElement('a');
+          link.href = pdfUrl;
+          link.download = `${formData.jobName || 'SWMS'}-${Date.now()}.pdf`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          
+          // Mark SWMS as completed
+          if (onDataChange) {
+            onDataChange({ status: 'completed', paidAccess: true });
           }
+
+          toast({
+            title: "SWMS Generated Successfully",
+            description: "Your professional SWMS document has been downloaded.",
+          });
+          
         } else {
-          const errorText = await response.text();
-          throw new Error(`SWMSprint API error ${response.status}: ${errorText}`);
+          throw new Error('PDF generation failed');
         }
         
       } catch (error) {
-        console.error('PDF generation error details:', {
-          message: error?.message || 'Unknown error',
-          name: error?.name || 'Error',
-          stack: error?.stack || 'No stack trace',
-          error: error
-        });
+        console.error('PDF generation error:', error);
         setStatus('error');
-        setCurrentMessage(`PDF generation failed: ${error?.message || 'Connection error with SWMSprint'}`);
+        setCurrentMessage('PDF generation failed. Please try again.');
         setProgress(0);
         
         toast({
           title: "Generation Failed",
-          description: `Error: ${error?.message || 'Connection issue with SWMSprint API. Please check the URL and try again.'}`,
+          description: "There was an issue generating your PDF. Please try again.",
           variant: "destructive"
         });
       }
@@ -326,7 +231,11 @@ const AutomaticPDFGeneration = ({ formData, onDataChange }: { formData: any; onD
                 </Button>
               )}
               
-
+              <div className="text-center pt-4">
+                <Button variant="outline" onClick={() => window.location.href = '/dashboard'}>
+                  Return to Dashboard
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -335,60 +244,25 @@ const AutomaticPDFGeneration = ({ formData, onDataChange }: { formData: any; onD
   }
 
   if (status === 'error') {
-    const isSWMSprintDown = currentMessage.includes('SWMSprint app is not running');
-    
     return (
       <div className="space-y-6">
         <div className="text-center">
           <AlertCircle className="mx-auto h-16 w-16 text-red-500 mb-4" />
-          <h3 className="text-xl font-semibold mb-2 text-red-700">
-            {isSWMSprintDown ? 'SWMSprint App Not Running' : 'Generation Failed'}
-          </h3>
+          <h3 className="text-xl font-semibold mb-2 text-red-700">Generation Failed</h3>
           <p className="text-gray-600 text-sm mb-6">
-            {isSWMSprintDown ? 'Your SWMSprint PDF generator app needs to be started first.' : 'There was an issue generating your PDF. Please try again.'}
+            There was an issue generating your PDF. Please try again.
           </p>
         </div>
-
-        {isSWMSprintDown && (
-          <Card className="mb-6 border-orange-200 bg-orange-50">
-            <CardContent className="pt-6">
-              <div className="space-y-4">
-                <div className="flex items-center space-x-3">
-                  <ExternalLink className="h-6 w-6 text-orange-600" />
-                  <div className="text-left">
-                    <p className="font-medium text-orange-800">Action Required</p>
-                    <p className="text-orange-700 text-sm">Please start your SWMSprint app first</p>
-                  </div>
-                </div>
-                
-                <div className="text-left space-y-2">
-                  <p className="text-sm text-orange-700 font-medium">Steps to start SWMSprint:</p>
-                  <ol className="text-sm text-orange-700 space-y-1 list-decimal list-inside">
-                    <li>Open your SWMSprint Replit project</li>
-                    <li>Click the "Run" button to start the app</li>
-                    <li>Wait for the app to fully load</li>
-                    <li>Return here and try again</li>
-                  </ol>
-                </div>
-                
-                <Button 
-                  onClick={() => window.open('https://79937ff1-cac5-4736-b2b2-1df5354fb4b3-00-1bbtav2oqagxg.spock.replit.dev', '_blank')}
-                  className="bg-orange-600 hover:bg-orange-700 text-white"
-                >
-                  <ExternalLink className="h-4 w-4 mr-2" />
-                  Open SWMSprint App
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        )}
 
         <Card>
           <CardContent className="pt-6">
             <div className="text-center space-y-4">
-              <p className="text-sm text-muted-foreground">
-                PDF generation encountered an issue. Please check your data and try again.
-              </p>
+              <Button onClick={() => window.location.reload()}>
+                Try Again
+              </Button>
+              <Button variant="outline" onClick={() => window.location.href = '/dashboard'}>
+                Return to Dashboard
+              </Button>
             </div>
           </CardContent>
         </Card>
@@ -427,7 +301,15 @@ const AutomaticPDFGeneration = ({ formData, onDataChange }: { formData: any; onD
               <p className="text-gray-700 font-medium">{currentMessage}</p>
             </div>
             
-
+            <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+              <div className="flex items-start space-x-3">
+                <Info className="h-5 w-5 text-blue-600 mt-0.5" />
+                <div className="text-sm text-blue-800">
+                  <p className="font-medium mb-1">Background Processing</p>
+                  <p>Your SWMS data is being automatically processed through SWMSprint PDF generator. No manual input required.</p>
+                </div>
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -554,34 +436,6 @@ interface SWMSFormProps {
   setIsProcessingCredit?: (processing: boolean) => void;
 }
 
-// Helper function to get step icon
-const getStepIcon = (step: number) => {
-  const iconClasses = "mx-auto h-12 w-12 text-primary mb-4";
-  
-  switch (step) {
-    case 1:
-      return <FileText className={iconClasses} />;
-    case 2:
-      return <ClipboardList className={iconClasses} />;
-    case 3:
-      return <Shield className={iconClasses} />;
-    case 4:
-      return <Wrench className={iconClasses} />;
-    case 5:
-      return <AlertTriangle className={iconClasses} />;
-    case 6:
-      return <PenTool className={iconClasses} />;
-    case 7:
-      return <Scale className={iconClasses} />;
-    case 8:
-      return <CreditCard className={iconClasses} />;
-    case 9:
-      return <Download className={iconClasses} />;
-    default:
-      return <FileText className={iconClasses} />;
-  }
-};
-
 const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit, setIsProcessingCredit, userData, isLoadingCredits, creditsError, userBillingData, isLoadingUserCredits, userCreditsError }: StepContentProps) => {
   const { toast } = useToast();
 
@@ -628,15 +482,18 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
       return (
         <div className="space-y-6">
           <div className="text-center">
-            {getStepIcon(1)}
-            <h3 className="text-xl font-semibold mb-2">{translate("projectDetails")}</h3>
+            <MapPin className="mx-auto h-12 w-12 text-primary mb-4" />
+            <h3 className="text-lg font-semibold mb-2">{translate("projectDetails")}</h3>
             <p className="text-gray-600 text-sm">
               {translate("projectDetailsDesc")}
             </p>
           </div>
 
           <Card>
-            <CardContent className="space-y-4 pt-6">
+            <CardHeader>
+              <CardTitle>Project Information</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
               <div>
                 <Label htmlFor="jobName">Job Name *</Label>
                 <Input
@@ -812,9 +669,36 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
 
               {/* Project Personnel Details */}
               <div className="border-t pt-6">
-                <h2 className="text-xl font-semibold mb-4">Project Personnel</h2>
+                <h3 className="text-lg font-semibold mb-4">Project Personnel</h3>
                 
+                {/* Person creating and authorising SWMS */}
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                  <h4 className="text-md font-medium text-blue-900 mb-3">Person Creating and Authorising SWMS</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <Label htmlFor="swmsCreatorName">Name *</Label>
+                      <Input
+                        id="swmsCreatorName"
+                        value={formData.swmsCreatorName || ""}
+                        onChange={(e) => updateFormData({ swmsCreatorName: e.target.value })}
+                        placeholder="Full name of person creating SWMS"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="swmsCreatorPosition">Position *</Label>
+                      <Input
+                        id="swmsCreatorPosition"
+                        value={formData.swmsCreatorPosition || ""}
+                        onChange={(e) => updateFormData({ swmsCreatorPosition: e.target.value })}
+                        placeholder="Job title/position"
+                        required
+                      />
+                    </div>
+                  </div>
+                  
 
+                </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
@@ -860,10 +744,10 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
       return (
         <div className="space-y-6">
           <div className="text-center">
-            {getStepIcon(2)}
-            <h3 className="text-xl font-semibold mb-2">Work Activities & Risk Assessment</h3>
+            <AlertTriangle className="mx-auto h-12 w-12 text-primary mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Work Activities & Task Selection</h3>
             <p className="text-gray-600 text-sm">
-              Generate tasks with high-risk work selection and manage comprehensive risk assessments
+              Choose how to add tasks to your SWMS - search existing tasks, generate with AI, or create custom tasks
             </p>
           </div>
 
@@ -954,16 +838,16 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
       return (
         <div className="space-y-6">
           <div className="text-center">
-            {getStepIcon(3)}
-            <h3 className="text-xl font-semibold mb-2">Personal Protective Equipment</h3>
+            <Shield className="mx-auto h-12 w-12 text-blue-600 mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Personal Protective Equipment (PPE)</h3>
             <p className="text-gray-600 text-sm">
-              Select required PPE based on work activities and risk assessments
+              Select required PPE based on your work activities and identified risks
             </p>
           </div>
 
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center text-lg font-semibold">
+              <CardTitle className="flex items-center">
                 <Shield className="mr-2 h-5 w-5 text-blue-600" />
                 PPE Requirements
               </CardTitle>
@@ -996,7 +880,7 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
               <div className="space-y-6">
                 {/* Standard PPE */}
                 <div>
-                  <h4 className="text-lg font-semibold text-gray-900 mb-3 flex items-center">
+                  <h4 className="font-medium text-gray-900 mb-3 flex items-center">
                     <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
                     Standard PPE Items (General Use)
                   </h4>
@@ -1025,7 +909,7 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
                           onClick={() => {
                             const currentPPE = formData.ppeRequirements || [];
                             const updatedPPE = isSelected
-                              ? currentPPE.filter((id: string) => id !== ppe.id)
+                              ? currentPPE.filter(id => id !== ppe.id)
                               : [...currentPPE, ppe.id];
                             updateFormData({ ppeRequirements: updatedPPE });
                           }}
@@ -1057,7 +941,7 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
 
                 {/* Task-Specific PPE */}
                 <div>
-                  <h4 className="text-lg font-semibold text-gray-900 mb-3 flex items-center">
+                  <h4 className="font-medium text-gray-900 mb-3 flex items-center">
                     <AlertTriangle className="h-4 w-4 text-yellow-600 mr-2" />
                     Task-Specific PPE
                   </h4>
@@ -1091,7 +975,7 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
                           onClick={() => {
                             const currentPPE = formData.ppeRequirements || [];
                             const updatedPPE = isSelected
-                              ? currentPPE.filter((id: string) => id !== ppe.id)
+                              ? currentPPE.filter(id => id !== ppe.id)
                               : [...currentPPE, ppe.id];
                             updateFormData({ ppeRequirements: updatedPPE });
                           }}
@@ -1143,17 +1027,24 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
       return (
         <div className="space-y-6">
           <div className="text-center">
-            {getStepIcon(4)}
-            <h3 className="text-xl font-semibold mb-2">Plant, Equipment & Training</h3>
+            <Wrench className="mx-auto h-12 w-12 text-primary mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Plant & Equipment (Optional)</h3>
             <p className="text-gray-600 text-sm">
-              Manage plant, equipment, and tools with inspection schedules
+              Add any plant, equipment, or tools required for this project. This section is optional and will only appear in your SWMS if you add items.
             </p>
           </div>
 
-          <PlantEquipmentSystem
-            plantEquipment={formData.plantEquipment || []}
-            onUpdate={(equipment) => onDataChange({ plantEquipment: equipment })}
-          />
+          <Card>
+            <CardHeader>
+              <CardTitle>Plant, Equipment & Tools</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <PlantEquipmentSystem
+                plantEquipment={formData.plantEquipment || []}
+                onUpdate={(equipment) => updateFormData({ plantEquipment: equipment })}
+              />
+            </CardContent>
+          </Card>
         </div>
       );
 
@@ -1161,440 +1052,618 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
       return (
         <div className="space-y-6">
           <div className="text-center">
-            {getStepIcon(5)}
-            <h3 className="text-xl font-semibold mb-2">Emergency Information</h3>
+            <Shield className="mx-auto h-12 w-12 text-primary mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Emergency & Monitoring (Optional)</h3>
             <p className="text-gray-600 text-sm">
-              Configure emergency contacts and safety procedures
+              Emergency procedures and monitoring processes are optional. You can skip this step if not required for your project.
             </p>
           </div>
 
-          {/* Emergency Contacts Section */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center text-lg font-semibold">
-                <Phone className="mr-2 h-5 w-5 text-red-600" />
-                Emergency Contacts
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {(!formData.emergencyContacts || formData.emergencyContacts.length === 0) && (
-                <div className="space-y-4">
-                  {/* Default 3 emergency contacts */}
-                  {[1, 2, 3].map((num) => (
-                    <div key={num} className="grid grid-cols-2 gap-4 p-3 border border-gray-200 rounded-lg">
-                      <div>
-                        <Label htmlFor={`emergency-name-${num}`}>Emergency Contact 0{num} Name</Label>
-                        <Input
-                          id={`emergency-name-${num}`}
-                          placeholder="Contact name"
-                          value={formData.emergencyContacts?.[num-1]?.name || ""}
-                          onChange={(e) => {
-                            const contacts = [...(formData.emergencyContacts || [])];
-                            while (contacts.length < num) contacts.push({ name: "", phone: "" });
-                            contacts[num-1] = { ...contacts[num-1], name: e.target.value };
-                            updateFormData({ emergencyContacts: contacts });
-                          }}
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor={`emergency-phone-${num}`}>Phone Number</Label>
-                        <Input
-                          id={`emergency-phone-${num}`}
-                          placeholder="0499 999 999"
-                          value={formData.emergencyContacts?.[num-1]?.phone || ""}
-                          onChange={(e) => {
-                            const contacts = [...(formData.emergencyContacts || [])];
-                            while (contacts.length < num) contacts.push({ name: "", phone: "" });
-                            contacts[num-1] = { ...contacts[num-1], phone: e.target.value };
-                            updateFormData({ emergencyContacts: contacts });
-                          }}
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {formData.emergencyContacts && formData.emergencyContacts.length > 0 && (
-                <div className="space-y-4">
-                  {formData.emergencyContacts.map((contact: any, index: number) => (
-                    <div key={index} className="grid grid-cols-2 gap-4 p-3 border border-gray-200 rounded-lg">
-                      <div>
-                        <Label htmlFor={`emergency-name-${index}`}>Emergency Contact 0{index + 1} Name</Label>
-                        <Input
-                          id={`emergency-name-${index}`}
-                          placeholder="Contact name"
-                          value={contact.name || ""}
-                          onChange={(e) => {
-                            const contacts = [...formData.emergencyContacts];
-                            contacts[index] = { ...contacts[index], name: e.target.value };
-                            updateFormData({ emergencyContacts: contacts });
-                          }}
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor={`emergency-phone-${index}`}>Phone Number</Label>
-                        <Input
-                          id={`emergency-phone-${index}`}
-                          placeholder="0499 999 999"
-                          value={contact.phone || ""}
-                          onChange={(e) => {
-                            const contacts = [...formData.emergencyContacts];
-                            contacts[index] = { ...contacts[index], phone: e.target.value };
-                            updateFormData({ emergencyContacts: contacts });
-                          }}
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => {
-                  const contacts = [...(formData.emergencyContacts || [])];
-                  contacts.push({ name: "", phone: "" });
-                  updateFormData({ emergencyContacts: contacts });
-                }}
-                className="w-full flex items-center space-x-2"
-              >
-                <Plus className="h-4 w-4" />
-                <span>Add Emergency Contact</span>
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Emergency Response Procedures */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center text-lg font-semibold">
-                <AlertTriangle className="mr-2 h-5 w-5 text-orange-600" />
-                Emergency Response Procedures
-              </CardTitle>
+              <CardTitle>Emergency Procedures</CardTitle>
             </CardHeader>
             <CardContent>
-              <Textarea
-                placeholder="Enter detailed emergency response procedures here..."
-                value={formData.emergencyResponseProcedures || ""}
-                onChange={(e) => updateFormData({ emergencyResponseProcedures: e.target.value })}
-                rows={6}
-                className="w-full"
-              />
-            </CardContent>
-          </Card>
+              <div className="mb-6 p-4 bg-orange-50 rounded-lg border border-orange-200">
+                <p className="text-orange-800 font-medium mb-2">Optional Step</p>
+                <p className="text-gray-600">
+                  Emergency procedures and monitoring are optional. This section will only appear in your SWMS if you add content.
+                </p>
+              </div>
 
-          {/* Monitoring & Review Requirements */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center text-lg font-semibold">
-                <Eye className="mr-2 h-5 w-5 text-blue-600" />
-                Monitoring & Review Requirements
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Textarea
-                placeholder="Enter monitoring and review requirements here..."
-                value={formData.monitoringRequirements || ""}
-                onChange={(e) => updateFormData({ monitoringRequirements: e.target.value })}
-                rows={6}
-                className="w-full"
-              />
+              <div className="space-y-4">
+                <div>
+                  <Label>Emergency Contacts</Label>
+                  <div className="space-y-3 mt-2">
+                    {(formData.emergencyContactsList || []).map((contact: any, index: number) => (
+                      <div key={index} className="p-3 border rounded-lg bg-gray-50">
+                        <div className="flex justify-between items-center mb-2">
+                          <h5 className="font-medium text-sm">Contact {index + 1}</h5>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              const updated = (formData.emergencyContactsList || []).filter((_: any, i: number) => i !== index);
+                              updateFormData({ emergencyContactsList: updated });
+                            }}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                          <Input
+                            placeholder="Contact Name/Organization"
+                            value={contact.name || ""}
+                            onChange={(e) => {
+                              const updated = [...(formData.emergencyContactsList || [])];
+                              updated[index] = { ...updated[index], name: e.target.value };
+                              updateFormData({ emergencyContactsList: updated });
+                            }}
+                          />
+                          <Input
+                            placeholder="Phone Number"
+                            value={contact.phone || ""}
+                            onChange={(e) => {
+                              const updated = [...(formData.emergencyContactsList || [])];
+                              updated[index] = { ...updated[index], phone: e.target.value };
+                              updateFormData({ emergencyContactsList: updated });
+                            }}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => {
+                        const newContact = { name: "", phone: "" };
+                        const updated = [...(formData.emergencyContactsList || []), newContact];
+                        updateFormData({ emergencyContactsList: updated });
+                      }}
+                      className="w-full"
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Emergency Contact
+                    </Button>
+                    
+                    {(!formData.emergencyContactsList || formData.emergencyContactsList.length === 0) && (
+                      <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                        <p className="text-amber-800 text-sm font-medium mb-1">Optional Step</p>
+                        <p className="text-amber-700 text-sm">
+                          Emergency contacts are optional. This section will only appear in your SWMS if you add content.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="emergencyProcedures">Emergency Response Procedures</Label>
+                  <Textarea
+                    id="emergencyProcedures"
+                    placeholder="Describe emergency response procedures, evacuation routes, assembly points..."
+                    value={formData.emergencyProcedures || ""}
+                    onChange={(e) => updateFormData({ emergencyProcedures: e.target.value })}
+                    rows={4}
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="monitoringRequirements">Monitoring & Review Requirements</Label>
+                  <Textarea
+                    id="monitoringRequirements"
+                    placeholder="Describe monitoring requirements, review schedules, compliance checks..."
+                    value={formData.monitoringRequirements || ""}
+                    onChange={(e) => updateFormData({ monitoringRequirements: e.target.value })}
+                    rows={3}
+                  />
+                </div>
+              </div>
             </CardContent>
           </Card>
         </div>
       );
 
     case 6:
+      // Payment step - implement payment logic here if needed
       return (
         <div className="space-y-6">
           <div className="text-center">
-            {getStepIcon(6)}
-            <h3 className="text-xl font-semibold mb-2">Emergency Procedures & Monitoring</h3>
+            <CreditCard className="mx-auto h-12 w-12 text-primary mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Payment (Skipped in Demo)</h3>
             <p className="text-gray-600 text-sm">
-              Configure emergency protocols and safety monitoring requirements
+              This step handles payment processing. Currently skipped in demo mode.
             </p>
           </div>
-
-          {/* Person Creating and Authorising SWMS Section */}
-          <Card>
-            <CardContent className="space-y-4 pt-6">
-              <div className="flex items-center space-x-2 mb-4">
-                <Crown className="h-5 w-5 text-amber-500" />
-                <h3 className="text-lg font-semibold">Person Creating and Authorising SWMS</h3>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="swmsCreatorName">Full Name <span className="text-red-500">*</span></Label>
-                  <Input
-                    id="swmsCreatorName"
-                    placeholder="Enter creator/authorizer name"
-                    value={formData.swmsCreatorName || ""}
-                    onChange={(e) => updateFormData({ swmsCreatorName: e.target.value })}
-                    required
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="swmsCreatorPosition">Position/Title <span className="text-red-500">*</span></Label>
-                  <Input
-                    id="swmsCreatorPosition"
-                    placeholder="Enter position or title"
-                    value={formData.swmsCreatorPosition || ""}
-                    onChange={(e) => updateFormData({ swmsCreatorPosition: e.target.value })}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div>
-                <Label>Signature Method <span className="text-red-500">*</span></Label>
-                <div className="flex space-x-4 mt-2">
-                  <Button
-                    type="button"
-                    variant={formData.signatureMethod === 'type' ? 'default' : 'outline'}
-                    onClick={() => updateFormData({ signatureMethod: 'type', signatureImage: null })}
-                    className="flex items-center space-x-2"
-                  >
-                    <span>Type Name</span>
-                  </Button>
-                  <Button
-                    type="button"
-                    variant={formData.signatureMethod === 'upload' ? 'default' : 'outline'}
-                    onClick={() => updateFormData({ signatureMethod: 'upload', signatureText: '' })}
-                    className="flex items-center space-x-2"
-                  >
-                    <span>Upload Image</span>
-                  </Button>
-                </div>
-              </div>
-
-              {formData.signatureMethod === 'type' && (
-                <div>
-                  <Label htmlFor="signatureText">Typed Signature</Label>
-                  <Input
-                    id="signatureText"
-                    placeholder="Type your full name as signature"
-                    value={formData.signatureText || ""}
-                    onChange={(e) => updateFormData({ signatureText: e.target.value })}
-                    className="font-cursive text-lg"
-                  />
-                </div>
-              )}
-
-              {formData.signatureMethod === 'upload' && (
-                <div>
-                  <Label htmlFor="signatureUpload">Upload Signature Image</Label>
-                  <Input
-                    id="signatureUpload"
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) {
-                        const reader = new FileReader();
-                        reader.onload = (event) => {
-                          updateFormData({ signatureImage: event.target?.result as string });
-                        };
-                        reader.readAsDataURL(file);
-                      }
-                    }}
-                  />
-                  {formData.signatureImage && (
-                    <div className="mt-2">
-                      <img src={formData.signatureImage} alt="Signature" className="max-h-20 border rounded" />
-                    </div>
-                  )}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Additional Signatories Section */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2 text-lg font-semibold">
-                <Users className="h-5 w-5 text-blue-500" />
-                <span>Additional Project Signatories</span>
-              </CardTitle>
-              <p className="text-sm text-gray-600">
-                Add project managers, site supervisors, or other personnel who need to sign this SWMS.
-              </p>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {(!formData.signatures || formData.signatures.length === 0) && (
-                <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg text-center">
-                  <p className="text-gray-600 text-sm mb-3">No additional signatories added yet.</p>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => {
-                      const newSignature = { name: "", phone: "", signatureMethod: "type", signatureText: "", signatureImage: null };
-                      updateFormData({ signatures: [newSignature] });
-                    }}
-                    className="flex items-center space-x-2"
-                  >
-                    <Plus className="h-4 w-4" />
-                    <span>Add First Signatory</span>
-                  </Button>
-                </div>
-              )}
-
-              {formData.signatures && formData.signatures.map((signature: any, index: number) => (
-                <div key={index} className="border border-gray-200 rounded-lg p-4 space-y-4">
-                  <div className="flex justify-between items-center">
-                    <h4 className="font-medium text-gray-900">Signatory {index + 1}</h4>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        const updated = [...(formData.signatures || [])];
-                        updated.splice(index, 1);
-                        updateFormData({ signatures: updated });
-                      }}
-                      className="text-red-600 hover:text-red-800"
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor={`sig-name-${index}`}>Full Name</Label>
-                      <Input
-                        id={`sig-name-${index}`}
-                        placeholder="Enter signatory name"
-                        value={signature.name || ""}
-                        onChange={(e) => {
-                          const updated = [...(formData.signatures || [])];
-                          updated[index] = { ...updated[index], name: e.target.value };
-                          updateFormData({ signatures: updated });
-                        }}
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor={`sig-phone-${index}`}>Phone Number</Label>
-                      <Input
-                        id={`sig-phone-${index}`}
-                        placeholder="Enter phone number"
-                        value={signature.phone || ""}
-                        onChange={(e) => {
-                          const updated = [...(formData.signatures || [])];
-                          updated[index] = { ...updated[index], phone: e.target.value };
-                          updateFormData({ signatures: updated });
-                        }}
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label>Signature Method</Label>
-                    <div className="flex space-x-4 mt-2">
-                      <Button
-                        type="button"
-                        variant={signature.signatureMethod === 'type' ? 'default' : 'outline'}
-                        onClick={() => {
-                          const updated = [...(formData.signatures || [])];
-                          updated[index] = { ...updated[index], signatureMethod: 'type', signatureImage: null };
-                          updateFormData({ signatures: updated });
-                        }}
-                        size="sm"
-                      >
-                        Type Name
-                      </Button>
-                      <Button
-                        type="button"
-                        variant={signature.signatureMethod === 'upload' ? 'default' : 'outline'}
-                        onClick={() => {
-                          const updated = [...(formData.signatures || [])];
-                          updated[index] = { ...updated[index], signatureMethod: 'upload', signatureText: '' };
-                          updateFormData({ signatures: updated });
-                        }}
-                        size="sm"
-                      >
-                        Upload Image
-                      </Button>
-                    </div>
-                  </div>
-
-                  {signature.signatureMethod === 'type' && (
-                    <div>
-                      <Label htmlFor={`sig-text-${index}`}>Typed Signature</Label>
-                      <Input
-                        id={`sig-text-${index}`}
-                        placeholder="Type full name as signature"
-                        value={signature.signatureText || ""}
-                        onChange={(e) => {
-                          const updated = [...(formData.signatures || [])];
-                          updated[index] = { ...updated[index], signatureText: e.target.value };
-                          updateFormData({ signatures: updated });
-                        }}
-                        className="font-cursive text-lg"
-                      />
-                    </div>
-                  )}
-
-                  {signature.signatureMethod === 'upload' && (
-                    <div>
-                      <Label htmlFor={`sig-upload-${index}`}>Upload Signature Image</Label>
-                      <Input
-                        id={`sig-upload-${index}`}
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            const reader = new FileReader();
-                            reader.onload = (event) => {
-                              const updated = [...(formData.signatures || [])];
-                              updated[index] = { ...updated[index], signatureImage: event.target?.result as string };
-                              updateFormData({ signatures: updated });
-                            };
-                            reader.readAsDataURL(file);
-                          }
-                        }}
-                      />
-                      {signature.signatureImage && (
-                        <div className="mt-2">
-                          <img src={signature.signatureImage} alt="Signature" className="max-h-20 border rounded" />
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              ))}
-
-              {formData.signatures && formData.signatures.length > 0 && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => {
-                    const newSignature = { name: "", phone: "", signatureMethod: "type", signatureText: "", signatureImage: null };
-                    const updated = [...(formData.signatures || []), newSignature];
-                    updateFormData({ signatures: updated });
-                  }}
-                  className="w-full flex items-center space-x-2"
-                >
-                  <Plus className="h-4 w-4" />
-                  <span>Add Another Signatory</span>
-                </Button>
-              )}
-            </CardContent>
-          </Card>
         </div>
       );
-
-
 
     case 7:
       return (
         <div className="space-y-6">
           <div className="text-center">
-            {getStepIcon(7)}
-            <h3 className="text-xl font-semibold mb-2">Legal Disclaimer & Compliance</h3>
+            <Shield className="mx-auto h-12 w-12 text-primary mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Legal Disclaimer</h3>
             <p className="text-gray-600 text-sm">
-              Review and acknowledge Australian WHS compliance requirements
+              Review and accept the terms and conditions for SWMS creation.
+            </p>
+          </div>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Terms and Conditions</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                <h4 className="font-semibold text-amber-800 mb-2">Important Notice</h4>
+                <p className="text-amber-700 text-sm">
+                  This SWMS is a template and must be reviewed, adapted, and approved by a competent person 
+                  before use. The user is responsible for ensuring compliance with all applicable workplace 
+                  health and safety legislation.
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                <div className="flex items-start space-x-3">
+                  <Checkbox 
+                    id="terms1"
+                    checked={formData.acceptTerms1 || false}
+                    onCheckedChange={(checked) => updateFormData({ acceptTerms1: checked })}
+                  />
+                  <Label htmlFor="terms1" className="text-sm leading-relaxed">
+                    I acknowledge that this SWMS template requires review and adaptation to specific 
+                    workplace conditions and hazards before implementation.
+                  </Label>
+                </div>
+
+                <div className="flex items-start space-x-3">
+                  <Checkbox 
+                    id="terms2"
+                    checked={formData.acceptTerms2 || false}
+                    onCheckedChange={(checked) => updateFormData({ acceptTerms2: checked })}
+                  />
+                  <Label htmlFor="terms2" className="text-sm leading-relaxed">
+                    I understand that compliance with workplace health and safety legislation is my responsibility 
+                    and that this template does not guarantee compliance.
+                  </Label>
+                </div>
+
+                <div className="flex items-start space-x-3">
+                  <Checkbox 
+                    id="terms3"
+                    checked={formData.acceptTerms3 || false}
+                    onCheckedChange={(checked) => updateFormData({ acceptTerms3: checked })}
+                  />
+                  <Label htmlFor="terms3" className="text-sm leading-relaxed">
+                    I accept that the use of this SWMS template is at my own risk and that I will ensure 
+                    appropriate consultation with workers and safety professionals.
+                  </Label>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      );
+
+    case 8:
+      return (
+        <div className="space-y-6">
+          <div className="text-center">
+            <CreditCard className="mx-auto h-12 w-12 text-primary mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Payment & Access</h3>
+            <p className="text-gray-600 text-sm">
+              Complete your payment to finalize and download your SWMS document.
+            </p>
+          </div>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Payment Options</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {/* Use Current Credits Option */}
+                {isLoadingCredits ? (
+                  <div className="p-4 border rounded-lg bg-blue-50 border-blue-200">
+                    <div className="flex items-center justify-between mb-3">
+                      <div>
+                        <p className="font-medium text-blue-800">Loading Credits...</p>
+                        <p className="text-sm text-blue-700">Checking your available credits</p>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className={`p-4 border rounded-lg ${hasCredits ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
+                    <div className="flex items-center justify-between mb-3">
+                      <div>
+                        <p className={`font-medium ${hasCredits ? 'text-green-800' : 'text-red-800'}`}>
+                          {hasCredits ? 'Use Current Credits' : 'No Credits Available'}
+                        </p>
+                        <p className={`text-sm ${hasCredits ? 'text-green-700' : 'text-red-700'}`}>
+                          {hasCredits 
+                            ? `You have ${totalCredits} total credits available (${subscriptionCredits} subscription + ${addonCredits} add-on)`
+                            : 'You need to purchase credits or use a payment option below to continue'
+                          }
+                        </p>
+                      </div>
+                      <Badge className={`${hasCredits ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                        {totalCredits} Credits
+                      </Badge>
+                    </div>
+                    <Button 
+                      size="lg"
+                      className={`w-full ${hasCredits ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-400 cursor-not-allowed'}`}
+                      disabled={isProcessingCredit || !hasCredits}
+                      onClick={async (e) => {
+                        console.log('🎯 === USE CREDIT BUTTON CLICKED ===');
+                        console.log('Event object:', e);
+                        console.log('hasCredits:', hasCredits);
+                        console.log('isProcessingCredit:', isProcessingCredit);
+                        console.log('Button disabled state:', isProcessingCredit || !hasCredits);
+                        console.log('Button element:', e.target);
+                        console.log('Credit check - totalCredits:', totalCredits);
+                        console.log('Credit check - creditData:', creditData);
+                        
+                        // If button is disabled, prevent execution
+                        if (isProcessingCredit || !hasCredits) {
+                          console.log('❌ Button execution blocked - disabled state');
+                          return;
+                        }
+                        
+                        if (!hasCredits) {
+                          alert('You have no credits available. Please purchase credits below.');
+                          return;
+                        }
+                        if (isProcessingCredit) return; // Prevent double clicks
+                    
+                        setIsProcessingCredit?.(true);
+                        console.log('Credit button clicked - starting process');
+                        
+                        try {
+                          // Call the credit usage API with admin demo headers
+                          const response = await fetch('/api/user/use-credit', {
+                            method: 'POST',
+                            headers: {
+                              'Content-Type': 'application/json',
+                              'x-admin-demo': localStorage.getItem('adminDemoMode') || 'false',
+                              'x-app-admin': localStorage.getItem('isAppAdmin') || 'false',
+                            },
+                            credentials: 'include',
+                          });
+
+                          console.log('Credit API response status:', response.status);
+                          const result = await response.json();
+                          console.log('Credit API response:', result);
+
+                          if (response.ok) {
+                            console.log('Credit used successfully:', result);
+                            
+                            // Immediately update form data to indicate payment is complete
+                            updateFormData({ 
+                              paymentMethod: 'credits', 
+                              paid: true,
+                              creditsUsed: true,
+                              paidAccess: true,  // This is what the step validation checks for
+                              lastPaymentUpdate: Date.now() // Force refresh
+                            });
+                            
+                            // Proceed immediately - don't wait for cache invalidation
+                            console.log('Payment completed successfully with credits - proceeding to next step immediately');
+                            if (onNext) {
+                              onNext();
+                            } else {
+                              console.log('WARNING: onNext is not available');
+                            }
+                            
+                            // Invalidate cache in background for next time (don't await)
+                            setTimeout(() => {
+                              queryClient.invalidateQueries({ queryKey: ['/api/user'] });
+                              queryClient.invalidateQueries({ queryKey: ['/api/dashboard/999'] });
+                              queryClient.invalidateQueries({ queryKey: ['/api/user/billing'] });
+                            }, 0);
+                            
+                          } else {
+                            console.error('Failed to use credit:', response.statusText);
+                            alert('Failed to process credit usage. Please try again.');
+                          }
+                        } catch (error) {
+                          console.error('Error using credit:', error);
+                          // Show more helpful error message
+                          if (onNext) {
+                            console.log('Error occurred, calling onNext anyway for demo');
+                            onNext(); // Allow progression anyway for demo
+                          }
+                        } finally {
+                          setIsProcessingCredit?.(false);
+                        }
+                      }}
+                    >
+                      {hasCredits ? 'Use Current Credits (1 credit)' : 'No Credits Available'}
+                    </Button>
+                  </div>
+                )}
+                
+                <div className="text-center">
+                  <p className="text-gray-600 mb-4">
+                    Or purchase additional credits or upgrade:
+                  </p>
+                  
+                  {/* Real Stripe Payment Options */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    {/* One-off SWMS Purchase */}
+                    <Button 
+                      variant="outline"
+                      size="lg"
+                      onClick={async () => {
+                        try {
+                          const response = await fetch('/api/create-payment-intent', {
+                            method: 'POST',
+                            headers: {
+                              'Content-Type': 'application/json',
+                            },
+                            credentials: 'include',
+                            body: JSON.stringify({
+                              amount: 1500, // $15.00 in cents
+                              currency: 'aud',
+                              product: 'One-off SWMS',
+                              quantity: 1
+                            })
+                          });
+
+                          if (response.ok) {
+                            const { url } = await response.json();
+                            window.open(url, '_blank');
+                          } else {
+                            toast({
+                              title: "Payment Error",
+                              description: "Unable to create payment session. Please try again.",
+                              variant: "destructive",
+                            });
+                          }
+                        } catch (error) {
+                          console.error('Payment error:', error);
+                          toast({
+                            title: "Payment Error", 
+                            description: "Something went wrong. Please try again.",
+                            variant: "destructive",
+                          });
+                        }
+                      }}
+                      className="border-blue-200 text-blue-700 hover:bg-blue-50"
+                    >
+                      <CreditCard className="mr-2 h-4 w-4" />
+                      One SWMS - $15
+                    </Button>
+
+                    {/* Credit Pack Purchase */}
+                    <Button 
+                      variant="outline" 
+                      size="lg"
+                      onClick={async () => {
+                        try {
+                          const response = await fetch('/api/create-payment-intent', {
+                            method: 'POST',
+                            headers: {
+                              'Content-Type': 'application/json',
+                            },
+                            credentials: 'include',
+                            body: JSON.stringify({
+                              amount: 6000, // $60.00 in cents
+                              currency: 'aud',
+                              product: '5 SWMS Credit Pack',
+                              quantity: 1
+                            })
+                          });
+
+                          if (response.ok) {
+                            const { url } = await response.json();
+                            window.open(url, '_blank');
+                          } else {
+                            toast({
+                              title: "Payment Error",
+                              description: "Unable to create payment session. Please try again.",
+                              variant: "destructive",
+                            });
+                          }
+                        } catch (error) {
+                          console.error('Payment error:', error);
+                          toast({
+                            title: "Payment Error",
+                            description: "Something went wrong. Please try again.",
+                            variant: "destructive",
+                          });
+                        }
+                      }}
+                      className="border-orange-200 text-orange-700 hover:bg-orange-50"
+                    >
+                      <Package className="mr-2 h-4 w-4" />
+                      5 Credits - $60
+                    </Button>
+
+                    {/* Subscription Option */}
+                    <Button 
+                      variant="outline" 
+                      size="lg"
+                      onClick={async () => {
+                        try {
+                          const response = await fetch('/api/create-payment-intent', {
+                            method: 'POST',
+                            headers: {
+                              'Content-Type': 'application/json',
+                            },
+                            credentials: 'include',
+                            body: JSON.stringify({
+                              amount: 4900, // $49.00 in cents
+                              currency: 'aud',
+                              product: 'Pro Monthly Subscription',
+                              quantity: 1,
+                              subscription: true
+                            })
+                          });
+
+                          if (response.ok) {
+                            const { url } = await response.json();
+                            window.open(url, '_blank');
+                          } else {
+                            toast({
+                              title: "Payment Error",
+                              description: "Unable to create payment session. Please try again.",
+                              variant: "destructive",
+                            });
+                          }
+                        } catch (error) {
+                          console.error('Payment error:', error);
+                          toast({
+                            title: "Payment Error",
+                            description: "Something went wrong. Please try again.",
+                            variant: "destructive",
+                          });
+                        }
+                      }}
+                      className="border-green-200 text-green-700 hover:bg-green-50"
+                    >
+                      <Shield className="mr-2 h-4 w-4" />
+                      Pro Plan - $49/mo
+                    </Button>
+                  </div>
+
+                  {/* Demo Payment Options */}
+                  <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                    <p className="text-sm text-gray-600 mb-3 font-medium">Demo Mode (Testing Only):</p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <Button 
+                      variant="outline"
+                      size="lg"
+                      onClick={async () => {
+                        console.log('DEMO $15 BUTTON CLICKED');
+                        // For demo purposes, simulate payment success
+                        const confirmed = confirm('DEMO MODE: Simulate $15 payment for One-Off SWMS?');
+                        console.log('User confirmed demo payment:', confirmed);
+                        if (confirmed) {
+                          try {
+                            console.log('Making demo payment API call...');
+                            const response = await fetch('/api/user/add-credits', {
+                              method: 'POST',
+                              headers: {
+                                'Content-Type': 'application/json',
+                              },
+                              credentials: 'include',
+                              body: JSON.stringify({
+                                amount: 1,
+                                type: 'demo-payment'
+                              })
+                            });
+
+                            if (response.ok) {
+                              alert('Demo payment successful! 1 credit added to your account.');
+                              // Invalidate all user-related queries to refresh credit balance
+                              queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+                              queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+                              queryClient.invalidateQueries({ queryKey: ["credits"] });
+                              // Force re-render of payment step to show updated credits
+                              updateFormData({ lastPaymentUpdate: Date.now() });
+                              // Wait a moment then refetch user data
+                              setTimeout(() => {
+                                queryClient.refetchQueries({ queryKey: ["/api/user"] });
+                              }, 500);
+                            } else {
+                              alert('Demo payment failed. Please try again.');
+                            }
+                          } catch (error) {
+                            console.error('Error:', error);
+                            alert('Error processing demo payment.');
+                          }
+                        }
+                      }}
+                      className="border-blue-200 text-blue-700 hover:bg-blue-50"
+                    >
+                      <CreditCard className="mr-2 h-4 w-4" />
+                      Demo: One-Off SWMS ($15)
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="lg"
+                      onClick={async () => {
+                        // For demo purposes, simulate payment success
+                        const confirmed = confirm('DEMO MODE: Simulate $60 payment for 5 SWMS Credits?');
+                        if (confirmed) {
+                          try {
+                            const response = await fetch('/api/user/add-credits', {
+                              method: 'POST',
+                              headers: {
+                                'Content-Type': 'application/json',
+                              },
+                              credentials: 'include',
+                              body: JSON.stringify({
+                                amount: 5,
+                                type: 'demo-payment'
+                              })
+                            });
+
+                            if (response.ok) {
+                              alert('Demo payment successful! 5 credits added to your account.');
+                              // Invalidate all user-related queries to refresh credit balance
+                              queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+                              queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+                              queryClient.invalidateQueries({ queryKey: ["credits"] });
+                              // Force re-render of payment step to show updated credits
+                              updateFormData({ lastPaymentUpdate: Date.now() });
+                              // Wait a moment then refetch user data
+                              setTimeout(() => {
+                                queryClient.refetchQueries({ queryKey: ["/api/user"] });
+                              }, 500);
+                            } else {
+                              alert('Demo payment failed. Please try again.');
+                            }
+                          } catch (error) {
+                            console.error('Error:', error);
+                            alert('Error processing demo payment.');
+                          }
+                        }
+                      }}
+                      className="border-orange-200 text-orange-700 hover:bg-orange-50"
+                    >
+                      <Zap className="mr-2 h-4 w-4" />
+                      Credit Pack ($60)
+                    </Button>
+                  </div>
+                  
+                  {/* Admin Demo Toggle - Only visible to admin */}
+                  {localStorage.getItem('isAppAdmin') === 'true' && (
+                    <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                      <p className="text-red-800 text-sm font-medium mb-2">Admin Demo Mode</p>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          localStorage.setItem('adminDemoMode', 'true');
+                          updateFormData({ adminDemoBypass: true });
+                        }}
+                        className="border-red-300 text-red-700 hover:bg-red-100"
+                      >
+                        Proceed with Demo Access
+                      </Button>
+                    </div>
+                  )}
+                </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+
+        </div>
+      );
+
+    case 7:
+      return (
+        <div className="space-y-6">
+          <div className="text-center">
+            <Scale className="mx-auto h-12 w-12 text-primary mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Legal Disclaimer</h3>
+            <p className="text-gray-600 text-sm">
+              Review and accept the terms and liability disclaimer to proceed.
             </p>
           </div>
 
@@ -1643,102 +1712,267 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
       );
 
     case 8:
-      // Check if user already has paid access
-      const hasPaidAccess = formData.paidAccess === true || formData.paid === true || formData.creditsUsed === true;
-      
-      // Calculate total credits available
-      const creditBalance = (userBillingData?.credits || userData?.credits || 0) + 
-                           (userBillingData?.subscriptionCredits || userData?.subscriptionCredits || 0) + 
-                           (userBillingData?.addonCredits || userData?.addonCredits || 0);
-      
-      // Check for admin/demo access
-      const isAdmin = localStorage.getItem('isAppAdmin') === 'true' || 
-                     localStorage.getItem('adminDemoMode') === 'true' ||
-                     userData?.isAdmin === true;
-      
       return (
         <div className="space-y-6">
           <div className="text-center">
-            {getStepIcon(8)}
-            <h3 className="text-lg font-semibold mb-2">Payment & Access</h3>
+            <PenTool className="mx-auto h-12 w-12 text-primary mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Signatures</h3>
             <p className="text-gray-600 text-sm">
-              Complete payment to generate your professional SWMS document.
+              Add authorizing signatures for document validation
             </p>
           </div>
 
+          {/* Person Creating and Authorizing SWMS */}
           <Card>
             <CardHeader>
-              <CardTitle>
-                {hasPaidAccess ? "Document Ready" : 
-                 isAdmin ? "Payment (Admin Mode)" : 
-                 creditBalance > 0 ? "Use Credits" : "Payment Required"}
+              <CardTitle className="flex items-center gap-2">
+                <User className="h-5 w-5" />
+                Person Creating and Authorising SWMS
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {hasPaidAccess ? (
-                <div className="p-4 bg-green-50 border border-green-200 rounded-lg text-center">
-                  <CheckCircle className="h-8 w-8 text-green-600 mx-auto mb-2" />
-                  <p className="text-green-800 font-medium">Payment Complete</p>
-                  <p className="text-green-600 text-sm">Ready to generate your SWMS document</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="creatorName">Full Name *</Label>
+                  <Input
+                    id="creatorName"
+                    value={formData.swmsCreatorName || ''}
+                    onChange={(e) => updateFormData({ swmsCreatorName: e.target.value })}
+                    placeholder="Enter full name"
+                  />
                 </div>
-              ) : isAdmin ? (
-                <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg text-center">
-                  <Crown className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-                  <p className="text-blue-800 font-medium">Admin Access</p>
-                  <p className="text-blue-600 text-sm">Payment processing bypassed in admin mode</p>
+                <div>
+                  <Label htmlFor="creatorPhone">Phone Number *</Label>
+                  <Input
+                    id="creatorPhone"
+                    value={formData.creatorPhone || ''}
+                    onChange={(e) => updateFormData({ creatorPhone: e.target.value })}
+                    placeholder="Enter phone number"
+                  />
                 </div>
-              ) : creditBalance > 0 ? (
-                <div className="space-y-4">
-                  <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-medium text-amber-800">Available Credits: {creditBalance}</p>
-                        <p className="text-amber-600 text-sm">Use 1 credit to generate this SWMS</p>
-                      </div>
-                      <CreditCard className="h-8 w-8 text-amber-600" />
-                    </div>
-                  </div>
-                  <div className="flex justify-end">
-                    <Button 
-                      onClick={() => {
-                        // Mark as credit used and proceed
-                        onDataChange({ creditsUsed: true, paidAccess: true });
-                        // Call onNext to proceed to document generation
-                        if (onNext) onNext();
+              </div>
+              
+              {/* Signature Method */}
+              <div className="space-y-3">
+                <Label>Authorising Signature</Label>
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant={formData.signatureMethod === 'upload' ? 'default' : 'outline'}
+                    onClick={() => updateFormData({ signatureMethod: 'upload' })}
+                    size="sm"
+                  >
+                    Upload Signature
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={formData.signatureMethod === 'type' ? 'default' : 'outline'}
+                    onClick={() => updateFormData({ signatureMethod: 'type' })}
+                    size="sm"
+                  >
+                    Type Name
+                  </Button>
+                </div>
+
+                {formData.signatureMethod === 'upload' && (
+                  <div className="space-y-3">
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onload = (event) => {
+                            updateFormData({ signatureImage: event.target?.result as string });
+                          };
+                          reader.readAsDataURL(file);
+                        }
                       }}
-                      size="lg"
-                      className="bg-amber-600 hover:bg-amber-700 text-white"
-                      disabled={isProcessingCredit}
+                    />
+                    {formData.signatureImage && (
+                      <div className="border rounded-lg p-4 bg-gray-50">
+                        <p className="text-sm text-gray-600 mb-2">Signature preview:</p>
+                        <img
+                          src={formData.signatureImage}
+                          alt="Signature"
+                          className="max-h-16 border rounded"
+                        />
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {formData.signatureMethod === 'type' && (
+                  <div className="space-y-3">
+                    <Label htmlFor="typedSignature">Type your full name as signature</Label>
+                    <Input
+                      id="typedSignature"
+                      value={formData.signatureText || ''}
+                      onChange={(e) => updateFormData({ signatureText: e.target.value })}
+                      placeholder="Type your full name"
+                    />
+                    {formData.signatureText && (
+                      <div className="border rounded-lg p-4 bg-gray-50">
+                        <p className="text-sm text-gray-600 mb-2">Signature preview:</p>
+                        <p className="font-cursive text-2xl text-primary">
+                          {formData.signatureText}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* People Signing onto the SWMS */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Users className="h-5 w-5" />
+                People Signing onto this SWMS
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* List existing signatories */}
+              {(formData.signatories || []).map((signatory: any, index: number) => (
+                <div key={index} className="border rounded-lg p-4 bg-gray-50">
+                  <div className="flex justify-between items-start mb-3">
+                    <div>
+                      <h4 className="font-medium">{signatory.name}</h4>
+                      <p className="text-sm text-gray-600">{signatory.phone}</p>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        const newSignatories = (formData.signatories || []).filter((_: any, i: number) => i !== index);
+                        updateFormData({ signatories: newSignatories });
+                      }}
                     >
-                      {isProcessingCredit ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Processing...
-                        </>
-                      ) : (
-                        <>
-                          <CreditCard className="mr-2 h-4 w-4" />
-                          Use 1 Credit
-                        </>
-                      )}
+                      <X className="h-4 w-4" />
                     </Button>
                   </div>
+                  
+                  {signatory.signatureImage && (
+                    <div className="mt-2">
+                      <p className="text-xs text-gray-500 mb-1">Signature:</p>
+                      <img
+                        src={signatory.signatureImage}
+                        alt="Signature"
+                        className="max-h-12 border rounded"
+                      />
+                    </div>
+                  )}
+                  
+                  {signatory.signatureText && (
+                    <div className="mt-2">
+                      <p className="text-xs text-gray-500 mb-1">Signature:</p>
+                      <p className="font-cursive text-xl text-primary">
+                        {signatory.signatureText}
+                      </p>
+                    </div>
+                  )}
                 </div>
-              ) : (
-                <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-center">
-                  <AlertCircle className="h-8 w-8 text-red-600 mx-auto mb-2" />
-                  <p className="text-red-800 font-medium">Payment Required</p>
-                  <p className="text-red-600 text-sm">Please purchase credits or subscribe to continue</p>
+              ))}
+
+              {/* Add new signatory form */}
+              <div className="border rounded-lg p-4 bg-blue-50">
+                <h4 className="font-medium mb-3">Add New Signatory</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                  <Input
+                    placeholder="Full name"
+                    value={formData.newSignatoryName || ''}
+                    onChange={(e) => updateFormData({ newSignatoryName: e.target.value })}
+                  />
+                  <Input
+                    placeholder="Phone number"
+                    value={formData.newSignatoryPhone || ''}
+                    onChange={(e) => updateFormData({ newSignatoryPhone: e.target.value })}
+                  />
                 </div>
-              )}
-              
-              {(hasPaidAccess || isAdmin) && (
-                <div className="flex justify-end">
-                  <div className="text-green-600 text-sm font-medium">
-                    ✓ Access granted - Use the Continue button below to proceed to document generation
+
+                {/* Signature method for new signatory */}
+                <div className="space-y-3">
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      variant={formData.newSignatoryMethod === 'upload' ? 'default' : 'outline'}
+                      onClick={() => updateFormData({ newSignatoryMethod: 'upload' })}
+                      size="sm"
+                    >
+                      Upload Signature
+                    </Button>
+                    <Button
+                      type="button"
+                      variant={formData.newSignatoryMethod === 'type' ? 'default' : 'outline'}
+                      onClick={() => updateFormData({ newSignatoryMethod: 'type' })}
+                      size="sm"
+                    >
+                      Type Name
+                    </Button>
                   </div>
+
+                  {formData.newSignatoryMethod === 'upload' && (
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onload = (event) => {
+                            updateFormData({ newSignatoryImage: event.target?.result as string });
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                    />
+                  )}
+
+                  {formData.newSignatoryMethod === 'type' && (
+                    <Input
+                      placeholder="Type full name as signature"
+                      value={formData.newSignatoryText || ''}
+                      onChange={(e) => updateFormData({ newSignatoryText: e.target.value })}
+                    />
+                  )}
+
+                  <Button
+                    type="button"
+                    onClick={() => {
+                      if (!formData.newSignatoryName || !formData.newSignatoryPhone) {
+                        alert('Please enter name and phone number');
+                        return;
+                      }
+
+                      const newSignatory = {
+                        name: formData.newSignatoryName,
+                        phone: formData.newSignatoryPhone,
+                        signatureImage: formData.newSignatoryImage || null,
+                        signatureText: formData.newSignatoryText || null,
+                        signedAt: new Date().toISOString()
+                      };
+
+                      const existingSignatories = formData.signatories || [];
+                      updateFormData({
+                        signatories: [...existingSignatories, newSignatory],
+                        newSignatoryName: '',
+                        newSignatoryPhone: '',
+                        newSignatoryImage: null,
+                        newSignatoryText: '',
+                        newSignatoryMethod: undefined
+                      });
+                    }}
+                    className="w-full"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Signatory
+                  </Button>
                 </div>
-              )}
+              </div>
             </CardContent>
           </Card>
         </div>
@@ -1760,8 +1994,6 @@ export default function SWMSForm({ step, data = {}, onNext, onDataChange, userDa
   const [formData, setFormData] = useState(data);
   // Use parent's setIsProcessingCredit instead of local state
   const isProcessingCredit = false; // This will be managed by parent component
-  
-
 
   // Fetch current user billing data for real-time credits with better error handling
   const { data: userBillingData, refetch: refetchUserData, isLoading: isLoadingUserCredits, error: userCreditsError } = useQuery({
