@@ -1752,9 +1752,11 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
                   <Button 
                     onClick={() => {
                       console.log('Generate SWMS Document button clicked');
+                      console.log('Current step:', step);
                       console.log('onNext function:', onNext);
                       console.log('hasPaidAccess:', hasPaidAccess);
                       console.log('isAdmin:', isAdmin);
+                      console.log('StepContent props:', { step, onNext, hasPaidAccess, isAdmin });
                       if (onNext) {
                         console.log('Calling onNext function...');
                         onNext();
