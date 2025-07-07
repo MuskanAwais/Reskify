@@ -13,6 +13,7 @@ import { Progress } from "@/components/ui/progress";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useToast } from "@/hooks/use-toast";
 import RiskComplianceChecker from "./risk-compliance-checker";
+import { SWMSPrintInterface } from './SWMSPrintInterface';
 
 import PDFPrintSystem from "./pdf-print-system";
 import RiskValidationSystem from "./risk-validation-system";
@@ -1850,7 +1851,7 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
       );
 
     case 9:
-      return <AutomaticPDFGeneration formData={formData} onDataChange={onDataChange} />;
+      return <SWMSPrintInterface formData={formData} />;
 
     default:
       return (
