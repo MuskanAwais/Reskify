@@ -2033,7 +2033,35 @@ export async function registerRoutes(app: Express) {
           riskLevel: calculateOverallRiskLevel(data.riskAssessments || []),
           documentComplete: true,
           generationSource: 'Riskify-SWMSprint-Integration'
-        }
+        },
+        
+        // ===== ADDITIONAL EMERGENCY FIELDS =====
+        emergencyContacts: data.emergencyContacts || [],
+        firstAidArrangements: data.firstAidArrangements || '',
+        emergencyResponseProcedures: data.emergencyResponseProcedures || '',
+        
+        // ===== REVIEW & MONITORING =====
+        reviewProcess: data.reviewProcess || {},
+        monitoringRequirements: data.monitoringRequirements || '',
+        
+        // ===== SYSTEM & SECURITY =====
+        safetyMeasures: data.safetyMeasures || {},
+        complianceCodes: data.complianceCodes || [],
+        documentHash: data.documentHash || '',
+        aiEnhanced: data.aiEnhanced || false,
+        creditsCost: data.creditsCost || 1,
+        
+        // ===== DIGITAL SIGNATURES ENHANCED =====
+        requiresSignature: data.requiresSignature || false,
+        signatureStatus: data.signatureStatus || 'unsigned',
+        signedAt: data.signedAt || null,
+        signedBy: data.signedBy || '',
+        signatureTitle: data.signatureTitle || '',
+        signatureData: data.signatureData || '',
+        signatureHash: data.signatureHash || '',
+        witnessName: data.witnessName || '',
+        witnessSignature: data.witnessSignature || '',
+        witnessSignedAt: data.witnessSignedAt || null
       };
       
       console.log('Connecting to SWMSprint app for PDF generation...');
@@ -2189,7 +2217,35 @@ export async function registerRoutes(app: Express) {
           riskLevel: calculateOverallRiskLevel(data.riskAssessments || []),
           documentComplete: false, // Preview mode
           generationSource: 'Riskify-SWMSprint-Preview'
-        }
+        },
+        
+        // ===== ADDITIONAL EMERGENCY FIELDS =====
+        emergencyContacts: data.emergencyContacts || [],
+        firstAidArrangements: data.firstAidArrangements || '',
+        emergencyResponseProcedures: data.emergencyResponseProcedures || '',
+        
+        // ===== REVIEW & MONITORING =====
+        reviewProcess: data.reviewProcess || {},
+        monitoringRequirements: data.monitoringRequirements || '',
+        
+        // ===== SYSTEM & SECURITY =====
+        safetyMeasures: data.safetyMeasures || {},
+        complianceCodes: data.complianceCodes || [],
+        documentHash: data.documentHash || '',
+        aiEnhanced: data.aiEnhanced || false,
+        creditsCost: data.creditsCost || 1,
+        
+        // ===== DIGITAL SIGNATURES ENHANCED =====
+        requiresSignature: data.requiresSignature || false,
+        signatureStatus: data.signatureStatus || 'unsigned',
+        signedAt: data.signedAt || null,
+        signedBy: data.signedBy || '',
+        signatureTitle: data.signatureTitle || '',
+        signatureData: data.signatureData || '',
+        signatureHash: data.signatureHash || '',
+        witnessName: data.witnessName || '',
+        witnessSignature: data.witnessSignature || '',
+        witnessSignedAt: data.witnessSignedAt || null
       };
       
       console.log('Generating PDF preview with SWMSprint app');
