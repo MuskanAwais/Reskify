@@ -171,8 +171,30 @@ const AutomaticPDFGeneration = ({ formData, onDataChange }: { formData: any; onD
           }
         };
         
+        setCurrentMessage('Testing SWMSprint connection...');
+        setProgress(88);
+        
+        // First test if SWMSprint is accessible
+        console.log('Testing SWMSprint API connection...');
+        const healthCheck = await fetch('https://79937ff1-cac5-4736-b2b2-1df5354fb4b3-00-1bbtav2oqagxg.spock.replit.dev/api/health', {
+          method: 'GET',
+          headers: { 'Accept': 'application/json' }
+        });
+        
+        console.log('Health check response:', {
+          status: healthCheck.status,
+          ok: healthCheck.ok,
+          headers: Object.fromEntries(healthCheck.headers.entries())
+        });
+        
         setCurrentMessage('Connecting to SWMSprint PDF generator...');
         setProgress(90);
+        
+        console.log('Sending PDF generation request with data:', {
+          dataKeys: Object.keys(enhancedPdfData),
+          jobName: enhancedPdfData.jobName,
+          activitiesCount: enhancedPdfData.workActivities?.length || 0
+        });
         
         const response = await fetch('https://79937ff1-cac5-4736-b2b2-1df5354fb4b3-00-1bbtav2oqagxg.spock.replit.dev/api/swms/generate-pdf', {
           method: 'POST',
@@ -181,6 +203,12 @@ const AutomaticPDFGeneration = ({ formData, onDataChange }: { formData: any; onD
             'Accept': 'application/pdf'
           },
           body: JSON.stringify(enhancedPdfData)
+        });
+        
+        console.log('PDF generation response:', {
+          status: response.status,
+          ok: response.ok,
+          headers: Object.fromEntries(response.headers.entries())
         });
 
         if (response.ok) {
@@ -226,14 +254,19 @@ const AutomaticPDFGeneration = ({ formData, onDataChange }: { formData: any; onD
         }
         
       } catch (error) {
-        console.error('PDF generation error:', error);
+        console.error('PDF generation error details:', {
+          message: error?.message || 'Unknown error',
+          name: error?.name || 'Error',
+          stack: error?.stack || 'No stack trace',
+          error: error
+        });
         setStatus('error');
-        setCurrentMessage('PDF generation failed. Please try again.');
+        setCurrentMessage(`PDF generation failed: ${error?.message || 'Connection error with SWMSprint'}`);
         setProgress(0);
         
         toast({
           title: "Generation Failed",
-          description: "There was an issue generating your PDF through SWMSprint. Please try again.",
+          description: `Error: ${error?.message || 'Connection issue with SWMSprint API. Please check the URL and try again.'}`,
           variant: "destructive"
         });
       }
