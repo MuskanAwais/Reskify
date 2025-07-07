@@ -670,11 +670,10 @@ export async function registerRoutes(app: Express) {
   // Get user SWMS documents - frontend compatibility endpoint
   app.get("/api/swms", async (req, res) => {
     try {
-      const userId = req.session?.userId;
-      if (!userId) {
-        return res.status(401).json({ error: 'Authentication required' });
-      }
+      // Support demo mode - use demo user ID 999 if no session
+      const userId = req.session?.userId || 999;
       console.log('Fetching SWMS for user:', userId);
+      
       const swmsList = await storage.getUserSwms(userId);
       console.log('Found SWMS documents:', swmsList.length);
       
