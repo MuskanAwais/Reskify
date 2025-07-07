@@ -50,7 +50,8 @@ import {
   Download,
   AlertCircle,
   Crown,
-  Phone
+  Phone,
+  ExternalLink
 } from "lucide-react";
 import { SimplifiedTableEditor } from "./simplified-table-editor";
 import GPTTaskSelection from "./gpt-task-selection";
@@ -1749,7 +1750,18 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
               {(hasPaidAccess || isAdmin) && (
                 <div className="flex justify-end">
                   <Button 
-                    onClick={onNext}
+                    onClick={() => {
+                      console.log('Generate SWMS Document button clicked');
+                      console.log('onNext function:', onNext);
+                      console.log('hasPaidAccess:', hasPaidAccess);
+                      console.log('isAdmin:', isAdmin);
+                      if (onNext) {
+                        console.log('Calling onNext function...');
+                        onNext();
+                      } else {
+                        console.error('onNext function is not available');
+                      }
+                    }}
                     size="lg"
                     className="bg-green-600 hover:bg-green-700 text-white"
                   >
