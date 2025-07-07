@@ -1,122 +1,81 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Download, Eye, FileText, Users, Shield, Wrench, AlertTriangle, MapPin, Phone, Calendar, CheckCircle } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Download, FileText } from 'lucide-react';
 
 interface SWMSPrintInterfaceProps {
   formData: any;
 }
 
-interface Section {
-  id: string;
-  title: string;
-  icon: React.ReactNode;
-  selected: boolean;
-  content?: any;
-}
-
 export function SWMSPrintInterface({ formData }: SWMSPrintInterfaceProps) {
-  const [selectedSections, setSelectedSections] = useState<string[]>([
-    'project-info', 'personnel', 'activities', 'ppe', 'equipment', 'emergency'
-  ]);
-  const [previewData, setPreviewData] = useState<any>(null);
+  const [formFields, setFormFields] = useState({
+    companyName: formData.principalContractor || 'Test Company Name',
+    projectName: formData.jobName || 'Test Project Name',
+    projectNumber: formData.jobNumber || '123 456',
+    projectAddress: formData.projectAddress || '123 Sample Job Address',
+    jobName: formData.jobName || 'Test Project Name',
+    jobNumber: formData.jobNumber || '123 456',
+    startDate: formData.startDate || '12th July 2025',
+    duration: '8 Weeks',
+    dateCreated: '23rd June 2025',
+    principalContractor: formData.principalContractor || 'Test Principal Contractor',
+    projectManager: formData.projectManager || 'Test Project Manager Name',
+    siteSupervisor: formData.siteSupervisor || 'Test Project Supervisor',
+    authorisingPersonName: formData.swmsCreatorName || 'Test authorising person name',
+    authorisingPersonPosition: formData.swmsCreatorPosition || 'Test authorising person position',
+    typeSignature: 'John Smith'
+  });
+
+  const [selectedTab, setSelectedTab] = useState('Project Information');
   const [isGenerating, setIsGenerating] = useState(false);
 
-  const sections: Section[] = [
-    {
-      id: 'project-info',
-      title: 'Project Information',
-      icon: <FileText className="w-5 h-5" />,
-      selected: selectedSections.includes('project-info'),
-      content: {
-        projectName: formData.jobName || formData.title || 'Untitled Project',
-        jobNumber: formData.jobNumber || 'N/A',
-        address: formData.projectAddress || 'N/A',
-        tradeType: formData.tradeType || 'General Construction',
-        startDate: formData.startDate || 'N/A',
-        description: formData.projectDescription || formData.workDescription || 'N/A'
-      }
-    },
-    {
-      id: 'personnel',
-      title: 'Personnel Information',
-      icon: <Users className="w-5 h-5" />,
-      selected: selectedSections.includes('personnel'),
-      content: {
-        principalContractor: formData.principalContractor || 'N/A',
-        projectManager: formData.projectManager || 'N/A',
-        siteSupervisor: formData.siteSupervisor || 'N/A',
-        swmsCreator: formData.swmsCreatorName || 'N/A'
-      }
-    },
-    {
-      id: 'activities',
-      title: 'Work Activities',
-      icon: <CheckCircle className="w-5 h-5" />,
-      selected: selectedSections.includes('activities'),
-      content: {
-        activities: formData.workActivities || formData.activities || []
-      }
-    },
-    {
-      id: 'ppe',
-      title: 'PPE Requirements',
-      icon: <Shield className="w-5 h-5" />,
-      selected: selectedSections.includes('ppe'),
-      content: {
-        requirements: formData.ppeRequirements || []
-      }
-    },
-    {
-      id: 'equipment',
-      title: 'Plant & Equipment',
-      icon: <Wrench className="w-5 h-5" />,
-      selected: selectedSections.includes('equipment'),
-      content: {
-        equipment: formData.plantEquipment || []
-      }
-    },
-    {
-      id: 'emergency',
-      title: 'Emergency Procedures',
-      icon: <AlertTriangle className="w-5 h-5" />,
-      selected: selectedSections.includes('emergency'),
-      content: {
-        procedures: formData.emergencyProcedures || 'No emergency procedures specified'
-      }
-    }
+  const tabs = [
+    'Project Information',
+    'Task & Risk Analysis', 
+    'Risk Matrix',
+    'Work Activities',
+    'PPE',
+    'Plant & Equipment',
+    'Sign in Register',
+    'MIOS'
   ];
 
-  const toggleSection = (sectionId: string) => {
-    setSelectedSections(prev => 
-      prev.includes(sectionId) 
-        ? prev.filter(id => id !== sectionId)
-        : [...prev, sectionId]
-    );
-  };
-
-  const updatePreview = () => {
-    const selectedContent = sections
-      .filter(section => selectedSections.includes(section.id))
-      .reduce((acc, section) => {
-        acc[section.id] = section.content;
-        return acc;
-      }, {} as any);
-    
-    setPreviewData(selectedContent);
+  const updateField = (field: string, value: string) => {
+    setFormFields(prev => ({
+      ...prev,
+      [field]: value
+    }));
   };
 
   useEffect(() => {
-    updatePreview();
-  }, [selectedSections, formData]);
+    // Update form fields when formData changes
+    setFormFields(prev => ({
+      ...prev,
+      companyName: formData.principalContractor || prev.companyName,
+      projectName: formData.jobName || prev.projectName,
+      projectNumber: formData.jobNumber || prev.projectNumber,
+      projectAddress: formData.projectAddress || prev.projectAddress,
+      jobName: formData.jobName || prev.jobName,
+      jobNumber: formData.jobNumber || prev.jobNumber,
+      startDate: formData.startDate || prev.startDate,
+      principalContractor: formData.principalContractor || prev.principalContractor,
+      projectManager: formData.projectManager || prev.projectManager,
+      siteSupervisor: formData.siteSupervisor || prev.siteSupervisor,
+      authorisingPersonName: formData.swmsCreatorName || prev.authorisingPersonName,
+      authorisingPersonPosition: formData.swmsCreatorPosition || prev.authorisingPersonPosition
+    }));
+  }, [formData]);
 
-  const generatePDF = async () => {
+  const generatePDF = async (type: 'Print' | 'Download' | 'Vector' | 'Final') => {
     setIsGenerating(true);
     try {
       const response = await fetch('/api/swms/pdf-download', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({ ...formData, ...formFields })
       });
       
       if (response.ok) {
@@ -125,7 +84,7 @@ export function SWMSPrintInterface({ formData }: SWMSPrintInterfaceProps) {
         const a = document.createElement('a');
         a.style.display = 'none';
         a.href = url;
-        a.download = `${formData.jobName || 'SWMS'}-${Date.now()}.pdf`;
+        a.download = `${formFields.projectName || 'SWMS'}-${type}-${Date.now()}.pdf`;
         document.body.appendChild(a);
         a.click();
         window.URL.revokeObjectURL(url);
@@ -138,229 +97,329 @@ export function SWMSPrintInterface({ formData }: SWMSPrintInterfaceProps) {
   };
 
   const renderPreviewContent = () => {
-    if (!previewData) return <div className="text-gray-500">Select sections to preview</div>;
-
     return (
-      <div className="space-y-6">
-        {previewData['project-info'] && (
-          <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-            <h3 className="font-semibold text-blue-900 mb-3 flex items-center">
-              <FileText className="w-4 h-4 mr-2" />
-              Project Information
-            </h3>
-            <div className="grid grid-cols-2 gap-3 text-sm">
-              <div><span className="font-medium">Project:</span> {previewData['project-info'].projectName}</div>
-              <div><span className="font-medium">Job #:</span> {previewData['project-info'].jobNumber}</div>
-              <div><span className="font-medium">Address:</span> {previewData['project-info'].address}</div>
-              <div><span className="font-medium">Trade:</span> {previewData['project-info'].tradeType}</div>
-              <div><span className="font-medium">Start Date:</span> {previewData['project-info'].startDate}</div>
-              <div className="col-span-2"><span className="font-medium">Description:</span> {previewData['project-info'].description}</div>
+      <div className="bg-white p-6 h-full overflow-y-auto" style={{ fontSize: '11px' }}>
+        {/* Header */}
+        <div className="flex justify-between items-start mb-6">
+          <div className="flex items-center">
+            <div className="text-blue-600 font-bold text-lg mr-4">Riskify</div>
+            <div>
+              <div className="font-bold text-lg">Safe Work Method Statement</div>
             </div>
           </div>
-        )}
-
-        {previewData['personnel'] && (
-          <div className="bg-green-50 p-4 rounded-lg border border-green-200">
-            <h3 className="font-semibold text-green-900 mb-3 flex items-center">
-              <Users className="w-4 h-4 mr-2" />
-              Personnel Information
-            </h3>
-            <div className="grid grid-cols-2 gap-3 text-sm">
-              <div><span className="font-medium">Principal Contractor:</span> {previewData['personnel'].principalContractor}</div>
-              <div><span className="font-medium">Project Manager:</span> {previewData['personnel'].projectManager}</div>
-              <div><span className="font-medium">Site Supervisor:</span> {previewData['personnel'].siteSupervisor}</div>
-              <div><span className="font-medium">SWMS Creator:</span> {previewData['personnel'].swmsCreator}</div>
-            </div>
+          <div className="text-right text-xs">
+            <div><strong>Test Company Name</strong></div>
+            <div>SWMS</div>
+            <div>123 456</div>
+            <div>123 Sample Job Address</div>
           </div>
-        )}
+        </div>
 
-        {previewData['activities'] && (
-          <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
-            <h3 className="font-semibold text-purple-900 mb-3 flex items-center">
-              <CheckCircle className="w-4 h-4 mr-2" />
-              Work Activities ({previewData['activities'].activities.length})
-            </h3>
-            <div className="space-y-2">
-              {previewData['activities'].activities.slice(0, 3).map((activity: any, index: number) => (
-                <div key={index} className="text-sm bg-white p-2 rounded border">
-                  <div className="font-medium">{index + 1}. {activity.name}</div>
-                  {activity.riskScore && (
-                    <div className="text-xs text-purple-600">Risk Score: {activity.riskScore}/20</div>
-                  )}
+        {/* Project Information */}
+        <div className="mb-6">
+          <h3 className="font-bold bg-gray-100 p-2 text-sm border-b mb-4">Project Information</h3>
+          
+          <div className="grid grid-cols-2 gap-6 text-xs">
+            <div className="space-y-3">
+              <div>
+                <div className="font-medium">Company Name: <span className="font-normal">{formFields.companyName}</span></div>
+              </div>
+              <div>
+                <div className="font-medium">Job Name: <span className="font-normal">{formFields.jobName}</span></div>
+              </div>
+              <div>
+                <div className="font-medium">Job Number: <span className="font-normal">{formFields.jobNumber}</span></div>
+              </div>
+              <div>
+                <div className="font-medium">Project Address: <span className="font-normal">{formFields.projectAddress}</span></div>
+              </div>
+              <div>
+                <div className="font-medium">Start Date: <span className="font-normal">{formFields.startDate}</span></div>
+              </div>
+              <div>
+                <div className="font-medium">Duration: <span className="font-normal">{formFields.duration}</span></div>
+              </div>
+              <div>
+                <div className="font-medium">Date Created: <span className="font-normal">{formFields.dateCreated}</span></div>
+              </div>
+              <div>
+                <div className="font-medium">Principal Contractor: <span className="font-normal">{formFields.principalContractor}</span></div>
+              </div>
+            </div>
+            
+            <div className="space-y-3">
+              <div>
+                <div className="font-medium">Project Manager: <span className="font-normal">{formFields.projectManager}</span></div>
+              </div>
+              <div>
+                <div className="font-medium">Site Supervisor: <span className="font-normal">{formFields.siteSupervisor}</span></div>
+              </div>
+              <div>
+                <div className="font-medium">Person Authorising SWMS</div>
+                <div className="ml-4">
+                  <div>Name: <span className="font-normal">{formFields.authorisingPersonName}</span></div>
+                  <div>Position: <span className="font-normal">{formFields.authorisingPersonPosition}</span></div>
                 </div>
-              ))}
-              {previewData['activities'].activities.length > 3 && (
-                <div className="text-xs text-gray-500">
-                  +{previewData['activities'].activities.length - 3} more activities...
+              </div>
+              <div>
+                <div className="font-medium">Signature:</div>
+                <div className="mt-2 p-2 border border-gray-300 h-16 bg-gray-50">
+                  <div className="italic text-xs">{formFields.typeSignature}</div>
                 </div>
-              )}
+              </div>
             </div>
           </div>
-        )}
+        </div>
 
-        {previewData['ppe'] && (
-          <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
-            <h3 className="font-semibold text-yellow-900 mb-3 flex items-center">
-              <Shield className="w-4 h-4 mr-2" />
-              PPE Requirements ({previewData['ppe'].requirements.length})
-            </h3>
-            <div className="flex flex-wrap gap-2">
-              {previewData['ppe'].requirements.slice(0, 6).map((ppe: string, index: number) => (
-                <span key={index} className="text-xs bg-yellow-200 px-2 py-1 rounded">
-                  {ppe}
-                </span>
-              ))}
-              {previewData['ppe'].requirements.length > 6 && (
-                <span className="text-xs text-gray-500">
-                  +{previewData['ppe'].requirements.length - 6} more...
-                </span>
-              )}
-            </div>
+        {/* Scope of Work */}
+        <div className="mb-6">
+          <h3 className="font-bold bg-gray-100 p-2 text-sm border-b mb-4">Scope of Work</h3>
+          <div className="text-xs">
+            <p>Sample scope of work description</p>
           </div>
-        )}
+        </div>
 
-        {previewData['equipment'] && (
-          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-            <h3 className="font-semibold text-gray-900 mb-3 flex items-center">
-              <Wrench className="w-4 h-4 mr-2" />
-              Plant & Equipment ({previewData['equipment'].equipment.length})
-            </h3>
-            <div className="space-y-2">
-              {previewData['equipment'].equipment.slice(0, 3).map((item: any, index: number) => (
-                <div key={index} className="text-sm bg-white p-2 rounded border flex justify-between">
-                  <span>{item.name || item}</span>
-                  {item.riskLevel && (
-                    <span className={`text-xs px-2 py-1 rounded ${
-                      item.riskLevel === 'High' ? 'bg-red-100 text-red-700' :
-                      item.riskLevel === 'Medium' ? 'bg-yellow-100 text-yellow-700' :
-                      'bg-green-100 text-green-700'
-                    }`}>
-                      {item.riskLevel}
-                    </span>
-                  )}
-                </div>
-              ))}
-              {previewData['equipment'].equipment.length > 3 && (
-                <div className="text-xs text-gray-500">
-                  +{previewData['equipment'].equipment.length - 3} more items...
-                </div>
-              )}
-            </div>
+        {/* Review and Monitoring */}
+        <div className="mb-6">
+          <h3 className="font-bold bg-gray-100 p-2 text-sm border-b mb-4">Review and Monitoring</h3>
+          <div className="text-xs">
+            <p>This SWMS will be reviewed and updated whenever changes occur to scope, method, or risk levels. The site supervisor is responsible for initiating this review. All workers will be consulted on this SWMS during the pre-start meeting. Updates will be communicated verbally and via toolbox talks.</p>
           </div>
-        )}
-
-        {previewData['emergency'] && (
-          <div className="bg-red-50 p-4 rounded-lg border border-red-200">
-            <h3 className="font-semibold text-red-900 mb-3 flex items-center">
-              <AlertTriangle className="w-4 h-4 mr-2" />
-              Emergency Procedures
-            </h3>
-            <div className="text-sm text-red-800 whitespace-pre-line">
-              {previewData['emergency'].procedures}
-            </div>
-          </div>
-        )}
+        </div>
       </div>
     );
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto">
+    <div className="flex h-screen bg-gray-200">
+      {/* Left Sidebar - Form Controls */}
+      <div className="w-96 bg-gray-100 border-r border-gray-300">
         {/* Header */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">SWMSprint Document Builder</h1>
-              <p className="text-gray-600 mt-1">Select sections and customize your SWMS document</p>
-            </div>
-            <div className="flex gap-3">
-              <Button 
-                variant="outline" 
-                onClick={updatePreview}
-                className="flex items-center gap-2"
+        <div className="bg-white p-4 border-b">
+          <h2 className="text-lg font-bold text-gray-800">SWMS Generator</h2>
+        </div>
+
+        {/* Tab Navigation */}
+        <div className="bg-gray-200 border-b">
+          <div className="flex flex-wrap text-xs">
+            {tabs.map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setSelectedTab(tab)}
+                className={`px-3 py-2 border-r border-gray-300 ${
+                  selectedTab === tab 
+                    ? 'bg-white text-blue-600 font-medium' 
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-50'
+                }`}
               >
-                <Eye className="w-4 h-4" />
-                Update Preview
-              </Button>
-              <Button 
-                onClick={generatePDF}
-                disabled={isGenerating}
-                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700"
-              >
-                <Download className="w-4 h-4" />
-                {isGenerating ? 'Generating...' : 'Download PDF'}
-              </Button>
-            </div>
+                {tab}
+              </button>
+            ))}
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Section Selection Panel */}
-          <div className="lg:col-span-1">
-            <Card>
-              <CardContent className="p-6">
-                <h2 className="text-lg font-semibold mb-4">Document Sections</h2>
-                <div className="space-y-3">
-                  {sections.map((section) => (
-                    <div
-                      key={section.id}
-                      className={`flex items-center p-3 rounded-lg border-2 transition-all cursor-pointer ${
-                        section.selected
-                          ? 'border-blue-500 bg-blue-50'
-                          : 'border-gray-200 bg-white hover:border-gray-300'
-                      }`}
-                      onClick={() => toggleSection(section.id)}
-                    >
-                      <div className={`mr-3 ${section.selected ? 'text-blue-600' : 'text-gray-400'}`}>
-                        {section.icon}
-                      </div>
-                      <div>
-                        <div className={`font-medium ${section.selected ? 'text-blue-900' : 'text-gray-700'}`}>
-                          {section.title}
-                        </div>
-                        <div className="text-xs text-gray-500">
-                          {section.selected ? 'Included' : 'Click to include'}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-                  <div className="text-sm font-medium text-gray-700 mb-2">
-                    Document Status
-                  </div>
-                  <div className="text-xs text-gray-600">
-                    {selectedSections.length} of {sections.length} sections selected
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                    <div 
-                      className="bg-blue-600 h-2 rounded-full transition-all"
-                      style={{ width: `${(selectedSections.length / sections.length) * 100}%` }}
-                    ></div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+        {/* PDF Generation Buttons */}
+        <div className="p-4 bg-white border-b">
+          <div className="grid grid-cols-2 gap-2 text-xs">
+            <Button 
+              onClick={() => generatePDF('Print')}
+              className="bg-green-600 hover:bg-green-700 text-white"
+              disabled={isGenerating}
+            >
+              Print PDF
+            </Button>
+            <Button 
+              onClick={() => generatePDF('Download')}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+              disabled={isGenerating}
+            >
+              Download PDF
+            </Button>
+            <Button 
+              onClick={() => generatePDF('Vector')}
+              className="bg-purple-600 hover:bg-purple-700 text-white"
+              disabled={isGenerating}
+            >
+              Vector PDF
+            </Button>
+            <Button 
+              onClick={() => generatePDF('Final')}
+              className="bg-red-600 hover:bg-red-700 text-white"
+              disabled={isGenerating}
+            >
+              Final PDF
+            </Button>
           </div>
+        </div>
 
-          {/* Preview Panel */}
-          <div className="lg:col-span-2">
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-lg font-semibold">Document Preview</h2>
-                  <div className="text-sm text-gray-500">
-                    Live preview • {selectedSections.length} sections
-                  </div>
-                </div>
-                <div className="border rounded-lg p-4 bg-white max-h-96 overflow-y-auto">
-                  {renderPreviewContent()}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+        {/* Form Content */}
+        <div className="p-4 overflow-y-auto flex-1">
+          {selectedTab === 'Project Information' && (
+            <div className="space-y-4">
+              <h3 className="font-bold text-sm">Project Information</h3>
+              
+              <div>
+                <Label className="text-xs">Company Logo</Label>
+                <div className="mt-1 text-xs text-gray-500">Choose File - no file selected</div>
+              </div>
+
+              <div>
+                <Label className="text-xs">Company Name</Label>
+                <Input 
+                  value={formFields.companyName}
+                  onChange={(e) => updateField('companyName', e.target.value)}
+                  className="text-xs h-8"
+                />
+              </div>
+
+              <div>
+                <Label className="text-xs">Project Name</Label>
+                <Input 
+                  value={formFields.projectName}
+                  onChange={(e) => updateField('projectName', e.target.value)}
+                  className="text-xs h-8"
+                />
+              </div>
+
+              <div>
+                <Label className="text-xs">Project Number</Label>
+                <Input 
+                  value={formFields.projectNumber}
+                  onChange={(e) => updateField('projectNumber', e.target.value)}
+                  className="text-xs h-8"
+                />
+              </div>
+
+              <div>
+                <Label className="text-xs">Project Address</Label>
+                <Textarea 
+                  value={formFields.projectAddress}
+                  onChange={(e) => updateField('projectAddress', e.target.value)}
+                  className="text-xs"
+                  rows={3}
+                />
+              </div>
+
+              <div>
+                <Label className="text-xs">Job Name</Label>
+                <Input 
+                  value={formFields.jobName}
+                  onChange={(e) => updateField('jobName', e.target.value)}
+                  className="text-xs h-8"
+                />
+              </div>
+
+              <div>
+                <Label className="text-xs">Job Number</Label>
+                <Input 
+                  value={formFields.jobNumber}
+                  onChange={(e) => updateField('jobNumber', e.target.value)}
+                  className="text-xs h-8"
+                />
+              </div>
+
+              <div>
+                <Label className="text-xs">Start Date</Label>
+                <Input 
+                  value={formFields.startDate}
+                  onChange={(e) => updateField('startDate', e.target.value)}
+                  className="text-xs h-8"
+                />
+              </div>
+
+              <div>
+                <Label className="text-xs">Duration</Label>
+                <Input 
+                  value={formFields.duration}
+                  onChange={(e) => updateField('duration', e.target.value)}
+                  className="text-xs h-8"
+                />
+              </div>
+
+              <div>
+                <Label className="text-xs">Date Created</Label>
+                <Input 
+                  value={formFields.dateCreated}
+                  onChange={(e) => updateField('dateCreated', e.target.value)}
+                  className="text-xs h-8"
+                />
+              </div>
+
+              <div>
+                <Label className="text-xs">Principal Contractor</Label>
+                <Input 
+                  value={formFields.principalContractor}
+                  onChange={(e) => updateField('principalContractor', e.target.value)}
+                  className="text-xs h-8"
+                />
+              </div>
+
+              <div>
+                <Label className="text-xs">Project Manager</Label>
+                <Input 
+                  value={formFields.projectManager}
+                  onChange={(e) => updateField('projectManager', e.target.value)}
+                  className="text-xs h-8"
+                />
+              </div>
+
+              <div>
+                <Label className="text-xs">Site Supervisor</Label>
+                <Input 
+                  value={formFields.siteSupervisor}
+                  onChange={(e) => updateField('siteSupervisor', e.target.value)}
+                  className="text-xs h-8"
+                />
+              </div>
+
+              <div>
+                <Label className="text-xs">Authorising Person Name</Label>
+                <Input 
+                  value={formFields.authorisingPersonName}
+                  onChange={(e) => updateField('authorisingPersonName', e.target.value)}
+                  className="text-xs h-8"
+                />
+              </div>
+
+              <div>
+                <Label className="text-xs">Authorising Person Position</Label>
+                <Input 
+                  value={formFields.authorisingPersonPosition}
+                  onChange={(e) => updateField('authorisingPersonPosition', e.target.value)}
+                  className="text-xs h-8"
+                />
+              </div>
+
+              <div>
+                <Label className="text-xs">Authorising Person Signature</Label>
+                <div className="mt-1 text-xs text-gray-500">Upload Signature Image</div>
+                <div className="mt-1 text-xs text-gray-500">Choose File - no file selected</div>
+                <div className="mt-2 text-xs text-gray-500">OR</div>
+              </div>
+
+              <div>
+                <Label className="text-xs">Type Signature</Label>
+                <Input 
+                  value={formFields.typeSignature}
+                  onChange={(e) => updateField('typeSignature', e.target.value)}
+                  className="text-xs h-8"
+                />
+              </div>
+            </div>
+          )}
+
+          {selectedTab !== 'Project Information' && (
+            <div className="text-center text-gray-500 text-sm py-8">
+              {selectedTab} content will be displayed here
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Right Side - Document Preview */}
+      <div className="flex-1 bg-white">
+        <div className="h-full border border-gray-300">
+          {renderPreviewContent()}
         </div>
       </div>
     </div>
