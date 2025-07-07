@@ -98,91 +98,96 @@ export function SWMSPrintInterface({ formData }: SWMSPrintInterfaceProps) {
 
   const renderPreviewContent = () => {
     return (
-      <div className="bg-white p-6 h-full overflow-y-auto" style={{ fontSize: '11px' }}>
-        {/* Header */}
-        <div className="flex justify-between items-start mb-6">
-          <div className="flex items-center">
-            <div className="text-blue-600 font-bold text-lg mr-4">Riskify</div>
+      <div className="bg-gray-100 p-6 h-full overflow-y-auto" style={{ fontSize: '12px' }}>
+        {/* Header with Riskify branding */}
+        <div className="flex justify-between items-start mb-8">
+          <div className="flex items-start">
+            <div className="mr-6">
+              <div className="text-blue-600 font-bold text-2xl mb-1">Riskify</div>
+              <div className="text-xs text-gray-600">AI SWMS Generator</div>
+            </div>
             <div>
-              <div className="font-bold text-lg">Safe Work Method Statement</div>
+              <div className="font-bold text-xl text-gray-800">Safe Work Method Statement</div>
             </div>
           </div>
-          <div className="text-right text-xs">
-            <div><strong>Test Company Name</strong></div>
+          <div className="text-right text-xs text-gray-700 border border-dashed border-gray-400 p-3">
+            <div className="font-medium">{formFields.companyName}</div>
+            <div>{formFields.projectName}</div>
             <div>SWMS</div>
-            <div>123 456</div>
-            <div>123 Sample Job Address</div>
+            <div>{formFields.projectNumber}</div>
+            <div>{formFields.projectAddress}</div>
+            <div className="mt-2 text-gray-500">Company Logo</div>
           </div>
         </div>
 
-        {/* Project Information */}
-        <div className="mb-6">
-          <h3 className="font-bold bg-gray-100 p-2 text-sm border-b mb-4">Project Information</h3>
+        {/* Project Information Section */}
+        <div className="bg-white border border-gray-300 rounded p-4 mb-6">
+          <h3 className="font-bold text-gray-800 text-lg mb-4">Project Information</h3>
           
-          <div className="grid grid-cols-2 gap-6 text-xs">
+          <div className="grid grid-cols-2 gap-6 text-sm">
             <div className="space-y-3">
               <div>
-                <div className="font-medium">Company Name: <span className="font-normal">{formFields.companyName}</span></div>
+                <span className="font-medium text-gray-700">Company Name:</span> {formFields.companyName}
               </div>
               <div>
-                <div className="font-medium">Job Name: <span className="font-normal">{formFields.jobName}</span></div>
+                <span className="font-medium text-gray-700">Job Name:</span> {formFields.jobName}
               </div>
               <div>
-                <div className="font-medium">Job Number: <span className="font-normal">{formFields.jobNumber}</span></div>
+                <span className="font-medium text-gray-700">Job Number:</span> {formFields.jobNumber}
               </div>
               <div>
-                <div className="font-medium">Project Address: <span className="font-normal">{formFields.projectAddress}</span></div>
+                <span className="font-medium text-gray-700">Project Address:</span> {formFields.projectAddress}
               </div>
               <div>
-                <div className="font-medium">Start Date: <span className="font-normal">{formFields.startDate}</span></div>
+                <span className="font-medium text-gray-700">Start Date:</span> {formFields.startDate}
               </div>
               <div>
-                <div className="font-medium">Duration: <span className="font-normal">{formFields.duration}</span></div>
+                <span className="font-medium text-gray-700">Duration:</span> {formFields.duration}
               </div>
               <div>
-                <div className="font-medium">Date Created: <span className="font-normal">{formFields.dateCreated}</span></div>
+                <span className="font-medium text-gray-700">Date Created:</span> {formFields.dateCreated}
               </div>
               <div>
-                <div className="font-medium">Principal Contractor: <span className="font-normal">{formFields.principalContractor}</span></div>
+                <span className="font-medium text-gray-700">Principal Contractor:</span> {formFields.principalContractor}
               </div>
             </div>
             
             <div className="space-y-3">
               <div>
-                <div className="font-medium">Project Manager: <span className="font-normal">{formFields.projectManager}</span></div>
+                <span className="font-medium text-gray-700">Project Manager:</span> {formFields.projectManager}
               </div>
               <div>
-                <div className="font-medium">Site Supervisor: <span className="font-normal">{formFields.siteSupervisor}</span></div>
+                <span className="font-medium text-gray-700">Site Supervisor:</span> {formFields.siteSupervisor}
               </div>
-              <div>
-                <div className="font-medium">Person Authorising SWMS</div>
-                <div className="ml-4">
-                  <div>Name: <span className="font-normal">{formFields.authorisingPersonName}</span></div>
-                  <div>Position: <span className="font-normal">{formFields.authorisingPersonPosition}</span></div>
+              <div className="mt-4">
+                <div className="font-medium text-gray-700 underline">Person Authorising SWMS</div>
+                <div className="mt-2 ml-4 space-y-1">
+                  <div>Name: {formFields.authorisingPersonName}</div>
+                  <div>Position: {formFields.authorisingPersonPosition}</div>
                 </div>
               </div>
-              <div>
-                <div className="font-medium">Signature:</div>
-                <div className="mt-2 p-2 border border-gray-300 h-16 bg-gray-50">
-                  <div className="italic text-xs">{formFields.typeSignature}</div>
+              <div className="mt-4">
+                <div className="font-medium text-gray-700">Signature:</div>
+                <div className="mt-2 border border-gray-300 h-16 bg-white flex items-center justify-center">
+                  <div className="italic text-blue-600">{formFields.typeSignature}</div>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Scope of Work */}
-        <div className="mb-6">
-          <h3 className="font-bold bg-gray-100 p-2 text-sm border-b mb-4">Scope of Work</h3>
-          <div className="text-xs">
-            <p>Sample scope of work description</p>
+        {/* Scope of Works Section */}
+        <div className="bg-white border border-gray-300 rounded p-4 mb-6">
+          <h3 className="font-bold text-gray-800 text-lg mb-4">Scope of Works</h3>
+          <div className="text-sm text-gray-700">
+            <p>Sample scope of works description</p>
           </div>
         </div>
 
-        {/* Review and Monitoring */}
-        <div className="mb-6">
-          <h3 className="font-bold bg-gray-100 p-2 text-sm border-b mb-4">Review and Monitoring</h3>
-          <div className="text-xs">
+        {/* Review and Monitoring Section */}
+        <div className="bg-white border border-gray-300 rounded p-4">
+          <h3 className="font-bold text-gray-800 text-lg mb-4">Review and Monitoring</h3>
+          <div className="text-sm text-gray-700 leading-relaxed">
             <p>This SWMS will be reviewed and updated whenever changes occur to scope, method, or risk levels. The site supervisor is responsible for initiating this review. All workers will be consulted on this SWMS during the pre-start meeting. Updates will be communicated verbally and via toolbox talks.</p>
           </div>
         </div>
@@ -408,9 +413,45 @@ export function SWMSPrintInterface({ formData }: SWMSPrintInterfaceProps) {
             </div>
           )}
 
-          {selectedTab !== 'Project Information' && (
+          {selectedTab === 'Work Activities' && (
             <div className="text-center text-gray-500 text-sm py-8">
-              {selectedTab} content will be displayed here
+              Work Activities content will be displayed here
+            </div>
+          )}
+
+          {selectedTab === 'Task & Risk Analysis' && (
+            <div className="text-center text-gray-500 text-sm py-8">
+              Task & Risk Analysis content will be displayed here
+            </div>
+          )}
+
+          {selectedTab === 'Risk Matrix' && (
+            <div className="text-center text-gray-500 text-sm py-8">
+              Risk Matrix content will be displayed here
+            </div>
+          )}
+
+          {selectedTab === 'PPE' && (
+            <div className="text-center text-gray-500 text-sm py-8">
+              PPE content will be displayed here
+            </div>
+          )}
+
+          {selectedTab === 'Plant & Equipment' && (
+            <div className="text-center text-gray-500 text-sm py-8">
+              Plant & Equipment content will be displayed here
+            </div>
+          )}
+
+          {selectedTab === 'Sign in Register' && (
+            <div className="text-center text-gray-500 text-sm py-8">
+              Sign in Register content will be displayed here
+            </div>
+          )}
+
+          {selectedTab === 'MIOS' && (
+            <div className="text-center text-gray-500 text-sm py-8">
+              MIOS content will be displayed here
             </div>
           )}
         </div>
