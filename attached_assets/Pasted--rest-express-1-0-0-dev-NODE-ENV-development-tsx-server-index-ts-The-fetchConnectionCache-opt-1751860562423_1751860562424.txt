@@ -1,0 +1,44 @@
+
+> rest-express@1.0.0 dev
+> NODE_ENV=development tsx server/index.ts
+
+The `fetchConnectionCache` option is deprecated (now always `true`)
+3:54:21 AM [express] Initializing database connection...
+Testing database connection...
+Database connection successful
+3:54:21 AM [express] Server running on port 5000
+3:54:21 AM [express] Environment: development
+Browserslist: browsers data (caniuse-lite) is 9 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+3:54:39 AM [express] GET /api/user 304 in 158ms :: {"id":999,"username":"demo","name":"Demo User","e…
+3:54:39 AM [express] GET /api/user 304 in 167ms :: {"id":999,"username":"demo","name":"Demo User","e…
+3:54:39 AM [express] GET /api/user/subscription 200 in 9ms
+Saving SWMS draft for user: 999 Project: Untitled SWMS Demo mode: true
+DEBUG - projectDescription field: 
+DEBUG - workDescription field: 
+Saving SWMS draft for user: 999 Project: Untitled SWMS Demo mode: true
+DEBUG - projectDescription field: 
+DEBUG - workDescription field: 
+Found existing draft for user, updating instead of creating new: 66976
+Found existing draft for user, updating instead of creating new: 66976
+SWMS draft updated: 66976
+SWMS draft saved successfully with ID: 66976
+3:54:42 AM [express] POST /api/swms/draft 200 in 112ms :: {"success":true,"id":66976,"message":"Draf…
+SWMS draft updated: 66976
+SWMS draft saved successfully with ID: 66976
+3:54:42 AM [express] POST /api/swms/draft 200 in 158ms :: {"success":true,"id":66976,"message":"Draf…
+Saving SWMS draft for user: 999 Project: Untitled SWMS Demo mode: true
+DEBUG - projectDescription field: 
+DEBUG - workDescription field: 
+Updating existing document: 66976
+SWMS draft updated: 66976
+SWMS draft saved successfully with ID: 66976
+3:55:53 AM [express] POST /api/swms/draft 200 in 179ms :: {"success":true,"id":66976,"message":"Draf…
+Saving SWMS draft for user: 999 Project: Untitled SWMS Demo mode: true
+DEBUG - projectDescription field: 
+DEBUG - workDescription field: 
+Updating existing document: 66976
+SWMS draft updated: 66976
+SWMS draft saved successfully with ID: 66976
+3:55:54 AM [express] POST /api/swms/draft 200 in 57ms :: {"success":true,"id":66976,"message":"Draft…

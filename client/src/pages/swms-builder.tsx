@@ -1389,6 +1389,9 @@ export default function SwmsBuilder() {
               creditsError={creditsError}
               setIsProcessingCredit={setIsProcessingCredit}
             />
+            {/* Debug: Check handleNext function */}
+            {console.log('swms-builder handleNext function:', handleNext)}
+            {console.log('swms-builder currentStep:', currentStep)}
                 
                 {/* Navigation - Hidden on step 9 (automatic PDF generation) */}
                 {currentStep !== 9 && (
