@@ -1,12 +1,16 @@
 import PDFDocument from 'pdfkit';
 
-export function generateEmbeddedPDF(data: any): Buffer {
+export function generateEmbeddedPDF(data: any): Promise<Buffer> {
+  return new Promise((resolve, reject) => {
   console.log('🏗️ EMBEDDED PDF GENERATOR - Creating SWMS document');
   console.log('📊 Data received:', {
     projectName: data.projectName || data.jobName || 'Untitled',
-    activitiesCount: data.swmsData?.activities?.length || data.activities?.length || 0,
+    activitiesCount: data.swmsData?.activities?.length || data.activities?.length || data.workActivities?.length || 0,
     equipmentCount: data.swmsData?.plantEquipment?.length || data.plantEquipment?.length || 0
   });
+  
+  console.log('📋 Raw data keys:', Object.keys(data));
+  console.log('📋 WorkActivities found:', !!data.workActivities, data.workActivities?.length || 0);
 
   const doc = new PDFDocument({
     size: 'A4',
@@ -15,7 +19,15 @@ export function generateEmbeddedPDF(data: any): Buffer {
 
   const chunks: Buffer[] = [];
   doc.on('data', (chunk: Buffer) => chunks.push(chunk));
-  doc.on('end', () => {});
+  doc.on('end', () => {
+    const buffer = Buffer.concat(chunks);
+    console.log(`✅ PDF generated successfully: ${buffer.length} bytes`);
+    resolve(buffer);
+  });
+  doc.on('error', (error) => {
+    console.error('PDF generation error:', error);
+    reject(error);
+  });
 
   // Extract data with fallbacks
   const formData = data.formData || data.swmsData || data;
@@ -23,7 +35,7 @@ export function generateEmbeddedPDF(data: any): Buffer {
   const projectNumber = data.projectNumber || formData.jobNumber || '';
   const projectAddress = data.projectAddress || formData.projectLocation || formData.location || '';
   const principalContractor = data.principalContractor || formData.principalContractor || data.companyName || '';
-  const activities = data.swmsData?.activities || data.activities || formData.activities || [];
+  const activities = data.swmsData?.activities || data.activities || formData.activities || formData.workActivities || [];
   const plantEquipment = data.swmsData?.plantEquipment || data.plantEquipment || formData.plantEquipment || [];
   const emergencyProcedures = data.swmsData?.emergencyProcedures || data.emergencyProcedures || formData.emergencyProcedures || [];
 
@@ -33,6 +45,11 @@ export function generateEmbeddedPDF(data: any): Buffer {
     equipmentCount: plantEquipment.length,
     emergencyCount: emergencyProcedures.length
   });
+  
+  // Debug first activity structure
+  if (activities.length > 0) {
+    console.log('🔍 First activity structure:', JSON.stringify(activities[0], null, 2));
+  }
 
   // HEADER SECTION
   doc.fontSize(20).font('Helvetica-Bold').text('SAFE WORK METHOD STATEMENT', { align: 'center' });
@@ -94,11 +111,23 @@ export function generateEmbeddedPDF(data: any): Buffer {
         doc.moveDown(0.2);
       }
 
-      // Control Measures
-      if (activity.controlMeasures && activity.controlMeasures.length > 0) {
+      // Control Measures - handle both array and nested structure
+      const controlMeasures = activity.controlMeasures || [];
+      if (activity.hazards && activity.hazards.length > 0) {
+        activity.hazards.forEach((hazard: any) => {
+          if (hazard.controlMeasures && hazard.controlMeasures.length > 0) {
+            controlMeasures.push(...hazard.controlMeasures);
+          }
+        });
+      }
+      
+      if (controlMeasures.length > 0) {
         doc.font('Helvetica-Bold').text('Control Measures:');
-        activity.controlMeasures.forEach((control: any) => {
-          doc.font('Helvetica').text(`• ${control}`, { indent: 10 });
+        controlMeasures.forEach((control: any) => {
+          const controlText = typeof control === 'string' ? control : control.description || control.measure || '';
+          if (controlText) {
+            doc.font('Helvetica').text(`• ${controlText}`, { indent: 10 });
+          }
         });
         doc.moveDown(0.2);
       }
@@ -208,9 +237,5 @@ export function generateEmbeddedPDF(data: any): Buffer {
            { align: 'center' });
 
   doc.end();
-
-  const buffer = Buffer.concat(chunks);
-  console.log(`✅ PDF generated successfully: ${buffer.length} bytes`);
-  
-  return buffer;
+  });
 }
