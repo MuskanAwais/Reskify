@@ -326,11 +326,7 @@ const AutomaticPDFGeneration = ({ formData, onDataChange }: { formData: any; onD
                 </Button>
               )}
               
-              <div className="text-center pt-4">
-                <Button variant="outline" onClick={() => window.location.href = '/dashboard'}>
-                  Return to Dashboard
-                </Button>
-              </div>
+
             </div>
           </CardContent>
         </Card>
@@ -390,12 +386,9 @@ const AutomaticPDFGeneration = ({ formData, onDataChange }: { formData: any; onD
         <Card>
           <CardContent className="pt-6">
             <div className="text-center space-y-4">
-              <Button onClick={() => window.location.reload()}>
-                Try Again
-              </Button>
-              <Button variant="outline" onClick={() => window.location.href = '/dashboard'}>
-                Return to Dashboard
-              </Button>
+              <p className="text-sm text-muted-foreground">
+                PDF generation encountered an issue. Please check your data and try again.
+              </p>
             </div>
           </CardContent>
         </Card>
