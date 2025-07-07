@@ -1602,55 +1602,42 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
           </div>
 
           <Card>
-            <CardHeader>
-              <CardTitle>Terms and Conditions</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="p-4 bg-yellow-50 rounded-lg border border-yellow-200 mb-4">
-                <h4 className="font-semibold text-amber-800 mb-2">Important Notice</h4>
-                <p className="text-sm text-amber-700">
-                  This SWMS is a template and must be reviewed, adapted, and approved by a competent person before 
-                  use. The user is responsible for ensuring compliance with all applicable workplace health and safety 
-                  legislation.
-                </p>
+            <CardContent className="space-y-6 pt-6">
+              <div className="p-6 bg-orange-50 border border-orange-200 rounded-lg">
+                <h4 className="text-lg font-semibold text-orange-800 mb-4">IMPORTANT LEGAL DISCLAIMER</h4>
+                <div className="space-y-4 text-sm text-orange-700">
+                  <p>
+                    <strong>Template Nature:</strong> This SWMS is a template and must be reviewed, adapted, and approved by a competent person before use. It is not a substitute for professional safety advice or consultation.
+                  </p>
+                  <p>
+                    <strong>User Responsibility:</strong> The user is responsible for ensuring compliance with all applicable workplace health and safety legislation, including but not limited to the Work Health and Safety Act 2011 and associated regulations.
+                  </p>
+                  <p>
+                    <strong>Site-Specific Requirements:</strong> This template must be customized to reflect the specific hazards, controls, and conditions of your workplace and project. Generic content may not address all risks present at your site.
+                  </p>
+                  <p>
+                    <strong>Professional Consultation:</strong> Users should consult with qualified safety professionals, supervisors, and workers before implementing any SWMS. This template does not replace professional safety expertise.
+                  </p>
+                  <p>
+                    <strong>Limitation of Liability:</strong> The creators of this template accept no responsibility for any injuries, incidents, or non-compliance issues that may arise from its use. Use of this template is entirely at your own risk.
+                  </p>
+                  <p>
+                    <strong>Regulatory Compliance:</strong> While this template references Australian safety standards and regulations, users must verify current legislative requirements and ensure full compliance with all applicable laws.
+                  </p>
+                </div>
               </div>
-              
-              <div className="space-y-3">
-                <div className="flex items-start space-x-2">
-                  <Checkbox
-                    id="disclaimer1"
-                    checked={formData.acceptTerms1 || false}
-                    onCheckedChange={(checked) => updateFormData({ acceptTerms1: checked })}
-                  />
-                  <Label htmlFor="disclaimer1" className="text-sm">
-                    I acknowledge that this SWMS template requires review and adaptation to specific workplace conditions 
-                    and hazards before implementation.
-                  </Label>
-                </div>
-                
-                <div className="flex items-start space-x-2">
-                  <Checkbox
-                    id="disclaimer2"
-                    checked={formData.acceptTerms2 || false}
-                    onCheckedChange={(checked) => updateFormData({ acceptTerms2: checked })}
-                  />
-                  <Label htmlFor="disclaimer2" className="text-sm">
-                    I understand that compliance with workplace health and safety legislation is my responsibility and that 
-                    this template does not guarantee compliance.
-                  </Label>
-                </div>
-                
-                <div className="flex items-start space-x-2">
-                  <Checkbox
-                    id="disclaimer3"
-                    checked={formData.acceptTerms3 || false}
-                    onCheckedChange={(checked) => updateFormData({ acceptTerms3: checked })}
-                  />
-                  <Label htmlFor="disclaimer3" className="text-sm">
-                    I accept that the use of this SWMS template is at my own risk and that I will ensure appropriate 
-                    consultation with safety professionals.
-                  </Label>
-                </div>
+
+              <div className="flex items-start space-x-3">
+                <Checkbox
+                  id="acceptDisclaimer"
+                  checked={formData.acceptedDisclaimer || false}
+                  onCheckedChange={(checked) => updateFormData({ acceptedDisclaimer: checked })}
+                />
+                <Label htmlFor="acceptDisclaimer" className="text-sm leading-relaxed">
+                  I acknowledge that I have read and understood this disclaimer. I accept full responsibility for reviewing, 
+                  adapting, and implementing this SWMS template in accordance with my specific workplace requirements and 
+                  applicable safety legislation. I understand that use of this template is at my own risk.
+                </Label>
               </div>
             </CardContent>
           </Card>
