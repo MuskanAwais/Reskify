@@ -1044,7 +1044,9 @@ export default function SwmsBuilder() {
         isDemoMode,
         paidAccess: formData.paidAccess,
         paid: formData.paid,
-        creditsUsed: formData.creditsUsed
+        creditsUsed: formData.creditsUsed,
+        currentUser: currentUser,
+        isCurrentUserAdmin: (currentUser as any)?.isAdmin
       });
       
       // Allow progression if any of these conditions are met:
