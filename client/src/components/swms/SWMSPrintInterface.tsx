@@ -98,108 +98,102 @@ export function SWMSPrintInterface({ formData }: SWMSPrintInterfaceProps) {
 
   const renderPreviewContent = () => {
     return (
-      <div className="bg-gray-200 p-8 h-full overflow-y-auto" style={{ fontSize: '11px', fontFamily: 'Arial, sans-serif' }}>
+      <div className="bg-gray-100 p-6 h-full overflow-y-auto" style={{ fontSize: '12px', fontFamily: 'Arial, sans-serif' }}>
         {/* Header - Exact SWMSprint Layout */}
-        <div className="flex justify-between items-start mb-8">
-          <div className="flex items-start gap-6">
-            <div>
-              <div className="text-green-600 font-bold text-2xl" style={{ fontFamily: 'Arial, sans-serif' }}>Riskify</div>
-              <div className="text-xs text-gray-600 italic">AI SWMS Generator</div>
+        <div className="flex justify-between items-start mb-6">
+          <div className="flex items-start">
+            <div className="mr-8">
+              <div className="text-green-600 font-bold text-2xl mb-1">Riskify</div>
+              <div className="text-xs text-gray-600">AI SWMS Generator</div>
             </div>
             <div>
               <div className="font-bold text-xl text-black">Safe Work Method Statement</div>
             </div>
           </div>
-          <div className="text-right text-xs border border-dashed border-gray-500 p-3 bg-gray-50">
-            <div className="font-bold">Test Company Name</div>
-            <div className="font-bold">Test Project Name</div>
+          <div className="text-right text-xs border border-dashed border-gray-400 p-3 bg-white">
+            <div className="font-medium text-gray-700">Test Company Name</div>
+            <div className="font-medium text-gray-700">Test Project Name</div>
             <div>SWMS</div>
             <div>123 456</div>
             <div>123 Sample Job Address</div>
-            <div className="mt-3 border border-gray-400 p-2 text-center text-gray-500">Company Logo</div>
+            <div className="mt-2 border border-gray-300 p-2 text-center text-gray-500 text-xs">Company Logo</div>
           </div>
         </div>
 
-        {/* Project Information Section - Exact Match */}
-        <div className="bg-white border border-gray-400 mb-6">
-          <h3 className="font-bold text-black text-base bg-gray-100 p-3 border-b border-gray-400 m-0">Project Information</h3>
+        {/* Project Information Section */}
+        <div className="bg-white border border-gray-300 mb-4 p-4">
+          <h3 className="font-bold text-black text-lg mb-4">Project Information</h3>
           
-          <div className="p-4">
-            <div className="grid grid-cols-2 gap-8">
-              <div className="space-y-2">
-                <div className="text-sm">
-                  <span className="font-bold">Company Name:</span> Test Company Name
-                </div>
-                <div className="text-sm">
-                  <span className="font-bold">Job Name:</span> Test Project Name
-                </div>
-                <div className="text-sm">
-                  <span className="font-bold">Job Number:</span> 123 456
-                </div>
-                <div className="text-sm">
-                  <span className="font-bold">Project Address:</span> 123 Sample Job Address
-                </div>
-                <div className="text-sm">
-                  <span className="font-bold">Start Date:</span> 12th July 2025
-                </div>
-                <div className="text-sm">
-                  <span className="font-bold">Duration:</span> 8 Weeks
-                </div>
-                <div className="text-sm">
-                  <span className="font-bold">Date Created:</span> 23rd June 2025
-                </div>
-                <div className="text-sm">
-                  <span className="font-bold">Principal Contractor:</span> Test Principal Contractor
+          <div className="grid grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <div className="text-sm">
+                <span className="font-bold">Company Name:</span> Test Company Name
+              </div>
+              <div className="text-sm">
+                <span className="font-bold">Job Name:</span> Test Project Name
+              </div>
+              <div className="text-sm">
+                <span className="font-bold">Job Number:</span> 123 456
+              </div>
+              <div className="text-sm">
+                <span className="font-bold">Project Address:</span> 123 Sample Job Address
+              </div>
+              <div className="text-sm">
+                <span className="font-bold">Start Date:</span> 12th July 2025
+              </div>
+              <div className="text-sm">
+                <span className="font-bold">Duration:</span> 8 Weeks
+              </div>
+              <div className="text-sm">
+                <span className="font-bold">Date Created:</span> 23rd June 2025
+              </div>
+              <div className="text-sm">
+                <span className="font-bold">Principal Contractor:</span> Test Principal Contractor
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <div className="text-sm">
+                <span className="font-bold">Project Manager:</span> <span className="italic">Test Project Manager Name</span>
+              </div>
+              <div className="text-sm">
+                <span className="font-bold">Site Supervisor:</span> <span className="italic">Test Project Supervisor</span>
+              </div>
+              <div className="mt-3">
+                <div className="font-bold text-sm underline">Person Authorising SWMS</div>
+                <div className="mt-2 text-sm">
+                  <div>Name: <span className="italic">Test authorising person name</span></div>
+                  <div>Position: <span className="italic">Test authorising person position</span></div>
                 </div>
               </div>
-              
-              <div className="space-y-2">
-                <div className="text-sm">
-                  <span className="font-bold">Project Manager:</span> <span className="italic">Test Project Manager Name</span>
-                </div>
-                <div className="text-sm">
-                  <span className="font-bold">Site Supervisor:</span> <span className="italic">Test Project Supervisor</span>
-                </div>
-                <div className="mt-4">
-                  <div className="font-bold text-sm underline">Person Authorising SWMS</div>
-                  <div className="mt-2 text-sm">
-                    <div>Name: <span className="italic">Test authorising person name</span></div>
-                    <div>Position: <span className="italic">Test authorising person position</span></div>
-                  </div>
-                </div>
-                <div className="mt-4">
-                  <div className="font-bold text-sm">Signature:</div>
-                  <div className="mt-2 border border-gray-400 h-12 bg-white relative">
-                    <div className="absolute bottom-1 left-2">
-                      <div className="w-6 h-6 bg-blue-100 border border-blue-300 flex items-center justify-center">
-                        <span className="text-blue-600 text-xs font-bold">JS</span>
-                      </div>
+              <div className="mt-3">
+                <div className="font-bold text-sm">Signature:</div>
+                <div className="mt-2 border border-gray-300 h-12 bg-white relative">
+                  <div className="absolute bottom-1 left-2">
+                    <div className="w-6 h-6 bg-blue-100 border border-blue-300 flex items-center justify-center rounded-sm">
+                      <span className="text-blue-600 text-xs font-bold">JS</span>
                     </div>
-                    <div className="absolute bottom-0 left-0 right-0 h-px bg-gray-400"></div>
                   </div>
+                  <div className="absolute bottom-0 left-0 right-0 h-px bg-gray-300"></div>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Scope of Works Section - Exact Match */}
-        <div className="bg-white border border-gray-400 mb-6">
-          <h3 className="font-bold text-black text-base bg-gray-100 p-3 border-b border-gray-400 m-0">Scope of Works</h3>
-          <div className="p-4">
-            <div className="text-sm text-gray-700">
-              Sample scope of works description
-            </div>
+        {/* Scope of Works Section */}
+        <div className="bg-white border border-gray-300 mb-4 p-4">
+          <h3 className="font-bold text-black text-lg mb-3">Scope of Works</h3>
+          <div className="text-sm text-gray-700">
+            Sample scope of works description
           </div>
         </div>
 
-        {/* Review and Monitoring Section - Exact Match */}
-        <div className="bg-white border border-gray-400">
-          <h3 className="font-bold text-black text-base bg-gray-100 p-3 border-b border-gray-400 m-0">Review and Monitoring</h3>
-          <div className="p-4">
-            <div className="text-sm text-gray-700 leading-relaxed">
-              This SWMS will be reviewed and updated whenever changes occur to scope, method, or risk levels. The site supervisor is responsible for initiating this review. All workers will be consulted on this SWMS during the pre-start meeting. Updates will be communicated verbally and via toolbox talks.
-            </div>
+        {/* Review and Monitoring Section */}
+        <div className="bg-white border border-gray-300 p-4">
+          <h3 className="font-bold text-black text-lg mb-3">Review and Monitoring</h3>
+          <div className="text-sm text-gray-700 leading-relaxed">
+            This SWMS will be reviewed and updated whenever changes occur to scope, method, or risk levels. The site supervisor is responsible for initiating this review. All workers will be consulted on this SWMS during the pre-start meeting. Updates will be communicated verbally and via toolbox talks.
           </div>
         </div>
       </div>
