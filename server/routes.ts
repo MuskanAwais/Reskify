@@ -148,10 +148,119 @@ export async function registerRoutes(app: Express) {
       
       const data = req.body;
       
-      // Use embedded PDF generation system
-      console.log('Generating PDF with embedded RiskTemplateBuilder system');
-      const { generateEmbeddedPDF } = await import('./embedded-pdf-generator');
-      const pdfBuffer = await generateEmbeddedPDF(data);
+      // Use SWMSprint HTML generator system (the real one)
+      console.log('Generating PDF with SWMSprint HTML template system');
+      const { generateSWMSHTML } = await import('./swmsprint-html-generator');
+      const htmlContent = generateSWMSHTML(data);
+      
+      // Convert HTML to PDF - Use PDFKit with HTML content processing
+      console.log('Converting HTML to PDF with enhanced PDFKit system');
+      const PDFDocument = await import('pdfkit');
+      
+      let pdfBuffer: Buffer;
+      
+      try {
+        pdfBuffer = await new Promise<Buffer>((resolve, reject) => {
+          const doc = new PDFDocument.default({ 
+            margin: 50,
+            size: 'A4',
+            bufferPages: true
+          });
+          const chunks: Buffer[] = [];
+          
+          doc.on('data', (chunk: Buffer) => chunks.push(chunk));
+          doc.on('end', () => {
+            const finalBuffer = Buffer.concat(chunks);
+            console.log('✅ PDF generated successfully:', finalBuffer.length, 'bytes');
+            resolve(finalBuffer);
+          });
+          doc.on('error', reject);
+          
+          // Process HTML content into structured PDF
+          const projectName = data.projectName || data.jobName || 'SWMS Document';
+          const tradeType = data.tradeType || 'General Construction';
+          const activities = data.activities || data.workActivities || [];
+          const plantEquipment = data.plantEquipment || [];
+          const ppeRequirements = data.ppeRequirements || [];
+          
+          // Header
+          doc.fontSize(20).fillColor('#2c5530').text('RISKIFY - Safe Work Method Statement', { align: 'center' });
+          doc.moveDown();
+          
+          // Project Info
+          doc.fontSize(16).fillColor('#000').text('Project Information', { underline: true });
+          doc.fontSize(12).text(`Project Name: ${projectName}`);
+          doc.text(`Trade Type: ${tradeType}`);
+          doc.text(`Address: ${data.projectAddress || 'N/A'}`);
+          doc.text(`Job Number: ${data.jobNumber || 'N/A'}`);
+          doc.moveDown();
+          
+          // Personnel
+          doc.fontSize(16).text('Personnel Information', { underline: true });
+          doc.fontSize(12).text(`Principal Contractor: ${data.principalContractor || 'N/A'}`);
+          doc.text(`Project Manager: ${data.projectManager || 'N/A'}`);
+          doc.text(`Site Supervisor: ${data.siteSupervisor || 'N/A'}`);
+          doc.text(`SWMS Creator: ${data.swmsCreatorName || 'N/A'}`);
+          doc.moveDown();
+          
+          // Work Activities
+          if (activities.length > 0) {
+            doc.fontSize(16).text('Work Activities & Risk Assessment', { underline: true });
+            activities.forEach((activity: any, index: number) => {
+              doc.fontSize(14).text(`${index + 1}. ${activity.name || 'Activity'}`);
+              doc.fontSize(12).text(`Description: ${activity.description || 'N/A'}`);
+              
+              if (activity.hazards && activity.hazards.length > 0) {
+                doc.text('Hazards:');
+                activity.hazards.forEach((hazard: any, hIndex: number) => {
+                  doc.text(`  • ${hazard.description || hazard.name || 'Hazard'}`);
+                  if (hazard.controlMeasures && hazard.controlMeasures.length > 0) {
+                    doc.text('    Control Measures:');
+                    hazard.controlMeasures.forEach((control: string) => {
+                      doc.text(`      - ${control}`);
+                    });
+                  }
+                });
+              }
+              
+              if (activity.riskScore) {
+                doc.text(`Risk Score: ${activity.riskScore}/20`);
+              }
+              
+              doc.moveDown();
+            });
+          }
+          
+          // PPE Requirements
+          if (ppeRequirements.length > 0) {
+            doc.fontSize(16).text('Personal Protective Equipment (PPE)', { underline: true });
+            ppeRequirements.forEach((ppe: string) => {
+              doc.fontSize(12).text(`• ${ppe}`);
+            });
+            doc.moveDown();
+          }
+          
+          // Plant & Equipment
+          if (plantEquipment.length > 0) {
+            doc.fontSize(16).text('Plant & Equipment Register', { underline: true });
+            plantEquipment.forEach((equipment: any) => {
+              doc.fontSize(12).text(`• ${equipment.name || equipment}`);
+              if (equipment.riskLevel) {
+                doc.text(`  Risk Level: ${equipment.riskLevel}`);
+              }
+            });
+            doc.moveDown();
+          }
+          
+          // Footer
+          doc.fontSize(10).fillColor('#666').text(`Generated by Riskify SWMS Builder - ${new Date().toLocaleDateString()}`, { align: 'center' });
+          
+          doc.end();
+        });
+      } catch (error) {
+        console.error('PDF generation error:', error);
+        throw error;
+      }
       
       // Generate filename with project details
       const sanitizedTitle = (data.projectName || data.title || 'SWMS-Document')
