@@ -1896,11 +1896,11 @@ export async function registerRoutes(app: Express) {
     }
   });
 
-  // Update existing routes to use RiskTemplateBuilder
+  // SWMSprint PDF Download endpoint - Direct integration with deployed SWMSprint app
   app.post("/api/swms/pdf-download", async (req, res) => {
     try {
       const requestTitle = req.body?.projectName || req.body?.jobName || req.body?.title || 'Unknown project';
-      console.log("PDF generation request received:", requestTitle);
+      console.log("SWMSprint PDF generation request received:", requestTitle);
       
       const data = req.body;
       
@@ -1917,20 +1917,95 @@ export async function registerRoutes(app: Express) {
         }
       }
       
-      console.log('Generating PDF with RiskTemplateBuilder (EXCLUSIVE) for:', requestTitle);
+      // Enhanced data mapping for SWMSprint compatibility
+      const enhancedPdfData = {
+        // Project Information
+        jobName: data.jobName || data.projectName || data.title || 'SWMS Document',
+        jobNumber: data.jobNumber || '',
+        projectAddress: data.projectAddress || data.projectLocation || '',
+        projectLocation: data.projectLocation || data.projectAddress || '',
+        startDate: data.startDate || '',
+        swmsCreatorName: data.swmsCreatorName || '',
+        swmsCreatorPosition: data.swmsCreatorPosition || '',
+        principalContractor: data.principalContractor || '',
+        projectManager: data.projectManager || '',
+        siteSupervisor: data.siteSupervisor || '',
+        
+        // Work Activities
+        activities: data.activities || data.workActivities || [],
+        riskAssessments: data.riskAssessments || [],
+        
+        // Safety Data
+        hrcwCategories: data.hrcwCategories || [],
+        ppeRequirements: data.ppeRequirements || [],
+        plantEquipment: data.plantEquipment || [],
+        emergencyProcedures: data.emergencyProcedures || [],
+        
+        // Signatures
+        signatures: data.signatures || [],
+        
+        // Metadata
+        tradeType: data.tradeType || 'General',
+        projectDescription: data.projectDescription || '',
+        workDescription: data.workDescription || '',
+        
+        // Document metadata
+        document: {
+          type: 'SWMS',
+          title: data.jobName || data.projectName || data.title || 'Safe Work Method Statement',
+          version: '1.0',
+          generatedDate: new Date().toLocaleDateString('en-AU'),
+          generatedTime: new Date().toLocaleTimeString('en-AU')
+        },
+        
+        // Company branding
+        company: {
+          name: data.companyName || data.principalContractor || '',
+          logo: data.companyLogo || null,
+          abn: data.abn || ''
+        },
+        
+        // Compliance and safety
+        compliance: {
+          australianStandards: true,
+          whsCompliant: true,
+          riskMatrix: 'Australian Standard',
+          lastReviewed: new Date().toLocaleDateString('en-AU')
+        }
+      };
       
-      // ONLY use RiskTemplateBuilder integration - no fallback
-      const { generatePDFWithRiskTemplate } = await import('./risk-template-integration.js');
-      const pdfBuffer = await generatePDFWithRiskTemplate(data);
+      console.log('Connecting to SWMSprint app for PDF generation...');
       
-      res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', `attachment; filename="SWMS-${requestTitle.replace(/[^a-zA-Z0-9]/g, '_')}.pdf"`);
-      res.setHeader('Content-Length', pdfBuffer.length.toString());
-      res.send(pdfBuffer);
+      // Direct call to your deployed SWMSprint app
+      const response = await fetch('https://79937ff1-cac5-4736-b2b2-1df5354fb4b3-00-1bbtav2oqagxg.spock.replit.dev/api/swms/generate-pdf', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/pdf'
+        },
+        body: JSON.stringify(enhancedPdfData)
+      });
+      
+      if (response.ok) {
+        const pdfBuffer = await response.arrayBuffer();
+        const filename = `SWMS-${requestTitle.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`;
+        
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+        res.setHeader('Content-Length', pdfBuffer.byteLength.toString());
+        res.setHeader('Cache-Control', 'no-cache');
+        res.setHeader('X-Content-Type-Options', 'nosniff');
+        
+        console.log(`SWMSprint PDF generated successfully: ${filename} (${pdfBuffer.byteLength} bytes)`);
+        res.send(Buffer.from(pdfBuffer));
+      } else {
+        const errorText = await response.text();
+        throw new Error(`SWMSprint API error ${response.status}: ${errorText}`);
+      }
       
     } catch (error) {
-      console.error("PDF generation error:", error);
-      res.status(500).json({ error: "Failed to generate PDF" });
+      console.error("SWMSprint PDF generation error:", error);
+      res.status(500).json({ error: "Failed to generate PDF through SWMSprint" });
     }
   });
 
@@ -1951,23 +2026,85 @@ export async function registerRoutes(app: Express) {
         }
       }
       
-      console.log('Generating PDF preview with RiskTemplateBuilder (EXCLUSIVE)');
+      // Enhanced data mapping for SWMSprint compatibility
+      const enhancedPdfData = {
+        // Project Information
+        jobName: data.jobName || data.projectName || data.title || 'SWMS Document',
+        jobNumber: data.jobNumber || '',
+        projectAddress: data.projectAddress || data.projectLocation || '',
+        projectLocation: data.projectLocation || data.projectAddress || '',
+        startDate: data.startDate || '',
+        swmsCreatorName: data.swmsCreatorName || '',
+        swmsCreatorPosition: data.swmsCreatorPosition || '',
+        principalContractor: data.principalContractor || '',
+        projectManager: data.projectManager || '',
+        siteSupervisor: data.siteSupervisor || '',
+        
+        // Work Activities and other fields
+        activities: data.activities || data.workActivities || [],
+        riskAssessments: data.riskAssessments || [],
+        hrcwCategories: data.hrcwCategories || [],
+        ppeRequirements: data.ppeRequirements || [],
+        plantEquipment: data.plantEquipment || [],
+        emergencyProcedures: data.emergencyProcedures || [],
+        signatures: data.signatures || [],
+        tradeType: data.tradeType || 'General',
+        
+        // Document metadata for SWMSprint
+        document: {
+          type: 'SWMS',
+          title: data.jobName || data.projectName || data.title || 'Safe Work Method Statement',
+          version: '1.0',
+          generatedDate: new Date().toLocaleDateString('en-AU'),
+          generatedTime: new Date().toLocaleTimeString('en-AU')
+        },
+        
+        // Company branding
+        company: {
+          name: data.companyName || data.principalContractor || '',
+          logo: data.companyLogo || null,
+          abn: data.abn || ''
+        },
+        
+        // Compliance
+        compliance: {
+          australianStandards: true,
+          whsCompliant: true,
+          riskMatrix: 'Australian Standard',
+          lastReviewed: new Date().toLocaleDateString('en-AU')
+        }
+      };
       
-      // ONLY use RiskTemplateBuilder integration - no fallback
-      const { generatePDFWithRiskTemplate } = await import('./risk-template-integration.js');
-      const pdfBuffer = await generatePDFWithRiskTemplate(data);
+      console.log('Generating PDF preview with SWMSprint app');
       
-      // Set headers for browser PDF display
-      res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', 'inline; filename="swms_preview.pdf"');
-      res.setHeader('Content-Length', pdfBuffer.length.toString());
-      res.setHeader('Cache-Control', 'no-cache');
-      res.setHeader('X-Content-Type-Options', 'nosniff');
-      res.send(pdfBuffer);
+      // Direct call to your deployed SWMSprint app for preview
+      const response = await fetch('https://79937ff1-cac5-4736-b2b2-1df5354fb4b3-00-1bbtav2oqagxg.spock.replit.dev/api/swms/generate-pdf', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/pdf'
+        },
+        body: JSON.stringify(enhancedPdfData)
+      });
+      
+      if (response.ok) {
+        const pdfBuffer = await response.arrayBuffer();
+        
+        // Set headers for browser PDF display
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'inline; filename="swms_preview.pdf"');
+        res.setHeader('Content-Length', pdfBuffer.byteLength.toString());
+        res.setHeader('Cache-Control', 'no-cache');
+        res.setHeader('X-Content-Type-Options', 'nosniff');
+        res.send(Buffer.from(pdfBuffer));
+      } else {
+        const errorText = await response.text();
+        throw new Error(`SWMSprint API error ${response.status}: ${errorText}`);
+      }
       
     } catch (error) {
-      console.error("PDF preview error:", error);
-      res.status(500).json({ error: "Failed to generate PDF preview" });
+      console.error("SWMSprint PDF preview error:", error);
+      res.status(500).json({ error: "Failed to generate PDF preview through SWMSprint" });
     }
   });
 

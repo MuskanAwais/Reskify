@@ -201,7 +201,7 @@ const AutomaticPDFGeneration = ({ formData, onDataChange }: { formData: any; onD
         setCurrentMessage('Connecting to SWMSprint PDF generator...');
         setProgress(90);
         
-        const response = await fetch('https://swmsprint.replit.app/api/generate-pdf', {
+        const response = await fetch('https://79937ff1-cac5-4736-b2b2-1df5354fb4b3-00-1bbtav2oqagxg.spock.replit.dev/api/swms/generate-pdf', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
