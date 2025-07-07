@@ -47,7 +47,8 @@ import {
   User,
   Users,
   Download,
-  AlertCircle
+  AlertCircle,
+  ClipboardList
 } from "lucide-react";
 import { SimplifiedTableEditor } from "./simplified-table-editor";
 import GPTTaskSelection from "./gpt-task-selection";
@@ -742,7 +743,7 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
       return (
         <div className="space-y-6">
           <div className="text-center">
-            <AlertTriangle className="mx-auto h-12 w-12 text-primary mb-4" />
+            <ClipboardList className="mx-auto h-12 w-12 text-primary mb-4" />
             <h3 className="text-lg font-semibold mb-2">Work Activities & Task Selection</h3>
             <p className="text-gray-600 text-sm">
               Choose how to add tasks to your SWMS - search existing tasks, generate with AI, or create custom tasks

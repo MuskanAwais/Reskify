@@ -1,4 +1,5 @@
 import OpenAI from 'openai';
+import { generateDynamicRiskScore, generateResidualRiskScore } from './dynamic-risk-scorer.js';
 import { TaskGenerationRequest, GeneratedSWMSData } from './openai-integration';
 
 const openai = new OpenAI({
@@ -88,8 +89,8 @@ Return JSON with this exact structure:
     {
       "name": "Specific task name for ${tradeType}",
       "description": "Detailed 25+ word description of the activity",
-      "riskScore": 6,
-      "residualRisk": 3,
+      "riskScore": "DYNAMIC_RISK_SCORE_BASED_ON_TASK_COMPLEXITY_3_TO_16",
+      "residualRisk": "CALCULATED_RESIDUAL_RISK_LOWER_THAN_INITIAL",
       "legislation": [
         "${state} WHS Regulation 2017 - Section XXX (TASK-SPECIFIC section number)",
         "AS/NZS XXXX:YYYY - Standard SPECIFIC to this task only",
@@ -100,7 +101,7 @@ Return JSON with this exact structure:
         {
           "type": "Physical/Chemical/Biological/Ergonomic",
           "description": "Detailed 20+ word hazard description with specific cause and consequence",
-          "riskRating": 6,
+          "riskRating": "MATCH_TASK_RISK_SCORE_3_TO_16",
           "controlMeasures": [
             "Elimination control measure",
             "Substitution control measure", 
@@ -108,7 +109,7 @@ Return JSON with this exact structure:
             "Administrative control measure",
             "PPE control measure"
           ],
-          "residualRisk": 3,
+          "residualRisk": "REDUCED_RISK_AFTER_CONTROLS_1_TO_4",
           "causeAgent": "Specific equipment/material causing hazard",
           "environmentalCondition": "${siteEnvironment} environment with specific conditions",
           "consequence": "Specific injury type and severity"
@@ -243,21 +244,38 @@ LEGISLATION REQUIREMENTS PER TASK:
       throw new Error(`CRITICAL ERROR: Unable to generate minimum ${minimumTasks} tasks for ${tradeType}. Only generated ${finalActivities.length}.`);
     }
 
-    // Enhanced activities with comprehensive legislation
-    const enhancedActivities = finalActivities.map((activity: any) => ({
-      ...activity,
-      // Ensure legislation is always an array with comprehensive references
-      legislation: Array.isArray(activity.legislation) 
-        ? activity.legislation 
-        : getTradeSpecificLegislation(tradeType, state, activity.name),
-      hrcwReferences: hrcwCategories.length > 0 ? hrcwCategories : [],
-      hazards: activity.hazards.map((hazard: any) => ({
-        ...hazard,
-        environmentalCondition: hazard.environmentalCondition || `${siteEnvironment} site environment with specific workplace conditions`,
-        causeAgent: hazard.causeAgent || getTradeSpecificCause(activity.name, tradeType),
-        consequence: hazard.consequence || getTradeSpecificConsequence(activity.name, tradeType)
-      }))
-    }));
+    // Enhanced activities with comprehensive legislation and dynamic risk scoring
+    const enhancedActivities = finalActivities.map((activity: any) => {
+      // Generate dynamic risk scores if they're missing or placeholder values
+      const needsDynamicRiskScore = !activity.riskScore || 
+        activity.riskScore === 6 || 
+        typeof activity.riskScore === 'string';
+      
+      const dynamicRiskScore = needsDynamicRiskScore 
+        ? generateDynamicRiskScore(activity.name, tradeType, activity.hazards?.[0]?.type)
+        : activity.riskScore;
+      
+      const dynamicResidualRisk = generateResidualRiskScore(dynamicRiskScore, activity.hazards?.length || 3);
+      
+      return {
+        ...activity,
+        riskScore: dynamicRiskScore,
+        residualRisk: dynamicResidualRisk,
+        // Ensure legislation is always an array with comprehensive references
+        legislation: Array.isArray(activity.legislation) 
+          ? activity.legislation 
+          : getTradeSpecificLegislation(tradeType, state, activity.name),
+        hrcwReferences: hrcwCategories.length > 0 ? hrcwCategories : [],
+        hazards: activity.hazards.map((hazard: any) => ({
+          ...hazard,
+          riskRating: hazard.riskRating || dynamicRiskScore,
+          residualRisk: hazard.residualRisk || dynamicResidualRisk,
+          environmentalCondition: hazard.environmentalCondition || `${siteEnvironment} site environment with specific workplace conditions`,
+          causeAgent: hazard.causeAgent || getTradeSpecificCause(activity.name, tradeType),
+          consequence: hazard.consequence || getTradeSpecificConsequence(activity.name, tradeType)
+        }))
+      };
+    });
 
     return {
       activities: enhancedActivities,
@@ -699,7 +717,25 @@ function generateDiverseFallbackActivities(
     ]
   };
   
-  const activities = tradeActivities[tradeType] || [];
+  let activities = tradeActivities[tradeType] || [];
+  
+  // Apply dynamic risk scoring to all fallback activities
+  activities = activities.map((activity: any) => {
+    const dynamicRiskScore = generateDynamicRiskScore(activity.name, tradeType, activity.hazards?.[0]?.type);
+    const dynamicResidualRisk = generateResidualRiskScore(dynamicRiskScore, activity.hazards?.length || 3);
+    
+    return {
+      ...activity,
+      riskScore: dynamicRiskScore,
+      residualRisk: dynamicResidualRisk,
+      hazards: activity.hazards.map((hazard: any) => ({
+        ...hazard,
+        riskRating: hazard.riskRating || dynamicRiskScore,
+        residualRisk: hazard.residualRisk || dynamicResidualRisk
+      }))
+    };
+  });
+  
   return activities.slice(0, count);
 }
 
@@ -755,11 +791,14 @@ function generateFallbackActivities(tradeType: string, jobDescription: string, s
   
   for (let i = 0; i < count && i < baseActivities.length; i++) {
     const baseActivity = baseActivities[i];
+    const dynamicRiskScore = generateDynamicRiskScore(baseActivity.name, tradeType, baseActivity.hazardType);
+    const dynamicResidualRisk = generateResidualRiskScore(dynamicRiskScore, 3);
+    
     activities.push({
       name: baseActivity.name,
       description: `${baseActivity.description} for ${jobDescription} in ${siteEnvironment} environment`,
-      riskScore: baseActivity.riskScore,
-      residualRisk: baseActivity.residualRisk,
+      riskScore: dynamicRiskScore,
+      residualRisk: dynamicResidualRisk,
       legislation: getTradeSpecificLegislation(tradeType, state, baseActivity.name),
       hazards: [
         {

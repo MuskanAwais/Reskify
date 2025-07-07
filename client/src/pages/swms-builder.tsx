@@ -1028,7 +1028,7 @@ export default function SwmsBuilder() {
     if (currentStep === 8) {
       console.log('ENTERING PAYMENT STEP VALIDATION - Step 8 detected');
       // If this document already has paid access, skip payment step entirely
-      if (formData.paidAccess === true || formData.paid === true || formData.creditsUsed === true) {
+      if (formData.paidAccess === true || formData.paid === true || (formData.creditsUsed && formData.creditsUsed > 0)) {
         console.log('Payment step skipped - document already has paid access or payment completed');
         // Proceed to step 9 (Document Generation)
         setCurrentStep(9);
@@ -1164,7 +1164,10 @@ export default function SwmsBuilder() {
       projectDescription: "",
       plainTextDescription: "",
       monitoringRequirements: "",
-      lastPaymentUpdate: 0
+      lastPaymentUpdate: 0,
+      signatureMethod: "",
+      signatureImage: "",
+      signatureText: ""
     });
     
     // Clear localStorage
@@ -1239,7 +1242,10 @@ export default function SwmsBuilder() {
         projectDescription: "",
         plainTextDescription: "",
         monitoringRequirements: "",
-        lastPaymentUpdate: 0
+        lastPaymentUpdate: 0,
+        signatureMethod: "",
+        signatureImage: "",
+        signatureText: ""
       });
     }
   }, []);
