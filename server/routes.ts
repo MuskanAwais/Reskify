@@ -11,7 +11,7 @@ import { storage } from "./storage.js";
 import { generateExactPDF } from "./pdf-generator-figma-exact.js";
 import { generatePuppeteerPDF } from "./pdf-generator-puppeteer.js";
 import { generateSimplePDF } from "./pdf-generator-simple.js";
-import { generateSWMSHTML } from "./swmsprint-html-generator.js";
+
 import { db } from "./db.js";
 import { swmsDocuments, users as usersTable } from "@shared/schema";
 import { eq, and, isNull, sql } from "drizzle-orm";
@@ -148,114 +148,85 @@ export async function registerRoutes(app: Express) {
       
       const data = req.body;
       
-      // Use SWMSprint HTML generator system (the real one)
-      console.log('Generating PDF with SWMSprint HTML template system');
-      const { generateSWMSHTML } = await import('./swmsprint-html-generator');
+      // Generate professional SWMS document using SWMSprint system
+      console.log('🏗️ Generating professional SWMS with SWMSprint template system');
+      const { generateSWMSHTML } = await import('./swmsprint-html-generator-clean');
       const htmlContent = generateSWMSHTML(data);
+      console.log('📄 HTML template generated, converting to professional PDF using HTML2PDF');
       
-      // Convert HTML to PDF - Use PDFKit with HTML content processing
-      console.log('Converting HTML to PDF with enhanced PDFKit system');
-      const PDFDocument = await import('pdfkit');
+      // Use html2pdf.js for HTML to PDF conversion (better than PDFKit for HTML)
+      const html2pdf = await import('html2pdf.js');
       
       let pdfBuffer: Buffer;
       
       try {
+        // Configure html2pdf options for professional output
+        const opt = {
+          margin: 0.5,
+          filename: 'swms-document.pdf',
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: { 
+            scale: 2,
+            useCORS: true,
+            backgroundColor: '#ffffff'
+          },
+          jsPDF: { 
+            unit: 'in', 
+            format: 'a4', 
+            orientation: 'portrait' 
+          }
+        };
+        
+        console.log('🔄 Converting HTML to PDF with html2pdf.js');
+        
+        // Convert HTML to PDF buffer
         pdfBuffer = await new Promise<Buffer>((resolve, reject) => {
-          const doc = new PDFDocument.default({ 
-            margin: 50,
-            size: 'A4',
-            bufferPages: true
-          });
-          const chunks: Buffer[] = [];
-          
-          doc.on('data', (chunk: Buffer) => chunks.push(chunk));
-          doc.on('end', () => {
-            const finalBuffer = Buffer.concat(chunks);
-            console.log('✅ PDF generated successfully:', finalBuffer.length, 'bytes');
-            resolve(finalBuffer);
-          });
-          doc.on('error', reject);
-          
-          // Process HTML content into structured PDF
-          const projectName = data.projectName || data.jobName || 'SWMS Document';
-          const tradeType = data.tradeType || 'General Construction';
-          const activities = data.activities || data.workActivities || [];
-          const plantEquipment = data.plantEquipment || [];
-          const ppeRequirements = data.ppeRequirements || [];
-          
-          // Header
-          doc.fontSize(20).fillColor('#2c5530').text('RISKIFY - Safe Work Method Statement', { align: 'center' });
-          doc.moveDown();
-          
-          // Project Info
-          doc.fontSize(16).fillColor('#000').text('Project Information', { underline: true });
-          doc.fontSize(12).text(`Project Name: ${projectName}`);
-          doc.text(`Trade Type: ${tradeType}`);
-          doc.text(`Address: ${data.projectAddress || 'N/A'}`);
-          doc.text(`Job Number: ${data.jobNumber || 'N/A'}`);
-          doc.moveDown();
-          
-          // Personnel
-          doc.fontSize(16).text('Personnel Information', { underline: true });
-          doc.fontSize(12).text(`Principal Contractor: ${data.principalContractor || 'N/A'}`);
-          doc.text(`Project Manager: ${data.projectManager || 'N/A'}`);
-          doc.text(`Site Supervisor: ${data.siteSupervisor || 'N/A'}`);
-          doc.text(`SWMS Creator: ${data.swmsCreatorName || 'N/A'}`);
-          doc.moveDown();
-          
-          // Work Activities
-          if (activities.length > 0) {
-            doc.fontSize(16).text('Work Activities & Risk Assessment', { underline: true });
-            activities.forEach((activity: any, index: number) => {
-              doc.fontSize(14).text(`${index + 1}. ${activity.name || 'Activity'}`);
-              doc.fontSize(12).text(`Description: ${activity.description || 'N/A'}`);
-              
-              if (activity.hazards && activity.hazards.length > 0) {
-                doc.text('Hazards:');
-                activity.hazards.forEach((hazard: any, hIndex: number) => {
-                  doc.text(`  • ${hazard.description || hazard.name || 'Hazard'}`);
-                  if (hazard.controlMeasures && hazard.controlMeasures.length > 0) {
-                    doc.text('    Control Measures:');
-                    hazard.controlMeasures.forEach((control: string) => {
-                      doc.text(`      - ${control}`);
-                    });
-                  }
-                });
-              }
-              
-              if (activity.riskScore) {
-                doc.text(`Risk Score: ${activity.riskScore}/20`);
-              }
-              
-              doc.moveDown();
+          try {
+            // Create a temporary HTML file in memory
+            const { JSDOM } = require('jsdom');
+            const dom = new JSDOM(htmlContent);
+            const element = dom.window.document.body;
+            
+            // Use html2pdf to generate PDF
+            html2pdf.default().from(element).set(opt).outputPdf('arraybuffer').then((arrayBuffer: ArrayBuffer) => {
+              const buffer = Buffer.from(arrayBuffer);
+              console.log('✅ Professional PDF generated successfully:', buffer.length, 'bytes');
+              resolve(buffer);
+            }).catch(reject);
+          } catch (error) {
+            console.log('⚠️ html2pdf failed, using PDFKit fallback');
+            // Fallback to simple PDFKit if html2pdf fails
+            const PDFDocument = require('pdfkit');
+            const doc = new PDFDocument({ margin: 50, size: 'A4' });
+            const chunks: Buffer[] = [];
+            
+            doc.on('data', (chunk: Buffer) => chunks.push(chunk));
+            doc.on('end', () => {
+              const finalBuffer = Buffer.concat(chunks);
+              console.log('✅ Fallback PDF generated:', finalBuffer.length, 'bytes');
+              resolve(finalBuffer);
             });
-          }
-          
-          // PPE Requirements
-          if (ppeRequirements.length > 0) {
-            doc.fontSize(16).text('Personal Protective Equipment (PPE)', { underline: true });
-            ppeRequirements.forEach((ppe: string) => {
-              doc.fontSize(12).text(`• ${ppe}`);
-            });
+            doc.on('error', reject);
+            
+            // Basic PDF content
+            doc.fontSize(16).text('RISKIFY - Safe Work Method Statement', { align: 'center' });
             doc.moveDown();
-          }
-          
-          // Plant & Equipment
-          if (plantEquipment.length > 0) {
-            doc.fontSize(16).text('Plant & Equipment Register', { underline: true });
-            plantEquipment.forEach((equipment: any) => {
-              doc.fontSize(12).text(`• ${equipment.name || equipment}`);
-              if (equipment.riskLevel) {
-                doc.text(`  Risk Level: ${equipment.riskLevel}`);
-              }
-            });
+            doc.fontSize(12).text(`Project: ${data.jobName || 'SWMS Document'}`);
+            doc.text(`Generated: ${new Date().toLocaleDateString()}`);
             doc.moveDown();
+            
+            if (data.workActivities && data.workActivities.length > 0) {
+              doc.text('Work Activities:');
+              data.workActivities.forEach((activity: any, index: number) => {
+                doc.text(`${index + 1}. ${activity.name || 'Activity'}`);
+                if (activity.description) {
+                  doc.text(`   Description: ${activity.description}`);
+                }
+              });
+            }
+            
+            doc.end();
           }
-          
-          // Footer
-          doc.fontSize(10).fillColor('#666').text(`Generated by Riskify SWMS Builder - ${new Date().toLocaleDateString()}`, { align: 'center' });
-          
-          doc.end();
         });
       } catch (error) {
         console.error('PDF generation error:', error);
