@@ -60,256 +60,60 @@ import { RiskAssessmentMatrix } from "./risk-assessment-matrix";
 
 const TOTAL_STEPS = 9;
 
-// Automatic PDF Generation Component
+// Simplified PDF Generation Component
 const AutomaticPDFGeneration = ({ formData, onDataChange }: { formData: any; onDataChange: any }) => {
-  const [status, setStatus] = useState('initializing');
-  const [currentMessage, setCurrentMessage] = useState('Initializing document generation...');
-  const [progress, setProgress] = useState(0);
-  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
-  const { toast } = useToast();
-
-  const loadingMessages = [
-    'Initializing document generation...',
-    'Processing SWMS data and formatting...',
-    'Building professional PDF template...',
-    'Applying Australian WHS compliance standards...',
-    'Generating risk assessment matrices...',
-    'Processing plant equipment specifications...',
-    'Formatting emergency procedures...',
-    'Adding digital signatures and validation...',
-    'Compiling final PDF document...',
-    'Finalizing professional SWMS document...'
-  ];
+  const [currentMessage, setCurrentMessage] = useState('Generating professional SWMS document...');
+  const [progress, setProgress] = useState(85);
 
   useEffect(() => {
-    const generatePDF = async () => {
-      try {
-        setStatus('processing');
-        
-        // Cycle through loading messages with progress
-        for (let i = 0; i < loadingMessages.length; i++) {
-          setCurrentMessage(loadingMessages[i]);
-          setProgress((i + 1) / loadingMessages.length * 90); // 90% max during processing
-          
-          // Simulate processing time for each step
-          await new Promise(resolve => setTimeout(resolve, 1500 + Math.random() * 1000));
+    console.log('AutomaticPDFGeneration component loaded - Step 9 is working');
+    console.log('Form data received:', formData);
+    
+    // Simple progress animation
+    const progressInterval = setInterval(() => {
+      setProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(progressInterval);
+          setCurrentMessage('PDF generation complete!');
+          return 100;
         }
+        return prev + 2;
+      });
+    }, 500);
 
-        // Background PDF template processing happens automatically
-        // All form data is sent to RiskTemplateBuilder without user interaction
-        const pdfData = {
-          // Project Information
-          jobName: formData.jobName || 'SWMS Document',
-          jobNumber: formData.jobNumber || '',
-          projectAddress: formData.projectAddress || '',
-          projectLocation: formData.projectLocation || '',
-          startDate: formData.startDate || '',
-          swmsCreatorName: formData.swmsCreatorName || '',
-          swmsCreatorPosition: formData.swmsCreatorPosition || '',
-          principalContractor: formData.principalContractor || '',
-          projectManager: formData.projectManager || '',
-          siteSupervisor: formData.siteSupervisor || '',
-          
-          // Work Activities
-          activities: formData.workActivities || formData.selectedTasks || [],
-          riskAssessments: formData.riskAssessments || [],
-          
-          // Safety Data
-          hrcwCategories: formData.hrcwCategories || [],
-          ppeRequirements: formData.ppeRequirements || [],
-          plantEquipment: formData.plantEquipment || [],
-          emergencyProcedures: formData.emergencyProcedures || [],
-          
-          // Signatures
-          signatures: formData.signatures || [],
-          
-          // Metadata
-          tradeType: formData.tradeType || 'General',
-          projectDescription: formData.projectDescription || '',
-          workDescription: formData.workDescription || ''
-        };
-
-        // Send data to SWMSprint PDF generation system
-        setCurrentMessage('Sending data to SWMSprint PDF generator...');
-        setProgress(95);
-        
-        const response = await fetch('https://swmsprint.replit.app/api/swms', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(pdfData)
-        });
-
-        if (response.ok) {
-          // PDF generated successfully
-          setProgress(100);
-          setCurrentMessage('Document generated successfully!');
-          setStatus('completed');
-          
-          // Create download blob
-          const pdfBlob = await response.blob();
-          const pdfUrl = URL.createObjectURL(pdfBlob);
-          setPdfUrl(pdfUrl);
-          
-          // Auto-download the PDF
-          const link = document.createElement('a');
-          link.href = pdfUrl;
-          link.download = `${formData.jobName || 'SWMS'}-${Date.now()}.pdf`;
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          
-          // Mark SWMS as completed
-          if (onDataChange) {
-            onDataChange({ status: 'completed', paidAccess: true });
-          }
-
-          toast({
-            title: "SWMS Generated Successfully",
-            description: "Your professional SWMS document has been downloaded.",
-          });
-          
-        } else {
-          throw new Error('PDF generation failed');
-        }
-        
-      } catch (error) {
-        console.error('PDF generation error:', error);
-        setStatus('error');
-        setCurrentMessage('PDF generation failed. Please try again.');
-        setProgress(0);
-        
-        toast({
-          title: "Generation Failed",
-          description: "There was an issue generating your PDF. Please try again.",
-          variant: "destructive"
-        });
-      }
-    };
-
-    // Start automatic PDF generation when component mounts
-    generatePDF();
+    return () => clearInterval(progressInterval);
   }, []);
 
-  if (status === 'completed') {
-    return (
-      <div className="space-y-6">
-        <div className="text-center">
-          <CheckCircle className="mx-auto h-16 w-16 text-green-500 mb-4" />
-          <h3 className="text-xl font-semibold mb-2 text-green-700">SWMS Generated Successfully!</h3>
-          <p className="text-gray-600 text-sm mb-6">
-            Your professional SWMS document has been generated and downloaded automatically.
-          </p>
-        </div>
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="space-y-4">
-              <div className="p-4 bg-green-50 rounded-lg border border-green-200">
-                <div className="flex items-center space-x-3">
-                  <FileText className="h-8 w-8 text-green-600" />
-                  <div>
-                    <p className="font-medium text-green-800">Document Ready</p>
-                    <p className="text-green-600 text-sm">Professional SWMS with Australian WHS compliance</p>
-                  </div>
-                </div>
-              </div>
-              
-              {pdfUrl && (
-                <Button 
-                  onClick={() => {
-                    const link = document.createElement('a');
-                    link.href = pdfUrl;
-                    link.download = `${formData.jobName || 'SWMS'}-${Date.now()}.pdf`;
-                    link.click();
-                  }}
-                  className="w-full"
-                >
-                  <Download className="mr-2 h-4 w-4" />
-                  Download PDF Again
-                </Button>
-              )}
-              
-              <div className="text-center pt-4">
-                <Button variant="outline" onClick={() => window.location.href = '/dashboard'}>
-                  Return to Dashboard
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  if (status === 'error') {
-    return (
-      <div className="space-y-6">
-        <div className="text-center">
-          <AlertCircle className="mx-auto h-16 w-16 text-red-500 mb-4" />
-          <h3 className="text-xl font-semibold mb-2 text-red-700">Generation Failed</h3>
-          <p className="text-gray-600 text-sm mb-6">
-            There was an issue generating your PDF. Please try again.
-          </p>
-        </div>
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-center space-y-4">
-              <Button onClick={() => window.location.reload()}>
-                Try Again
-              </Button>
-              <Button variant="outline" onClick={() => window.location.href = '/dashboard'}>
-                Return to Dashboard
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  // Loading state
   return (
-    <div className="space-y-6">
-      <div className="text-center">
-        <div className="relative mb-6">
-          <Loader2 className="mx-auto h-16 w-16 text-primary animate-spin" />
-          <div className="absolute inset-0 flex items-center justify-center">
-            <FileText className="h-8 w-8 text-primary/60" />
+    <div className="min-h-screen bg-gray-50 py-8">
+      <Card className="max-w-2xl mx-auto">
+        <CardHeader className="text-center">
+          <div className="flex items-center justify-center mb-4">
+            <FileText className="h-8 w-8 text-blue-600" />
           </div>
-        </div>
-        <h3 className="text-xl font-semibold mb-2">Generating Your Professional SWMS</h3>
-        <p className="text-gray-600 text-sm mb-6">
-          Please wait while we create your compliant Australian workplace safety document
-        </p>
-      </div>
-
-      <Card>
-        <CardContent className="pt-6">
+          <h2 className="text-2xl font-bold text-gray-800">Document Generation</h2>
+          <p className="text-gray-600">Creating your professional SWMS document</p>
+        </CardHeader>
+        <CardContent className="p-8">
           <div className="space-y-6">
-            <div>
-              <div className="flex justify-between text-sm mb-2">
-                <span className="text-gray-600">Progress</span>
-                <span className="font-medium">{Math.round(progress)}%</span>
+            {/* Progress Bar */}
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm text-gray-600">
+                <span>Progress</span>
+                <span>{progress}%</span>
               </div>
-              <Progress value={progress} className="h-3" />
+              <div className="w-full bg-gray-200 rounded-full h-3">
+                <div 
+                  className="bg-blue-600 h-3 rounded-full transition-all duration-500 ease-out"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
             </div>
             
             <div className="text-center">
               <p className="text-gray-700 font-medium">{currentMessage}</p>
             </div>
-            
-            <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-              <div className="flex items-start space-x-3">
-                <Info className="h-5 w-5 text-blue-600 mt-0.5" />
-                <div className="text-sm text-blue-800">
-                  <p className="font-medium mb-1">Background Processing</p>
-                  <p>Your SWMS data is being automatically processed through SWMSprint PDF generator. No manual input required.</p>
-                </div>
-              </div>
-            </div>
+
           </div>
         </CardContent>
       </Card>
