@@ -1896,6 +1896,21 @@ export async function registerRoutes(app: Express) {
     }
   });
 
+  // Helper function to calculate overall risk level
+  function calculateOverallRiskLevel(riskAssessments: any[]): string {
+    if (!riskAssessments || riskAssessments.length === 0) return 'Medium';
+    
+    const riskCounts = { High: 0, Medium: 0, Low: 0 };
+    riskAssessments.forEach((assessment: any) => {
+      const risk = assessment.residualRisk || assessment.riskLevel || 'Medium';
+      if (risk in riskCounts) riskCounts[risk as keyof typeof riskCounts]++;
+    });
+    
+    if (riskCounts.High > 0) return 'High';
+    if (riskCounts.Medium > riskCounts.Low) return 'Medium';
+    return 'Low';
+  }
+
   // SWMSprint PDF Download endpoint - Direct integration with deployed SWMSprint app
   app.post("/api/swms/pdf-download", async (req, res) => {
     try {
@@ -1917,60 +1932,107 @@ export async function registerRoutes(app: Express) {
         }
       }
       
-      // Enhanced data mapping for SWMSprint compatibility
+      // COMPREHENSIVE Enhanced data mapping for SWMSprint compatibility - ALL FIELDS
       const enhancedPdfData = {
-        // Project Information
+        // ===== CORE PROJECT INFORMATION =====
         jobName: data.jobName || data.projectName || data.title || 'SWMS Document',
         jobNumber: data.jobNumber || '',
         projectAddress: data.projectAddress || data.projectLocation || '',
         projectLocation: data.projectLocation || data.projectAddress || '',
         startDate: data.startDate || '',
-        swmsCreatorName: data.swmsCreatorName || '',
-        swmsCreatorPosition: data.swmsCreatorPosition || '',
-        principalContractor: data.principalContractor || '',
-        projectManager: data.projectManager || '',
-        siteSupervisor: data.siteSupervisor || '',
-        
-        // Work Activities
-        activities: data.activities || data.workActivities || [],
-        riskAssessments: data.riskAssessments || [],
-        
-        // Safety Data
-        hrcwCategories: data.hrcwCategories || [],
-        ppeRequirements: data.ppeRequirements || [],
-        plantEquipment: data.plantEquipment || [],
-        emergencyProcedures: data.emergencyProcedures || [],
-        
-        // Signatures
-        signatures: data.signatures || [],
-        
-        // Metadata
-        tradeType: data.tradeType || 'General',
+        duration: data.duration || '',
         projectDescription: data.projectDescription || '',
         workDescription: data.workDescription || '',
         
-        // Document metadata
+        // ===== PERSONNEL INFORMATION =====
+        swmsCreatorName: data.swmsCreatorName || '',
+        swmsCreatorPosition: data.swmsCreatorPosition || '',
+        principalContractor: data.principalContractor || '',
+        principalContractorAbn: data.principalContractorAbn || '',
+        projectManager: data.projectManager || '',
+        siteSupervisor: data.siteSupervisor || '',
+        subcontractor: data.subcontractor || '',
+        subcontractorAbn: data.subcontractorAbn || '',
+        responsiblePersons: data.responsiblePersons || [],
+        
+        // ===== LICENSING AND AUTHORIZATION =====
+        authorisingSignature: data.authorisingSignature || '',
+        licenseNumber: data.licenseNumber || '',
+        documentVersion: data.documentVersion || '1.0',
+        
+        // ===== SIGNATURE SYSTEM =====
+        signatureMethod: data.signatureMethod || '', // 'upload' or 'type'
+        signatureImage: data.signatureImage || '', // Base64 encoded image
+        signatureText: data.signatureText || '', // Typed name signature
+        signatureSection: data.signatureSection || {},
+        signatures: data.signatures || [],
+        
+        // ===== WORK ACTIVITIES AND TRADE =====
+        tradeType: data.tradeType || 'General',
+        activities: data.activities || data.workActivities || [],
+        workActivities: data.workActivities || data.activities || [],
+        riskAssessments: data.riskAssessments || [],
+        
+        // ===== HIGH-RISK CONSTRUCTION WORK (HRCW) =====
+        isHighRiskWork: data.isHighRiskWork || false,
+        highRiskActivities: data.highRiskActivities || [],
+        whsRegulations: data.whsRegulations || [],
+        highRiskJustification: data.highRiskJustification || '',
+        hrcwCategories: data.hrcwCategories || [],
+        
+        // ===== PPE AND EQUIPMENT =====
+        ppeRequirements: data.ppeRequirements || [],
+        plantEquipment: data.plantEquipment || [],
+        
+        // ===== TRAINING AND COMPETENCY =====
+        trainingRequirements: data.trainingRequirements || [],
+        competencyRequirements: data.competencyRequirements || [],
+        permitsRequired: data.permitsRequired || [],
+        
+        // ===== EMERGENCY PROCEDURES =====
+        emergencyProcedures: data.emergencyProcedures || [],
+        nearestHospital: data.nearestHospital || '',
+        
+        // ===== DOCUMENT METADATA =====
         document: {
           type: 'SWMS',
           title: data.jobName || data.projectName || data.title || 'Safe Work Method Statement',
-          version: '1.0',
+          version: data.documentVersion || '1.0',
           generatedDate: new Date().toLocaleDateString('en-AU'),
-          generatedTime: new Date().toLocaleTimeString('en-AU')
+          generatedTime: new Date().toLocaleTimeString('en-AU'),
+          status: data.status || 'completed',
+          currentStep: data.currentStep || 9
         },
         
-        // Company branding
+        // ===== COMPANY BRANDING =====
         company: {
           name: data.companyName || data.principalContractor || '',
           logo: data.companyLogo || null,
-          abn: data.abn || ''
+          abn: data.abn || data.principalContractorAbn || '',
+          subcontractor: data.subcontractor || '',
+          subcontractorAbn: data.subcontractorAbn || ''
         },
         
-        // Compliance and safety
+        // ===== COMPLIANCE AND SAFETY =====
         compliance: {
           australianStandards: true,
           whsCompliant: true,
           riskMatrix: 'Australian Standard',
-          lastReviewed: new Date().toLocaleDateString('en-AU')
+          lastReviewed: new Date().toLocaleDateString('en-AU'),
+          isHighRiskWork: data.isHighRiskWork || false,
+          whsRegulations: data.whsRegulations || [],
+          permitsRequired: data.permitsRequired || []
+        },
+        
+        // ===== ADDITIONAL METADATA FOR ENHANCED PDF =====
+        metadata: {
+          userId: data.userId || 999,
+          createdAt: data.createdAt || new Date().toISOString(),
+          updatedAt: data.updatedAt || new Date().toISOString(),
+          tradeSpecific: data.tradeType !== 'General',
+          riskLevel: calculateOverallRiskLevel(data.riskAssessments || []),
+          documentComplete: true,
+          generationSource: 'Riskify-SWMSprint-Integration'
         }
       };
       
@@ -2026,52 +2088,107 @@ export async function registerRoutes(app: Express) {
         }
       }
       
-      // Enhanced data mapping for SWMSprint compatibility
+      // COMPREHENSIVE Enhanced data mapping for SWMSprint compatibility - ALL FIELDS (Preview)
       const enhancedPdfData = {
-        // Project Information
+        // ===== CORE PROJECT INFORMATION =====
         jobName: data.jobName || data.projectName || data.title || 'SWMS Document',
         jobNumber: data.jobNumber || '',
         projectAddress: data.projectAddress || data.projectLocation || '',
         projectLocation: data.projectLocation || data.projectAddress || '',
         startDate: data.startDate || '',
+        duration: data.duration || '',
+        projectDescription: data.projectDescription || '',
+        workDescription: data.workDescription || '',
+        
+        // ===== PERSONNEL INFORMATION =====
         swmsCreatorName: data.swmsCreatorName || '',
         swmsCreatorPosition: data.swmsCreatorPosition || '',
         principalContractor: data.principalContractor || '',
+        principalContractorAbn: data.principalContractorAbn || '',
         projectManager: data.projectManager || '',
         siteSupervisor: data.siteSupervisor || '',
+        subcontractor: data.subcontractor || '',
+        subcontractorAbn: data.subcontractorAbn || '',
+        responsiblePersons: data.responsiblePersons || [],
         
-        // Work Activities and other fields
+        // ===== LICENSING AND AUTHORIZATION =====
+        authorisingSignature: data.authorisingSignature || '',
+        licenseNumber: data.licenseNumber || '',
+        documentVersion: data.documentVersion || '1.0',
+        
+        // ===== SIGNATURE SYSTEM =====
+        signatureMethod: data.signatureMethod || '',
+        signatureImage: data.signatureImage || '',
+        signatureText: data.signatureText || '',
+        signatureSection: data.signatureSection || {},
+        signatures: data.signatures || [],
+        
+        // ===== WORK ACTIVITIES AND TRADE =====
+        tradeType: data.tradeType || 'General',
         activities: data.activities || data.workActivities || [],
+        workActivities: data.workActivities || data.activities || [],
         riskAssessments: data.riskAssessments || [],
+        
+        // ===== HIGH-RISK CONSTRUCTION WORK (HRCW) =====
+        isHighRiskWork: data.isHighRiskWork || false,
+        highRiskActivities: data.highRiskActivities || [],
+        whsRegulations: data.whsRegulations || [],
+        highRiskJustification: data.highRiskJustification || '',
         hrcwCategories: data.hrcwCategories || [],
+        
+        // ===== PPE AND EQUIPMENT =====
         ppeRequirements: data.ppeRequirements || [],
         plantEquipment: data.plantEquipment || [],
-        emergencyProcedures: data.emergencyProcedures || [],
-        signatures: data.signatures || [],
-        tradeType: data.tradeType || 'General',
         
-        // Document metadata for SWMSprint
+        // ===== TRAINING AND COMPETENCY =====
+        trainingRequirements: data.trainingRequirements || [],
+        competencyRequirements: data.competencyRequirements || [],
+        permitsRequired: data.permitsRequired || [],
+        
+        // ===== EMERGENCY PROCEDURES =====
+        emergencyProcedures: data.emergencyProcedures || [],
+        nearestHospital: data.nearestHospital || '',
+        
+        // ===== DOCUMENT METADATA =====
         document: {
           type: 'SWMS',
           title: data.jobName || data.projectName || data.title || 'Safe Work Method Statement',
-          version: '1.0',
+          version: data.documentVersion || '1.0',
           generatedDate: new Date().toLocaleDateString('en-AU'),
-          generatedTime: new Date().toLocaleTimeString('en-AU')
+          generatedTime: new Date().toLocaleTimeString('en-AU'),
+          status: data.status || 'preview',
+          currentStep: data.currentStep || 9
         },
         
-        // Company branding
+        // ===== COMPANY BRANDING =====
         company: {
           name: data.companyName || data.principalContractor || '',
           logo: data.companyLogo || null,
-          abn: data.abn || ''
+          abn: data.abn || data.principalContractorAbn || '',
+          subcontractor: data.subcontractor || '',
+          subcontractorAbn: data.subcontractorAbn || ''
         },
         
-        // Compliance
+        // ===== COMPLIANCE AND SAFETY =====
         compliance: {
           australianStandards: true,
           whsCompliant: true,
           riskMatrix: 'Australian Standard',
-          lastReviewed: new Date().toLocaleDateString('en-AU')
+          lastReviewed: new Date().toLocaleDateString('en-AU'),
+          isHighRiskWork: data.isHighRiskWork || false,
+          whsRegulations: data.whsRegulations || [],
+          permitsRequired: data.permitsRequired || []
+        },
+        
+        // ===== ADDITIONAL METADATA FOR ENHANCED PDF =====
+        metadata: {
+          userId: data.userId || 999,
+          createdAt: data.createdAt || new Date().toISOString(),
+          updatedAt: data.updatedAt || new Date().toISOString(),
+          tradeSpecific: data.tradeType !== 'General',
+          riskLevel: calculateOverallRiskLevel(data.riskAssessments || []),
+          documentComplete: false, // Preview mode
+          generationSource: 'Riskify-SWMSprint-Preview'
         }
       };
       
