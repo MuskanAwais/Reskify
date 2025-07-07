@@ -60,29 +60,109 @@ import { RiskAssessmentMatrix } from "./risk-assessment-matrix";
 
 const TOTAL_STEPS = 9;
 
-// Simplified PDF Generation Component
+// PDF Generation Component with SWMSprint Integration
 const AutomaticPDFGeneration = ({ formData, onDataChange }: { formData: any; onDataChange: any }) => {
-  const [currentMessage, setCurrentMessage] = useState('Generating professional SWMS document...');
-  const [progress, setProgress] = useState(85);
+  const [currentMessage, setCurrentMessage] = useState('Initializing document generation...');
+  const [progress, setProgress] = useState(0);
+  const { toast } = useToast();
 
   useEffect(() => {
     console.log('AutomaticPDFGeneration component loaded - Step 9 is working');
     console.log('Form data received:', formData);
     
-    // Simple progress animation
-    const progressInterval = setInterval(() => {
-      setProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(progressInterval);
-          setCurrentMessage('PDF generation complete!');
-          return 100;
-        }
-        return prev + 2;
-      });
-    }, 500);
+    const generatePDF = async () => {
+      try {
+        // Step 1: Prepare data
+        setCurrentMessage('Preparing SWMS data...');
+        setProgress(20);
+        await new Promise(resolve => setTimeout(resolve, 1000));
 
-    return () => clearInterval(progressInterval);
+        // Step 2: Connect to SWMSprint
+        setCurrentMessage('Connecting to SWMSprint PDF generator...');
+        setProgress(40);
+        
+        const pdfData = {
+          jobName: formData.jobName || 'SWMS Document',
+          jobNumber: formData.jobNumber || '',
+          projectAddress: formData.projectAddress || '',
+          startDate: formData.startDate || '',
+          tradeType: formData.tradeType || 'General',
+          swmsCreatorName: formData.swmsCreatorName || '',
+          principalContractor: formData.principalContractor || '',
+          projectManager: formData.projectManager || '',
+          siteSupervisor: formData.siteSupervisor || '',
+          activities: formData.workActivities || formData.selectedTasks || [],
+          riskAssessments: formData.riskAssessments || [],
+          hrcwCategories: formData.hrcwCategories || [],
+          ppeRequirements: formData.ppeRequirements || [],
+          plantEquipment: formData.plantEquipment || [],
+          emergencyProcedures: formData.emergencyProcedures || [],
+          signatures: formData.signatures || []
+        };
+
+        // Step 3: Generate PDF via SWMSprint
+        setProgress(60);
+        setCurrentMessage('Generating professional PDF document...');
+        
+        const response = await fetch('https://79937ff1-cac5-4736-b2b2-1df5354fb4b3-00-1bbtav2oqagxg.spock.replit.dev/api/swms/generate-pdf', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(pdfData)
+        });
+
+        if (response.ok) {
+          setProgress(80);
+          setCurrentMessage('Processing PDF download...');
+          
+          const pdfBlob = await response.blob();
+          setProgress(90);
+          
+          // Create download link
+          const url = URL.createObjectURL(pdfBlob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `${formData.jobName || 'SWMS'}-${Date.now()}.pdf`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+          
+          setProgress(100);
+          setCurrentMessage('PDF download complete!');
+          
+          toast({
+            title: "PDF Generated Successfully",
+            description: "Your SWMS document has been downloaded to your computer.",
+          });
+          
+        } else {
+          throw new Error('PDF generation failed');
+        }
+        
+      } catch (error) {
+        console.error('PDF generation error:', error);
+        setCurrentMessage('Generation failed. Please try again.');
+        setProgress(0);
+        
+        toast({
+          title: "Generation Failed",
+          description: "There was an issue generating your PDF. Please try again.",
+          variant: "destructive"
+        });
+      }
+    };
+
+    generatePDF();
   }, []);
+
+  const handleTryAgain = () => {
+    setProgress(0);
+    setCurrentMessage('Initializing document generation...');
+    // Trigger regeneration by reloading the component
+    window.location.reload();
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -113,6 +193,32 @@ const AutomaticPDFGeneration = ({ formData, onDataChange }: { formData: any; onD
             <div className="text-center">
               <p className="text-gray-700 font-medium">{currentMessage}</p>
             </div>
+
+            {/* Action buttons based on status */}
+            {currentMessage.includes('failed') && (
+              <div className="text-center space-y-3">
+                <Button onClick={handleTryAgain} className="w-full">
+                  Try Again
+                </Button>
+                <Button variant="outline" onClick={() => window.location.href = '/dashboard'}>
+                  Return to Dashboard
+                </Button>
+              </div>
+            )}
+
+            {progress === 100 && currentMessage.includes('complete') && (
+              <div className="text-center space-y-3">
+                <div className="p-4 bg-green-50 rounded-lg border border-green-200">
+                  <div className="flex items-center justify-center space-x-2">
+                    <CheckCircle className="h-5 w-5 text-green-600" />
+                    <span className="text-green-800 font-medium">PDF Successfully Downloaded</span>
+                  </div>
+                </div>
+                <Button variant="outline" onClick={() => window.location.href = '/dashboard'}>
+                  Return to Dashboard
+                </Button>
+              </div>
+            )}
 
           </div>
         </CardContent>
