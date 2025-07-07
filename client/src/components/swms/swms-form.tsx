@@ -138,100 +138,17 @@ const AutomaticPDFGeneration = ({ formData, onDataChange }: { formData: any; onD
           });
           
         } else {
-          // Try fallback PDF generation
-          setCurrentMessage('SWMSprint unavailable, using backup generator...');
-          
-          const fallbackResponse = await fetch('/api/swms/pdf-download', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(pdfData)
-          });
-          
-          if (fallbackResponse.ok) {
-            setProgress(80);
-            setCurrentMessage('Processing PDF download...');
-            
-            const pdfBlob = await fallbackResponse.blob();
-            setProgress(90);
-            
-            // Create download link
-            const url = URL.createObjectURL(pdfBlob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `${formData.jobName || 'SWMS'}-${Date.now()}.pdf`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
-            
-            setProgress(100);
-            setCurrentMessage('PDF download complete!');
-            
-            toast({
-              title: "PDF Generated Successfully",
-              description: "Your SWMS document has been downloaded using backup generator.",
-            });
-          } else {
-            throw new Error('Both PDF generators failed');
-          }
+          throw new Error('SWMSprint app is not running');
         }
         
       } catch (error) {
         console.error('PDF generation error:', error);
-        
-        // Try fallback if not already attempted
-        if (!error.message?.includes('backup')) {
-          try {
-            setCurrentMessage('Trying backup PDF generator...');
-            setProgress(50);
-            
-            const fallbackResponse = await fetch('/api/swms/pdf-download', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify(pdfData)
-            });
-            
-            if (fallbackResponse.ok) {
-              setProgress(80);
-              setCurrentMessage('Processing PDF download...');
-              
-              const pdfBlob = await fallbackResponse.blob();
-              setProgress(90);
-              
-              // Create download link
-              const url = URL.createObjectURL(pdfBlob);
-              const link = document.createElement('a');
-              link.href = url;
-              link.download = `${formData.jobName || 'SWMS'}-${Date.now()}.pdf`;
-              document.body.appendChild(link);
-              link.click();
-              document.body.removeChild(link);
-              URL.revokeObjectURL(url);
-              
-              setProgress(100);
-              setCurrentMessage('PDF download complete!');
-              
-              toast({
-                title: "PDF Generated Successfully",
-                description: "Your SWMS document has been downloaded using backup generator.",
-              });
-              return;
-            }
-          } catch (fallbackError) {
-            console.error('Fallback generation also failed:', fallbackError);
-          }
-        }
-        
-        setCurrentMessage('Generation failed. Please try again.');
+        setCurrentMessage('SWMSprint app is not running. Please wake up your SWMSprint app first.');
         setProgress(0);
         
         toast({
-          title: "Generation Failed",
-          description: "There was an issue generating your PDF. Please try again.",
+          title: "SWMSprint App Not Running",
+          description: "Please start your SWMSprint app and try again.",
           variant: "destructive"
         });
       }
@@ -278,7 +195,33 @@ const AutomaticPDFGeneration = ({ formData, onDataChange }: { formData: any; onD
             </div>
 
             {/* Action buttons based on status */}
-            {currentMessage.includes('failed') && (
+            {currentMessage.includes('not running') && (
+              <div className="text-center space-y-3">
+                <div className="p-4 bg-amber-50 rounded-lg border border-amber-200">
+                  <div className="flex items-center justify-center space-x-2 mb-3">
+                    <AlertCircle className="h-5 w-5 text-amber-600" />
+                    <span className="text-amber-800 font-medium">SWMSprint App Sleeping</span>
+                  </div>
+                  <p className="text-amber-700 text-sm">
+                    Your SWMSprint app needs to be running to generate PDFs. Click below to wake it up.
+                  </p>
+                </div>
+                <Button 
+                  onClick={() => window.open('https://79937ff1-cac5-4736-b2b2-1df5354fb4b3-00-1bbtav2oqagxg.spock.replit.dev', '_blank')}
+                  className="w-full bg-blue-600 hover:bg-blue-700"
+                >
+                  Wake Up SWMSprint App
+                </Button>
+                <Button onClick={handleTryAgain} variant="outline" className="w-full">
+                  Try PDF Generation Again
+                </Button>
+                <Button variant="outline" onClick={() => window.location.href = '/dashboard'}>
+                  Return to Dashboard
+                </Button>
+              </div>
+            )}
+
+            {currentMessage.includes('failed') && !currentMessage.includes('not running') && (
               <div className="text-center space-y-3">
                 <Button onClick={handleTryAgain} className="w-full">
                   Try Again
