@@ -951,9 +951,12 @@ export default function SwmsBuilder() {
   };
 
   const handleNext = async () => {
-    // Prevent double-clicks and multiple rapid submissions
-    if (saveDraftMutation.isPending || autoSaveMutation.isPending || isSaving) {
-      console.log('Button click ignored - save in progress');
+    console.log('handleNext called - currentStep:', currentStep);
+    
+    // For payment step (step 8), allow progression even during save operations
+    // The auto-save shouldn't block payment processing
+    if (currentStep !== 8 && (saveDraftMutation.isPending || autoSaveMutation.isPending || isSaving)) {
+      console.log('Button click ignored - save in progress (non-payment step)');
       return;
     }
 
@@ -1389,9 +1392,6 @@ export default function SwmsBuilder() {
               creditsError={creditsError}
               setIsProcessingCredit={setIsProcessingCredit}
             />
-            {/* Debug: Check handleNext function */}
-            {console.log('swms-builder handleNext function:', handleNext)}
-            {console.log('swms-builder currentStep:', currentStep)}
                 
                 {/* Navigation - Hidden on step 9 (automatic PDF generation) */}
                 {currentStep !== 9 && (

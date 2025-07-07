@@ -1749,27 +1749,9 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
               
               {(hasPaidAccess || isAdmin) && (
                 <div className="flex justify-end">
-                  <Button 
-                    onClick={() => {
-                      console.log('Generate SWMS Document button clicked');
-                      console.log('Current step:', step);
-                      console.log('onNext function:', onNext);
-                      console.log('hasPaidAccess:', hasPaidAccess);
-                      console.log('isAdmin:', isAdmin);
-                      console.log('StepContent props:', { step, onNext, hasPaidAccess, isAdmin });
-                      if (onNext) {
-                        console.log('Calling onNext function...');
-                        onNext();
-                      } else {
-                        console.error('onNext function is not available');
-                      }
-                    }}
-                    size="lg"
-                    className="bg-green-600 hover:bg-green-700 text-white"
-                  >
-                    <FileText className="mr-2 h-4 w-4" />
-                    Generate SWMS Document
-                  </Button>
+                  <div className="text-green-600 text-sm font-medium">
+                    ✓ Access granted - Use the Continue button below to proceed to document generation
+                  </div>
                 </div>
               )}
             </CardContent>
@@ -1794,9 +1776,7 @@ export default function SWMSForm({ step, data = {}, onNext, onDataChange, userDa
   // Use parent's setIsProcessingCredit instead of local state
   const isProcessingCredit = false; // This will be managed by parent component
   
-  // Debug: Check if onNext is being passed correctly
-  console.log('SWMSForm received onNext:', onNext);
-  console.log('SWMSForm step:', step);
+
 
   // Fetch current user billing data for real-time credits with better error handling
   const { data: userBillingData, refetch: refetchUserData, isLoading: isLoadingUserCredits, error: userCreditsError } = useQuery({
