@@ -138,11 +138,94 @@ const AutomaticPDFGeneration = ({ formData, onDataChange }: { formData: any; onD
           });
           
         } else {
-          throw new Error('PDF generation failed');
+          // Try fallback PDF generation
+          setCurrentMessage('SWMSprint unavailable, using backup generator...');
+          
+          const fallbackResponse = await fetch('/api/swms/pdf-download', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(pdfData)
+          });
+          
+          if (fallbackResponse.ok) {
+            setProgress(80);
+            setCurrentMessage('Processing PDF download...');
+            
+            const pdfBlob = await fallbackResponse.blob();
+            setProgress(90);
+            
+            // Create download link
+            const url = URL.createObjectURL(pdfBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `${formData.jobName || 'SWMS'}-${Date.now()}.pdf`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            
+            setProgress(100);
+            setCurrentMessage('PDF download complete!');
+            
+            toast({
+              title: "PDF Generated Successfully",
+              description: "Your SWMS document has been downloaded using backup generator.",
+            });
+          } else {
+            throw new Error('Both PDF generators failed');
+          }
         }
         
       } catch (error) {
         console.error('PDF generation error:', error);
+        
+        // Try fallback if not already attempted
+        if (!error.message?.includes('backup')) {
+          try {
+            setCurrentMessage('Trying backup PDF generator...');
+            setProgress(50);
+            
+            const fallbackResponse = await fetch('/api/swms/pdf-download', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(pdfData)
+            });
+            
+            if (fallbackResponse.ok) {
+              setProgress(80);
+              setCurrentMessage('Processing PDF download...');
+              
+              const pdfBlob = await fallbackResponse.blob();
+              setProgress(90);
+              
+              // Create download link
+              const url = URL.createObjectURL(pdfBlob);
+              const link = document.createElement('a');
+              link.href = url;
+              link.download = `${formData.jobName || 'SWMS'}-${Date.now()}.pdf`;
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+              URL.revokeObjectURL(url);
+              
+              setProgress(100);
+              setCurrentMessage('PDF download complete!');
+              
+              toast({
+                title: "PDF Generated Successfully",
+                description: "Your SWMS document has been downloaded using backup generator.",
+              });
+              return;
+            }
+          } catch (fallbackError) {
+            console.error('Fallback generation also failed:', fallbackError);
+          }
+        }
+        
         setCurrentMessage('Generation failed. Please try again.');
         setProgress(0);
         
