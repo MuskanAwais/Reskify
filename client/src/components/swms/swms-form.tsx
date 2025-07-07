@@ -1793,6 +1793,10 @@ export default function SWMSForm({ step, data = {}, onNext, onDataChange, userDa
   const [formData, setFormData] = useState(data);
   // Use parent's setIsProcessingCredit instead of local state
   const isProcessingCredit = false; // This will be managed by parent component
+  
+  // Debug: Check if onNext is being passed correctly
+  console.log('SWMSForm received onNext:', onNext);
+  console.log('SWMSForm step:', step);
 
   // Fetch current user billing data for real-time credits with better error handling
   const { data: userBillingData, refetch: refetchUserData, isLoading: isLoadingUserCredits, error: userCreditsError } = useQuery({

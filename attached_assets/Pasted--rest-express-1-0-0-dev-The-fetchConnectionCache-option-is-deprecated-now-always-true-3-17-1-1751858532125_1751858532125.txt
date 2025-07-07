@@ -1,0 +1,42 @@
+
+> rest-express@1.0.0 dev
+The `fetchConnectionCache` option is deprecated (now always `true`)
+3:17:11 AM [express] Initializing database connection...
+Testing database connection...
+Database connection successful
+3:17:11 AM [express] Server running on port 5000
+3:17:11 AM [express] Environment: development
+Browserslist: browsers data (caniuse-lite) is 9 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+3:17:22 AM [express] GET /api/user 304 in 119ms :: {"id":999,"username":"demo","name":"Demo User","e…
+3:17:22 AM [express] GET /api/user 304 in 138ms :: {"id":999,"username":"demo","name":"Demo User","e…
+3:17:23 AM [express] GET /api/user/subscription 200 in 11ms
+Saving SWMS draft for user: 999 Project: Untitled SWMS Demo mode: true
+DEBUG - projectDescription field: 
+DEBUG - workDescription field: 
+Saving SWMS draft for user: 999 Project: Untitled SWMS Demo mode: true
+DEBUG - projectDescription field: 
+DEBUG - workDescription field: 
+Found existing draft for user, updating instead of creating new: 66976
+SWMS draft updated: 66976
+SWMS draft saved successfully with ID: 66976
+3:17:26 AM [express] POST /api/swms/draft 200 in 170ms :: {"success":true,"id":66976,"message":"Draf…
+Found existing draft for user, updating instead of creating new: 66976
+SWMS draft updated: 66976
+SWMS draft saved successfully with ID: 66976
+3:17:26 AM [express] POST /api/swms/draft 200 in 349ms :: {"success":true,"id":66976,"message":"Draf…
+Saving SWMS draft for user: 999 Project: Untitled SWMS Demo mode: true
+DEBUG - projectDescription field: 
+DEBUG - workDescription field: 
+Updating existing document: 66976
+SWMS draft updated: 66976
+SWMS draft saved successfully with ID: 66976
+3:22:08 AM [express] POST /api/swms/draft 200 in 545ms :: {"success":true,"id":66976,"message":"Draf…
+Saving SWMS draft for user: 999 Project: Untitled SWMS Demo mode: true
+DEBUG - projectDescription field: 
+DEBUG - workDescription field: 
+Updating existing document: 66976
+SWMS draft updated: 66976
+SWMS draft saved successfully with ID: 66976
+3:22:08 AM [express] POST /api/swms/draft 200 in 62ms :: {"success":true,"id":66976,"message":"Draft…
