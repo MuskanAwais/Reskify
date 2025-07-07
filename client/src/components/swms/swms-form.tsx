@@ -63,43 +63,13 @@ import { RiskAssessmentMatrix } from "./risk-assessment-matrix";
 
 const TOTAL_STEPS = 9;
 
-// Automatic PDF Generation Component with Runtime Error Protection
+// Automatic PDF Generation Component with Fixed Hook Order
 const AutomaticPDFGeneration = ({ formData, onDataChange }: { formData: any; onDataChange: any }) => {
   const [status, setStatus] = useState('initializing');
   const [currentMessage, setCurrentMessage] = useState('Initializing document generation...');
   const [progress, setProgress] = useState(0);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
-  const [componentLoaded, setComponentLoaded] = useState(false);
   const { toast } = useToast();
-
-  // Debug logging to verify component loading with error protection
-  useEffect(() => {
-    try {
-      console.log('AutomaticPDFGeneration component loaded - Step 9 is working');
-      console.log('Form data received:', formData);
-      setComponentLoaded(true);
-    } catch (error) {
-      console.error('Error in component initialization:', error);
-      setComponentLoaded(false);
-    }
-  }, []);
-
-  // Early return with fallback if component hasn't loaded properly
-  if (!componentLoaded) {
-    return (
-      <div className="space-y-6">
-        <div className="text-center">
-          <Loader2 className="mx-auto h-16 w-16 text-blue-500 animate-spin mb-4" />
-          <h3 className="text-xl font-semibold mb-2">Document Generation</h3>
-          <p className="text-gray-600 text-sm mb-6">
-            Processing your SWMS document with SWMSprint...
-          </p>
-          <Progress value={50} className="w-full max-w-md mx-auto" />
-          <p className="text-sm text-gray-500 mt-2">Connecting to SWMSprint background service</p>
-        </div>
-      </div>
-    );
-  }
 
   const loadingMessages = [
     'Initializing document generation...',
@@ -115,6 +85,9 @@ const AutomaticPDFGeneration = ({ formData, onDataChange }: { formData: any; onD
   ];
 
   useEffect(() => {
+    console.log('AutomaticPDFGeneration component loaded - Step 9 is working');
+    console.log('Form data received:', formData);
+    
     const generatePDF = async () => {
       try {
         setStatus('processing');
