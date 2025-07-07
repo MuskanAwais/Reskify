@@ -1,4 +1,5 @@
 import { TaskGenerationRequest, GeneratedSWMSData } from './openai-integration';
+import { generateDynamicRiskScore, generateResidualRiskScore } from './dynamic-risk-scorer.js';
 
 export function generateFallbackSWMS(request: TaskGenerationRequest): GeneratedSWMSData {
   const { projectDetails, plainTextDescription } = request;
@@ -30,21 +31,21 @@ function generateTradeActivities(tradeType: string, description: string, siteEnv
       {
         name: "Surface Preparation and Cleaning",
         description: `Prepare ${siteEnvironment.toLowerCase()} surfaces for tile installation including cleaning, leveling, and priming`,
-        riskScore: 4,
-        residualRisk: 2,
+        riskScore: generateDynamicRiskScore("Surface Preparation and Cleaning", tradeType, "Chemical"),
+        residualRisk: generateResidualRiskScore(generateDynamicRiskScore("Surface Preparation and Cleaning", tradeType, "Chemical"), 4),
         legislation: `${state} WHS Regulation 2017 - Construction Work`,
         hazards: [
           {
             type: "Chemical",
             description: "Chemical exposure from cleaning solvents and primers causing skin irritation or respiratory issues",
-            riskRating: 4,
+            riskRating: generateDynamicRiskScore("Surface Preparation and Cleaning", tradeType, "Chemical"),
             controlMeasures: [
               "Use only approved construction-grade cleaning products",
               "Ensure adequate ventilation in work area",
               "Wear chemical-resistant gloves and eye protection",
               "Store chemicals in designated secure areas"
             ],
-            residualRisk: 2,
+            residualRisk: generateResidualRiskScore(generateDynamicRiskScore("Surface Preparation and Cleaning", tradeType, "Chemical"), 4),
             causeAgent: "Cleaning solvent vapors and direct skin contact",
             environmentalCondition: `${siteEnvironment} indoor environment with limited ventilation`,
             consequence: "Chemical burns, respiratory irritation, dermatitis"
@@ -59,21 +60,21 @@ function generateTradeActivities(tradeType: string, description: string, siteEnv
       {
         name: "Tile Cutting and Shaping",
         description: "Cut tiles to required dimensions using wet saws and angle grinders for precise fitting",
-        riskScore: 8,
-        residualRisk: 4,
+        riskScore: generateDynamicRiskScore("Tile Cutting and Shaping", tradeType, "Physical"),
+        residualRisk: generateResidualRiskScore(generateDynamicRiskScore("Tile Cutting and Shaping", tradeType, "Physical"), 4),
         legislation: `${state} WHS Regulation 2017 - Plant and Equipment`,
         hazards: [
           {
             type: "Physical",
             description: "Laceration injuries from tile cutting equipment blades and flying tile fragments",
-            riskRating: 8,
+            riskRating: generateDynamicRiskScore("Tile Cutting and Shaping", tradeType, "Physical"),
             controlMeasures: [
               "Maintain blade guards on all cutting equipment",
               "Use water cooling systems to reduce dust and heat",
               "Secure workpieces properly before cutting",
               "Inspect cutting equipment before each use"
             ],
-            residualRisk: 4,
+            residualRisk: generateResidualRiskScore(generateDynamicRiskScore("Tile Cutting and Shaping", tradeType, "Physical"), 4),
             causeAgent: "Angle grinder blade contact or tile fragment projection",
             environmentalCondition: `${siteEnvironment} work area with limited space for equipment operation`,
             consequence: "Severe lacerations to hands, arms, or face requiring emergency treatment"
@@ -93,21 +94,21 @@ function generateTradeActivities(tradeType: string, description: string, siteEnv
       {
         name: "Waterproof Membrane Application",
         description: "Apply liquid waterproofing membrane to prepared surfaces ensuring complete coverage and proper curing",
-        riskScore: 6,
-        residualRisk: 3,
+        riskScore: generateDynamicRiskScore("Waterproof Membrane Application", tradeType, "Chemical"),
+        residualRisk: generateResidualRiskScore(generateDynamicRiskScore("Waterproof Membrane Application", tradeType, "Chemical"), 4),
         legislation: `${state} WHS Regulation 2017 - Hazardous Chemicals`,
         hazards: [
           {
             type: "Chemical",
             description: "Chemical exposure to waterproofing compounds causing skin sensitization and respiratory irritation",
-            riskRating: 6,
+            riskRating: generateDynamicRiskScore("Waterproof Membrane Application", tradeType, "Chemical"),
             controlMeasures: [
               "Use approved waterproofing products with safety data sheets",
               "Apply membrane in thin, even coats as per manufacturer specifications",
               "Ensure cross-ventilation during application and curing",
               "Clean up spills immediately with appropriate materials"
             ],
-            residualRisk: 3,
+            residualRisk: generateResidualRiskScore(generateDynamicRiskScore("Waterproof Membrane Application", tradeType, "Chemical"), 4),
             causeAgent: "Waterproofing membrane vapors and skin contact with wet product",
             environmentalCondition: `Confined ${siteEnvironment.toLowerCase()} space with restricted airflow`,
             consequence: "Chemical sensitization, respiratory irritation, skin dermatitis"
@@ -128,21 +129,21 @@ function generateTradeActivities(tradeType: string, description: string, siteEnv
       {
         name: "Bathroom Fixture Installation",
         description: "Install bathroom fixtures and fittings ensuring proper sealing and water resistance",
-        riskScore: 5,
-        residualRisk: 2,
+        riskScore: generateDynamicRiskScore("Bathroom Fixture Installation", tradeType, "Ergonomic"),
+        residualRisk: generateResidualRiskScore(generateDynamicRiskScore("Bathroom Fixture Installation", tradeType, "Ergonomic"), 4),
         legislation: `${state} WHS Regulation 2017 - Manual Handling`,
         hazards: [
           {
             type: "Ergonomic",
             description: "Musculoskeletal injuries from manual handling of heavy bathroom fixtures in confined spaces",
-            riskRating: 5,
+            riskRating: generateDynamicRiskScore("Bathroom Fixture Installation", tradeType, "Ergonomic"),
             controlMeasures: [
               "Use mechanical lifting aids where possible",
               "Work in pairs for heavy fixture installation",
               "Plan lifting routes to minimize carrying distances",
               "Take regular breaks to prevent fatigue"
             ],
-            residualRisk: 2,
+            residualRisk: generateResidualRiskScore(generateDynamicRiskScore("Bathroom Fixture Installation", tradeType, "Ergonomic"), 4),
             causeAgent: "Heavy fixture lifting and awkward positioning in bathroom space",
             environmentalCondition: `Confined ${siteEnvironment.toLowerCase()} bathroom with limited maneuvering space`,
             consequence: "Back strain, shoulder injury, or muscle sprain requiring medical attention"
@@ -162,21 +163,21 @@ function generateTradeActivities(tradeType: string, description: string, siteEnv
     activities.push({
       name: "Site Setup and Tool Preparation",
       description: "Establish safe work area and prepare all tools and materials for efficient work completion",
-      riskScore: 3,
-      residualRisk: 1,
+      riskScore: generateDynamicRiskScore("Site Setup and Tool Preparation", tradeType, "Physical"),
+      residualRisk: generateResidualRiskScore(generateDynamicRiskScore("Site Setup and Tool Preparation", tradeType, "Physical"), 4),
       legislation: `${state} WHS Regulation 2017 - Workplace Management`,
       hazards: [
         {
           type: "Physical",
           description: "Slips, trips, and falls from unorganized work area and tool placement",
-          riskRating: 3,
+          riskRating: generateDynamicRiskScore("Site Setup and Tool Preparation", tradeType, "Physical"),
           controlMeasures: [
             "Establish designated tool storage areas",
             "Keep walkways clear of materials and equipment",
             "Use non-slip mats in wet areas",
             "Implement housekeeping procedures throughout work"
           ],
-          residualRisk: 1,
+          residualRisk: generateResidualRiskScore(generateDynamicRiskScore("Site Setup and Tool Preparation", tradeType, "Physical"), 4),
           causeAgent: "Scattered tools and materials in work area",
           environmentalCondition: `${siteEnvironment} work environment with pedestrian traffic`,
           consequence: "Minor injuries from trips or falls"
