@@ -1660,9 +1660,9 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
         <div className="space-y-6">
           <div className="text-center">
             <Scale className="mx-auto h-12 w-12 text-primary mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Legal Disclaimer</h3>
+            <h3 className="text-lg font-semibold mb-2">Terms & Conditions</h3>
             <p className="text-gray-600 text-sm">
-              Review and accept the terms and liability disclaimer to proceed.
+              Review and accept the terms and conditions to proceed with document creation.
             </p>
           </div>
 
