@@ -80,7 +80,7 @@ const AutomaticPDFGeneration = ({ formData, onDataChange }: { formData: any; onD
         await new Promise(resolve => setTimeout(resolve, 1000));
 
         // Step 2: Connect to SWMSprint
-        setCurrentMessage('Connecting to SWMSprint PDF generator...');
+        setCurrentMessage('Generating professional PDF document...');
         setProgress(40);
         
         const pdfData = {
@@ -106,7 +106,7 @@ const AutomaticPDFGeneration = ({ formData, onDataChange }: { formData: any; onD
         setProgress(60);
         setCurrentMessage('Generating professional PDF document...');
         
-        const response = await fetch('https://79937ff1-cac5-4736-b2b2-1df5354fb4b3-00-1bbtav2oqagxg.spock.replit.dev/api/swms/generate-pdf', {
+        const response = await fetch('/api/swms/pdf-download', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -140,17 +140,17 @@ const AutomaticPDFGeneration = ({ formData, onDataChange }: { formData: any; onD
           });
           
         } else {
-          throw new Error('SWMSprint app is not running');
+          throw new Error('PDF generation failed - please try again');
         }
         
       } catch (error) {
         console.error('PDF generation error:', error);
-        setCurrentMessage('SWMSprint app is not running. Please wake up your SWMSprint app first.');
+        setCurrentMessage('PDF generation encountered an error. Please try again.');
         setProgress(0);
         
         toast({
-          title: "SWMSprint App Not Running",
-          description: "Please start your SWMSprint app and try again.",
+          title: "PDF Generation Error",
+          description: "There was an issue generating your PDF. Please try again.",
           variant: "destructive"
         });
       }
@@ -197,24 +197,21 @@ const AutomaticPDFGeneration = ({ formData, onDataChange }: { formData: any; onD
             </div>
 
             {/* Action buttons based on status */}
-            {currentMessage.includes('not running') && (
+            {currentMessage.includes('error') && (
               <div className="text-center space-y-3">
                 <div className="p-4 bg-amber-50 rounded-lg border border-amber-200">
                   <div className="flex items-center justify-center space-x-2 mb-3">
                     <AlertCircle className="h-5 w-5 text-amber-600" />
-                    <span className="text-amber-800 font-medium">SWMSprint App Sleeping</span>
+                    <span className="text-amber-800 font-medium">PDF Generation Error</span>
                   </div>
                   <p className="text-amber-700 text-sm">
-                    Your SWMSprint app needs to be running to generate PDFs. Click below to wake it up.
+                    There was an issue generating your PDF. Please try again.
                   </p>
                 </div>
                 <Button 
-                  onClick={() => window.open('https://79937ff1-cac5-4736-b2b2-1df5354fb4b3-00-1bbtav2oqagxg.spock.replit.dev', '_blank')}
+                  onClick={handleTryAgain}
                   className="w-full bg-blue-600 hover:bg-blue-700"
                 >
-                  Wake Up SWMSprint App
-                </Button>
-                <Button onClick={handleTryAgain} variant="outline" className="w-full">
                   Try PDF Generation Again
                 </Button>
                 <Button variant="outline" onClick={() => window.location.href = '/dashboard'}>

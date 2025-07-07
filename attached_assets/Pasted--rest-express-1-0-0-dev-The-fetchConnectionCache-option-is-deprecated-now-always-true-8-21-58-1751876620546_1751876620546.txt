@@ -1,0 +1,366 @@
+> rest-express@1.0.0 dev
+The `fetchConnectionCache` option is deprecated (now always `true`)
+8:21:58 AM [express] Initializing database connection...
+Testing database connection...
+Database connection successful
+8:21:59 AM [express] Server running on port 5000
+8:21:59 AM [express] Environment: development
+Browserslist: browsers data (caniuse-lite) is 9 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+8:22:06 AM [vite] warning: This case clause will never be evaluated because it duplicates an earlier case clause
+1646|  
+1647|  
+1648|      case 8:
+   |      ^
+1649|        // Check if user already has paid access
+1650|        const hasPaidAccess = formData.paidAccess === true || formData.paid === true || formData.creditsUsed === true;
+
+  Plugin: vite:esbuild
+  File: /home/runner/workspace/client/src/components/swms/swms-form.tsx
+8:22:09 AM [express] GET /api/user 200 in 7ms
+8:22:09 AM [express] GET /api/user 200 in 6ms
+8:22:58 AM [express] POST /api/auth/login 200 in 2222ms :: {"success":true,"user":{"id":2,"username"…
+Dashboard API called for user: 999
+Querying database for user 999 SWMS documents...
+Database returned 1 active SWMS documents for user 999
+Sample document: { id: 66976, title: 'Test job name' }
+User found: demo, SWMS count: 1, Credits: 10
+Dashboard response data: {
+  draftSwms: 0,
+  completedSwms: 1,
+  totalSwms: 1,
+  credits: 10,
+  subscription: 'trial',
+  recentSwms: [
+    {
+      id: 66976,
+      title: 'Test job name',
+      tradeType: 'Tiling & Waterproofing',
+      status: 'completed',
+      updatedAt: 2025-07-07T08:20:57.535Z,
+      location: '24'
+    }
+  ],
+  recentDocuments: [
+    {
+      id: 66976,
+      title: 'Test job name',
+      tradeType: 'Tiling & Waterproofing',
+      status: 'completed',
+      updatedAt: 2025-07-07T08:20:57.535Z,
+      location: '24'
+    }
+  ]
+}
+8:22:58 AM [express] GET /api/dashboard/999 200 in 157ms :: {"draftSwms":0,"completedSwms":1,"totalS…
+8:23:00 AM [express] GET /api/admin/users 200 in 21ms
+Fetching SWMS for user: 999
+Querying database for user 999 SWMS documents...
+Database returned 1 active SWMS documents for user 999
+Sample document: { id: 66976, title: 'Test job name' }
+Found SWMS documents: 1
+8:23:01 AM [express] GET /api/swms 200 in 337ms :: {"documents":[{"id":66976,"userId":999,"title":"T…
+8:23:03 AM [express] GET /api/user/subscription 200 in 4ms
+Loading draft for editing: 66976
+Draft found: Test job name
+8:23:03 AM [express] GET /api/swms/draft/66976 200 in 46ms :: {"id":66976,"userId":999,"title":"Test…
+Loading draft for editing: 66976
+Draft found: Test job name
+8:23:03 AM [express] GET /api/swms/draft/66976 200 in 48ms :: {"id":66976,"userId":999,"title":"Test…
+8:23:04 AM [vite] hmr update /src/components/swms/swms-form.tsx, /src/index.css?v=GHbOFa0_L0POgjH-mlH0
+8:23:05 AM [vite] warning: This case clause will never be evaluated because it duplicates an earlier case clause
+1646|  
+1647|  
+1648|      case 8:
+   |      ^
+1649|        // Check if user already has paid access
+1650|        const hasPaidAccess = formData.paidAccess === true || formData.paid === true || formData.creditsUsed === true;
+
+  Plugin: vite:esbuild
+  File: /home/runner/workspace/client/src/components/swms/swms-form.tsx
+8:23:06 AM [vite] hmr update /src/components/swms/swms-form.tsx, /src/index.css?v=GHbOFa0_L0POgjH-mlH0
+Saving SWMS draft for user: 999 Project: Untitled SWMS Demo mode: true
+DEBUG - projectDescription field: 
+DEBUG - workDescription field: 
+Updating existing document: 66976
+SWMS draft updated: 66976
+SWMS draft saved successfully with ID: 66976
+8:23:06 AM [express] POST /api/swms/draft 200 in 135ms :: {"success":true,"id":66976,"message":"Draf…
+8:23:07 AM [vite] warning: This case clause will never be evaluated because it duplicates an earlier case clause
+1646|  
+1647|  
+1648|      case 8:
+   |      ^
+1649|        // Check if user already has paid access
+1650|        const hasPaidAccess = formData.paidAccess === true || formData.paid === true || formData.creditsUsed === true;
+
+  Plugin: vite:esbuild
+  File: /home/runner/workspace/client/src/components/swms/swms-form.tsx
+Saving SWMS draft for user: 999 Project: Untitled SWMS Demo mode: true
+DEBUG - projectDescription field: 
+DEBUG - workDescription field: 
+8:23:07 AM [vite] hmr update /src/components/swms/swms-form.tsx, /src/index.css?v=GHbOFa0_L0POgjH-mlH0
+SWMS draft updated: 66976
+SWMS draft saved successfully with ID: 66976
+8:23:07 AM [express] POST /api/swms/draft 200 in 111ms :: {"success":true,"id":66976,"message":"Draf…
+8:23:08 AM [vite] warning: This case clause will never be evaluated because it duplicates an earlier case clause
+1646|  
+1647|  
+1648|      case 8:
+   |      ^
+1649|        // Check if user already has paid access
+1650|        const hasPaidAccess = formData.paidAccess === true || formData.paid === true || formData.creditsUsed === true;
+
+  Plugin: vite:esbuild
+  File: /home/runner/workspace/client/src/components/swms/swms-form.tsx
+8:23:09 AM [vite] hmr update /src/components/swms/swms-form.tsx, /src/index.css?v=GHbOFa0_L0POgjH-mlH0
+Saving SWMS draft for user: 999 Project: Test job name Demo mode: true
+DEBUG - projectDescription field: tiling a bathroom 
+DEBUG - workDescription field: tiling a bathroom 
+8:23:09 AM [vite] warning: This case clause will never be evaluated because it duplicates an earlier case clause
+1646|  
+1647|  
+1648|      case 8:
+   |      ^
+1649|        // Check if user already has paid access
+1650|        const hasPaidAccess = formData.paidAccess === true || formData.paid === true || formData.creditsUsed === true;
+
+  Plugin: vite:esbuild
+  File: /home/runner/workspace/client/src/components/swms/swms-form.tsx
+Updating existing document: 66976
+SWMS draft updated: 66976
+SWMS draft saved successfully with ID: 66976
+8:23:09 AM [express] POST /api/swms/draft 200 in 161ms :: {"success":true,"id":66976,"message":"Draf…
+Saving SWMS draft for user: 999 Project: Test job name Demo mode: true
+DEBUG - projectDescription field: tiling a bathroom 
+DEBUG - workDescription field: tiling a bathroom 
+Updating existing document: 66976
+Saving SWMS draft for user: 999 Project: Test job name Demo mode: true
+DEBUG - projectDescription field: tiling a bathroom 
+DEBUG - workDescription field: tiling a bathroom 
+SWMS draft updated: 66976
+SWMS draft saved successfully with ID: 66976
+8:23:11 AM [express] POST /api/swms/draft 200 in 112ms :: {"success":true,"id":66976,"message":"Draf…
+Updating existing document: 66976
+SWMS draft updated: 66976
+SWMS draft saved successfully with ID: 66976
+8:23:11 AM [express] POST /api/swms/draft 200 in 59ms :: {"success":true,"id":66976,"message":"Draft…
+Saving SWMS draft for user: 999 Project: Test job name Demo mode: true
+DEBUG - projectDescription field: tiling a bathroom 
+DEBUG - workDescription field: tiling a bathroom 
+Updating existing document: 66976
+SWMS draft updated: 66976
+SWMS draft saved successfully with ID: 66976
+8:23:12 AM [express] POST /api/swms/draft 200 in 111ms :: {"success":true,"id":66976,"message":"Draf…
+Saving SWMS draft for user: 999 Project: Test job name Demo mode: true
+DEBUG - projectDescription field: tiling a bathroom 
+DEBUG - workDescription field: tiling a bathroom 
+Updating existing document: 66976
+SWMS draft updated: 66976
+SWMS draft saved successfully with ID: 66976
+8:23:13 AM [express] POST /api/swms/draft 200 in 111ms :: {"success":true,"id":66976,"message":"Draf…
+Saving SWMS draft for user: 999 Project: Test job name Demo mode: true
+DEBUG - projectDescription field: tiling a bathroom 
+DEBUG - workDescription field: tiling a bathroom 
+Updating existing document: 66976
+SWMS draft updated: 66976
+SWMS draft saved successfully with ID: 66976
+8:23:16 AM [express] POST /api/swms/draft 200 in 118ms :: {"success":true,"id":66976,"message":"Draf…
+Saving SWMS draft for user: 999 Project: Test job name Demo mode: true
+DEBUG - projectDescription field: tiling a bathroom 
+DEBUG - workDescription field: tiling a bathroom 
+8:23:18 AM [vite] hmr update /src/components/swms/swms-form.tsx, /src/index.css?v=GHbOFa0_L0POgjH-mlH0
+Updating existing document: 66976
+SWMS draft updated: 66976
+SWMS draft saved successfully with ID: 66976
+8:23:18 AM [express] POST /api/swms/draft 200 in 112ms :: {"success":true,"id":66976,"message":"Draf…
+8:23:18 AM [vite] warning: This case clause will never be evaluated because it duplicates an earlier case clause
+1646|  
+1647|  
+1648|      case 8:
+   |      ^
+1649|        // Check if user already has paid access
+1650|        const hasPaidAccess = formData.paidAccess === true || formData.paid === true || formData.creditsUsed === true;
+
+  Plugin: vite:esbuild
+  File: /home/runner/workspace/client/src/components/swms/swms-form.tsx
+Saving SWMS draft for user: 999 Project: Test job name Demo mode: true
+DEBUG - projectDescription field: tiling a bathroom 
+DEBUG - workDescription field: tiling a bathroom 
+Updating existing document: 66976
+SWMS draft updated: 66976
+SWMS draft saved successfully with ID: 66976
+8:23:19 AM [express] POST /api/swms/draft 200 in 115ms :: {"success":true,"id":66976,"message":"Draf…
+SWMSprint PDF generation request received: Unknown project
+Generating PDF with embedded RiskTemplateBuilder system
+🏗️ EMBEDDED PDF GENERATOR - Creating SWMS document
+📊 Data received: {
+  projectName: 'Test job name',
+  activitiesCount: 9,
+  equipmentCount: 11
+}
+📋 Processing SWMS data: {
+  projectName: 'Test job name',
+  activitiesCount: 9,
+  equipmentCount: 11,
+  emergencyCount: 29
+}
+SWMSprint PDF generation error: TypeError: emergencyProcedures.forEach is not a function
+    at generateEmbeddedPDF (/home/runner/workspace/server/embedded-pdf-generator.ts:165:25)
+    at <anonymous> (/home/runner/workspace/server/routes.ts:154:31)
+8:23:19 AM [express] POST /api/swms/pdf-download 500 in 130ms :: {"error":"Failed to generate PDF wi…
+8:23:19 AM [vite] hmr update /src/components/swms/swms-form.tsx, /src/index.css?v=GHbOFa0_L0POgjH-mlH0
+8:23:20 AM [vite] warning: This case clause will never be evaluated because it duplicates an earlier case clause
+1646|  
+1647|  
+1648|      case 8:
+   |      ^
+1649|        // Check if user already has paid access
+1650|        const hasPaidAccess = formData.paidAccess === true || formData.paid === true || formData.creditsUsed === true;
+
+  Plugin: vite:esbuild
+  File: /home/runner/workspace/client/src/components/swms/swms-form.tsx
+SWMSprint PDF generation request received: Unknown project
+Generating PDF with embedded RiskTemplateBuilder system
+🏗️ EMBEDDED PDF GENERATOR - Creating SWMS document
+📊 Data received: {
+  projectName: 'Test job name',
+  activitiesCount: 9,
+  equipmentCount: 11
+}
+📋 Processing SWMS data: {
+  projectName: 'Test job name',
+  activitiesCount: 9,
+  equipmentCount: 11,
+  emergencyCount: 29
+}
+SWMSprint PDF generation error: TypeError: emergencyProcedures.forEach is not a function
+    at generateEmbeddedPDF (/home/runner/workspace/server/embedded-pdf-generator.ts:165:25)
+    at <anonymous> (/home/runner/workspace/server/routes.ts:154:31)
+8:23:20 AM [express] POST /api/swms/pdf-download 500 in 27ms :: {"error":"Failed to generate PDF wit…
+SWMSprint PDF generation request received: Unknown project
+Generating PDF with embedded RiskTemplateBuilder system
+🏗️ EMBEDDED PDF GENERATOR - Creating SWMS document
+📊 Data received: {
+  projectName: 'Test job name',
+  activitiesCount: 9,
+  equipmentCount: 11
+}
+📋 Processing SWMS data: {
+  projectName: 'Test job name',
+  activitiesCount: 9,
+  equipmentCount: 11,
+  emergencyCount: 29
+}
+SWMSprint PDF generation error: TypeError: emergencyProcedures.forEach is not a function
+    at generateEmbeddedPDF (/home/runner/workspace/server/embedded-pdf-generator.ts:165:25)
+    at <anonymous> (/home/runner/workspace/server/routes.ts:154:31)
+8:23:22 AM [express] POST /api/swms/pdf-download 500 in 22ms :: {"error":"Failed to generate PDF wit…
+8:23:29 AM [vite] hmr update /src/components/swms/swms-form.tsx, /src/index.css?v=GHbOFa0_L0POgjH-mlH0
+8:23:29 AM [vite] warning: This case clause will never be evaluated because it duplicates an earlier case clause
+1643|  
+1644|  
+1645|      case 8:
+   |      ^
+1646|        // Check if user already has paid access
+1647|        const hasPaidAccess = formData.paidAccess === true || formData.paid === true || formData.creditsUsed === true;
+
+  Plugin: vite:esbuild
+  File: /home/runner/workspace/client/src/components/swms/swms-form.tsx
+SWMSprint PDF generation request received: Unknown project
+Generating PDF with embedded RiskTemplateBuilder system
+🏗️ EMBEDDED PDF GENERATOR - Creating SWMS document
+📊 Data received: {
+  projectName: 'Test job name',
+  activitiesCount: 9,
+  equipmentCount: 11
+}
+📋 Processing SWMS data: {
+  projectName: 'Test job name',
+  activitiesCount: 9,
+  equipmentCount: 11,
+  emergencyCount: 29
+}
+SWMSprint PDF generation error: TypeError: emergencyProcedures.forEach is not a function
+    at generateEmbeddedPDF (/home/runner/workspace/server/embedded-pdf-generator.ts:165:25)
+    at <anonymous> (/home/runner/workspace/server/routes.ts:154:31)
+8:23:31 AM [express] POST /api/swms/pdf-download 500 in 17ms :: {"error":"Failed to generate PDF wit…
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

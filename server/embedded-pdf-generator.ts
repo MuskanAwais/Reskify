@@ -162,7 +162,7 @@ export function generateEmbeddedPDF(data: any): Buffer {
     doc.fontSize(14).font('Helvetica-Bold').text('EMERGENCY PROCEDURES', { underline: true });
     doc.moveDown(0.5);
 
-    emergencyProcedures.forEach((procedure: any, index: number) => {
+    (Array.isArray(emergencyProcedures) ? emergencyProcedures : []).forEach((procedure: any, index: number) => {
       doc.fontSize(11).font('Helvetica-Bold').text(`${index + 1}. ${procedure.scenario || 'Emergency Scenario'}`);
       
       if (procedure.response) {
