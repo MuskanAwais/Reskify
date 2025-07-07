@@ -427,15 +427,7 @@ const AutomaticPDFGeneration = ({ formData, onDataChange }: { formData: any; onD
               <p className="text-gray-700 font-medium">{currentMessage}</p>
             </div>
             
-            <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-              <div className="flex items-start space-x-3">
-                <Info className="h-5 w-5 text-blue-600 mt-0.5" />
-                <div className="text-sm text-blue-800">
-                  <p className="font-medium mb-1">Background Processing</p>
-                  <p>Your SWMS data is being automatically processed through SWMSprint PDF generator. No manual input required.</p>
-                </div>
-              </div>
-            </div>
+
           </div>
         </CardContent>
       </Card>
