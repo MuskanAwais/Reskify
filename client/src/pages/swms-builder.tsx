@@ -987,8 +987,8 @@ export default function SwmsBuilder() {
       errors = validateStep5();
     } else if (currentStep === 6) {
       errors = validateStep6();
-    } else if (currentStep === 8) {
-      errors = validateStep8();
+    } else if (currentStep === 7) {
+      errors = validateStep8(); // Legal disclaimer validation
     }
 
     if (errors.length > 0) {
