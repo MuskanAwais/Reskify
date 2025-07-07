@@ -837,7 +837,7 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
       return (
         <div className="space-y-6">
           <div className="text-center">
-            <Shield className="mx-auto h-12 w-12 text-blue-600 mb-4" />
+            <Shield className="mx-auto h-12 w-12 text-primary mb-4" />
             <h3 className="text-lg font-semibold mb-2">Personal Protective Equipment (PPE)</h3>
             <p className="text-gray-600 text-sm">
               Select required PPE based on your work activities and identified risks
@@ -1051,7 +1051,7 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
       return (
         <div className="space-y-6">
           <div className="text-center">
-            <Shield className="mx-auto h-12 w-12 text-primary mb-4" />
+            <AlertTriangle className="mx-auto h-12 w-12 text-primary mb-4" />
             <h3 className="text-lg font-semibold mb-2">Emergency & Monitoring (Optional)</h3>
             <p className="text-gray-600 text-sm">
               Emergency procedures and monitoring processes are optional. You can skip this step if not required for your project.
@@ -1178,81 +1178,16 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
         </div>
       );
 
-    case 7:
-      return (
-        <div className="space-y-6">
-          <div className="text-center">
-            <Shield className="mx-auto h-12 w-12 text-primary mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Legal Disclaimer</h3>
-            <p className="text-gray-600 text-sm">
-              Review and accept the terms and conditions for SWMS creation.
-            </p>
-          </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Terms and Conditions</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
-                <h4 className="font-semibold text-amber-800 mb-2">Important Notice</h4>
-                <p className="text-amber-700 text-sm">
-                  This SWMS is a template and must be reviewed, adapted, and approved by a competent person 
-                  before use. The user is responsible for ensuring compliance with all applicable workplace 
-                  health and safety legislation.
-                </p>
-              </div>
-
-              <div className="space-y-3">
-                <div className="flex items-start space-x-3">
-                  <Checkbox 
-                    id="terms1"
-                    checked={formData.acceptTerms1 || false}
-                    onCheckedChange={(checked) => updateFormData({ acceptTerms1: checked })}
-                  />
-                  <Label htmlFor="terms1" className="text-sm leading-relaxed">
-                    I acknowledge that this SWMS template requires review and adaptation to specific 
-                    workplace conditions and hazards before implementation.
-                  </Label>
-                </div>
-
-                <div className="flex items-start space-x-3">
-                  <Checkbox 
-                    id="terms2"
-                    checked={formData.acceptTerms2 || false}
-                    onCheckedChange={(checked) => updateFormData({ acceptTerms2: checked })}
-                  />
-                  <Label htmlFor="terms2" className="text-sm leading-relaxed">
-                    I understand that compliance with workplace health and safety legislation is my responsibility 
-                    and that this template does not guarantee compliance.
-                  </Label>
-                </div>
-
-                <div className="flex items-start space-x-3">
-                  <Checkbox 
-                    id="terms3"
-                    checked={formData.acceptTerms3 || false}
-                    onCheckedChange={(checked) => updateFormData({ acceptTerms3: checked })}
-                  />
-                  <Label htmlFor="terms3" className="text-sm leading-relaxed">
-                    I accept that the use of this SWMS template is at my own risk and that I will ensure 
-                    appropriate consultation with workers and safety professionals.
-                  </Label>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      );
 
     case 8:
       return (
         <div className="space-y-6">
           <div className="text-center">
-            <CreditCard className="mx-auto h-12 w-12 text-primary mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Payment & Access</h3>
+            <PenTool className="mx-auto h-12 w-12 text-primary mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Signatures</h3>
             <p className="text-gray-600 text-sm">
-              Complete your payment to finalize and download your SWMS document.
+              Add authorizing signatures for document validation
             </p>
           </div>
 
@@ -1684,8 +1619,8 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
                 <div className="flex items-start space-x-2">
                   <Checkbox
                     id="disclaimer1"
-                    checked={formData.acceptedDisclaimer || false}
-                    onCheckedChange={(checked) => updateFormData({ acceptedDisclaimer: checked })}
+                    checked={formData.acceptTerms1 || false}
+                    onCheckedChange={(checked) => updateFormData({ acceptTerms1: checked })}
                   />
                   <Label htmlFor="disclaimer1" className="text-sm">
                     I acknowledge that this SWMS template requires review and adaptation to specific workplace conditions 
@@ -1696,8 +1631,8 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
                 <div className="flex items-start space-x-2">
                   <Checkbox
                     id="disclaimer2"
-                    checked={formData.acceptedDisclaimer || false}
-                    onCheckedChange={(checked) => updateFormData({ acceptedDisclaimer: checked })}
+                    checked={formData.acceptTerms2 || false}
+                    onCheckedChange={(checked) => updateFormData({ acceptTerms2: checked })}
                   />
                   <Label htmlFor="disclaimer2" className="text-sm">
                     I understand that compliance with workplace health and safety legislation is my responsibility and that 
@@ -1708,8 +1643,8 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
                 <div className="flex items-start space-x-2">
                   <Checkbox
                     id="disclaimer3"
-                    checked={formData.acceptedDisclaimer || false}
-                    onCheckedChange={(checked) => updateFormData({ acceptedDisclaimer: checked })}
+                    checked={formData.acceptTerms3 || false}
+                    onCheckedChange={(checked) => updateFormData({ acceptTerms3: checked })}
                   />
                   <Label htmlFor="disclaimer3" className="text-sm">
                     I accept that the use of this SWMS template is at my own risk and that I will ensure appropriate 
@@ -1722,12 +1657,12 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
         </div>
       );
 
-    case 8:
+    case 9:
       return (
         <div className="space-y-6">
           <div className="text-center">
-            <PenTool className="mx-auto h-12 w-12 text-primary mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Signatures</h3>
+            <CreditCard className="mx-auto h-12 w-12 text-primary mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Payment & Access</h3>
             <p className="text-gray-600 text-sm">
               Add authorizing signatures for document validation
             </p>

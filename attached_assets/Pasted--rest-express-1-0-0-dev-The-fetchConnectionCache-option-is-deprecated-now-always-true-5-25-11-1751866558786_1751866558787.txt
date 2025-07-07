@@ -1,0 +1,681 @@
+> rest-express@1.0.0 dev
+The `fetchConnectionCache` option is deprecated (now always `true`)
+5:25:11 AM [express] Initializing database connection...
+Testing database connection...
+Database connection successful
+5:25:11 AM [express] Server running on port 5000
+5:25:11 AM [express] Environment: development
+Browserslist: browsers data (caniuse-lite) is 9 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+5:25:16 AM [vite] warning: This case clause will never be evaluated because it duplicates an earlier case clause
+1656|  
+1657|  
+1658|      case 7:
+   |      ^
+1659|        return (
+1660|          <div data-replit-metadata="client/src/components/swms/swms-form.tsx:1660:8" data-component-name="div" className="space-y-6">
+
+  Plugin: vite:esbuild
+  File: /home/runner/workspace/client/src/components/swms/swms-form.tsx
+5:25:16 AM [vite] warning: This case clause will never be evaluated because it duplicates an earlier case clause
+1723|  
+1724|  
+1725|      case 8:
+   |      ^
+1726|        return (
+1727|          <div data-replit-metadata="client/src/components/swms/swms-form.tsx:1727:8" data-component-name="div" className="space-y-6">
+
+  Plugin: vite:esbuild
+  File: /home/runner/workspace/client/src/components/swms/swms-form.tsx
+5:25:17 AM [express] GET /api/user 200 in 5ms
+5:25:17 AM [express] GET /api/user 200 in 6ms
+5:25:21 AM [express] GET /api/user 200 in 4ms
+5:25:21 AM [express] GET /api/user 200 in 7ms
+5:25:42 AM [express] POST /api/auth/login 200 in 258ms :: {"success":true,"user":{"id":2,"username":…
+Dashboard API called for user: 999
+Querying database for user 999 SWMS documents...
+Database returned 1 active SWMS documents for user 999
+Sample document: { id: 66976, title: 'Test job name' }
+User found: demo, SWMS count: 1, Credits: 10
+Dashboard response data: {
+  draftSwms: 1,
+  completedSwms: 0,
+  totalSwms: 1,
+  credits: 10,
+  subscription: 'trial',
+  recentSwms: [
+    {
+      id: 66976,
+      title: 'Test job name',
+      tradeType: 'Tiling & Waterproofing',
+      status: 'draft',
+      updatedAt: 2025-07-07T05:15:16.807Z,
+      location: '24'
+    }
+  ],
+  recentDocuments: [
+    {
+      id: 66976,
+      title: 'Test job name',
+      tradeType: 'Tiling & Waterproofing',
+      status: 'draft',
+      updatedAt: 2025-07-07T05:15:16.807Z,
+      location: '24'
+    }
+  ]
+}
+5:25:42 AM [express] GET /api/dashboard/999 200 in 172ms :: {"draftSwms":1,"completedSwms":0,"totalS…
+5:27:00 AM [express] GET /api/user/subscription 200 in 6ms
+Loading draft for editing: 66976
+Loading draft for editing: 66976
+Draft found: Test job name
+5:27:01 AM [express] GET /api/swms/draft/66976 200 in 90ms :: {"id":66976,"userId":999,"title":"Test…
+Draft found: Test job name
+5:27:01 AM [express] GET /api/swms/draft/66976 200 in 90ms :: {"id":66976,"userId":999,"title":"Test…
+Saving SWMS draft for user: 999 Project: Untitled SWMS Demo mode: true
+DEBUG - projectDescription field: 
+DEBUG - workDescription field: 
+Saving SWMS draft for user: 999 Project: Untitled SWMS Demo mode: true
+DEBUG - projectDescription field: 
+DEBUG - workDescription field: 
+Updating existing document: 66976
+Updating existing document: 66976
+SWMS draft updated: 66976
+SWMS draft saved successfully with ID: 66976
+5:27:06 AM [express] POST /api/swms/draft 200 in 3426ms :: {"success":true,"id":66976,"message":"Dra…
+SWMS draft updated: 66976
+SWMS draft saved successfully with ID: 66976
+5:27:06 AM [express] POST /api/swms/draft 200 in 3432ms :: {"success":true,"id":66976,"message":"Dra…
+Saving SWMS draft for user: 999 Project: Test job name Demo mode: true
+DEBUG - projectDescription field: tiling a bathroom 
+DEBUG - workDescription field: tiling a bathroom 
+Updating existing document: 66976
+SWMS draft updated: 66976
+SWMS draft saved successfully with ID: 66976
+5:27:07 AM [express] POST /api/swms/draft 200 in 146ms :: {"success":true,"id":66976,"message":"Draf…
+Saving SWMS draft for user: 999 Project: Test job name Demo mode: true
+DEBUG - projectDescription field: tiling a bathroom 
+DEBUG - workDescription field: tiling a bathroom 
+Saving SWMS draft for user: 999 Project: Test job name Demo mode: true
+DEBUG - projectDescription field: tiling a bathroom 
+DEBUG - workDescription field: tiling a bathroom 
+Updating existing document: 66976
+Updating existing document: 66976
+SWMS draft updated: 66976
+SWMS draft saved successfully with ID: 66976
+5:27:09 AM [express] POST /api/swms/draft 200 in 93ms :: {"success":true,"id":66976,"message":"Draft…
+SWMS draft updated: 66976
+SWMS draft saved successfully with ID: 66976
+5:27:09 AM [express] POST /api/swms/draft 200 in 245ms :: {"success":true,"id":66976,"message":"Draf…
+Demo access granted for SWMS generation
+🎯 SWMS GENERATION - Preserving Enhanced Safety Options: {
+  mode: 'job',
+  plainTextDescription: 'tiling a bathroom ',
+  projectDetails: {
+    projectName: '',
+    location: '24',
+    tradeType: 'Tiling & Waterproofing',
+    description: 'tiling a bathroom ',
+    siteEnvironment: '',
+    specialRiskFactors: [],
+    hrcwCategories: [],
+    state: 'NSW'
+  }
+}
+🎯 Enhanced Safety Options - Site: Commercial, State: NSW, HRCW: 
+🎯 GUARANTEED AI GENERATION - Always minimum 8+ tasks with comprehensive legislation
+🚀 SIMPLE AI GENERATION - Trade: Tiling & Waterproofing, Job: tiling a bathroom 
+🚀 SITE: Commercial, STATE: NSW, HRCW: 
+🚀 MINIMUM TASKS REQUIRED: 9 for Tiling & Waterproofing
+🚀 SENDING SIMPLE REQUEST WITH TIMEOUT...
+🚀 SENDING REQUEST TO OPENAI:
+System Message Length: 4137
+User Message: Generate tasks for Tiling & Waterproofing work: tiling a bathroom 
+🚀 RECEIVED RESPONSE
+🚀 FULL AI RESPONSE:
+==================================================
+```json
+{
+  "activities": [
+    {
+      "name": "Surface Assessment and Substrate Preparation",
+      "description": "Evaluating the bathroom surfaces for defects and preparing the substrate to ensure a smooth and stable base for tiling.",
+      "riskScore": "8",
+      "residualRisk": "3",
+      "legislation": [
+        "NSW WHS Regulation 2017 - Section 35",
+        "AS/NZS 1884:2013 - Floor coverings",
+        "Code of Practice - Managing the Work Environment and Facilities",
+        "Trade regulation - Surface Preparation Standards"
+      ],
+      "hazards": [
+        {
+          "type": "Physical",
+          "description": "Uneven surfaces can cause trips and falls, leading to potential injuries.",
+          "riskRating": "8",
+          "controlMeasures": [
+            "Ensure surfaces are level",
+            "Use appropriate leveling compounds",
+            "Install warning signs",
+            "Conduct regular inspections",
+            "Wear appropriate footwear"
+          ],
+          "residualRisk": "3",
+          "causeAgent": "Uneven substrate",
+          "environmentalCondition": "Commercial site with high foot traffic",
+          "consequence": "Sprains or fractures"
+        }
+      ],
+      "ppe": ["Safety boots", "Gloves", "Eye protection"],
+      "tools": ["Leveling tool"],
+      "trainingRequired": ["Surface preparation training"],
+      "hrcwReferences": [null],
+      "permitRequired": ["None"]
+    },
+    {
+      "name": "Waterproofing Membrane Installation",
+      "description": "Applying a waterproofing membrane to protect the bathroom structure from water ingress and damage.",
+      "riskScore": "10",
+      "residualRisk": "4",
+      "legislation": [
+        "NSW WHS Regulation 2017 - Section 39",
+        "AS 3740:2010 - Waterproofing of domestic wet areas",
+        "Code of Practice - Safe Design of Structures",
+        "Trade regulation - Waterproofing Standards"
+      ],
+      "hazards": [
+        {
+          "type": "Chemical",
+          "description": "Exposure to waterproofing chemicals can cause skin irritation and respiratory issues.",
+          "riskRating": "10",
+          "controlMeasures": [
+            "Use non-toxic alternatives",
+            "Ensure proper ventilation",
+            "Implement safe handling procedures",
+            "Provide safety data sheets",
+            "Wear appropriate PPE"
+          ],
+          "residualRisk": "4",
+          "causeAgent": "Waterproofing chemicals",
+          "environmentalCondition": "Enclosed bathroom space",
+          "consequence": "Skin irritation or respiratory issues"
+        }
+      ],
+      "ppe": ["Respirator", "Chemical-resistant gloves", "Protective clothing"],
+      "tools": ["Brush or roller"],
+      "trainingRequired": ["Chemical handling training"],
+      "hrcwReferences": [null],
+      "permitRequired": ["None"]
+    },
+    {
+      "name": "Tile Layout and Measurement Planning",
+      "description": "Planning the tile layout and taking precise measurements to ensure a symmetrical and aesthetically pleasing finish.",
+      "riskScore": "5",
+      "residualRisk": "2",
+      "legislation": [
+        "NSW WHS Regulation 2017 - Section 43",
+        "AS/NZS 4386.1:1996 - Domestic kitchen assemblies",
+        "Code of Practice - Managing Risks of Hazardous Chemicals",
+        "Trade regulation - Tiling Layout Standards"
+      ],
+      "hazards": [
+        {
+          "type": "Ergonomic",
+          "description": "Poor posture during measurement can lead to musculoskeletal disorders.",
+          "riskRating": "5",
+          "controlMeasures": [
+            "Use ergonomic tools",
+            "Implement regular breaks",
+            "Provide training on proper posture",
+            "Adjust work height",
+            "Wear supportive footwear"
+          ],
+          "residualRisk": "2",
+          "causeAgent": "Measuring tools",
+          "environmentalCondition": "Confined bathroom space",
+          "consequence": "Musculoskeletal disorders"
+        }
+      ],
+      "ppe": ["Knee pads", "Supportive footwear", "Comfortable clothing"],
+      "tools": ["Measuring tape"],
+      "trainingRequired": ["Ergonomic training"],
+      "hrcwReferences": [null],
+      "permitRequired": ["None"]
+    },
+    {
+      "name": "Tile Cutting and Edge Preparation",
+      "description": "Cutting tiles to the required size and preparing edges to fit around fixtures and corners.",
+      "riskScore": "12",
+      "residualRisk": "5",
+      "legislation": [
+        "NSW WHS Regulation 2017 - Section 45",
+        "AS/NZS 4455.1:2008 - Masonry units and segmental pavers",
+        "Code of Practice - Managing Noise and Preventing Hearing Loss",
+        "Trade regulation - Tile Cutting Standards"
+      ],
+      "hazards": [
+        {
+          "type": "Physical",
+          "description": "Sharp edges and flying debris during cutting can cause cuts and eye injuries.",
+          "riskRating": "12",
+          "controlMeasures": [
+            "Use guards on cutting tools",
+            "Implement dust extraction systems",
+            "Provide training on tool use",
+            "Conduct regular tool maintenance",
+            "Wear appropriate PPE"
+          ],
+          "residualRisk": "5",
+          "causeAgent": "Tile cutter",
+          "environmentalCondition": "Dusty environment",
+          "consequence": "Cuts or eye injuries"
+        }
+      ],
+      "ppe": ["Safety goggles", "Cut-resistant gloves", "Dust mask"],
+      "tools": ["Tile cutter"],
+      "trainingRequired": ["Tile cutting training"],
+      "hrcwReferences": [null],
+      "permitRequired": ["None"]
+    },
+    {
+      "name": "Adhesive Application and Tile Installation",
+      "description": "Applying adhesive to the substrate and installing tiles in the planned layout to ensure a secure bond.",
+      "riskScore": "9",
+      "residualRisk": "3",
+      "legislation": [
+        "NSW WHS Regulation 2017 - Section 47",
+        "AS 3958.1:2007 - Ceramic tiles",
+        "Code of Practice - Managing Risks of Plant in the Workplace",
+        "Trade regulation - Adhesive Application Standards"
+      ],
+      "hazards": [
+        {
+          "type": "Chemical",
+          "description": "Inhalation of adhesive fumes can cause respiratory irritation and long-term health effects.",
+          "riskRating": "9",
+          "controlMeasures": [
+            "Use low-VOC adhesives",
+            "Ensure adequate ventilation",
+            "Implement safe handling procedures",
+            "Provide safety data sheets",
+            "Wear appropriate PPE"
+          ],
+          "residualRisk": "3",
+          "causeAgent": "Adhesive chemicals",
+          "environmentalCondition": "Enclosed bathroom space",
+          "consequence": "Respiratory irritation"
+        }
+      ],
+      "ppe": ["Respirator", "Gloves", "Protective eyewear"],
+      "tools": ["Trowel"],
+      "trainingRequired": ["Adhesive handling training"],
+      "hrcwReferences": [null],
+      "permitRequired": ["None"]
+    },
+    {
+      "name": "Grouting and Joint Sealing Operations",
+      "description": "Filling the joints between tiles with grout and applying sealant to ensure water resistance and durability.",
+      "riskScore": "7",
+      "residualRisk": "2",
+      "legislation": [
+        "NSW WHS Regulation 2017 - Section 49",
+        "AS 3740:2010 - Waterproofing of domestic wet areas",
+        "Code of Practice - Managing Risks of Hazardous Chemicals",
+        "Trade regulation - Grouting Standards"
+      ],
+      "hazards": [
+        {
+          "type": "Chemical",
+          "description": "Contact with grout and sealant can cause skin irritation and allergic reactions.",
+          "riskRating": "7",
+          "controlMeasures": [
+            "Use skin-friendly products",
+            "Implement safe handling procedures",
+            "Provide safety data sheets",
+            "Conduct regular skin checks",
+            "Wear appropriate PPE"
+          ],
+          "residualRisk": "2",
+          "causeAgent": "Grout and sealant",
+          "environmentalCondition": "Wet environment",
+          "consequence": "Skin irritation or allergic reactions"
+        }
+      ],
+      "ppe": ["Gloves", "Long-sleeved clothing", "Eye protection"],
+      "tools": ["Grout float"],
+      "trainingRequired": ["Grouting and sealing training"],
+      "hrcwReferences": [null],
+      "permitRequired": ["None"]
+    },
+    {
+      "name": "Surface Cleaning and Protection",
+      "description": "Performing a final cleaning of the tiled surfaces and applying protective treatments to enhance durability and appearance.",
+      "riskScore": "6",
+      "residualRisk": "2",
+      "legislation": [
+        "NSW WHS Regulation 2017 - Section 51",
+        "AS/NZS 3661.1:1993 - Slip resistance of pedestrian surfaces",
+        "Code of Practice - Managing the Work Environment and Facilities",
+        "Trade regulation - Surface Cleaning Standards"
+      ],
+      "hazards": [
+        {
+          "type": "Chemical",
+          "description": "Exposure to cleaning agents can cause respiratory issues and skin irritation.",
+          "riskRating": "6",
+          "controlMeasures": [
+            "Use non-toxic cleaning agents",
+            "Ensure proper ventilation",
+            "Implement safe handling procedures",
+            "Provide safety data sheets",
+            "Wear appropriate PPE"
+          ],
+          "residualRisk": "2",
+          "causeAgent": "Cleaning agents",
+          "environmentalCondition": "Confined bathroom space",
+          "consequence": "Respiratory issues or skin irritation"
+        }
+      ],
+      "ppe": ["Gloves", "Respirator", "Eye protection"],
+      "tools": ["Cleaning cloth"],
+      "trainingRequired": ["Chemical safety training"],
+      "hrcwReferences": [null],
+      "permitRequired": ["None"]
+    },
+    {
+      "name": "Quality Control and Final Inspection",
+      "description": "Conducting a thorough inspection of the completed tiling work to ensure compliance with quality standards and project specifications.",
+      "riskScore": "4",
+      "residualRisk": "1",
+      "legislation": [
+        "NSW WHS Regulation 2017 - Section 53",
+        "AS 3958.1:2007 - Ceramic tiles",
+        "Code of Practice - Construction Work",
+        "Trade regulation - Quality Control Standards"
+      ],
+      "hazards": [
+        {
+          "type": "Ergonomic",
+          "description": "Repetitive movements during inspection can lead to fatigue and musculoskeletal issues.",
+          "riskRating": "4",
+          "controlMeasures": [
+            "Implement regular breaks",
+            "Provide ergonomic tools",
+            "Conduct ergonomic assessments",
+            "Adjust work height",
+            "Wear supportive footwear"
+          ],
+          "residualRisk": "1",
+          "causeAgent": "Inspection tools",
+          "environmentalCondition": "Confined bathroom space",
+          "consequence": "Fatigue or musculoskeletal issues"
+        }
+      ],
+      "ppe": ["Comfortable footwear", "Knee pads", "Supportive clothing"],
+      "tools": ["Inspection checklist"],
+      "trainingRequired": ["Quality control training"],
+      "hrcwReferences": [null],
+      "permitRequired": ["None"]
+    },
+    {
+      "name": "Waste Management and Site Clean-up",
+      "description": "Managing waste materials and debris generated during the tiling process and ensuring the site is left clean and safe.",
+      "riskScore": "7",
+      "residualRisk": "3",
+      "legislation": [
+        "NSW WHS Regulation 2017 - Section 55",
+        "AS/NZS 3831:1998 - Waste management",
+        "Code of Practice - Managing Risks of Hazardous Chemicals",
+        "Trade regulation - Waste Disposal Standards"
+      ],
+      "hazards": [
+        {
+          "type": "Physical",
+          "description": "Improper waste handling can lead to cuts, punctures, and exposure to hazardous materials.",
+          "riskRating": "7",
+          "controlMeasures": [
+            "Implement waste segregation",
+            "Use appropriate disposal methods",
+            "Provide training on waste handling",
+            "Conduct regular waste audits",
+            "Wear appropriate PPE"
+          ],
+          "residualRisk": "3",
+          "causeAgent": "Waste materials",
+          "environmentalCondition": "Commercial site with waste accumulation",
+          "consequence": "Cuts or exposure to hazardous materials"
+        }
+      ],
+      "ppe": ["Gloves", "Safety boots", "High-visibility vest"],
+      "tools": ["Waste bins"],
+      "trainingRequired": ["Waste management training"],
+      "hrcwReferences": [null],
+      "permitRequired": ["None"]
+    }
+  ]
+}
+```
+==================================================
+🚀 PARSED SUCCESSFULLY - Activities: 9
+🚀 NORMALIZED TASK: "Surface Assessment and Substrate Preparation" → "surfaceassessmentsubstrate"
+🚀 NORMALIZED TASK: "Waterproofing Membrane Installation" → "waterproofingmembrane"
+🚀 NORMALIZED TASK: "Tile Layout and Measurement Planning" → "tilelayoutmeasurementplanning"
+🚀 NORMALIZED TASK: "Tile Cutting and Edge Preparation" → "tilecuttingedge"
+🚀 NORMALIZED TASK: "Adhesive Application and Tile Installation" → "adhesivetile"
+🚀 NORMALIZED TASK: "Grouting and Joint Sealing Operations" → "groutingjointsealingoperations"
+🚀 NORMALIZED TASK: "Surface Cleaning and Protection" → "surfacecleaning"
+🚀 NORMALIZED TASK: "Quality Control and Final Inspection" → "qualitycontrolfinalinspection"
+🚀 NORMALIZED TASK: "Waste Management and Site Clean-up" → "wastemanagementcleanup"
+🚀 TASK UNIQUENESS CHECK: 9 → 9 unique tasks
+🚀 AFTER EXACT DUPLICATE CHECK: 9 unique activities
+🚀 ENFORCING MINIMUM TASKS: Current 9, Required 9
+🚀 SUFFICIENT TASKS: Using 9 AI-generated activities
+🚀 GUARANTEED MINIMUM TASKS: Final count 9 (minimum 9 required)
+🎯 AI GENERATION SUCCESSFUL - Enhanced safety options and comprehensive legislation included
+5:27:41 AM [express] POST /api/generate-swms 200 in 27006ms :: {"success":true,"data":{"activities":…
+Saving SWMS draft for user: 999 Project: Test job name Demo mode: true
+DEBUG - projectDescription field: tiling a bathroom 
+DEBUG - workDescription field: tiling a bathroom 
+Updating existing document: 66976
+SWMS draft updated: 66976
+SWMS draft saved successfully with ID: 66976
+5:27:46 AM [express] POST /api/swms/draft 200 in 214ms :: {"success":true,"id":66976,"message":"Draf…
+Saving SWMS draft for user: 999 Project: Test job name Demo mode: true
+DEBUG - projectDescription field: tiling a bathroom 
+DEBUG - workDescription field: tiling a bathroom 
+Updating existing document: 66976
+SWMS draft updated: 66976
+SWMS draft saved successfully with ID: 66976
+5:27:51 AM [express] POST /api/swms/draft 200 in 243ms :: {"success":true,"id":66976,"message":"Draf…
+Saving SWMS draft for user: 999 Project: Test job name Demo mode: true
+DEBUG - projectDescription field: tiling a bathroom 
+DEBUG - workDescription field: tiling a bathroom 
+Updating existing document: 66976
+SWMS draft updated: 66976
+SWMS draft saved successfully with ID: 66976
+5:32:19 AM [express] POST /api/swms/draft 200 in 654ms :: {"success":true,"id":66976,"message":"Draf…
+Saving SWMS draft for user: 999 Project: Test job name Demo mode: true
+DEBUG - projectDescription field: tiling a bathroom 
+DEBUG - workDescription field: tiling a bathroom 
+Updating existing document: 66976
+SWMS draft updated: 66976
+SWMS draft saved successfully with ID: 66976
+5:32:20 AM [express] POST /api/swms/draft 200 in 132ms :: {"success":true,"id":66976,"message":"Draf…
+Saving SWMS draft for user: 999 Project: Test job name Demo mode: true
+DEBUG - projectDescription field: tiling a bathroom 
+DEBUG - workDescription field: tiling a bathroom 
+Updating existing document: 66976
+SWMS draft updated: 66976
+SWMS draft saved successfully with ID: 66976
+5:32:22 AM [express] POST /api/swms/draft 200 in 116ms :: {"success":true,"id":66976,"message":"Draf…
+Saving SWMS draft for user: 999 Project: Test job name Demo mode: true
+DEBUG - projectDescription field: tiling a bathroom 
+DEBUG - workDescription field: tiling a bathroom 
+Updating existing document: 66976
+SWMS draft updated: 66976
+SWMS draft saved successfully with ID: 66976
+5:32:24 AM [express] POST /api/swms/draft 200 in 115ms :: {"success":true,"id":66976,"message":"Draf…
+5:32:24 AM [express] GET /api/user/billing 200 in 5ms
+Saving SWMS draft for user: 999 Project: Test job name Demo mode: true
+DEBUG - projectDescription field: tiling a bathroom 
+DEBUG - workDescription field: tiling a bathroom 
+Updating existing document: 66976
+SWMS draft updated: 66976
+SWMS draft saved successfully with ID: 66976
+5:32:26 AM [express] POST /api/swms/draft 200 in 114ms :: {"success":true,"id":66976,"message":"Draf…
+5:32:26 AM [express] GET /api/user/billing 200 in 5ms
+5:32:29 AM [express] GET /api/user/billing 200 in 7ms
+5:32:33 AM [express] GET /api/user/billing 200 in 4ms
+5:33:16 AM [vite] hmr update /src/components/swms/swms-form.tsx, /src/index.css?v=wYADSvzEVQ6wh4vq5ct_a
+5:33:17 AM [vite] warning: This case clause will never be evaluated because it duplicates an earlier case clause
+1656|  
+1657|  
+1658|      case 7:
+   |      ^
+1659|        return (
+1660|          <div data-replit-metadata="client/src/components/swms/swms-form.tsx:1660:8" data-component-name="div" className="space-y-6">
+
+  Plugin: vite:esbuild
+  File: /home/runner/workspace/client/src/components/swms/swms-form.tsx
+5:33:17 AM [vite] warning: This case clause will never be evaluated because it duplicates an earlier case clause
+1723|  
+1724|  
+1725|      case 8:
+   |      ^
+1726|        return (
+1727|          <div data-replit-metadata="client/src/components/swms/swms-form.tsx:1727:8" data-component-name="div" className="space-y-6">
+
+  Plugin: vite:esbuild
+  File: /home/runner/workspace/client/src/components/swms/swms-form.tsx
+5:34:36 AM [express] GET /api/user 200 in 11ms
+5:34:36 AM [express] GET /api/user 200 in 4ms
+5:34:42 AM [express] POST /api/auth/login 200 in 2548ms :: {"success":true,"user":{"id":2,"username"…
+Dashboard API called for user: 999
+Querying database for user 999 SWMS documents...
+Database returned 1 active SWMS documents for user 999
+Sample document: { id: 66976, title: 'Test job name' }
+User found: demo, SWMS count: 1, Credits: 10
+Dashboard response data: {
+  draftSwms: 1,
+  completedSwms: 0,
+  totalSwms: 1,
+  credits: 10,
+  subscription: 'trial',
+  recentSwms: [
+    {
+      id: 66976,
+      title: 'Test job name',
+      tradeType: 'Tiling & Waterproofing',
+      status: 'draft',
+      updatedAt: 2025-07-07T05:32:26.020Z,
+      location: '24'
+    }
+  ],
+  recentDocuments: [
+    {
+      id: 66976,
+      title: 'Test job name',
+      tradeType: 'Tiling & Waterproofing',
+      status: 'draft',
+      updatedAt: 2025-07-07T05:32:26.020Z,
+      location: '24'
+    }
+  ]
+}
+5:34:43 AM [express] GET /api/dashboard/999 200 in 160ms :: {"draftSwms":1,"completedSwms":0,"totalS…
+5:34:47 AM [express] GET /api/user/subscription 200 in 3ms
+Loading draft for editing: 66976
+Loading draft for editing: 66976
+Draft found: Test job name
+5:34:47 AM [express] GET /api/swms/draft/66976 200 in 50ms :: {"id":66976,"userId":999,"title":"Test…
+Draft found: Test job name
+5:34:47 AM [express] GET /api/swms/draft/66976 200 in 91ms :: {"id":66976,"userId":999,"title":"Test…
+Saving SWMS draft for user: 999 Project: Test job name Demo mode: true
+DEBUG - projectDescription field: tiling a bathroom 
+DEBUG - workDescription field: tiling a bathroom 
+Updating existing document: 66976
+SWMS draft updated: 66976
+SWMS draft saved successfully with ID: 66976
+5:34:49 AM [express] POST /api/swms/draft 200 in 130ms :: {"success":true,"id":66976,"message":"Draf…
+Saving SWMS draft for user: 999 Project: Untitled SWMS Demo mode: true
+DEBUG - projectDescription field: 
+DEBUG - workDescription field: 
+Saving SWMS draft for user: 999 Project: Untitled SWMS Demo mode: true
+DEBUG - projectDescription field: 
+DEBUG - workDescription field: 
+Updating existing document: 66976
+Updating existing document: 66976
+SWMS draft updated: 66976
+SWMS draft saved successfully with ID: 66976
+5:34:50 AM [express] POST /api/swms/draft 200 in 75ms :: {"success":true,"id":66976,"message":"Draft…
+SWMS draft updated: 66976
+SWMS draft saved successfully with ID: 66976
+5:34:50 AM [express] POST /api/swms/draft 200 in 125ms :: {"success":true,"id":66976,"message":"Draf…
+Saving SWMS draft for user: 999 Project: Test job name Demo mode: true
+DEBUG - projectDescription field: tiling a bathroom 
+DEBUG - workDescription field: tiling a bathroom 
+Saving SWMS draft for user: 999 Project: Test job name Demo mode: true
+DEBUG - projectDescription field: tiling a bathroom 
+DEBUG - workDescription field: tiling a bathroom 
+Updating existing document: 66976
+Updating existing document: 66976
+SWMS draft updated: 66976
+SWMS draft saved successfully with ID: 66976
+5:34:55 AM [express] POST /api/swms/draft 200 in 161ms :: {"success":true,"id":66976,"message":"Draf…
+SWMS draft updated: 66976
+SWMS draft saved successfully with ID: 66976
+5:34:55 AM [express] POST /api/swms/draft 200 in 217ms :: {"success":true,"id":66976,"message":"Draf…
+Saving SWMS draft for user: 999 Project: Test job name Demo mode: true
+DEBUG - projectDescription field: tiling a bathroom 
+DEBUG - workDescription field: tiling a bathroom 
+Updating existing document: 66976
+SWMS draft updated: 66976
+SWMS draft saved successfully with ID: 66976
+5:34:56 AM [express] POST /api/swms/draft 200 in 111ms :: {"success":true,"id":66976,"message":"Draf…
+Saving SWMS draft for user: 999 Project: Test job name Demo mode: true
+DEBUG - projectDescription field: tiling a bathroom 
+DEBUG - workDescription field: tiling a bathroom 
+Updating existing document: 66976
+SWMS draft updated: 66976
+SWMS draft saved successfully with ID: 66976
+5:34:58 AM [express] POST /api/swms/draft 200 in 112ms :: {"success":true,"id":66976,"message":"Draf…
+Saving SWMS draft for user: 999 Project: Test job name Demo mode: true
+DEBUG - projectDescription field: tiling a bathroom 
+DEBUG - workDescription field: tiling a bathroom 
+Updating existing document: 66976
+SWMS draft updated: 66976
+SWMS draft saved successfully with ID: 66976
+5:34:59 AM [express] POST /api/swms/draft 200 in 157ms :: {"success":true,"id":66976,"message":"Draf…
+Saving SWMS draft for user: 999 Project: Test job name Demo mode: true
+DEBUG - projectDescription field: tiling a bathroom 
+DEBUG - workDescription field: tiling a bathroom 
+Updating existing document: 66976
+SWMS draft updated: 66976
+SWMS draft saved successfully with ID: 66976
+5:35:28 AM [express] POST /api/swms/draft 200 in 210ms :: {"success":true,"id":66976,"message":"Draf…
+5:35:28 AM [express] GET /api/user/billing 200 in 4ms
+5:35:30 AM [express] GET /api/user/billing 200 in 3ms
+Saving SWMS draft for user: 999 Project: Test job name Demo mode: true
+DEBUG - projectDescription field: tiling a bathroom 
+DEBUG - workDescription field: tiling a bathroom 
+Updating existing document: 66976
+SWMS draft updated: 66976
+SWMS draft saved successfully with ID: 66976
+5:35:32 AM [express] POST /api/swms/draft 200 in 233ms :: {"success":true,"id":66976,"message":"Draf…
+5:35:33 AM [express] GET /api/user/billing 200 in 3ms
+5:35:37 AM [express] GET /api/user/billing 200 in 4ms
+Saving SWMS draft for user: 999 Project: Test job name Demo mode: true
+DEBUG - projectDescription field: tiling a bathroom 
+DEBUG - workDescription field: tiling a bathroom 
+Updating existing document: 66976
+SWMS draft updated: 66976
+SWMS draft saved successfully with ID: 66976
+5:35:49 AM [express] POST /api/swms/draft 200 in 210ms :: {"success":true,"id":66976,"message":"Draf…
+Saving SWMS draft for user: 999 Project: Test job name Demo mode: true
+DEBUG - projectDescription field: tiling a bathroom 
+DEBUG - workDescription field: tiling a bathroom 
+Updating existing document: 66976
+SWMS draft updated: 66976
+SWMS draft saved successfully with ID: 66976
+5:35:53 AM [express] POST /api/swms/draft 200 in 223ms :: {"success":true,"id":66976,"message":"Draf…
