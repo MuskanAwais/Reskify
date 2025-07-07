@@ -187,6 +187,16 @@ const AutomaticPDFGeneration = ({ formData, onDataChange }: { formData: any; onD
           headers: Object.fromEntries(healthCheck.headers.entries())
         });
         
+        // Check if SWMSprint app is sleeping/not running
+        if (healthCheck.status === 404) {
+          const responseText = await healthCheck.text();
+          if (responseText.includes('Run this app to see the results here')) {
+            setStatus('error');
+            setCurrentMessage('SWMSprint app is not running. Please start your SWMSprint app first.');
+            throw new Error('SWMSprint app is sleeping or not running. Please start the app at: https://79937ff1-cac5-4736-b2b2-1df5354fb4b3-00-1bbtav2oqagxg.spock.replit.dev');
+          }
+        }
+        
         setCurrentMessage('Connecting to SWMSprint PDF generator...');
         setProgress(90);
         
@@ -328,15 +338,53 @@ const AutomaticPDFGeneration = ({ formData, onDataChange }: { formData: any; onD
   }
 
   if (status === 'error') {
+    const isSWMSprintDown = currentMessage.includes('SWMSprint app is not running');
+    
     return (
       <div className="space-y-6">
         <div className="text-center">
           <AlertCircle className="mx-auto h-16 w-16 text-red-500 mb-4" />
-          <h3 className="text-xl font-semibold mb-2 text-red-700">Generation Failed</h3>
+          <h3 className="text-xl font-semibold mb-2 text-red-700">
+            {isSWMSprintDown ? 'SWMSprint App Not Running' : 'Generation Failed'}
+          </h3>
           <p className="text-gray-600 text-sm mb-6">
-            There was an issue generating your PDF. Please try again.
+            {isSWMSprintDown ? 'Your SWMSprint PDF generator app needs to be started first.' : 'There was an issue generating your PDF. Please try again.'}
           </p>
         </div>
+
+        {isSWMSprintDown && (
+          <Card className="mb-6 border-orange-200 bg-orange-50">
+            <CardContent className="pt-6">
+              <div className="space-y-4">
+                <div className="flex items-center space-x-3">
+                  <ExternalLink className="h-6 w-6 text-orange-600" />
+                  <div className="text-left">
+                    <p className="font-medium text-orange-800">Action Required</p>
+                    <p className="text-orange-700 text-sm">Please start your SWMSprint app first</p>
+                  </div>
+                </div>
+                
+                <div className="text-left space-y-2">
+                  <p className="text-sm text-orange-700 font-medium">Steps to start SWMSprint:</p>
+                  <ol className="text-sm text-orange-700 space-y-1 list-decimal list-inside">
+                    <li>Open your SWMSprint Replit project</li>
+                    <li>Click the "Run" button to start the app</li>
+                    <li>Wait for the app to fully load</li>
+                    <li>Return here and try again</li>
+                  </ol>
+                </div>
+                
+                <Button 
+                  onClick={() => window.open('https://79937ff1-cac5-4736-b2b2-1df5354fb4b3-00-1bbtav2oqagxg.spock.replit.dev', '_blank')}
+                  className="bg-orange-600 hover:bg-orange-700 text-white"
+                >
+                  <ExternalLink className="h-4 w-4 mr-2" />
+                  Open SWMSprint App
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         <Card>
           <CardContent className="pt-6">
