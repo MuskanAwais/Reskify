@@ -955,9 +955,23 @@ export default function SwmsBuilder() {
     
     // For payment step (step 8), allow progression even during save operations
     // The auto-save shouldn't block payment processing
-    if (currentStep !== 8 && (saveDraftMutation.isPending || autoSaveMutation.isPending || isSaving)) {
+    const savingInProgress = saveDraftMutation.isPending || autoSaveMutation.isPending || isSaving;
+    console.log('Save status check:', {
+      currentStep,
+      savingInProgress,
+      saveDraftMutationPending: saveDraftMutation.isPending,
+      autoSaveMutationPending: autoSaveMutation.isPending,
+      isSaving
+    });
+    
+    if (currentStep !== 8 && savingInProgress) {
       console.log('Button click ignored - save in progress (non-payment step)');
       return;
+    }
+    
+    // For payment step, continue processing even if saves are in progress
+    if (currentStep === 8) {
+      console.log('Payment step - allowing progression despite save operations');
     }
 
     // Validate current step before proceeding
@@ -1012,6 +1026,7 @@ export default function SwmsBuilder() {
     
     // Handle proceeding from payment step (step 8) - STRICT VALIDATION
     if (currentStep === 8) {
+      console.log('ENTERING PAYMENT STEP VALIDATION - Step 8 detected');
       // If this document already has paid access, skip payment step entirely
       if (formData.paidAccess === true || formData.paid === true || formData.creditsUsed === true) {
         console.log('Payment step skipped - document already has paid access or payment completed');

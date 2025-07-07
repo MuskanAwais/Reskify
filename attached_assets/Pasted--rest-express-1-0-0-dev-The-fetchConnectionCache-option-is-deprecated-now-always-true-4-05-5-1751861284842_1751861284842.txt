@@ -1,0 +1,67 @@
+
+> rest-express@1.0.0 dev
+The `fetchConnectionCache` option is deprecated (now always `true`)
+4:05:57 AM [express] Initializing database connection...
+Testing database connection...
+Database connection successful
+4:05:57 AM [express] Server running on port 5000
+4:05:57 AM [express] Environment: development
+Browserslist: browsers data (caniuse-lite) is 9 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+4:06:03 AM [express] GET /api/user 304 in 468ms :: {"id":999,"username":"demo","name":"Demo User","e…
+4:06:03 AM [express] GET /api/user 304 in 25ms :: {"id":999,"username":"demo","name":"Demo User","em…
+4:06:06 AM [express] GET /api/user 304 in 25ms :: {"id":999,"username":"demo","name":"Demo User","em…
+4:06:06 AM [express] GET /api/user 304 in 110ms :: {"id":999,"username":"demo","name":"Demo User","e…
+4:06:06 AM [express] GET /api/user/subscription 200 in 5ms
+Saving SWMS draft for user: 999 Project: Untitled SWMS Demo mode: true
+DEBUG - projectDescription field: 
+DEBUG - workDescription field: 
+Saving SWMS draft for user: 999 Project: Untitled SWMS Demo mode: true
+DEBUG - projectDescription field: 
+DEBUG - workDescription field: 
+Found existing draft for user, updating instead of creating new: 66976
+Found existing draft for user, updating instead of creating new: 66976
+SWMS draft updated: 66976
+SWMS draft saved successfully with ID: 66976
+4:06:09 AM [express] POST /api/swms/draft 200 in 143ms :: {"success":true,"id":66976,"message":"Draf…
+SWMS draft updated: 66976
+SWMS draft saved successfully with ID: 66976
+4:06:09 AM [express] POST /api/swms/draft 200 in 150ms :: {"success":true,"id":66976,"message":"Draf…
+Saving SWMS draft for user: 999 Project: Untitled SWMS Demo mode: true
+DEBUG - projectDescription field: 
+DEBUG - workDescription field: 
+Updating existing document: 66976
+SWMS draft updated: 66976
+SWMS draft saved successfully with ID: 66976
+4:06:48 AM [express] GET /api/user 304 in 71ms :: {"id":999,"username":"demo","name":"Demo User","em…
+4:06:48 AM [express] GET /api/user 304 in 77ms :: {"id":999,"username":"demo","name":"Demo User","em…
+4:06:48 AM [express] GET /api/user/subscription 200 in 4ms
+Saving SWMS draft for user: 999 Project: Untitled SWMS Demo mode: true
+DEBUG - projectDescription field: 
+DEBUG - workDescription field: 
+Saving SWMS draft for user: 999 Project: Untitled SWMS Demo mode: true
+DEBUG - projectDescription field: 
+DEBUG - workDescription field: 
+Found existing draft for user, updating instead of creating new: 66976
+Found existing draft for user, updating instead of creating new: 66976
+SWMS draft updated: 66976
+SWMS draft saved successfully with ID: 66976
+4:06:51 AM [express] POST /api/swms/draft 200 in 54ms :: {"success":true,"id":66976,"message":"Draft…
+SWMS draft updated: 66976
+SWMS draft saved successfully with ID: 66976
+4:06:51 AM [express] POST /api/swms/draft 200 in 113ms :: {"success":true,"id":66976,"message":"Draf…
+Saving SWMS draft for user: 999 Project: Untitled SWMS Demo mode: true
+DEBUG - projectDescription field: 
+DEBUG - workDescription field: 
+Updating existing document: 66976
+SWMS draft updated: 66976
+SWMS draft saved successfully with ID: 66976
+4:07:45 AM [express] POST /api/swms/draft 200 in 150ms :: {"success":true,"id":66976,"message":"Draf…
+Saving SWMS draft for user: 999 Project: Untitled SWMS Demo mode: true
+DEBUG - projectDescription field: 
+DEBUG - workDescription field: 
+Updating existing document: 66976
+SWMS draft updated: 66976
+SWMS draft saved successfully with ID: 66976
+4:07:46 AM [express] POST /api/swms/draft 200 in 75ms :: {"success":true,"id":66976,"message":"Draft…
