@@ -357,3 +357,176 @@ export const safetyMeasureSchema = z.object({
 
 export type RiskAssessment = z.infer<typeof riskAssessmentSchema>;
 export type SafetyMeasure = z.infer<typeof safetyMeasureSchema>;
+
+// SwmsFormData schemas for the frontend
+export const riskLevelSchema = z.object({
+  level: z.enum(['extreme', 'high', 'medium', 'low']),
+  score: z.number()
+});
+
+export const emergencyContactSchema = z.object({
+  name: z.string(),
+  phone: z.string(),
+});
+
+export const highRiskActivitySchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  description: z.string(),
+  selected: z.boolean(),
+  riskLevel: z.enum(['extreme', 'high', 'medium', 'low']).optional(),
+});
+
+export const ppeItemSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  description: z.string(),
+  selected: z.boolean(),
+  category: z.string().optional(),
+  required: z.boolean().optional(),
+});
+
+export const workActivitySchema = z.object({
+  id: z.string(),
+  activity: z.string(),
+  hazards: z.array(z.string()),
+  initialRisk: z.union([
+    z.string(),
+    riskLevelSchema
+  ]),
+  controlMeasures: z.array(z.string()),
+  residualRisk: z.union([
+    z.string(),
+    riskLevelSchema
+  ]),
+  legislation: z.array(z.string()),
+});
+
+export const plantEquipmentSchema = z.object({
+  id: z.string(),
+  equipment: z.string(),
+  model: z.string(),
+  serialNumber: z.string(),
+  riskLevel: z.enum(['high', 'medium', 'low']),
+  nextInspection: z.string(),
+  certificationRequired: z.boolean(),
+  hazards: z.array(z.string()).default([]),
+  initialRisk: riskLevelSchema,
+  controlMeasures: z.array(z.string()).default([]),
+  residualRisk: riskLevelSchema,
+  legislation: z.array(z.string()).default([]),
+  operator: z.string().optional(),
+});
+
+export const signInEntrySchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  company: z.string(),
+  position: z.string(),
+  date: z.string(),
+  timeIn: z.string(),
+  timeOut: z.string(),
+  signature: z.string(),
+  inductionComplete: z.boolean(),
+  number: z.number().optional()
+});
+
+export const msdsDocumentSchema = z.object({
+  id: z.string(),
+  fileName: z.string(),
+  customTitle: z.string(),
+  fileData: z.string(),
+  uploadDate: z.string(),
+  selected: z.boolean().default(false),
+});
+
+export const swmsFormSchema = z.object({
+  companyName: z.string().min(1, "Company name is required"),
+  projectName: z.string().min(1, "Project name is required"),
+  projectNumber: z.string().min(1, "Project number is required"),
+  projectAddress: z.string().min(1, "Project address is required"),
+  jobName: z.string().min(1, "Job name is required"),
+  jobNumber: z.string().min(1, "Job number is required"),
+  startDate: z.string().min(1, "Start date is required"),
+  duration: z.string().min(1, "Duration is required"),
+  dateCreated: z.string().min(1, "Date created is required"),
+  principalContractor: z.string().min(1, "Principal contractor is required"),
+  projectManager: z.string().min(1, "Project manager is required"),
+  siteSupervisor: z.string().min(1, "Site supervisor is required"),
+  authorisingPerson: z.string().min(1, "Authorising person is required"),
+  authorisingPosition: z.string().min(1, "Authorising position is required"),
+  scopeOfWorks: z.string().min(1, "Scope of works is required"),
+  reviewAndMonitoring: z.string().min(1, "Review and monitoring is required"),
+  companyLogo: z.string().optional(),
+  emergencyContacts: z.array(emergencyContactSchema),
+  emergencyProcedures: z.string(),
+  emergencyMonitoring: z.string(),
+  highRiskActivities: z.array(highRiskActivitySchema),
+  workActivities: z.array(workActivitySchema),
+  ppeItems: z.array(ppeItemSchema),
+  plantEquipment: z.array(plantEquipmentSchema),
+  signInEntries: z.array(signInEntrySchema),
+  msdsDocuments: z.array(msdsDocumentSchema),
+  authorisingSignature: z.string().optional(),
+  authorisingSignatureName: z.string().optional(),
+});
+
+export type SwmsFormData = z.infer<typeof swmsFormSchema>;
+
+export const defaultSwmsData: SwmsFormData = {
+  companyName: "Riskify Construction",
+  projectName: "Office Building Construction",
+  projectNumber: "PRJ-2025-001",
+  projectAddress: "123 Construction Ave, Sydney NSW",
+  jobName: "Foundation & Concrete Works",
+  jobNumber: "JOB-001",
+  startDate: "1st July 2025",
+  duration: "6 weeks",
+  dateCreated: "24th June 2025",
+  principalContractor: "BuildCorp Construction Ltd",
+  projectManager: "John Smith",
+  siteSupervisor: "Jane Doe",
+  authorisingPerson: "Sarah Wilson",
+  authorisingPosition: "WHS Manager",
+  scopeOfWorks: `Foundation excavation and concrete pouring works including:
+• Site preparation and excavation to specified depths
+• Installation of formwork and reinforcement steel
+• Concrete pouring and finishing
+• Quality control and testing procedures
+• Site safety measures and emergency procedures`,
+  companyLogo: undefined,
+  reviewAndMonitoring: "This SWMS will be reviewed and updated whenever changes occur to scope, method, or risk levels. The site supervisor is responsible for initiating this review. All workers will be consulted on this SWMS during the pre-start meeting. Updates will be communicated verbally and via toolbox talks.",
+  emergencyContacts: [
+    { name: "Emergency Contact 01 Name", phone: "0499 999 999" },
+    { name: "Emergency Contact 02 Name", phone: "0499 999 999" },
+    { name: "Emergency Contact 03 Name", phone: "0499 999 999" },
+  ],
+  emergencyProcedures: "Sample procedure information here",
+  emergencyMonitoring: "Emergency procedures will be reviewed monthly and updated as needed. Site supervisor will conduct weekly checks of emergency equipment and contact details. All personnel will be trained on emergency procedures during induction and refresher training every 6 months.",
+  highRiskActivities: [
+    { id: "1", title: "Work on a telecommunication tower", description: "", selected: true },
+    { id: "2", title: "Risk of a person falling more than 2 metres", description: "", selected: true, riskLevel: 'high' as const },
+    { id: "3", title: "Work involving demolition of an element that is load-bearing", description: "", selected: true },
+    { id: "4", title: "Work involving the disturbance of asbestos", description: "", selected: true },
+  ],
+  workActivities: [
+    {
+      id: "1",
+      activity: "Site preparation and excavation",
+      hazards: ["Manual handling", "Equipment hazards", "Fall risks"],
+      initialRisk: { level: 'high' as const, score: 12 },
+      controlMeasures: ["Use mechanical aids", "Proper PPE", "Safety barriers"],
+      residualRisk: { level: 'medium' as const, score: 6 },
+      legislation: ["WHS Act 2011", "Construction Work COP"]
+    }
+  ],
+  ppeItems: [
+    { id: "1", name: "Hard Hat", description: "Safety helmet", selected: true },
+    { id: "2", name: "Safety Boots", description: "Steel-capped boots", selected: true },
+  ],
+  plantEquipment: [],
+  signInEntries: [],
+  msdsDocuments: [],
+  authorisingSignature: undefined,
+  authorisingSignatureName: undefined,
+};

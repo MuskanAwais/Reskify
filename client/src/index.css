@@ -1,12 +1,56 @@
-@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* Force override for risk badges - use flexbox for perfect centering */
+.risk-badge-override,
+span[style*="background-color"]:not([class]) {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 10px !important;
+  color: #ffffff !important;
+  font-weight: 500 !important;
+  width: 70px !important;
+  height: 24px !important;
+  border-radius: 4px !important;
+  font-family: 'Inter', Arial, sans-serif !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+  box-sizing: border-box !important;
+  text-align: center !important;
+}
+
+/* Center all text in risk matrix tables - FORCE FOR PDF CAPTURE */
+table td,
+table th {
+  text-align: center !important;
+}
+
 /* Custom cursive font for signatures */
 .font-cursive {
   font-family: 'Dancing Script', cursive;
+}
+
+.signature-text {
+  font-family: 'Dancing Script', cursive;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1f2937;
+  padding: 0.5rem 1rem;
+  border-bottom: 2px solid #374151;
+  min-height: 3rem;
+  display: flex;
+  align-items: center;
+}
+
+:root {
+  --riskify-green: #2c5530;
+  --riskify-green-light: #4a7c59;
+  --riskify-green-dark: #1a3d20;
 }
 
 /* Mobile and Tablet Optimizations */

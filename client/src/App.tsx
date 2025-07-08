@@ -36,6 +36,7 @@ import Register from "@/pages/register";
 import LegalDisclaimer from "@/pages/legal-disclaimer";
 import LanguageTest from "@/pages/language-test";
 import LanguageDemo from "@/pages/language-demo";
+import SwmsComplete from "@/pages/swms-complete";
 
 // Admin pages
 import AdminDashboard from "@/pages/admin/admin-dashboard";
@@ -199,6 +200,7 @@ function Router() {
         <Route path="/language-demo" component={LanguageDemo} />
         <Route path="/legal-disclaimer" component={LegalDisclaimer} />
         <Route path="/pdf-test" component={PDFTest} />
+        <Route path="/swms-complete" component={SwmsComplete} />
         
         {/* Innovative Features - Coming Soon */}
 

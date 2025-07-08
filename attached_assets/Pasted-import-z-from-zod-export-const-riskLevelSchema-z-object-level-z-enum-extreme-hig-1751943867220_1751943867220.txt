@@ -1,0 +1,500 @@
+import { z } from "zod";
+
+export const riskLevelSchema = z.object({
+  level: z.enum(['extreme', 'high', 'medium', 'low']),
+  score: z.number()
+});
+
+export const emergencyContactSchema = z.object({
+  name: z.string(),
+  phone: z.string(),
+});
+
+export const highRiskActivitySchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  description: z.string(),
+  selected: z.boolean(),
+  riskLevel: z.enum(['extreme', 'high', 'medium', 'low']).optional(),
+});
+
+export const ppeItemSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  description: z.string(),
+  selected: z.boolean(),
+  category: z.string().optional(),
+  required: z.boolean().optional(),
+});
+
+export const workActivitySchema = z.object({
+  id: z.string(),
+  activity: z.string(),
+  hazards: z.array(z.string()),
+  initialRisk: z.union([
+    z.string(),
+    riskLevelSchema
+  ]),
+  controlMeasures: z.array(z.string()),
+  residualRisk: z.union([
+    z.string(),
+    riskLevelSchema
+  ]),
+  legislation: z.array(z.string()),
+});
+
+export const plantEquipmentSchema = z.object({
+  id: z.string(),
+  equipment: z.string(),
+  model: z.string(),
+  serialNumber: z.string(),
+  riskLevel: z.enum(['high', 'medium', 'low']),
+  nextInspection: z.string(),
+  certificationRequired: z.boolean(),
+  hazards: z.array(z.string()).default([]),
+  initialRisk: riskLevelSchema,
+  controlMeasures: z.array(z.string()).default([]),
+  residualRisk: riskLevelSchema,
+  legislation: z.array(z.string()).default([]),
+  operator: z.string().optional(),
+});
+
+export const equipmentItemSchema = z.object({
+  id: z.string(),
+  equipment: z.string(),
+  model: z.string(),
+  serialNumber: z.string(),
+  riskLevel: z.enum(['high', 'medium', 'low']),
+  nextInspection: z.string(),
+  certificationRequired: z.boolean(),
+});
+
+export const signInEntrySchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  company: z.string(),
+  position: z.string(),
+  date: z.string(),
+  timeIn: z.string(),
+  timeOut: z.string(),
+  signature: z.string(),
+  inductionComplete: z.boolean(),
+  number: z.number().optional()
+});
+
+export const msdsDocumentSchema = z.object({
+  id: z.string(),
+  fileName: z.string(),
+  customTitle: z.string(),
+  fileData: z.string(), // Base64 encoded PDF data
+  uploadDate: z.string(),
+  selected: z.boolean().default(false),
+});
+
+export const swmsFormSchema = z.object({
+  // Basic project information
+  companyName: z.string().min(1, "Company name is required"),
+  projectName: z.string().min(1, "Project name is required"),
+  projectNumber: z.string().min(1, "Project number is required"),
+  projectAddress: z.string().min(1, "Project address is required"),
+  jobName: z.string().min(1, "Job name is required"),
+  jobNumber: z.string().min(1, "Job number is required"),
+  startDate: z.string().min(1, "Start date is required"),
+  duration: z.string().min(1, "Duration is required"),
+  dateCreated: z.string().min(1, "Date created is required"),
+  principalContractor: z.string().min(1, "Principal contractor is required"),
+  projectManager: z.string().min(1, "Project manager is required"),
+  siteSupervisor: z.string().min(1, "Site supervisor is required"),
+  authorisingPerson: z.string().min(1, "Authorising person is required"),
+  authorisingPosition: z.string().min(1, "Authorising position is required"),
+  scopeOfWorks: z.string().min(1, "Scope of works is required"),
+  reviewAndMonitoring: z.string().min(1, "Review and monitoring is required"),
+  companyLogo: z.string().optional(),
+  
+  // Emergency information
+  emergencyContacts: z.array(emergencyContactSchema),
+  emergencyProcedures: z.string(),
+  emergencyMonitoring: z.string(),
+  
+  // High risk activities
+  highRiskActivities: z.array(highRiskActivitySchema),
+  
+  // Work activities
+  workActivities: z.array(workActivitySchema),
+  
+  // PPE items
+  ppeItems: z.array(ppeItemSchema),
+  
+  // Plant & Equipment
+  plantEquipment: z.array(plantEquipmentSchema),
+  
+  // Sign in entries
+  signInEntries: z.array(signInEntrySchema),
+  
+  // MSDS Documents
+  msdsDocuments: z.array(msdsDocumentSchema),
+  
+  // SWMS Authorization Signature
+  authorisingSignature: z.string().optional(),
+  authorisingSignatureName: z.string().optional(),
+});
+
+export type SwmsFormData = z.infer<typeof swmsFormSchema>;
+
+export const defaultSwmsData: SwmsFormData = {
+  companyName: "Test Company Name",
+  projectName: "Test Project Name",
+  projectNumber: "123 456",
+  projectAddress: "123 Sample Job Address",
+  jobName: "Test Project Name",
+  jobNumber: "123 456",
+  startDate: "12th July 2025",
+  duration: "8 Weeks",
+  dateCreated: "23rd June 2025",
+  principalContractor: "Test Principal Contractor",
+  projectManager: "Test Project Manager Name",
+  siteSupervisor: "Test Project Supervisor",
+  authorisingPerson: "Test authorising person name",
+  authorisingPosition: "Test authorising person position",
+  scopeOfWorks: "Sample scope of works description",
+  companyLogo: undefined,
+  reviewAndMonitoring: "This SWMS will be reviewed and updated whenever changes occur to scope, method, or risk levels. The site supervisor is responsible for initiating this review. All workers will be consulted on this SWMS during the pre-start meeting. Updates will be communicated verbally and via toolbox talks.",
+  
+  emergencyContacts: [
+    { name: "Emergency Contact 01 Name", phone: "0499 999 999" },
+    { name: "Emergency Contact 02 Name", phone: "0499 999 999" },
+    { name: "Emergency Contact 03 Name", phone: "0499 999 999" },
+  ],
+  emergencyProcedures: "Sample procedure information here",
+  emergencyMonitoring: "Emergency procedures will be reviewed monthly and updated as needed. Site supervisor will conduct weekly checks of emergency equipment and contact details. All personnel will be trained on emergency procedures during induction and refresher training every 6 months.",
+  
+  highRiskActivities: [
+    { id: "1", title: "Work on a telecommunication tower", description: "", selected: true },
+    { id: "2", title: "Risk of a person falling more than 2 metres (e.g. work on ladders, scaffolding, roofs, etc.)", description: "", selected: true, riskLevel: 'high' },
+    { id: "3", title: "Work involving demolition of an element that is load-bearing or otherwise related to the physical integrity of the structure", description: "", selected: true },
+    { id: "4", title: "Work involving the disturbance of asbestos", description: "", selected: true },
+    { id: "5", title: "Work involving structural alterations or repairs that require temporary support to prevent collapse", description: "", selected: true },
+    { id: "6", title: "Work carried out in or near a confined space", description: "", selected: true },
+    { id: "7", title: "Work carried out in or near a shaft or trench deeper than 1.5 metres or a tunnel", description: "", selected: false },
+    { id: "8", title: "Work involving the use of explosives", description: "", selected: false },
+    { id: "9", title: "Work on or near pressurised gas distribution mains or piping", description: "", selected: false },
+    { id: "10", title: "Work on or near chemical, fuel or refrigerant lines", description: "", selected: false },
+    { id: "11", title: "Work on or near energised electrical installations or services (includes live electrical work)", description: "", selected: false, riskLevel: 'medium' },
+    { id: "12", title: "Work in an area that may have a contaminated or flammable atmosphere", description: "", selected: false },
+    { id: "13", title: "Work involving tilt-up or precast concrete elements", description: "", selected: false },
+    { id: "14", title: "Work carried out, in or adjacent to a road, railway, or other traffic corridor that is in use", description: "", selected: false, riskLevel: 'high' },
+    { id: "15", title: "Work in an area at a workplace in which there is any movement of powered mobile plant (e.g. forklifts, excavators, cranes)", description: "", selected: false },
+    { id: "16", title: "Work in areas where there are artificial extremes of temperature (e.g. cold rooms, furnace areas)", description: "", selected: false },
+    { id: "17", title: "Work carries out in or near water or other liquid that involves a risk of drowning", description: "", selected: false },
+    { id: "18", title: "Work carried out on or near live electrical conductors", description: "", selected: false },
+  ],
+  
+  workActivities: [
+    {
+      id: "1",
+      activity: "Activity description in detail sample 01",
+      hazards: [
+        "Hazard description 01",
+        "Hazard description 02 this is an extended description",
+        "Hazard description 03",
+        "Hazard description 04",
+        "Hazard description 05",
+        "Hazard description 06 this is an extended description",
+        "Hazard description 07",
+        "Hazard description 08"
+      ],
+      initialRisk: { level: 'extreme' as const, score: 16 },
+      controlMeasures: [
+        "Hazard description 01",
+        "Hazard description 02 this is an extended description",
+        "Hazard description 03",
+        "Hazard description 04",
+        "Hazard description 05",
+        "Hazard description 06 this is an extended description",
+        "Hazard description 07",
+        "Hazard description 08"
+      ],
+      residualRisk: { level: 'medium' as const, score: 9 },
+      legislation: [
+        "Legislation description 01",
+        "Legislation description 02 this is an extended description"
+      ]
+    },
+    {
+      id: "2",
+      activity: "Activity description in detail sample 02",
+      hazards: [
+        "Hazard description 01",
+        "Hazard description 02 this is an extended description",
+        "Hazard description 03",
+        "Hazard description 04",
+        "Hazard description 05",
+        "Hazard description 06 this is an extended description",
+        "Hazard description 07",
+        "Hazard description 08"
+      ],
+      initialRisk: { level: 'high' as const, score: 12 },
+      controlMeasures: [
+        "Hazard description 01",
+        "Hazard description 02 this is an extended description",
+        "Hazard description 03",
+        "Hazard description 04",
+        "Hazard description 05",
+        "Hazard description 06 this is an extended description",
+        "Hazard description 07",
+        "Hazard description 08"
+      ],
+      residualRisk: { level: 'low' as const, score: 6 },
+      legislation: [
+        "Legislation description 01",
+        "Legislation description 02 this is an extended description"
+      ]
+    },
+    {
+      id: "3",
+      activity: "Activity description in detail sample 03",
+      hazards: [
+        "Hazard description 01",
+        "Hazard description 02 this is an extended description",
+        "Hazard description 03",
+        "Hazard description 04",
+        "Hazard description 05",
+        "Hazard description 06 this is an extended description",
+        "Hazard description 07",
+        "Hazard description 08"
+      ],
+      initialRisk: { level: 'extreme' as const, score: 13 },
+      controlMeasures: [
+        "Hazard description 01",
+        "Hazard description 02 this is an extended description",
+        "Hazard description 03",
+        "Hazard description 04",
+        "Hazard description 05",
+        "Hazard description 08"
+      ],
+      residualRisk: { level: 'medium' as const, score: 9 },
+      legislation: [
+        "Legislation description 01",
+        "Legislation description 02 this is an extended description"
+      ]
+    },
+    {
+      id: "4",
+      activity: "Activity description in detail sample 04",
+      hazards: [
+        "Hazard description 01",
+        "Hazard description 02 this is an extended description",
+        "Hazard description 03",
+        "Hazard description 04",
+        "Hazard description 05",
+        "Hazard description 06 this is an extended description",
+        "Hazard description 07",
+        "Hazard description 08"
+      ],
+      initialRisk: { level: 'low' as const, score: 3 },
+      controlMeasures: [
+        "Hazard description 01",
+        "Hazard description 02 this is an extended description",
+        "Hazard description 03",
+        "Hazard description 04",
+        "Hazard description 05",
+        "Hazard description 06 this is an extended description",
+        "Hazard description 07",
+        "Hazard description 08"
+      ],
+      residualRisk: { level: 'low' as const, score: 1 },
+      legislation: [
+        "Legislation description 01",
+        "Legislation description 02 this is an extended description"
+      ]
+    },
+    {
+      id: "5",
+      activity: "Activity description in detail sample 05",
+      hazards: [
+        "Hazard description 01",
+        "Hazard description 02 this is an extended description",
+        "Hazard description 03",
+        "Hazard description 04",
+        "Hazard description 05",
+        "Hazard description 06 this is an extended description",
+        "Hazard description 07",
+        "Hazard description 08"
+      ],
+      initialRisk: { level: 'medium' as const, score: 8 },
+      controlMeasures: [
+        "Hazard description 01",
+        "Hazard description 02 this is an extended description",
+        "Hazard description 03",
+        "Hazard description 04",
+        "Hazard description 05",
+        "Hazard description 06 this is an extended description",
+        "Hazard description 07",
+        "Hazard description 08"
+      ],
+      residualRisk: { level: 'low' as const, score: 2 },
+      legislation: [
+        "Legislation description 01",
+        "Legislation description 02 this is an extended description"
+      ]
+    },
+    {
+      id: "6",
+      activity: "Activity description in detail sample 06",
+      hazards: [
+        "Hazard description 01",
+        "Hazard description 02 this is an extended description",
+        "Hazard description 03",
+        "Hazard description 04",
+        "Hazard description 05",
+        "Hazard description 06 this is an extended description",
+        "Hazard description 07",
+        "Hazard description 08"
+      ],
+      initialRisk: { level: 'high' as const, score: 15 },
+      controlMeasures: [
+        "Hazard description 01",
+        "Hazard description 02 this is an extended description",
+        "Hazard description 03",
+        "Hazard description 04",
+        "Hazard description 05",
+        "Hazard description 06 this is an extended description",
+        "Hazard description 07",
+        "Hazard description 08"
+      ],
+      residualRisk: { level: 'medium' as const, score: 6 },
+      legislation: [
+        "Legislation description 01",
+        "Legislation description 02 this is an extended description"
+      ]
+    },
+    {
+      id: "7",
+      activity: "Electrical installation and testing procedures with detailed safety protocols and emergency response plans",
+      hazards: [
+        "Electrical shock from live wires",
+        "Arc flash from short circuits",
+        "Burns from heated components",
+        "Fire hazard from faulty wiring"
+      ],
+      initialRisk: { level: 'extreme' as const, score: 20 },
+      controlMeasures: [
+        "Lockout/tagout procedures before work",
+        "Use of appropriate PPE including insulated gloves",
+        "Testing circuits with approved meters",
+        "Maintaining safe working distances",
+        "Regular equipment inspection and maintenance"
+      ],
+      residualRisk: { level: 'medium' as const, score: 8 },
+      legislation: [
+        "Electrical Safety Regulation 2013",
+        "Work Health and Safety Act 2011"
+      ]
+    },
+    {
+      id: "8", 
+      activity: "Heavy machinery operation and maintenance in confined spaces with complex ventilation requirements and multiple safety systems",
+      hazards: [
+        "Crushing injuries from heavy equipment",
+        "Respiratory hazards from exhaust fumes and dust particles",
+        "Noise-induced hearing loss from prolonged exposure to high decibel levels",
+        "Entanglement in moving parts and mechanical components",
+        "Chemical exposure from hydraulic fluids and lubricants"
+      ],
+      initialRisk: { level: 'extreme' as const, score: 25 },
+      controlMeasures: [
+        "Comprehensive pre-operation safety inspections",
+        "Mandatory use of respiratory protection equipment",
+        "Implementation of noise control measures and hearing protection",
+        "Establishment of exclusion zones around operating machinery",
+        "Regular maintenance schedules and safety system checks",
+        "Emergency shutdown procedures and communication protocols"
+      ],
+      residualRisk: { level: 'high' as const, score: 12 },
+      legislation: [
+        "Heavy Vehicle National Law",
+        "Dangerous Goods Safety Management Act",
+        "Environmental Protection Regulation"
+      ]
+    }
+  ],
+  
+  ppeItems: [
+    { id: "1", name: "Hard Hat – Head protection from falling objects", description: "", selected: false },
+    { id: "2", name: "Hi-Vis Vest/Shirt – Visibility on site", description: "", selected: false },
+    { id: "3", name: "Steel Cap Boots – Foot protection from impact or puncture", description: "", selected: false },
+    { id: "4", name: "Safety Glasses – Eye protection", description: "", selected: false },
+    { id: "5", name: "Gloves – General hand protection", description: "", selected: false },
+    { id: "6", name: "Hearing Protection – Earplugs or earmuffs", description: "", selected: false },
+    { id: "7", name: "Long Pants – Protection from abrasions and minor cuts", description: "", selected: false },
+    { id: "8", name: "Long Sleeve Shirt – Arm protection from scratches and UV", description: "", selected: false },
+    { id: "9", name: "Safety Harness – Fall protection for work at heights", description: "", selected: false },
+    { id: "10", name: "Sun Protection (Hat, Sunscreen) – UV exposure control", description: "", selected: false },
+    { id: "11", name: "Fall Arrest Harness – Working at heights", description: "", selected: false },
+    { id: "12", name: "Confined Space Breathing Apparatus – Confined spaces or poor air quality", description: "", selected: false },
+    { id: "13", name: "Welding Helmet & Gloves – Welding tasks", description: "", selected: false },
+    { id: "14", name: "Cut-Resistant Gloves – Blade or glass handling", description: "", selected: false },
+    { id: "15", name: "Face Shield – High-impact or chemical splash risk", description: "", selected: false },
+    { id: "16", name: "Respirator (Half/Full Face) – Hazardous fumes, chemicals, or dust", description: "", selected: false },
+    { id: "17", name: "Chemical-Resistant Apron – Handling corrosive substances", description: "", selected: false },
+    { id: "18", name: "Anti-Static Clothing – Electrical or explosive environments", description: "", selected: false },
+    { id: "19", name: "Insulated Gloves – Live electrical work", description: "", selected: false },
+    { id: "20", name: "Emergency Eyewash – First aid for chemical exposure", description: "", selected: false }
+  ],
+
+  plantEquipment: [
+    { 
+      id: "1", 
+      equipment: "Excavator", 
+      model: "CAT 320D", 
+      serialNumber: "12345", 
+      riskLevel: "high" as const, 
+      nextInspection: "2024-12-01", 
+      certificationRequired: true,
+      hazards: ["Crushing from bucket or tracks", "Noise exposure", "Hydraulic fluid leaks"],
+      initialRisk: { level: 'high' as const, score: 16 },
+      controlMeasures: ["Licensed operator only", "Pre-start inspection", "Exclusion zones", "PPE required"],
+      residualRisk: { level: 'medium' as const, score: 8 },
+      legislation: ["Work Health and Safety Act 2011", "Heavy Vehicle National Law"],
+      operator: "Licensed Operator Required"
+    },
+    { 
+      id: "2", 
+      equipment: "Forklift", 
+      model: "Toyota 8FBU25", 
+      serialNumber: "67890", 
+      riskLevel: "medium" as const, 
+      nextInspection: "2024-11-15", 
+      certificationRequired: true,
+      hazards: ["Tip-over risk", "Load falling", "Collision with pedestrians"],
+      initialRisk: { level: 'medium' as const, score: 12 },
+      controlMeasures: ["Forklift license required", "Speed limits", "Load securing", "Designated travel paths"],
+      residualRisk: { level: 'low' as const, score: 4 },
+      legislation: ["Work Health and Safety Act 2011"],
+      operator: "Licensed Operator Required"
+    },
+    { 
+      id: "3", 
+      equipment: "Scaffolding", 
+      model: "Layher Allround", 
+      serialNumber: "ABC123", 
+      riskLevel: "high" as const, 
+      nextInspection: "2024-10-30", 
+      certificationRequired: true,
+      hazards: ["Falls from height", "Structural collapse", "Falling objects"],
+      initialRisk: { level: 'high' as const, score: 20 },
+      controlMeasures: ["Competent person assembly", "Daily inspections", "Fall protection", "Tag and barricade"],
+      residualRisk: { level: 'medium' as const, score: 6 },
+      legislation: ["Work Health and Safety Act 2011", "Work Health and Safety Regulation 2017"],
+      operator: "Certified Scaffolder"
+    }
+  ],
+
+  signInEntries: [],
+  
+  msdsDocuments: [],
+  
+  // SWMS Authorization Signature
+  authorisingSignature: "John Smith",
+  authorisingSignatureName: "John Smith"
+};
