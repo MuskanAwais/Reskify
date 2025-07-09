@@ -929,8 +929,37 @@ const SignInRegisterPage = ({ formData, onUpdate }: { formData: any, onUpdate: (
   </div>
 );
 
-export default function SwmsComplete() {
-  const [formData, setFormData] = useState(defaultFormData);
+export default function SwmsComplete({ initialData }: { initialData?: any } = {}) {
+  const [formData, setFormData] = useState(() => {
+    // If initialData is provided, merge it with defaults
+    if (initialData) {
+      return {
+        ...defaultFormData,
+        ...initialData,
+        // Map SWMS builder fields to SwmsComplete fields
+        projectName: initialData.jobName || initialData.projectName || defaultFormData.projectName,
+        projectNumber: initialData.jobNumber || initialData.projectNumber || defaultFormData.projectNumber,
+        projectAddress: initialData.projectAddress || defaultFormData.projectAddress,
+        companyName: initialData.companyName || defaultFormData.companyName,
+        principalContractor: initialData.principalContractor || defaultFormData.principalContractor,
+        projectManager: initialData.projectManager || defaultFormData.projectManager,
+        siteSupervisor: initialData.siteSupervisor || defaultFormData.siteSupervisor,
+        startDate: initialData.startDate || defaultFormData.startDate,
+        workActivities: initialData.workActivities || initialData.selectedTasks || defaultFormData.workActivities,
+        emergencyContacts: initialData.emergencyContacts || defaultFormData.emergencyContacts,
+        emergencyProcedures: initialData.emergencyProcedures || defaultFormData.emergencyProcedures,
+        highRiskActivities: initialData.hrcwCategories ? 
+          defaultFormData.highRiskActivities.map(activity => ({
+            ...activity,
+            selected: initialData.hrcwCategories?.includes(activity.name) || false
+          })) : defaultFormData.highRiskActivities,
+        ppeRequirements: initialData.ppeRequirements || defaultFormData.ppeRequirements,
+        plantEquipment: initialData.plantEquipment || defaultFormData.plantEquipment,
+        companyLogo: initialData.companyLogo || defaultFormData.companyLogo
+      };
+    }
+    return defaultFormData;
+  });
   const [currentPage, setCurrentPage] = useState<DocumentPage>('project-info');
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 
@@ -1064,7 +1093,7 @@ export default function SwmsComplete() {
       
       {/* Main Content */}
       <div className="flex-1 overflow-auto">
-        <div className="bg-white min-h-full relative">
+        <div className="bg-gray-100 min-h-full relative py-8">
           {/* Background Watermark */}
           <div className="absolute inset-0 pointer-events-none opacity-5 z-0">
             <div className="grid grid-cols-4 gap-20 h-full p-8">
@@ -1083,15 +1112,18 @@ export default function SwmsComplete() {
           {/* Content with A4 landscape dimensions */}
           <div 
             id="swms-content" 
-            className="relative z-10 p-8"
+            className="relative z-10 p-6"
             style={{
-              width: '1123px',
-              minHeight: '794px',
-              maxWidth: '1123px',
+              width: '1400px',
+              height: '990px',
+              maxWidth: '1400px',
               margin: '0 auto',
               backgroundColor: 'white',
-              transform: 'scale(0.8)',
-              transformOrigin: 'top center'
+              transform: 'scale(0.7)',
+              transformOrigin: 'top center',
+              border: '1px solid #e5e7eb',
+              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+              aspectRatio: '1.414/1'
             }}
           >
             <CurrentPageComponent formData={formData} onUpdate={handleInputChange} />
