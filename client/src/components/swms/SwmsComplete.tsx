@@ -48,24 +48,24 @@ const defaultFormData = {
   
   // High Risk Activities
   highRiskActivities: [
-    'Work on a telecommunication tower',
-    'Risk of a person falling more than 2 metres (e.g. work on ladders, scaffolding, roofs, etc.)',
-    'Work involving demolition of an element that is load-bearing or otherwise related to the physical integrity of the structure',
-    'Work involving the disturbance of asbestos',
-    'Work involving structural alterations or repairs that require temporary support to prevent collapse',
-    'Work carried out in or near a confined space',
-    'Work carried out in or near a shaft or trench deeper than 1.5 metres or a tunnel',
-    'Work involving the use of explosives',
-    'Work on or near pressurised gas distribution mains or piping',
-    'Work on or near chemical, fuel or refrigerant lines',
-    'Work on or near energised electrical installations or services (includes live electrical work)',
-    'Work in an area that may have a contaminated or flammable atmosphere',
-    'Work involving tilt-up or precast concrete elements',
-    'Work carried out, in or adjacent to a road, railway, or other traffic corridor that is in use',
-    'Work in an area at a workplace in which there is any movement of powered mobile plant (e.g. forklifts, excavators, cranes)',
-    'Work in areas where there are artificial extremes of temperature (e.g. cold rooms, furnace areas)',
-    'Work carries out in or near water or other liquid that involves a risk of drowning',
-    'Work carried out on or near live electrical conductors'
+    { name: 'Work on a telecommunication tower', selected: false },
+    { name: 'Risk of a person falling more than 2 metres (e.g. work on ladders, scaffolding, roofs, etc.)', selected: true },
+    { name: 'Work involving demolition of an element that is load-bearing or otherwise related to the physical integrity of the structure', selected: true },
+    { name: 'Work involving the disturbance of asbestos', selected: true },
+    { name: 'Work involving structural alterations or repairs that require temporary support to prevent collapse', selected: false },
+    { name: 'Work carried out in or near a confined space', selected: false },
+    { name: 'Work carried out in or near a shaft or trench deeper than 1.5 metres or a tunnel', selected: false },
+    { name: 'Work involving the use of explosives', selected: false },
+    { name: 'Work on or near pressurised gas distribution mains or piping', selected: false },
+    { name: 'Work on or near chemical, fuel or refrigerant lines', selected: false },
+    { name: 'Work on or near energised electrical installations or services (includes live electrical work)', selected: false },
+    { name: 'Work in an area that may have a contaminated or flammable atmosphere', selected: false },
+    { name: 'Work involving tilt-up or precast concrete elements', selected: false },
+    { name: 'Work carried out, in or adjacent to a road, railway, or other traffic corridor that is in use', selected: false },
+    { name: 'Work in an area at a workplace in which there is any movement of powered mobile plant (e.g. forklifts, excavators, cranes)', selected: false },
+    { name: 'Work in areas where there are artificial extremes of temperature (e.g. cold rooms, furnace areas)', selected: false },
+    { name: 'Work carries out in or near water or other liquid that involves a risk of drowning', selected: false },
+    { name: 'Work carried out on or near live electrical conductors', selected: false }
   ],
   
   // Work Activities
@@ -433,19 +433,20 @@ const HighRiskActivitiesPage = ({ formData, onUpdate }: { formData: any, onUpdat
     <h2 className="text-xl font-bold text-gray-900 mb-6">High Risk Activities</h2>
     
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      {formData.highRiskActivities.map((activity: string, index: number) => (
-        <div key={index} className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+      {formData.highRiskActivities.map((activity: any, index: number) => (
+        <div 
+          key={index} 
+          className={`border rounded-lg p-4 cursor-pointer transition-all ${
+            activity.selected ? 'bg-orange-50 border-orange-200' : 'bg-white border-gray-200'
+          }`}
+          onClick={() => {
+            const newActivities = [...formData.highRiskActivities];
+            newActivities[index].selected = !newActivities[index].selected;
+            onUpdate('highRiskActivities', newActivities);
+          }}
+        >
           <div className="text-sm text-gray-800 leading-relaxed">
-            <textarea
-              value={activity}
-              onChange={(e) => {
-                const newActivities = [...formData.highRiskActivities];
-                newActivities[index] = e.target.value;
-                onUpdate('highRiskActivities', newActivities);
-              }}
-              className="w-full bg-transparent border-none outline-none resize-none"
-              rows={3}
-            />
+            {activity.name}
           </div>
         </div>
       ))}
@@ -1063,8 +1064,32 @@ export default function SwmsComplete() {
       
       {/* Main Content */}
       <div className="flex-1 overflow-auto">
-        <div className="bg-white min-h-full">
-          <div id="swms-content" className="p-8">
+        <div className="bg-white min-h-full relative">
+          {/* Background Watermark */}
+          <div className="absolute inset-0 pointer-events-none opacity-5 z-0">
+            <div className="grid grid-cols-6 gap-20 h-full p-8">
+              {Array.from({ length: 30 }).map((_, i) => (
+                <div key={i} className="flex items-center justify-center">
+                  <div className="transform rotate-45 text-6xl font-bold text-gray-400">
+                    RISKIFY
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          {/* Content with A4 landscape dimensions */}
+          <div 
+            id="swms-content" 
+            className="relative z-10 p-8"
+            style={{
+              width: '297mm',
+              minHeight: '210mm',
+              maxWidth: '297mm',
+              margin: '0 auto',
+              backgroundColor: 'white'
+            }}
+          >
             <CurrentPageComponent formData={formData} onUpdate={handleInputChange} />
           </div>
         </div>
