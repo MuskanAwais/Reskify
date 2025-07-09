@@ -204,7 +204,19 @@ export async function registerRoutes(app: Express) {
       let pdfBuffer: Buffer;
       
       try {
+        // First, check if your SWMSprint app is responding
+        console.log('🔍 Checking SWMSprint app health...');
+        const healthCheck = await fetch('https://79937ff1-cac5-4736-b2b2-1df5354fb4b3-00-1bbtav2ooagxg.spock.replit.dev/api/health', {
+          method: 'GET',
+          headers: { 'Accept': 'application/json' }
+        });
+        
+        if (!healthCheck.ok) {
+          throw new Error('SWMSprint app health check failed');
+        }
+        
         // Connect to your working SWMSprint app
+        console.log('🔗 Connecting to SWMSprint for PDF generation...');
         const swmsprintResponse = await fetch('https://79937ff1-cac5-4736-b2b2-1df5354fb4b3-00-1bbtav2ooagxg.spock.replit.dev/api/swms/generate-pdf', {
           method: 'POST',
           headers: {
@@ -214,54 +226,65 @@ export async function registerRoutes(app: Express) {
           body: JSON.stringify(swmsprintData)
         });
         
-        if (swmsprintResponse.ok && swmsprintResponse.headers.get('content-type')?.includes('application/pdf')) {
-          console.log('✅ PDF generated successfully from your working SWMSprint app');
-          pdfBuffer = Buffer.from(await swmsprintResponse.arrayBuffer());
+        console.log('📡 SWMSprint response:', {
+          status: swmsprintResponse.status,
+          ok: swmsprintResponse.ok,
+          contentType: swmsprintResponse.headers.get('content-type')
+        });
+        
+        if (swmsprintResponse.ok) {
+          const contentType = swmsprintResponse.headers.get('content-type');
+          if (contentType?.includes('application/pdf')) {
+            console.log('✅ PDF generated successfully from your working SWMSprint app');
+            pdfBuffer = Buffer.from(await swmsprintResponse.arrayBuffer());
+          } else {
+            // If it's not PDF, try to get the error message
+            const errorText = await swmsprintResponse.text();
+            console.log('⚠️ SWMSprint returned non-PDF response:', errorText);
+            throw new Error(`SWMSprint app returned ${contentType}: ${errorText}`);
+          }
         } else {
-          throw new Error('SWMSprint app returned non-PDF response');
+          const errorText = await swmsprintResponse.text();
+          throw new Error(`SWMSprint app error ${swmsprintResponse.status}: ${errorText}`);
         }
         
       } catch (error) {
         console.error('SWMSprint connection error:', error);
-        console.log('⚠️ SWMSprint connection failed, using local fallback');
+        console.log('⚠️ SWMSprint connection failed, using local PDFKit fallback');
         
-        // Fallback to simple PDFKit if SWMSprint fails
-        const PDFDocument = require('pdfkit');
+        // Fallback to PDFKit - import properly for ES modules
+        const PDFDocument = (await import('pdfkit')).default;
         const doc = new PDFDocument({ margin: 50, size: 'A4' });
         const chunks: Buffer[] = [];
         
-        doc.on('data', (chunk: Buffer) => chunks.push(chunk));
-        doc.on('end', () => {
-          const finalBuffer = Buffer.concat(chunks);
-          console.log('✅ Fallback PDF generated:', finalBuffer.length, 'bytes');
-          pdfBuffer = finalBuffer;
-        });
-        doc.on('error', (err: any) => {
-          console.error('Fallback PDF error:', err);
-          throw err;
-        });
-        
-        // Basic PDF content
-        doc.fontSize(16).text('RISKIFY - Safe Work Method Statement', { align: 'center' });
-        doc.moveDown();
-        doc.fontSize(12).text(`Project: ${data.jobName || 'SWMS Document'}`);
-        doc.text(`Generated: ${new Date().toLocaleDateString()}`);
-        doc.moveDown();
-        
-        if (data.workActivities && data.workActivities.length > 0) {
-          doc.text('Work Activities:');
-          data.workActivities.forEach((activity: any, index: number) => {
-            doc.text(`${index + 1}. ${activity.name || activity.activity || 'Activity'}`);
-            if (activity.description) {
-              doc.text(`   Description: ${activity.description}`);
-            }
+        pdfBuffer = await new Promise<Buffer>((resolve, reject) => {
+          doc.on('data', (chunk: Buffer) => chunks.push(chunk));
+          doc.on('end', () => {
+            const finalBuffer = Buffer.concat(chunks);
+            console.log('✅ Fallback PDF generated:', finalBuffer.length, 'bytes');
+            resolve(finalBuffer);
           });
-        }
-        
-        doc.end();
-        
-        // Wait for PDF generation to complete
-        await new Promise(resolve => doc.on('end', resolve));
+          doc.on('error', reject);
+          
+          // Basic PDF content
+          doc.fontSize(16).text('RISKIFY - Safe Work Method Statement', { align: 'center' });
+          doc.moveDown();
+          doc.fontSize(12).text(`Project: ${swmsprintData.projectName}`);
+          doc.text(`Generated: ${new Date().toLocaleDateString()}`);
+          doc.moveDown();
+          
+          if (swmsprintData.workActivities && swmsprintData.workActivities.length > 0) {
+            doc.text('Work Activities:');
+            swmsprintData.workActivities.forEach((activity: any, index: number) => {
+              doc.text(`${index + 1}. ${activity.name || activity.activity || 'Activity'}`);
+              if (activity.description) {
+                doc.text(`   Description: ${activity.description}`);
+              }
+            });
+          }
+          
+          doc.end();
+        });
       }
       
       // Generate filename with project details
