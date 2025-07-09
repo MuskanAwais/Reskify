@@ -60,6 +60,7 @@ import QuickActionTooltip, { presetTooltips } from "@/components/ui/quick-action
 import AustralianAddressAutocomplete from "@/components/ui/australian-address-autocomplete";
 import VisualPDFPreviewer from "./visual-pdf-previewer";
 import { RiskAssessmentMatrix } from "./risk-assessment-matrix";
+import SwmsComplete from "./SwmsComplete";
 
 const TOTAL_STEPS = 9;
 
@@ -1851,7 +1852,19 @@ const StepContent = ({ step, formData, onDataChange, onNext, isProcessingCredit,
       );
 
     case 9:
-      return <SWMSPrintInterface formData={formData} />;
+      return (
+        <div className="space-y-6">
+          <div className="text-center">
+            <Download className="mx-auto h-12 w-12 text-primary mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Document Generation</h3>
+            <p className="text-gray-600 text-sm">
+              Review and edit your SWMS document before final generation.
+            </p>
+          </div>
+          
+          <SwmsComplete initialData={formData} />
+        </div>
+      );
 
     default:
       return (

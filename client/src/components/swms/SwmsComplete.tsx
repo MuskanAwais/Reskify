@@ -6,13 +6,16 @@ import { RiskBadgeNew } from './RiskBadgeNew';
 
 type DocumentPage = 'project-info' | 'emergency-info' | 'high-risk-activities' | 'risk-matrix' | 'work-activities' | 'ppe' | 'plant-equipment' | 'sign-in';
 
-// Riskify Logo as inline SVG
+// Riskify Logo as colored PNG-style SVG
 const RiskifyLogo = () => (
   <svg width="86" height="86" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
     <rect width="100" height="100" rx="10" fill="#2c5530"/>
-    <text x="50" y="35" textAnchor="middle" fill="white" fontSize="16" fontWeight="bold">RISKIFY</text>
-    <text x="50" y="55" textAnchor="middle" fill="white" fontSize="8">CONSTRUCTION</text>
-    <text x="50" y="70" textAnchor="middle" fill="white" fontSize="8">SAFETY</text>
+    <circle cx="50" cy="40" r="20" fill="#4CAF50"/>
+    <text x="50" y="35" textAnchor="middle" fill="white" fontSize="12" fontWeight="bold">RISKIFY</text>
+    <text x="50" y="55" textAnchor="middle" fill="white" fontSize="6">CONSTRUCTION</text>
+    <text x="50" y="65" textAnchor="middle" fill="white" fontSize="6">SAFETY</text>
+    <rect x="30" y="75" width="40" height="3" fill="#FF9800"/>
+    <rect x="35" y="80" width="30" height="3" fill="#2196F3"/>
   </svg>
 );
 
@@ -188,9 +191,10 @@ const defaultFormData = {
   signInEntries: []
 };
 
-// Header component matching the exact layout
-const SWMSHeader = ({ formData }: { formData: any }) => (
+// Header component with updated layout as requested
+const SWMSHeader = ({ formData, onUpdate }: { formData: any, onUpdate: (field: string, value: any) => void }) => (
   <div className="flex justify-between items-start mb-8 border-b border-gray-200 pb-4">
+    {/* Left side - Riskify logo */}
     <div className="flex items-center space-x-4">
       <RiskifyLogo />
       <div>
@@ -198,13 +202,48 @@ const SWMSHeader = ({ formData }: { formData: any }) => (
         <p className="text-sm text-gray-600">AI SWMS Generator</p>
       </div>
     </div>
-    <div className="text-right">
-      <div className="border-2 border-dashed border-gray-300 p-4 rounded-lg">
+    
+    {/* Right side - Project details and company logo */}
+    <div className="flex items-start space-x-4">
+      {/* Project details */}
+      <div className="text-right">
         <div className="text-sm text-gray-800 font-medium">{formData.companyName}</div>
         <div className="text-sm text-gray-600">{formData.projectName}</div>
         <div className="text-sm text-gray-600">{formData.projectNumber}</div>
         <div className="text-sm text-gray-600">{formData.projectAddress}</div>
-        <div className="text-xs text-gray-500 mt-2">Company Logo</div>
+      </div>
+      
+      {/* Company logo upload */}
+      <div className="w-24 h-24 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center bg-gray-50">
+        {formData.companyLogo ? (
+          <img 
+            src={formData.companyLogo} 
+            alt="Company Logo" 
+            className="w-full h-full object-contain rounded-lg"
+          />
+        ) : (
+          <div className="text-center">
+            <svg className="w-8 h-8 text-gray-400 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+            </svg>
+            <p className="text-xs text-gray-500">Company Logo</p>
+          </div>
+        )}
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) {
+              const reader = new FileReader();
+              reader.onload = (e) => {
+                onUpdate('companyLogo', e.target?.result);
+              };
+              reader.readAsDataURL(file);
+            }
+          }}
+          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+        />
       </div>
     </div>
   </div>
@@ -213,7 +252,7 @@ const SWMSHeader = ({ formData }: { formData: any }) => (
 // Project Information Page
 const ProjectInfoPage = ({ formData, onUpdate }: { formData: any, onUpdate: (field: string, value: any) => void }) => (
   <div className="space-y-6">
-    <SWMSHeader formData={formData} />
+    <SWMSHeader formData={formData} onUpdate={onUpdate} />
     
     <h2 className="text-xl font-bold text-gray-900 mb-6">Project Information</h2>
     
@@ -375,7 +414,7 @@ const ProjectInfoPage = ({ formData, onUpdate }: { formData: any, onUpdate: (fie
 // Emergency Information Page
 const EmergencyInfoPage = ({ formData, onUpdate }: { formData: any, onUpdate: (field: string, value: any) => void }) => (
   <div className="space-y-6">
-    <SWMSHeader formData={formData} />
+    <SWMSHeader formData={formData} onUpdate={onUpdate} />
     
     <h2 className="text-xl font-bold text-gray-900 mb-6">Emergency Information</h2>
     
@@ -428,7 +467,7 @@ const EmergencyInfoPage = ({ formData, onUpdate }: { formData: any, onUpdate: (f
 // High Risk Activities Page
 const HighRiskActivitiesPage = ({ formData, onUpdate }: { formData: any, onUpdate: (field: string, value: any) => void }) => (
   <div className="space-y-6">
-    <SWMSHeader formData={formData} />
+    <SWMSHeader formData={formData} onUpdate={onUpdate} />
     
     <h2 className="text-xl font-bold text-gray-900 mb-6">High Risk Activities</h2>
     
@@ -455,9 +494,9 @@ const HighRiskActivitiesPage = ({ formData, onUpdate }: { formData: any, onUpdat
 );
 
 // Risk Matrix Page
-const RiskMatrixPage = ({ formData }: { formData: any }) => (
+const RiskMatrixPage = ({ formData, onUpdate }: { formData: any, onUpdate: (field: string, value: any) => void }) => (
   <div className="space-y-6">
-    <SWMSHeader formData={formData} />
+    <SWMSHeader formData={formData} onUpdate={onUpdate} />
     
     <h2 className="text-xl font-bold text-gray-900 mb-6">Construction Control Risk Matrix</h2>
     
@@ -649,7 +688,7 @@ const RiskMatrixPage = ({ formData }: { formData: any }) => (
 // Work Activities Page
 const WorkActivitiesPage = ({ formData, onUpdate }: { formData: any, onUpdate: (field: string, value: any) => void }) => (
   <div className="space-y-6">
-    <SWMSHeader formData={formData} />
+    <SWMSHeader formData={formData} onUpdate={onUpdate} />
     
     <h2 className="text-xl font-bold text-gray-900 mb-6">Work Activities & Risk Assessment</h2>
     
@@ -760,7 +799,7 @@ const WorkActivitiesPage = ({ formData, onUpdate }: { formData: any, onUpdate: (
 // PPE Page
 const PPEPage = ({ formData, onUpdate }: { formData: any, onUpdate: (field: string, value: any) => void }) => (
   <div className="space-y-6">
-    <SWMSHeader formData={formData} />
+    <SWMSHeader formData={formData} onUpdate={onUpdate} />
     
     <h2 className="text-xl font-bold text-gray-900 mb-6">Personal Protective Equipment (PPE)</h2>
     
@@ -792,7 +831,7 @@ const PPEPage = ({ formData, onUpdate }: { formData: any, onUpdate: (field: stri
 // Plant Equipment Page
 const PlantEquipmentPage = ({ formData, onUpdate }: { formData: any, onUpdate: (field: string, value: any) => void }) => (
   <div className="space-y-6">
-    <SWMSHeader formData={formData} />
+    <SWMSHeader formData={formData} onUpdate={onUpdate} />
     
     <h2 className="text-xl font-bold text-gray-900 mb-6">Plant & Equipment</h2>
     
@@ -900,7 +939,7 @@ const PlantEquipmentPage = ({ formData, onUpdate }: { formData: any, onUpdate: (
 // Sign In Register Page
 const SignInRegisterPage = ({ formData, onUpdate }: { formData: any, onUpdate: (field: string, value: any) => void }) => (
   <div className="space-y-6">
-    <SWMSHeader formData={formData} />
+    <SWMSHeader formData={formData} onUpdate={onUpdate} />
     
     <h2 className="text-xl font-bold text-gray-900 mb-6">Sign In Register</h2>
     
