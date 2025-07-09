@@ -1170,7 +1170,7 @@ const SignInRegisterPage = ({ formData, onUpdate }: { formData: any, onUpdate: (
   );
 };
 
-export default function SwmsComplete({ initialData }: { initialData?: any } = {}) {
+function SwmsComplete({ initialData }: { initialData?: any } = {}) {
   const [formData, setFormData] = useState(() => {
     // If initialData is provided, merge it with defaults
     if (initialData) {
@@ -1270,39 +1270,95 @@ export default function SwmsComplete({ initialData }: { initialData?: any } = {}
     { id: 'sign-in', title: 'Sign In Register', component: SignInRegisterPage }
   ];
 
-  // PDF Generation functions
-  const generatePNGPDF = async () => {
+  // PDF Generation functions using SWMSprint integration
+  const generateSWMSprintPDF = async () => {
     setIsGeneratingPDF(true);
     try {
-      const pdf = new jsPDF('p', 'mm', 'a4');
+      console.log('🏗️ Connecting to your working SWMSprint app for PDF generation');
       
-      for (let i = 0; i < navItems.length; i++) {
-        const navItem = navItems[i];
-        setCurrentPage(navItem.id as DocumentPage);
+      // Prepare comprehensive data for SWMSprint
+      const swmsprintData = {
+        // Project Information
+        projectName: formData.jobName || formData.projectName || 'SWMS Document',
+        projectNumber: formData.jobNumber || formData.projectNumber || '',
+        projectAddress: formData.projectAddress || formData.address || '',
+        startDate: formData.startDate || '',
+        duration: formData.duration || '',
+        dateCreated: new Date().toLocaleDateString(),
         
-        // Wait for re-render
-        await new Promise(resolve => setTimeout(resolve, 100));
+        // Personnel
+        principalContractor: formData.principalContractor || '',
+        projectManager: formData.projectManager || '',
+        siteSupervisor: formData.siteSupervisor || '',
+        swmsCreatorName: formData.swmsCreatorName || formData.authorisingPerson || '',
+        authorisingPerson: formData.authorisingPerson || '',
+        authorisingPosition: formData.authorisingPosition || '',
+        companyName: formData.companyName || '',
+        companyLogo: formData.companyLogo || null,
         
-        const element = document.getElementById('swms-content');
-        if (element) {
-          const canvas = await html2canvas(element, {
-            scale: 2,
-            useCORS: true,
-            allowTaint: true
-          });
-          
-          const imgData = canvas.toDataURL('image/png');
-          const imgWidth = 210;
-          const imgHeight = (canvas.height * imgWidth) / canvas.width;
-          
-          if (i > 0) pdf.addPage();
-          pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-        }
+        // Work Activities
+        workActivities: formData.workActivities || [],
+        
+        // High Risk Construction Work
+        highRiskActivities: formData.highRiskActivities || [],
+        
+        // PPE Requirements
+        ppeRequirements: formData.ppeItems?.filter(item => item.selected).map(item => item.name) || [],
+        
+        // Plant & Equipment
+        plantEquipment: formData.plantEquipment || [],
+        
+        // Emergency Procedures
+        emergencyProcedures: formData.emergencyProcedures || '',
+        emergencyContacts: formData.emergencyContacts || [],
+        emergencyMonitoring: formData.emergencyMonitoring || '',
+        
+        // Additional fields
+        tradeType: formData.tradeType || 'General',
+        scopeOfWorks: formData.scopeOfWorks || '',
+        reviewAndMonitoring: formData.reviewAndMonitoring || '',
+        
+        // Signature data
+        signatureText: formData.signatureText || '',
+        signatureImage: formData.signatureImage || null
+      };
+      
+      console.log('📤 Sending data to SWMSprint:', {
+        projectName: swmsprintData.projectName,
+        workActivitiesCount: swmsprintData.workActivities.length,
+        ppeCount: swmsprintData.ppeRequirements.length,
+        plantEquipmentCount: swmsprintData.plantEquipment.length
+      });
+      
+      // Use the same endpoint as your working app
+      const response = await fetch('/api/swms/pdf-download', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(swmsprintData)
+      });
+      
+      if (response.ok) {
+        console.log('✅ PDF generated successfully from SWMSprint');
+        const pdfBlob = await response.blob();
+        
+        // Create download link
+        const url = URL.createObjectURL(pdfBlob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `${formData.projectName || 'SWMS'}-${Date.now()}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      } else {
+        throw new Error('PDF generation failed - please try again');
       }
       
-      pdf.save('swms-document.pdf');
     } catch (error) {
       console.error('PDF generation error:', error);
+      alert('PDF generation failed. Please try again.');
     } finally {
       setIsGeneratingPDF(false);
     }
@@ -1351,28 +1407,28 @@ export default function SwmsComplete({ initialData }: { initialData?: any } = {}
         
         <div className="p-4 border-t border-gray-200 space-y-2">
           <button
-            onClick={generatePNGPDF}
+            onClick={generateSWMSprintPDF}
             disabled={isGeneratingPDF}
             className="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50"
           >
             {isGeneratingPDF ? 'Generating...' : 'Print'}
           </button>
           <button
-            onClick={generatePNGPDF}
+            onClick={generateSWMSprintPDF}
             disabled={isGeneratingPDF}
             className="w-full bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 disabled:opacity-50"
           >
             {isGeneratingPDF ? 'Generating...' : 'Download'}
           </button>
           <button
-            onClick={generateVectorPDF}
+            onClick={generateSWMSprintPDF}
             disabled={isGeneratingPDF}
             className="w-full bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 disabled:opacity-50"
           >
             {isGeneratingPDF ? 'Generating...' : 'Vector'}
           </button>
           <button
-            onClick={generatePNGPDF}
+            onClick={generateSWMSprintPDF}
             disabled={isGeneratingPDF}
             className="w-full bg-orange-600 text-white px-4 py-2 rounded-md hover:bg-orange-700 disabled:opacity-50"
           >
@@ -1423,3 +1479,5 @@ export default function SwmsComplete({ initialData }: { initialData?: any } = {}
     </div>
   );
 }
+
+export default SwmsComplete;

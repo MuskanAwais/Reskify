@@ -148,89 +148,120 @@ export async function registerRoutes(app: Express) {
       
       const data = req.body;
       
-      // Generate professional SWMS document using SWMSprint system
-      console.log('🏗️ Generating professional SWMS with SWMSprint template system');
-      const { generateSWMSHTML } = await import('./swmsprint-html-generator-clean');
-      const htmlContent = generateSWMSHTML(data);
-      console.log('📄 HTML template generated, converting to professional PDF using HTML2PDF');
+      // CONNECT TO YOUR WORKING SWMSPRINT APP
+      console.log('🏗️ Connecting to your working SWMSprint app for PDF generation');
       
-      // Use html2pdf.js for HTML to PDF conversion (better than PDFKit for HTML)
-      const html2pdf = await import('html2pdf.js');
+      // Prepare comprehensive data mapping for SWMSprint
+      const swmsprintData = {
+        // Project Information
+        projectName: data.jobName || data.projectName || 'SWMS Document',
+        projectNumber: data.jobNumber || data.projectNumber || '',
+        projectAddress: data.projectAddress || data.address || '',
+        startDate: data.startDate || '',
+        duration: data.duration || '',
+        dateCreated: new Date().toLocaleDateString(),
+        
+        // Personnel
+        principalContractor: data.principalContractor || '',
+        projectManager: data.projectManager || '',
+        siteSupervisor: data.siteSupervisor || '',
+        swmsCreatorName: data.swmsCreatorName || '',
+        authorisingPerson: data.authorisingPerson || '',
+        authorisingPosition: data.authorisingPosition || '',
+        companyName: data.companyName || '',
+        companyLogo: data.companyLogo || null,
+        
+        // Work Activities
+        workActivities: data.workActivities || data.selectedTasks || [],
+        
+        // Risk Assessments
+        riskAssessments: data.riskAssessments || [],
+        
+        // High Risk Construction Work
+        hrcwCategories: data.hrcwCategories || [],
+        highRiskActivities: data.highRiskActivities || [],
+        
+        // PPE Requirements
+        ppeRequirements: data.ppeRequirements || [],
+        
+        // Plant & Equipment
+        plantEquipment: data.plantEquipment || [],
+        
+        // Emergency Procedures
+        emergencyProcedures: data.emergencyProcedures || '',
+        emergencyContacts: data.emergencyContacts || [],
+        emergencyMonitoring: data.emergencyMonitoring || '',
+        
+        // Signatures
+        signatures: data.signatures || [],
+        
+        // Additional fields
+        tradeType: data.tradeType || 'General',
+        scopeOfWorks: data.scopeOfWorks || '',
+        reviewAndMonitoring: data.reviewAndMonitoring || ''
+      };
       
       let pdfBuffer: Buffer;
       
       try {
-        // Configure html2pdf options for professional output
-        const opt = {
-          margin: 0.5,
-          filename: 'swms-document.pdf',
-          image: { type: 'jpeg', quality: 0.98 },
-          html2canvas: { 
-            scale: 2,
-            useCORS: true,
-            backgroundColor: '#ffffff'
+        // Connect to your working SWMSprint app
+        const swmsprintResponse = await fetch('https://79937ff1-cac5-4736-b2b2-1df5354fb4b3-00-1bbtav2ooagxg.spock.replit.dev/api/swms/generate-pdf', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/pdf'
           },
-          jsPDF: { 
-            unit: 'in', 
-            format: 'a4', 
-            orientation: 'portrait' 
-          }
-        };
-        
-        console.log('🔄 Converting HTML to PDF with html2pdf.js');
-        
-        // Convert HTML to PDF buffer
-        pdfBuffer = await new Promise<Buffer>((resolve, reject) => {
-          try {
-            // Create a temporary HTML file in memory
-            const { JSDOM } = require('jsdom');
-            const dom = new JSDOM(htmlContent);
-            const element = dom.window.document.body;
-            
-            // Use html2pdf to generate PDF
-            html2pdf.default().from(element).set(opt).outputPdf('arraybuffer').then((arrayBuffer: ArrayBuffer) => {
-              const buffer = Buffer.from(arrayBuffer);
-              console.log('✅ Professional PDF generated successfully:', buffer.length, 'bytes');
-              resolve(buffer);
-            }).catch(reject);
-          } catch (error) {
-            console.log('⚠️ html2pdf failed, using PDFKit fallback');
-            // Fallback to simple PDFKit if html2pdf fails
-            const PDFDocument = require('pdfkit');
-            const doc = new PDFDocument({ margin: 50, size: 'A4' });
-            const chunks: Buffer[] = [];
-            
-            doc.on('data', (chunk: Buffer) => chunks.push(chunk));
-            doc.on('end', () => {
-              const finalBuffer = Buffer.concat(chunks);
-              console.log('✅ Fallback PDF generated:', finalBuffer.length, 'bytes');
-              resolve(finalBuffer);
-            });
-            doc.on('error', reject);
-            
-            // Basic PDF content
-            doc.fontSize(16).text('RISKIFY - Safe Work Method Statement', { align: 'center' });
-            doc.moveDown();
-            doc.fontSize(12).text(`Project: ${data.jobName || 'SWMS Document'}`);
-            doc.text(`Generated: ${new Date().toLocaleDateString()}`);
-            doc.moveDown();
-            
-            if (data.workActivities && data.workActivities.length > 0) {
-              doc.text('Work Activities:');
-              data.workActivities.forEach((activity: any, index: number) => {
-                doc.text(`${index + 1}. ${activity.name || 'Activity'}`);
-                if (activity.description) {
-                  doc.text(`   Description: ${activity.description}`);
-                }
-              });
-            }
-            
-            doc.end();
-          }
+          body: JSON.stringify(swmsprintData)
         });
+        
+        if (swmsprintResponse.ok && swmsprintResponse.headers.get('content-type')?.includes('application/pdf')) {
+          console.log('✅ PDF generated successfully from your working SWMSprint app');
+          pdfBuffer = Buffer.from(await swmsprintResponse.arrayBuffer());
+        } else {
+          throw new Error('SWMSprint app returned non-PDF response');
+        }
+        
       } catch (error) {
-        console.error('PDF generation error:', error);
-        throw error;
+        console.error('SWMSprint connection error:', error);
+        console.log('⚠️ SWMSprint connection failed, using local fallback');
+        
+        // Fallback to simple PDFKit if SWMSprint fails
+        const PDFDocument = require('pdfkit');
+        const doc = new PDFDocument({ margin: 50, size: 'A4' });
+        const chunks: Buffer[] = [];
+        
+        doc.on('data', (chunk: Buffer) => chunks.push(chunk));
+        doc.on('end', () => {
+          const finalBuffer = Buffer.concat(chunks);
+          console.log('✅ Fallback PDF generated:', finalBuffer.length, 'bytes');
+          pdfBuffer = finalBuffer;
+        });
+        doc.on('error', (err: any) => {
+          console.error('Fallback PDF error:', err);
+          throw err;
+        });
+        
+        // Basic PDF content
+        doc.fontSize(16).text('RISKIFY - Safe Work Method Statement', { align: 'center' });
+        doc.moveDown();
+        doc.fontSize(12).text(`Project: ${data.jobName || 'SWMS Document'}`);
+        doc.text(`Generated: ${new Date().toLocaleDateString()}`);
+        doc.moveDown();
+        
+        if (data.workActivities && data.workActivities.length > 0) {
+          doc.text('Work Activities:');
+          data.workActivities.forEach((activity: any, index: number) => {
+            doc.text(`${index + 1}. ${activity.name || activity.activity || 'Activity'}`);
+            if (activity.description) {
+              doc.text(`   Description: ${activity.description}`);
+            }
+          });
+        }
+        
+        doc.end();
+        
+        // Wait for PDF generation to complete
+        await new Promise(resolve => doc.on('end', resolve));
       }
       
       // Generate filename with project details
