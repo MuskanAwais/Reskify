@@ -1067,11 +1067,13 @@ export default function SwmsComplete() {
         <div className="bg-white min-h-full relative">
           {/* Background Watermark */}
           <div className="absolute inset-0 pointer-events-none opacity-5 z-0">
-            <div className="grid grid-cols-6 gap-20 h-full p-8">
-              {Array.from({ length: 30 }).map((_, i) => (
+            <div className="grid grid-cols-4 gap-20 h-full p-8">
+              {Array.from({ length: 20 }).map((_, i) => (
                 <div key={i} className="flex items-center justify-center">
-                  <div className="transform rotate-45 text-6xl font-bold text-gray-400">
-                    RISKIFY
+                  <div className="transform rotate-45 text-4xl font-bold text-gray-400 text-center">
+                    <div>{formData.projectName}</div>
+                    <div className="text-2xl">{formData.projectNumber}</div>
+                    <div className="text-2xl">{formData.projectAddress}</div>
                   </div>
                 </div>
               ))}
@@ -1083,11 +1085,13 @@ export default function SwmsComplete() {
             id="swms-content" 
             className="relative z-10 p-8"
             style={{
-              width: '297mm',
-              minHeight: '210mm',
-              maxWidth: '297mm',
+              width: '1123px',
+              minHeight: '794px',
+              maxWidth: '1123px',
               margin: '0 auto',
-              backgroundColor: 'white'
+              backgroundColor: 'white',
+              transform: 'scale(0.8)',
+              transformOrigin: 'top center'
             }}
           >
             <CurrentPageComponent formData={formData} onUpdate={handleInputChange} />
