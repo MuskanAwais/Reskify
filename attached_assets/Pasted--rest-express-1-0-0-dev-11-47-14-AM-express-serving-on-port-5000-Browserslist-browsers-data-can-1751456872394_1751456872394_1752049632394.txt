@@ -1,0 +1,113 @@
+> rest-express@1.0.0 dev
+11:47:14 AM [express] serving on port 5000
+Browserslist: browsers data (caniuse-lite) is 9 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+11:47:17 AM [vite] warning: Duplicate key "lineHeight" in object literal
+1909|              color: '#6b7280',
+1910|              fontFamily: 'Inter, system-ui, sans-serif',
+1911|              lineHeight: '1.2'
+   |              ^
+1912|            }}>
+1913|                <div data-replit-metadata="client/src/pages/swms-complete.tsx:1913:14" data-component-name="div" className="font-medium" style={{ color: '#374151' }}>{formData.companyName}</div>
+
+  Plugin: vite:esbuild
+  File: /home/runner/workspace/client/src/pages/swms-complete.tsx
+11:47:17 AM [vite] warning: Duplicate key "lineHeight" in object literal
+1954|            fontFamily: 'Inter, system-ui, sans-serif',
+1955|            lineHeight: '1.2',
+1956|            lineHeight: '1.2'
+   |            ^
+1957|          }}>
+1958|              Project Information
+
+  Plugin: vite:esbuild
+  File: /home/runner/workspace/client/src/pages/swms-complete.tsx
+11:47:17 AM [vite] warning: Duplicate key "lineHeight" in object literal
+2048|            fontFamily: 'Inter, system-ui, sans-serif',
+2049|            lineHeight: '1.2',
+2050|            lineHeight: '1.2'
+   |            ^
+2051|          }}>
+2052|              Scope of Works
+
+  Plugin: vite:esbuild
+  File: /home/runner/workspace/client/src/pages/swms-complete.tsx
+11:47:17 AM [vite] warning: Duplicate key "lineHeight" in object literal
+2073|            fontFamily: 'Inter, system-ui, sans-serif',
+2074|            lineHeight: '1.2',
+2075|            lineHeight: '1.2'
+   |            ^
+2076|          }}>
+2077|              Review and Monitoring
+
+  Plugin: vite:esbuild
+  File: /home/runner/workspace/client/src/pages/swms-complete.tsx
+11:47:17 AM [vite] warning: Duplicate key "lineHeight" in object literal
+2148|              color: '#6b7280',
+2149|              fontFamily: 'Inter, system-ui, sans-serif',
+2150|              lineHeight: '1.2'
+   |              ^
+2151|            }}>
+2152|                <div data-replit-metadata="client/src/pages/swms-complete.tsx:2152:14" data-component-name="div" className="font-medium" style={{ color: '#374151' }}>{formData.companyName}</div>
+
+  Plugin: vite:esbuild
+  File: /home/runner/workspace/client/src/pages/swms-complete.tsx
+11:47:17 AM [vite] warning: Duplicate key "lineHeight" in object literal
+11:47:17 AM [vite] warning: Duplicate key "lineHeight" in object literal
+3477|            fontFamily: 'Inter, system-ui, sans-serif',
+3478|            lineHeight: '1.2',
+3479|            lineHeight: '1.2'
+   |            ^
+3480|          }}>
+3481|              Sign In Register
+
+  Plugin: vite:esbuild
+  File: /home/runner/workspace/client/src/pages/swms-complete.tsx
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

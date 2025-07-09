@@ -1,0 +1,3048 @@
+import { useState } from "react";
+import type { SwmsFormData } from "@shared/schema";
+import { defaultSwmsData } from "@shared/schema";
+import riskifyLogo from '@assets/slogan-6_1750823980552.png';
+import html2pdf from 'html2pdf.js';
+
+type DocumentPage = 'project-info' | 'emergency-info' | 'high-risk-activities' | 'risk-matrix' | 'work-activities' | 'ppe' | 'plant-equipment' | 'sign-in';
+
+export default function SwmsComplete() {
+  const [formData, setFormData] = useState<SwmsFormData>(defaultSwmsData);
+  const [currentPage, setCurrentPage] = useState<DocumentPage>('project-info');
+
+  const handleInputChange = (field: keyof SwmsFormData, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handlePrintPDF = async () => {
+    try {
+      // Create a temporary container with all document pages content
+      const tempContainer = document.createElement('div');
+      tempContainer.style.position = 'absolute';
+      tempContainer.style.left = '-9999px';
+      tempContainer.style.top = '0';
+      tempContainer.style.width = '1123px'; // A4 landscape width in pixels
+      tempContainer.style.backgroundColor = '#ffffff';
+      tempContainer.style.fontFamily = 'Inter, system-ui, sans-serif';
+      tempContainer.style.fontSize = '14px';
+      tempContainer.style.lineHeight = '1.5';
+      tempContainer.style.color = '#000000';
+      
+      // Generate HTML content for all pages
+      const allPagesHTML = `
+        <div style="font-family: Inter, system-ui, sans-serif; background: white; color: #000;">
+          ${renderAllPagesForPDF()}
+        </div>
+      `;
+      
+      tempContainer.innerHTML = allPagesHTML;
+      document.body.appendChild(tempContainer);
+      
+      // Wait for images to load
+      const images = tempContainer.querySelectorAll('img');
+      await Promise.all(Array.from(images).map(img => {
+        return new Promise((resolve) => {
+          if (img.complete) {
+            resolve(true);
+          } else {
+            img.onload = () => resolve(true);
+            img.onerror = () => resolve(true);
+          }
+        });
+      }));
+      
+      // Configure html2pdf options
+      const options = {
+        margin: [10, 10, 10, 10],
+        filename: `SWMS-${formData.projectName || 'Document'}-${new Date().toISOString().split('T')[0]}.pdf`,
+        image: { type: 'jpeg', quality: 0.95 },
+        html2canvas: { 
+          scale: 1.5,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#ffffff',
+          logging: false,
+          letterRendering: true,
+          width: 1123,
+          height: 794
+        },
+        jsPDF: { 
+          unit: 'mm', 
+          format: 'a4', 
+          orientation: 'landscape',
+          compress: true
+        },
+        pagebreak: { 
+          mode: ['css', 'legacy'],
+          before: '.page-break',
+          after: '.page-break'
+        }
+      };
+      
+      // Generate and download PDF
+      await html2pdf().set(options).from(tempContainer).save();
+      
+      // Clean up
+      document.body.removeChild(tempContainer);
+      
+    } catch (error) {
+      console.error('PDF generation failed:', error);
+      alert('Failed to generate PDF. Please try again.');
+    }
+  };
+
+  const renderAllPagesForPDF = () => {
+    const riskLevels = {
+      'extreme': { color: '#dc2626', text: 'white' },
+      'high': { color: '#ea580c', text: 'white' },
+      'medium': { color: '#eab308', text: 'white' },
+      'low': { color: '#22c55e', text: 'white' }
+    };
+
+    const getRiskBadge = (level: string, score: number) => {
+      const risk = riskLevels[level as keyof typeof riskLevels] || riskLevels.medium;
+      return `<span style="background-color: ${risk.color}; color: ${risk.text}; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;">${level.charAt(0).toUpperCase() + level.slice(1)} - ${score}</span>`;
+    };
+
+    return `
+      <!-- Project Info Page -->
+      <div style="width: 100%; min-height: 794px; padding: 40px; background: white; page-break-after: always;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px;">
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <img src="${riskifyLogo}" alt="Riskify Logo" style="height: 86px; width: auto;" />
+            <div style="font-size: 24px; font-weight: 600; color: #111827;">Safe Work Method Statement</div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 32px;">
+            <div style="text-align: right; font-size: 13px; line-height: 18px; color: #6b7280;">
+              <div style="font-weight: 500; color: #374151;">${formData.companyName}</div>
+              <div>${formData.projectName}</div>
+              <div>${formData.projectNumber}</div>
+              <div>${formData.projectAddress}</div>
+            </div>
+            <div style="flex-shrink: 0;">
+              ${formData.companyLogo ? `<img src="${formData.companyLogo}" alt="Company Logo" style="height: 86px; width: auto; object-fit: contain;" />` : '<div style="height: 86px; width: 120px; border: 2px dashed #d1d5db; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 11px; color: #9ca3af;">Company Logo</div>'}
+            </div>
+          </div>
+        </div>
+        
+        <div style="margin-bottom: 32px;">
+          <h1 style="font-size: 24px; font-weight: 700; color: #1f2937; margin-bottom: 24px;">Project Information</h1>
+          
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+            <div><strong>Job Name:</strong> ${formData.jobName}</div>
+            <div><strong>Job Number:</strong> ${formData.jobNumber}</div>
+            <div><strong>Start Date:</strong> ${formData.startDate}</div>
+            <div><strong>Duration:</strong> ${formData.duration}</div>
+            <div><strong>Date Created:</strong> ${formData.dateCreated}</div>
+            <div><strong>Principal Contractor:</strong> ${formData.principalContractor}</div>
+            <div><strong>Project Manager:</strong> ${formData.projectManager}</div>
+            <div><strong>Site Supervisor:</strong> ${formData.siteSupervisor}</div>
+          </div>
+          
+          <div style="margin-bottom: 24px;">
+            <div><strong>Authorising Person:</strong> ${formData.authorisingPerson}</div>
+          </div>
+          
+          <div>
+            <strong>Scope of Works:</strong>
+            <div style="margin-top: 8px; padding: 12px; border: 1px solid #e5e7eb; background: #f9fafb; min-height: 100px;">${formData.scopeOfWorks}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Emergency Info Page -->
+      <div style="width: 100%; min-height: 794px; padding: 40px; background: white; page-break-after: always;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px;">
+          <div style="flex-shrink: 0;">
+            <img src="${riskifyLogo}" alt="Riskify Logo" style="height: 86px; width: auto;" />
+          </div>
+          <div style="text-align: center; flex: 1; margin: 0 32px;">
+            <div style="font-size: 13px; line-height: 18px; color: #6b7280;">
+              <div style="font-weight: 500; color: #374151;">${formData.companyName}</div>
+              <div>${formData.projectName}</div>
+              <div>${formData.projectNumber}</div>
+              <div>${formData.projectAddress}</div>
+            </div>
+          </div>
+          <div style="flex-shrink: 0;">
+            ${formData.companyLogo ? `<img src="${formData.companyLogo}" alt="Company Logo" style="width: 140px; height: 88px; object-fit: contain;" />` : '<div style="width: 140px; height: 88px; border: 2px dashed #d1d5db; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 11px; color: #9ca3af;">Company Logo</div>'}
+          </div>
+        </div>
+
+        <div style="margin-bottom: 32px;">
+          <h1 style="font-size: 24px; font-weight: 700; color: #1f2937; margin-bottom: 24px;">Emergency Contact Information</h1>
+          
+          <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px;">
+            <thead>
+              <tr>
+                <th style="border: 1px solid #e5e7eb; padding: 8px; background-color: #f9fafb; color: #1f2937; text-align: center; font-weight: 600;">Name</th>
+                <th style="border: 1px solid #e5e7eb; padding: 8px; background-color: #f9fafb; color: #1f2937; text-align: center; font-weight: 600;">Phone</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${formData.emergencyContacts.map(contact => `
+                <tr>
+                  <td style="border: 1px solid #e5e7eb; padding: 8px;">${contact.name}</td>
+                  <td style="border: 1px solid #e5e7eb; padding: 8px;">${contact.phone}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+          
+          <div>
+            <strong>Emergency Procedures:</strong>
+            <div style="margin-top: 8px; padding: 12px; border: 1px solid #e5e7eb; background: #f9fafb; min-height: 100px;">${formData.emergencyProcedures}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- High Risk Activities Page -->
+      <div style="width: 100%; min-height: 794px; padding: 40px; background: white; page-break-after: always;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px;">
+          <div style="flex-shrink: 0;">
+            <img src="${riskifyLogo}" alt="Riskify Logo" style="height: 86px; width: auto;" />
+          </div>
+          <div style="text-align: center; flex: 1; margin: 0 32px;">
+            <div style="font-size: 13px; line-height: 18px; color: #6b7280;">
+              <div style="font-weight: 500; color: #374151;">${formData.companyName}</div>
+              <div>${formData.projectName}</div>
+              <div>${formData.projectNumber}</div>
+              <div>${formData.projectAddress}</div>
+            </div>
+          </div>
+          <div style="flex-shrink: 0;">
+            ${formData.companyLogo ? `<img src="${formData.companyLogo}" alt="Company Logo" style="width: 140px; height: 88px; object-fit: contain;" />` : '<div style="width: 140px; height: 88px; border: 2px dashed #d1d5db; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 11px; color: #9ca3af;">Company Logo</div>'}
+          </div>
+        </div>
+
+        <div style="margin-bottom: 32px;">
+          <h1 style="font-size: 24px; font-weight: 700; color: #1f2937; margin-bottom: 24px;">High Risk Activities</h1>
+          
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;">
+            ${formData.highRiskActivities.filter(activity => activity.selected).map(activity => `
+              <div style="border: 1px solid #e5e7eb; padding: 16px; border-radius: 8px; background: #f9fafb;">
+                <div style="font-weight: 600; color: #1f2937; margin-bottom: 8px;">${activity.title}</div>
+                <div style="font-size: 12px; color: #6b7280; margin-bottom: 12px;">${activity.description}</div>
+                ${activity.riskLevel ? `<div style="text-align: center;">${getRiskBadge(activity.riskLevel, 0)}</div>` : ''}
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+
+      <!-- Risk Matrix Page -->
+      <div style="width: 100%; min-height: 794px; padding: 40px; background: white; page-break-after: always;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px;">
+          <div style="flex-shrink: 0;">
+            <img src="${riskifyLogo}" alt="Riskify Logo" style="height: 86px; width: auto;" />
+          </div>
+          <div style="text-align: center; flex: 1; margin: 0 32px;">
+            <div style="font-size: 13px; line-height: 18px; color: #6b7280;">
+              <div style="font-weight: 500; color: #374151;">${formData.companyName}</div>
+              <div>${formData.projectName}</div>
+              <div>${formData.projectNumber}</div>
+              <div>${formData.projectAddress}</div>
+            </div>
+          </div>
+          <div style="flex-shrink: 0;">
+            ${formData.companyLogo ? `<img src="${formData.companyLogo}" alt="Company Logo" style="width: 140px; height: 88px; object-fit: contain;" />` : '<div style="width: 140px; height: 88px; border: 2px dashed #d1d5db; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 11px; color: #9ca3af;">Company Logo</div>'}
+          </div>
+        </div>
+
+        <div style="margin-bottom: 32px;">
+          <h1 style="font-size: 24px; font-weight: 700; color: #1f2937; margin-bottom: 24px;">Risk Assessment Matrix</h1>
+          
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
+            <!-- Likelihood Matrix -->
+            <div>
+              <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 16px;">Likelihood Assessment</h3>
+              <table style="width: 100%; border-collapse: collapse; border: 2px solid #374151;">
+                <thead>
+                  <tr>
+                    <th style="background-color: #f8fafc; color: #1f2937; padding: 8px; text-align: center; border: 1px solid #e5e7eb;">Likelihood</th>
+                    <th style="background-color: #f8fafc; color: #1f2937; padding: 8px; text-align: center; border: 1px solid #e5e7eb;">Frequency</th>
+                    <th style="background-color: #f8fafc; color: #1f2937; padding: 8px; text-align: center; border: 1px solid #e5e7eb;">Probability</th>
+                    <th style="background-color: #f8fafc; color: #1f2937; padding: 8px; text-align: center; border: 1px solid #e5e7eb;">Value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td style="background-color: white; color: #374151; padding: 8px; text-align: center; border: 1px solid #e5e7eb;">5</td><td style="background-color: white; color: #374151; padding: 8px; border: 1px solid #e5e7eb;">Almost Certain</td><td style="background-color: white; color: #374151; padding: 8px; border: 1px solid #e5e7eb;">Daily / Weekly</td><td style="background-color: white; color: #374151; padding: 8px; border: 1px solid #e5e7eb;">>90%</td></tr>
+                  <tr><td style="background-color: #fefefe; color: #374151; padding: 8px; text-align: center; border: 1px solid #e5e7eb;">4</td><td style="background-color: #fefefe; color: #374151; padding: 8px; border: 1px solid #e5e7eb;">Likely</td><td style="background-color: #fefefe; color: #374151; padding: 8px; border: 1px solid #e5e7eb;">Monthly</td><td style="background-color: #fefefe; color: #374151; padding: 8px; border: 1px solid #e5e7eb;">61-90%</td></tr>
+                  <tr><td style="background-color: white; color: #374151; padding: 8px; text-align: center; border: 1px solid #e5e7eb;">3</td><td style="background-color: white; color: #374151; padding: 8px; border: 1px solid #e5e7eb;">Possible</td><td style="background-color: white; color: #374151; padding: 8px; border: 1px solid #e5e7eb;">Yearly</td><td style="background-color: white; color: #374151; padding: 8px; border: 1px solid #e5e7eb;">31-60%</td></tr>
+                  <tr><td style="background-color: #fefefe; color: #374151; padding: 8px; text-align: center; border: 1px solid #e5e7eb;">2</td><td style="background-color: #fefefe; color: #374151; padding: 8px; border: 1px solid #e5e7eb;">Unlikely</td><td style="background-color: #fefefe; color: #374151; padding: 8px; border: 1px solid #e5e7eb;">5-10 Years</td><td style="background-color: #fefefe; color: #374151; padding: 8px; border: 1px solid #e5e7eb;">11-30%</td></tr>
+                  <tr><td style="background-color: white; color: #374151; padding: 8px; text-align: center; border: 1px solid #e5e7eb;">1</td><td style="background-color: white; color: #374151; padding: 8px; border: 1px solid #e5e7eb;">Rare</td><td style="background-color: white; color: #374151; padding: 8px; border: 1px solid #e5e7eb;">>10 Years</td><td style="background-color: white; color: #374151; padding: 8px; border: 1px solid #e5e7eb;"><10%</td></tr>
+                </tbody>
+              </table>
+            </div>
+            
+            <!-- Consequence Matrix -->
+            <div>
+              <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 16px;">Consequence Assessment</h3>
+              <table style="width: 100%; border-collapse: collapse; border: 2px solid #374151;">
+                <thead>
+                  <tr>
+                    <th style="background-color: #f8fafc; color: #374151; padding: 8px; text-align: center; border: 1px solid #e5e7eb;">Consequence</th>
+                    <th style="background-color: #f8fafc; color: #374151; padding: 8px; text-align: center; border: 1px solid #e5e7eb;">People</th>
+                    <th style="background-color: #f8fafc; color: #374151; padding: 8px; text-align: center; border: 1px solid #e5e7eb;">Environment</th>
+                    <th style="background-color: #f8fafc; color: #374151; padding: 8px; text-align: center; border: 1px solid #e5e7eb;">Value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td style="background-color: white; color: #374151; padding: 8px; text-align: center; border: 1px solid #e5e7eb;">5</td><td style="background-color: white; color: #374151; padding: 8px; border: 1px solid #e5e7eb;">Fatality</td><td style="background-color: white; color: #374151; padding: 8px; border: 1px solid #e5e7eb;">Major Environmental Impact</td><td style="background-color: white; color: #374151; padding: 8px; border: 1px solid #e5e7eb;">Catastrophic</td></tr>
+                  <tr><td style="background-color: #fefefe; color: #374151; padding: 8px; text-align: center; border: 1px solid #e5e7eb;">4</td><td style="background-color: #fefefe; color: #374151; padding: 8px; border: 1px solid #e5e7eb;">Permanent Disability</td><td style="background-color: #fefefe; color: #374151; padding: 8px; border: 1px solid #e5e7eb;">Significant Environmental Impact</td><td style="background-color: #fefefe; color: #374151; padding: 8px; border: 1px solid #e5e7eb;">Major</td></tr>
+                  <tr><td style="background-color: white; color: #374151; padding: 8px; text-align: center; border: 1px solid #e5e7eb;">3</td><td style="background-color: white; color: #374151; padding: 8px; border: 1px solid #e5e7eb;">Lost Time Injury</td><td style="background-color: white; color: #374151; padding: 8px; border: 1px solid #e5e7eb;">Moderate Environmental Impact</td><td style="background-color: white; color: #374151; padding: 8px; border: 1px solid #e5e7eb;">Moderate</td></tr>
+                  <tr><td style="background-color: #fefefe; color: #374151; padding: 8px; text-align: center; border: 1px solid #e5e7eb;">2</td><td style="background-color: #fefefe; color: #374151; padding: 8px; border: 1px solid #e5e7eb;">Medical Treatment</td><td style="background-color: #fefefe; color: #374151; padding: 8px; border: 1px solid #e5e7eb;">Minor Environmental Impact</td><td style="background-color: #fefefe; color: #374151; padding: 8px; border: 1px solid #e5e7eb;">Minor</td></tr>
+                  <tr><td style="background-color: white; color: #374151; padding: 8px; text-align: center; border: 1px solid #e5e7eb;">1</td><td style="background-color: white; color: #374151; padding: 8px; border: 1px solid #e5e7eb;">First Aid</td><td style="background-color: white; color: #374151; padding: 8px; border: 1px solid #e5e7eb;">Negligible Environmental Impact</td><td style="background-color: white; color: #374151; padding: 8px; border: 1px solid #e5e7eb;">Negligible</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Work Activities Page -->
+      <div style="width: 100%; min-height: 794px; padding: 40px; background: white; page-break-after: always;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px;">
+          <div style="flex-shrink: 0;">
+            <img src="${riskifyLogo}" alt="Riskify Logo" style="height: 86px; width: auto;" />
+          </div>
+          <div style="text-align: center; flex: 1; margin: 0 32px;">
+            <div style="font-size: 13px; line-height: 18px; color: #6b7280;">
+              <div style="font-weight: 500; color: #374151;">${formData.companyName}</div>
+              <div>${formData.projectName}</div>
+              <div>${formData.projectNumber}</div>
+              <div>${formData.projectAddress}</div>
+            </div>
+          </div>
+          <div style="flex-shrink: 0;">
+            ${formData.companyLogo ? `<img src="${formData.companyLogo}" alt="Company Logo" style="width: 140px; height: 88px; object-fit: contain;" />` : '<div style="width: 140px; height: 88px; border: 2px dashed #d1d5db; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 11px; color: #9ca3af;">Company Logo</div>'}
+          </div>
+        </div>
+
+        <div style="margin-bottom: 32px;">
+          <h1 style="font-size: 24px; font-weight: 700; color: #1f2937; margin-bottom: 24px;">Work Activities</h1>
+          
+          <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+            <thead>
+              <tr>
+                <th style="border: 1px solid #e5e7eb; padding: 6px; background-color: #f9fafb; color: #1f2937; text-align: center; font-weight: 600; width: 3%;">#</th>
+                <th style="border: 1px solid #e5e7eb; padding: 6px; background-color: #f9fafb; color: #1f2937; text-align: center; font-weight: 600; width: 14%;">Activity</th>
+                <th style="border: 1px solid #e5e7eb; padding: 6px; background-color: #f9fafb; color: #1f2937; text-align: center; font-weight: 600; width: 23%;">Hazards</th>
+                <th style="border: 1px solid #e5e7eb; padding: 6px; background-color: #f9fafb; color: #1f2937; text-align: center; font-weight: 600; width: 11%;">Initial Risk</th>
+                <th style="border: 1px solid #e5e7eb; padding: 6px; background-color: #f9fafb; color: #1f2937; text-align: center; font-weight: 600; width: 27%;">Control Measures</th>
+                <th style="border: 1px solid #e5e7eb; padding: 6px; background-color: #f9fafb; color: #1f2937; text-align: center; font-weight: 600; width: 11%;">Residual Risk</th>
+                <th style="border: 1px solid #e5e7eb; padding: 6px; background-color: #f9fafb; color: #1f2937; text-align: center; font-weight: 600; width: 11%;">Legislation</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${formData.workActivities.map((activity, index) => `
+                <tr>
+                  <td style="border: 1px solid #e5e7eb; padding: 6px; text-align: center; font-size: 10px;">${index + 1}</td>
+                  <td style="border: 1px solid #e5e7eb; padding: 6px; font-size: 10px;">${activity.activity}</td>
+                  <td style="border: 1px solid #e5e7eb; padding: 6px; font-size: 10px;"><ul style="margin: 0; padding-left: 12px;">${activity.hazards.map(h => `<li style="margin-bottom: 2px;">${h}</li>`).join('')}</ul></td>
+                  <td style="border: 1px solid #e5e7eb; padding: 6px; text-align: center; font-size: 10px;">${getRiskBadge(activity.initialRisk.level, activity.initialRisk.score)}</td>
+                  <td style="border: 1px solid #e5e7eb; padding: 6px; font-size: 10px;"><ul style="margin: 0; padding-left: 12px;">${activity.controlMeasures.map(c => `<li style="margin-bottom: 2px;">${c}</li>`).join('')}</ul></td>
+                  <td style="border: 1px solid #e5e7eb; padding: 6px; text-align: center; font-size: 10px;">${getRiskBadge(activity.residualRisk.level, activity.residualRisk.score)}</td>
+                  <td style="border: 1px solid #e5e7eb; padding: 6px; font-size: 10px;"><ul style="margin: 0; padding-left: 12px;">${activity.legislation.map(l => `<li style="margin-bottom: 2px;">${l}</li>`).join('')}</ul></td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- PPE Page -->
+      <div style="width: 100%; min-height: 794px; padding: 40px; background: white; page-break-after: always;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px;">
+          <div style="flex-shrink: 0;">
+            <img src="${riskifyLogo}" alt="Riskify Logo" style="height: 86px; width: auto;" />
+          </div>
+          <div style="text-align: center; flex: 1; margin: 0 32px;">
+            <div style="font-size: 13px; line-height: 18px; color: #6b7280;">
+              <div style="font-weight: 500; color: #374151;">${formData.companyName}</div>
+              <div>${formData.projectName}</div>
+              <div>${formData.projectNumber}</div>
+              <div>${formData.projectAddress}</div>
+            </div>
+          </div>
+          <div style="flex-shrink: 0;">
+            ${formData.companyLogo ? `<img src="${formData.companyLogo}" alt="Company Logo" style="width: 140px; height: 88px; object-fit: contain;" />` : '<div style="width: 140px; height: 88px; border: 2px dashed #d1d5db; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 11px; color: #9ca3af;">Company Logo</div>'}
+          </div>
+        </div>
+
+        <div style="margin-bottom: 32px;">
+          <h1 style="font-size: 24px; font-weight: 700; color: #1f2937; margin-bottom: 24px;">Personal Protective Equipment (PPE)</h1>
+          
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+            ${(formData.ppeItems || []).filter(item => item.selected).map(item => `
+              <div style="border: 1px solid #e5e7eb; padding: 16px; border-radius: 8px; background: #f9fafb;">
+                <div style="font-weight: 600; color: #1f2937; margin-bottom: 8px;">${item.name}</div>
+                <div style="font-size: 12px; color: #6b7280; margin-bottom: 8px;">${item.description}</div>
+                <div style="font-size: 11px; color: #059669; font-weight: 500;">Category: ${item.category}</div>
+                ${item.required ? '<div style="font-size: 10px; color: #dc2626; font-weight: 600; margin-top: 4px;">REQUIRED</div>' : ''}
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+
+      <!-- Plant & Equipment Page -->
+      <div style="width: 100%; min-height: 794px; padding: 40px; background: white; page-break-after: always;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px;">
+          <div style="flex-shrink: 0;">
+            <img src="${riskifyLogo}" alt="Riskify Logo" style="height: 86px; width: auto;" />
+          </div>
+          <div style="text-align: center; flex: 1; margin: 0 32px;">
+            <div style="font-size: 13px; line-height: 18px; color: #6b7280;">
+              <div style="font-weight: 500; color: #374151;">${formData.companyName}</div>
+              <div>${formData.projectName}</div>
+              <div>${formData.projectNumber}</div>
+              <div>${formData.projectAddress}</div>
+            </div>
+          </div>
+          <div style="flex-shrink: 0;">
+            ${formData.companyLogo ? `<img src="${formData.companyLogo}" alt="Company Logo" style="width: 140px; height: 88px; object-fit: contain;" />` : '<div style="width: 140px; height: 88px; border: 2px dashed #d1d5db; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 11px; color: #9ca3af;">Company Logo</div>'}
+          </div>
+        </div>
+
+        <div style="margin-bottom: 32px;">
+          <h1 style="font-size: 24px; font-weight: 700; color: #1f2937; margin-bottom: 24px;">Plant & Equipment</h1>
+          
+          <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+            <thead>
+              <tr>
+                <th style="border: 1px solid #e5e7eb; padding: 6px; background-color: #f9fafb; color: #1f2937; text-align: center; font-weight: 600; width: 17%;">Equipment</th>
+                <th style="border: 1px solid #e5e7eb; padding: 6px; background-color: #f9fafb; color: #1f2937; text-align: center; font-weight: 600; width: 26%;">Hazards</th>
+                <th style="border: 1px solid #e5e7eb; padding: 6px; background-color: #f9fafb; color: #1f2937; text-align: center; font-weight: 600; width: 11%;">Initial Risk</th>
+                <th style="border: 1px solid #e5e7eb; padding: 6px; background-color: #f9fafb; color: #1f2937; text-align: center; font-weight: 600; width: 31%;">Control Measures</th>
+                <th style="border: 1px solid #e5e7eb; padding: 6px; background-color: #f9fafb; color: #1f2937; text-align: center; font-weight: 600; width: 11%;">Residual Risk</th>
+                <th style="border: 1px solid #e5e7eb; padding: 6px; background-color: #f9fafb; color: #1f2937; text-align: center; font-weight: 600; width: 4%;">Legislation</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${(formData.plantEquipment || []).map(equipment => `
+                <tr>
+                  <td style="border: 1px solid #e5e7eb; padding: 6px; font-size: 10px;">${equipment.name}</td>
+                  <td style="border: 1px solid #e5e7eb; padding: 6px; font-size: 10px;"><ul style="margin: 0; padding-left: 12px;">${equipment.hazards.map(h => `<li style="margin-bottom: 2px;">${h}</li>`).join('')}</ul></td>
+                  <td style="border: 1px solid #e5e7eb; padding: 6px; text-align: center; font-size: 10px;">${getRiskBadge(equipment.initialRisk.level, equipment.initialRisk.score)}</td>
+                  <td style="border: 1px solid #e5e7eb; padding: 6px; font-size: 10px;"><ul style="margin: 0; padding-left: 12px;">${equipment.controlMeasures.map(c => `<li style="margin-bottom: 2px;">${c}</li>`).join('')}</ul></td>
+                  <td style="border: 1px solid #e5e7eb; padding: 6px; text-align: center; font-size: 10px;">${getRiskBadge(equipment.residualRisk.level, equipment.residualRisk.score)}</td>
+                  <td style="border: 1px solid #e5e7eb; padding: 6px; font-size: 10px;"><ul style="margin: 0; padding-left: 12px;">${equipment.legislation.map(l => `<li style="margin-bottom: 2px;">${l}</li>`).join('')}</ul></td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Sign In Register Page -->
+      <div style="width: 100%; min-height: 794px; padding: 40px; background: white;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px;">
+          <div style="flex-shrink: 0;">
+            <img src="${riskifyLogo}" alt="Riskify Logo" style="height: 86px; width: auto;" />
+          </div>
+          <div style="text-align: center; flex: 1; margin: 0 32px;">
+            <div style="font-size: 13px; line-height: 18px; color: #6b7280;">
+              <div style="font-weight: 500; color: #374151;">${formData.companyName}</div>
+              <div>${formData.projectName}</div>
+              <div>${formData.projectNumber}</div>
+              <div>${formData.projectAddress}</div>
+            </div>
+          </div>
+          <div style="flex-shrink: 0;">
+            ${formData.companyLogo ? `<img src="${formData.companyLogo}" alt="Company Logo" style="width: 140px; height: 88px; object-fit: contain;" />` : '<div style="width: 140px; height: 88px; border: 2px dashed #d1d5db; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 11px; color: #9ca3af;">Company Logo</div>'}
+          </div>
+        </div>
+
+        <div style="margin-bottom: 32px;">
+          <h1 style="font-size: 24px; font-weight: 700; color: #1f2937; margin-bottom: 24px;">Site Sign-In Register</h1>
+          
+          <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+            <thead>
+              <tr>
+                <th style="border: 1px solid #e5e7eb; padding: 8px; background-color: #f9fafb; color: #1f2937; text-align: center; font-weight: 600; width: 25%;">Name</th>
+                <th style="border: 1px solid #e5e7eb; padding: 8px; background-color: #f9fafb; color: #1f2937; text-align: center; font-weight: 600; width: 15%;">Company</th>
+                <th style="border: 1px solid #e5e7eb; padding: 8px; background-color: #f9fafb; color: #1f2937; text-align: center; font-weight: 600; width: 20%;">Date</th>
+                <th style="border: 1px solid #e5e7eb; padding: 8px; background-color: #f9fafb; color: #1f2937; text-align: center; font-weight: 600; width: 15%;">Time In</th>
+                <th style="border: 1px solid #e5e7eb; padding: 8px; background-color: #f9fafb; color: #1f2937; text-align: center; font-weight: 600; width: 15%;">Time Out</th>
+                <th style="border: 1px solid #e5e7eb; padding: 8px; background-color: #f9fafb; color: #1f2937; text-align: center; font-weight: 600; width: 10%;">Signature</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${Array.from({ length: 15 }, (_, index) => `
+                <tr>
+                  <td style="border: 1px solid #e5e7eb; padding: 12px; height: 30px;"></td>
+                  <td style="border: 1px solid #e5e7eb; padding: 12px; height: 30px;"></td>
+                  <td style="border: 1px solid #e5e7eb; padding: 12px; height: 30px;"></td>
+                  <td style="border: 1px solid #e5e7eb; padding: 12px; height: 30px;"></td>
+                  <td style="border: 1px solid #e5e7eb; padding: 12px; height: 30px;"></td>
+                  <td style="border: 1px solid #e5e7eb; padding: 12px; height: 30px;"></td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `;
+  };
+
+  // Print page renderers
+  const renderProjectInfoPageForPrint = () => `
+    <div class="swms-page page-break">
+      <div style="display: flex; align-items: start; justify-content: space-between; margin-bottom: 40px;">
+        <div style="flex-shrink: 0;">
+          <img src="${riskifyLogo}" alt="Riskify Logo" style="height: 101px; width: auto;" />
+        </div>
+        <div style="text-align: center; margin: 0 32px; flex: 1;">
+          <div style="font-size: 13px; line-height: 18px; color: #6b7280; font-family: Inter, system-ui, sans-serif;">
+            <div style="font-weight: 500; color: #374151;">${formData.companyName}</div>
+            <div>${formData.projectName}</div>
+            <div>${formData.projectNumber}</div>
+            <div>${formData.projectAddress}</div>
+          </div>
+        </div>
+        <div style="flex-shrink: 0;">
+          <div style="width: 140px; height: 88px; border: 2px dashed #d1d5db; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 11px; color: #9ca3af; line-height: 14px;">
+            Insert company logo here
+          </div>
+        </div>
+      </div>
+      <div style="text-align: center; margin-bottom: 40px;">
+        <h1 style="font-weight: bold; font-size: 32px; color: #2c5530; font-family: Inter, system-ui, sans-serif; margin: 0;">
+          Safe Work Method Statement
+        </h1>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 40px;">
+        <div>
+          <h2 style="font-size: 18px; font-weight: 600; color: #2c5530; margin-bottom: 20px;">Project Information</h2>
+          <div style="space-y: 16px;">
+            <div><strong>Job Name:</strong> ${formData.jobName}</div>
+            <div><strong>Job Number:</strong> ${formData.jobNumber}</div>
+            <div><strong>Project Address:</strong> ${formData.projectAddress}</div>
+            <div><strong>Start Date:</strong> ${formData.startDate}</div>
+            <div><strong>Duration:</strong> ${formData.duration}</div>
+            <div><strong>Date Created:</strong> ${formData.dateCreated}</div>
+          </div>
+        </div>
+        <div>
+          <h2 style="font-size: 18px; font-weight: 600; color: #2c5530; margin-bottom: 20px;">Personnel</h2>
+          <div style="space-y: 16px;">
+            <div><strong>Principal Contractor:</strong> ${formData.principalContractor}</div>
+            <div><strong>Project Manager:</strong> ${formData.projectManager}</div>
+            <div><strong>Site Supervisor:</strong> ${formData.siteSupervisor}</div>
+            <div><strong>Authorising Person:</strong> ${formData.authorisingPerson}</div>
+            <div><strong>Position:</strong> ${formData.authorisingPosition}</div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-bottom: 40px;">
+        <h2 style="font-size: 18px; font-weight: 600; color: #2c5530; margin-bottom: 20px;">Scope of Works</h2>
+        <div style="background: #f9fafb; padding: 20px; border-radius: 8px; font-size: 14px; line-height: 20px;">
+          ${formData.scopeOfWorks}
+        </div>
+      </div>
+      <div>
+        <h2 style="font-size: 18px; font-weight: 600; color: #2c5530; margin-bottom: 20px;">Review and Monitoring</h2>
+        <div style="background: #f9fafb; padding: 20px; border-radius: 8px; font-size: 14px; line-height: 20px;">
+          ${formData.reviewAndMonitoring}
+        </div>
+      </div>
+    </div>
+  `;
+
+  const renderProjectInfoPage = () => (
+    <div className="bg-white shadow-lg mx-auto print-page relative" style={{ width: '1123px', minHeight: '794px' }}>
+      {/* Watermark */}
+      <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
+        <div className="grid grid-cols-3 grid-rows-2 h-full w-full gap-4">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <div key={index} className="flex items-center justify-center">
+              <div 
+                className="text-gray-200 font-bold select-none opacity-30"
+                style={{ 
+                  fontSize: '20px',
+                  transform: 'rotate(-45deg)',
+                  whiteSpace: 'nowrap',
+                  lineHeight: '24px',
+                  textAlign: 'center'
+                }}
+              >
+                <div>{formData.companyName}</div>
+                <div>{formData.projectName}</div>
+                <div>{formData.projectNumber}</div>
+                <div>{formData.projectAddress}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div style={{ padding: '48px 40px', position: 'relative', zIndex: 1 }}>
+        
+        {/* Header Section */}
+        <div className="flex items-start justify-between mb-10">
+          <div className="flex items-center space-x-4">
+            <img 
+              src={riskifyLogo} 
+              alt="Riskify Logo" 
+              style={{ height: '86px', width: 'auto' }}
+            />
+            <div style={{ 
+              fontSize: '24px', 
+              fontWeight: 'bold',
+              color: '#1f2937',
+              fontFamily: 'Inter, system-ui, sans-serif',
+              lineHeight: '1.2'
+            }}>
+              Safe Work Method Statement
+            </div>
+          </div>
+          
+          <div className="flex items-center space-x-8">
+            <div className="text-right" style={{ 
+              fontSize: '13px', 
+              lineHeight: '18px',
+              color: '#6b7280',
+              fontFamily: 'Inter, system-ui, sans-serif',
+              lineHeight: '1.2'
+            }}>
+              <div className="font-medium" style={{ color: '#374151' }}>{formData.companyName}</div>
+              <div>{formData.projectName}</div>
+              <div>{formData.projectNumber}</div>
+              <div>{formData.projectAddress}</div>
+            </div>
+            
+            <div className="flex-shrink-0">
+              {formData.companyLogo ? (
+                <img 
+                  src={formData.companyLogo} 
+                  alt="Company Logo" 
+                  style={{ 
+                    height: '86px', 
+                    width: 'auto',
+                    objectFit: 'contain'
+                  }}
+                />
+              ) : (
+                <div 
+                  className="border-2 border-dashed flex items-center justify-center text-center"
+                  style={{ 
+                    height: '86px', 
+                    width: '120px',
+                    borderColor: '#d1d5db',
+                    fontSize: '11px',
+                    color: '#9ca3af',
+                    lineHeight: '14px'
+                  }}
+                >
+                  Company Logo
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Project Information Section */}
+        <div className="mb-8">
+          <h2 className="font-bold mb-6" style={{ 
+            fontSize: '24px',
+            color: '#1f2937',
+            fontFamily: 'Inter, system-ui, sans-serif',
+              lineHeight: '1.2',
+            lineHeight: '1.2'
+          }}>
+            Project Information
+          </h2>
+          
+          <div className="grid grid-cols-2 gap-6">
+            {/* Left Card */}
+            <div className="bg-white border rounded-lg p-5" style={{ 
+              borderColor: '#e5e7eb',
+              boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)'
+            }}>
+              <div className="space-y-3">
+                <div style={{ fontSize: '13px', lineHeight: '18px' }}>
+                  <span className="font-semibold" style={{ color: '#111827' }}>Job Name: </span>
+                  <span style={{ color: '#111827' }}>{formData.jobName}</span>
+                </div>
+                <div style={{ fontSize: '13px', lineHeight: '18px' }}>
+                  <span className="font-semibold" style={{ color: '#111827' }}>Job Number: </span>
+                  <span style={{ color: '#111827' }}>{formData.jobNumber}</span>
+                </div>
+                <div style={{ fontSize: '13px', lineHeight: '18px' }}>
+                  <span className="font-semibold" style={{ color: '#111827' }}>Project Address: </span>
+                  <span style={{ color: '#111827' }}>{formData.projectAddress}</span>
+                </div>
+                <div style={{ fontSize: '13px', lineHeight: '18px' }}>
+                  <span className="font-semibold" style={{ color: '#111827' }}>Start Date: </span>
+                  <span style={{ color: '#111827' }}>{formData.startDate}</span>
+                </div>
+                <div style={{ fontSize: '13px', lineHeight: '18px' }}>
+                  <span className="font-semibold" style={{ color: '#111827' }}>Duration: </span>
+                  <span style={{ color: '#111827' }}>{formData.duration}</span>
+                </div>
+                <div style={{ fontSize: '13px', lineHeight: '18px' }}>
+                  <span className="font-semibold" style={{ color: '#111827' }}>Date Created: </span>
+                  <span style={{ color: '#111827' }}>{formData.dateCreated}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Card */}
+            <div className="bg-white border rounded-lg p-5" style={{ 
+              borderColor: '#e5e7eb',
+              boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)'
+            }}>
+              <div className="space-y-3">
+                <div style={{ fontSize: '13px', lineHeight: '18px' }}>
+                  <span className="font-semibold" style={{ color: '#111827' }}>Company Name: </span>
+                  <span style={{ color: '#111827' }}>{formData.companyName}</span>
+                </div>
+                <div style={{ fontSize: '13px', lineHeight: '18px' }}>
+                  <span className="font-semibold" style={{ color: '#111827' }}>Principal Contractor's Name: </span>
+                  <span className="italic" style={{ color: '#111827' }}>{formData.principalContractor}</span>
+                </div>
+                <div style={{ fontSize: '13px', lineHeight: '18px' }}>
+                  <span className="font-semibold" style={{ color: '#111827' }}>Project Manager: </span>
+                  <span className="italic" style={{ color: '#111827' }}>{formData.projectManager}</span>
+                </div>
+                <div style={{ fontSize: '13px', lineHeight: '18px' }}>
+                  <span className="font-semibold" style={{ color: '#111827' }}>Site Supervisor: </span>
+                  <span className="italic" style={{ color: '#111827' }}>{formData.siteSupervisor}</span>
+                </div>
+                <div className="mt-4" style={{ fontSize: '13px', lineHeight: '18px' }}>
+                  <div className="font-semibold underline mb-2" style={{ color: '#111827' }}>Person Authorising SWMS</div>
+                  <div>Name: <span className="italic" style={{ color: '#111827' }}>{formData.authorisingPerson}</span></div>
+                  <div>Position: <span className="italic" style={{ color: '#111827' }}>{formData.authorisingPosition}</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Scope of Works Section */}
+        <div className="mt-10">
+          <h2 className="font-bold mb-6" style={{ 
+            fontSize: '24px',
+            color: '#1f2937',
+            fontFamily: 'Inter, system-ui, sans-serif',
+              lineHeight: '1.2',
+            lineHeight: '1.2'
+          }}>
+            Scope of Works
+          </h2>
+          <div className="bg-white border rounded-lg p-5" style={{ 
+            borderColor: '#e5e7eb',
+            boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)'
+          }}>
+            <div className="whitespace-pre-line" style={{ 
+              fontSize: '13px', 
+              lineHeight: '18px',
+              color: '#111827'
+            }}>
+              {formData.scopeOfWorks}
+            </div>
+          </div>
+        </div>
+
+        {/* Review and Monitoring Section */}
+        <div className="mt-10">
+          <h2 className="font-bold mb-6" style={{ 
+            fontSize: '24px',
+            color: '#1f2937',
+            fontFamily: 'Inter, system-ui, sans-serif',
+              lineHeight: '1.2',
+            lineHeight: '1.2'
+          }}>
+            Review and Monitoring
+          </h2>
+          <div className="bg-white border rounded-lg p-5" style={{ 
+            borderColor: '#e5e7eb',
+            boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)'
+          }}>
+            <div className="whitespace-pre-line" style={{ 
+              fontSize: '13px', 
+              lineHeight: '18px',
+              color: '#111827'
+            }}>
+              {formData.reviewAndMonitoring}
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  );
+
+  const renderEmergencyInfoPage = () => (
+    <div className="bg-white shadow-lg mx-auto print-page relative" style={{ width: '1123px', minHeight: '794px' }}>
+      {/* Watermark */}
+      <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
+        <div className="grid grid-cols-3 grid-rows-2 h-full w-full gap-4">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <div key={index} className="flex items-center justify-center">
+              <div 
+                className="text-gray-200 font-bold select-none opacity-30"
+                style={{ 
+                  fontSize: '20px',
+                  transform: 'rotate(-45deg)',
+                  whiteSpace: 'nowrap',
+                  lineHeight: '24px',
+                  textAlign: 'center'
+                }}
+              >
+                <div>{formData.companyName}</div>
+                <div>{formData.projectName}</div>
+                <div>{formData.projectNumber}</div>
+                <div>{formData.projectAddress}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div style={{ padding: '48px 40px', position: 'relative', zIndex: 1 }}>
+        
+        {/* Header Section */}
+        <div className="flex items-start justify-between mb-10">
+          <div className="flex items-center space-x-4">
+            <img 
+              src={riskifyLogo} 
+              alt="Riskify Logo" 
+              style={{ height: '86px', width: 'auto' }}
+            />
+            <div style={{ 
+              fontSize: '24px', 
+              fontWeight: 'bold',
+              color: '#1f2937',
+              fontFamily: 'Inter, system-ui, sans-serif',
+              lineHeight: '1.2'
+            }}>
+              Safe Work Method Statement
+            </div>
+          </div>
+          
+          <div className="flex items-center space-x-8">
+            <div className="text-right" style={{ 
+              fontSize: '13px', 
+              lineHeight: '18px',
+              color: '#6b7280',
+              fontFamily: 'Inter, system-ui, sans-serif',
+              lineHeight: '1.2'
+            }}>
+              <div className="font-medium" style={{ color: '#374151' }}>{formData.companyName}</div>
+              <div>{formData.projectName}</div>
+              <div>{formData.projectNumber}</div>
+              <div>{formData.projectAddress}</div>
+            </div>
+            
+            <div className="flex-shrink-0">
+              {formData.companyLogo ? (
+                <img 
+                  src={formData.companyLogo} 
+                  alt="Company Logo" 
+                  style={{ 
+                    height: '86px', 
+                    width: 'auto',
+                    objectFit: 'contain'
+                  }}
+                />
+              ) : (
+                <div 
+                  className="border-2 border-dashed flex items-center justify-center text-center"
+                  style={{ 
+                    height: '86px', 
+                    width: '120px',
+                    borderColor: '#d1d5db',
+                    fontSize: '11px',
+                    color: '#9ca3af',
+                    lineHeight: '14px'
+                  }}
+                >
+                  Company Logo
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Document Title */}
+        <div className="mb-8">
+          <h1 className="font-bold" style={{ 
+            fontSize: '24px', 
+            color: '#1f2937',
+            fontFamily: 'Inter, system-ui, sans-serif',
+              lineHeight: '1.2',
+            lineHeight: '1.2'
+          }}>
+            Emergency Information
+          </h1>
+        </div>
+
+        {/* Emergency Contacts Section */}
+        <div className="mb-8">
+          <div className="bg-white border rounded-lg p-6" style={{ 
+            borderColor: '#e5e7eb',
+            boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)'
+          }}>
+            <h2 className="font-semibold mb-4" style={{ 
+              fontSize: '16px',
+              color: '#1f2937',
+              fontFamily: 'Inter, system-ui, sans-serif',
+              lineHeight: '1.2'
+            }}>
+              Emergency Contacts
+            </h2>
+            <div className="space-y-2">
+              {formData.emergencyContacts.map((contact, index) => (
+                <div key={index} style={{ fontSize: '13px', lineHeight: '18px', color: '#111827' }}>
+                  {contact.name} - {contact.phone}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Emergency Response Procedures Section */}
+        <div className="mb-8">
+          <div className="bg-white border rounded-lg p-6" style={{ 
+            borderColor: '#e5e7eb',
+            boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)'
+          }}>
+            <h2 className="font-semibold mb-4" style={{ 
+              fontSize: '16px',
+              color: '#1f2937',
+              fontFamily: 'Inter, system-ui, sans-serif',
+              lineHeight: '1.2'
+            }}>
+              Emergency Response Procedures
+            </h2>
+            <div className="whitespace-pre-line" style={{ 
+              fontSize: '14px', 
+              lineHeight: '20px',
+              color: '#1f2937'
+            }}>
+              {formData.emergencyProcedures}
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  );
+
+  const renderHighRiskActivitiesPage = () => (
+    <div className="bg-white shadow-lg mx-auto print-page relative" style={{ width: '1123px', minHeight: '794px' }}>
+      {/* Watermark */}
+      <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
+        <div className="grid grid-cols-3 grid-rows-2 h-full w-full gap-4">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <div key={index} className="flex items-center justify-center">
+              <div 
+                className="text-gray-200 font-bold select-none opacity-30"
+                style={{ 
+                  fontSize: '20px',
+                  transform: 'rotate(-45deg)',
+                  whiteSpace: 'nowrap',
+                  lineHeight: '24px',
+                  textAlign: 'center'
+                }}
+              >
+                <div>{formData.companyName}</div>
+                <div>{formData.projectName}</div>
+                <div>{formData.projectNumber}</div>
+                <div>{formData.projectAddress}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div style={{ padding: '48px 40px', position: 'relative', zIndex: 1 }}>
+        
+        {/* Header Section */}
+        <div className="flex items-start justify-between mb-10">
+          <div className="flex items-center space-x-4">
+            <img 
+              src={riskifyLogo} 
+              alt="Riskify Logo" 
+              style={{ height: '86px', width: 'auto' }}
+            />
+            <div style={{ 
+              fontSize: '24px', 
+              fontWeight: 'bold',
+              color: '#1f2937',
+              fontFamily: 'Inter, system-ui, sans-serif',
+              lineHeight: '1.2'
+            }}>
+              Safe Work Method Statement
+            </div>
+          </div>
+          
+          <div className="flex items-center space-x-8">
+            <div className="text-right" style={{ 
+              fontSize: '13px', 
+              lineHeight: '18px',
+              color: '#6b7280',
+              fontFamily: 'Inter, system-ui, sans-serif',
+              lineHeight: '1.2'
+            }}>
+              <div className="font-medium" style={{ color: '#374151' }}>{formData.companyName}</div>
+              <div>{formData.projectName}</div>
+              <div>{formData.projectNumber}</div>
+              <div>{formData.projectAddress}</div>
+            </div>
+            
+            <div className="flex-shrink-0">
+              {formData.companyLogo ? (
+                <img 
+                  src={formData.companyLogo} 
+                  alt="Company Logo" 
+                  style={{ 
+                    height: '86px', 
+                    width: 'auto',
+                    objectFit: 'contain'
+                  }}
+                />
+              ) : (
+                <div 
+                  className="border-2 border-dashed flex items-center justify-center text-center"
+                  style={{ 
+                    height: '86px', 
+                    width: '120px',
+                    borderColor: '#d1d5db',
+                    fontSize: '11px',
+                    color: '#9ca3af',
+                    lineHeight: '14px'
+                  }}
+                >
+                  Company Logo
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Document Title */}
+        <div className="mb-8">
+          <h1 className="font-bold" style={{ 
+            fontSize: '24px', 
+            color: '#1f2937',
+            fontFamily: 'Inter, system-ui, sans-serif',
+              lineHeight: '1.2',
+            lineHeight: '1.2'
+          }}>
+            High Risk Activities
+          </h1>
+        </div>
+
+        {/* High Risk Activities Grid */}
+        <div className="grid grid-cols-4 gap-4">
+          {formData.highRiskActivities.map((activity, index) => (
+            <div 
+              key={activity.id} 
+              className={`border rounded-lg p-4 text-center flex items-center justify-center ${
+                activity.selected 
+                  ? 'border-orange-300 bg-orange-50'
+                  : 'border-gray-200 bg-white'
+              }`}
+              style={{ 
+                fontSize: '11px', 
+                lineHeight: '15px',
+                color: activity.selected ? '#ea580c' : '#111827',
+                minHeight: '80px'
+              }}
+            >
+              <div className="font-medium">
+                {activity.title}
+              </div>
+            </div>
+          ))}
+        </div>
+
+      </div>
+    </div>
+  );
+
+  const renderRiskMatrixPage = () => (
+    <div className="bg-white shadow-lg mx-auto print-page relative" style={{ width: '1123px', minHeight: '794px' }}>
+      {/* Watermark */}
+      <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
+        <div className="grid grid-cols-3 grid-rows-2 h-full w-full gap-4">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <div key={index} className="flex items-center justify-center">
+              <div 
+                className="text-gray-200 font-bold select-none opacity-30"
+                style={{ 
+                  fontSize: '20px',
+                  transform: 'rotate(-45deg)',
+                  whiteSpace: 'nowrap',
+                  lineHeight: '24px',
+                  textAlign: 'center'
+                }}
+              >
+                <div>{formData.companyName}</div>
+                <div>{formData.projectName}</div>
+                <div>{formData.projectNumber}</div>
+                <div>{formData.projectAddress}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div style={{ padding: '48px 40px', position: 'relative', zIndex: 1 }}>
+        
+        {/* Header Section */}
+        <div className="flex items-start justify-between mb-10">
+          <div className="flex items-center space-x-4">
+            <img 
+              src={riskifyLogo} 
+              alt="Riskify Logo" 
+              style={{ height: '86px', width: 'auto' }}
+            />
+            <div style={{ 
+              fontSize: '24px', 
+              fontWeight: 'bold',
+              color: '#1f2937',
+              fontFamily: 'Inter, system-ui, sans-serif',
+              lineHeight: '1.2'
+            }}>
+              Safe Work Method Statement
+            </div>
+          </div>
+          
+          <div className="flex items-center space-x-8">
+            <div className="text-right" style={{ 
+              fontSize: '13px', 
+              lineHeight: '18px',
+              color: '#6b7280',
+              fontFamily: 'Inter, system-ui, sans-serif',
+              lineHeight: '1.2'
+            }}>
+              <div className="font-medium" style={{ color: '#374151' }}>{formData.companyName}</div>
+              <div>{formData.projectName}</div>
+              <div>{formData.projectNumber}</div>
+              <div>{formData.projectAddress}</div>
+            </div>
+            
+            <div className="flex-shrink-0">
+              {formData.companyLogo ? (
+                <img 
+                  src={formData.companyLogo} 
+                  alt="Company Logo" 
+                  style={{ 
+                    height: '86px', 
+                    width: 'auto',
+                    objectFit: 'contain'
+                  }}
+                />
+              ) : (
+                <div 
+                  className="border-2 border-dashed flex items-center justify-center text-center"
+                  style={{ 
+                    height: '86px', 
+                    width: '120px',
+                    borderColor: '#d1d5db',
+                    fontSize: '11px',
+                    color: '#9ca3af',
+                    lineHeight: '14px'
+                  }}
+                >
+                  Company Logo
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Document Title */}
+        <div className="mb-8">
+          <h1 className="font-bold" style={{ 
+            fontSize: '24px', 
+            color: '#1f2937',
+            fontFamily: 'Inter, system-ui, sans-serif',
+              lineHeight: '1.2',
+            lineHeight: '1.2'
+          }}>
+            Construction Control Risk Matrix
+          </h1>
+        </div>
+
+        {/* Four tables in 2x2 grid layout */}
+        <div className="grid grid-cols-2 gap-6 mb-8">
+          {/* Likelihood Definitions */}
+          <div>
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(4, 1fr)', 
+              gap: '1px',
+              fontSize: '10px',
+              backgroundColor: '#e5e7eb',
+              
+            }}>
+              {/* Headers */}
+              <div className="p-1 text-center font-semibold" style={{ backgroundColor: '#f8fafc', color: '#1f2937' }}>Likelihood</div>
+              <div className="p-1 text-center font-semibold" style={{ backgroundColor: '#f8fafc', color: '#1f2937' }}>Frequency</div>
+              <div className="p-1 text-center font-semibold" style={{ backgroundColor: '#f8fafc', color: '#1f2937' }}>Probability</div>
+              <div className="p-1 text-center font-semibold" style={{ backgroundColor: '#f8fafc', color: '#1f2937' }}>Value</div>
+              
+              {/* Rows */}
+              <div className="p-1 text-center" style={{ backgroundColor: 'white', color: '#374151' }}>Almost Certain</div>
+              <div className="p-1 text-center" style={{ backgroundColor: 'white', color: '#374151' }}>Weekly</div>
+              <div className="p-1 text-center" style={{ backgroundColor: 'white', color: '#374151' }}>Very high</div>
+              <div className="p-1 text-center font-semibold" style={{ backgroundColor: 'white', color: '#374151' }}>5</div>
+              
+              <div className="p-1 text-center" style={{ backgroundColor: '#fefefe', color: '#374151' }}>Likely</div>
+              <div className="p-1 text-center" style={{ backgroundColor: '#fefefe', color: '#374151' }}>Monthly</div>
+              <div className="p-1 text-center" style={{ backgroundColor: '#fefefe', color: '#374151' }}>Good</div>
+              <div className="p-1 text-center font-semibold" style={{ backgroundColor: '#fefefe', color: '#374151' }}>4</div>
+              
+              <div className="p-1 text-center" style={{ backgroundColor: 'white', color: '#374151' }}>Possible</div>
+              <div className="p-1 text-center" style={{ backgroundColor: 'white', color: '#374151' }}>Yearly</div>
+              <div className="p-1 text-center" style={{ backgroundColor: 'white', color: '#374151' }}>Even</div>
+              <div className="p-1 text-center font-semibold" style={{ backgroundColor: 'white', color: '#374151' }}>3</div>
+              
+              <div className="p-1 text-center" style={{ backgroundColor: '#fefefe', color: '#374151' }}>Unlikely</div>
+              <div className="p-1 text-center" style={{ backgroundColor: '#fefefe', color: '#374151' }}>10 years</div>
+              <div className="p-1 text-center" style={{ backgroundColor: '#fefefe', color: '#374151' }}>Low</div>
+              <div className="p-1 text-center font-semibold" style={{ backgroundColor: '#fefefe', color: '#374151' }}>2</div>
+              
+              <div className="p-1 text-center" style={{ backgroundColor: 'white', color: '#374151' }}>Rare</div>
+              <div className="p-1 text-center" style={{ backgroundColor: 'white', color: '#374151' }}>Lifetime</div>
+              <div className="p-1 text-center" style={{ backgroundColor: 'white', color: '#374151' }}>No chance</div>
+              <div className="p-1 text-center font-semibold" style={{ backgroundColor: 'white', color: '#374151' }}>1</div>
+            </div>
+          </div>
+
+          {/* Consequence Definitions */}
+          <div>
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: '1fr 2fr 1fr', 
+              gap: '1px',
+              fontSize: '10px',
+              backgroundColor: '#e5e7eb',
+              
+            }}>
+              {/* Headers */}
+              <div className="p-1 text-center font-semibold" style={{ backgroundColor: '#f8fafc', color: '#374151' }}>Consequence</div>
+              <div className="p-1 text-center font-semibold" style={{ backgroundColor: '#f8fafc', color: '#374151' }}>Description</div>
+              <div className="p-1 text-center font-semibold" style={{ backgroundColor: '#f8fafc', color: '#374151' }}>Value</div>
+              
+              {/* Rows */}
+              <div className="p-1 text-center" style={{ backgroundColor: 'white', color: '#374151' }}>Catastrophic</div>
+              <div className="p-1 text-center" style={{ backgroundColor: 'white', color: '#374151' }}>Fatality, disability, $50,000+</div>
+              <div className="p-1 text-center font-semibold" style={{ backgroundColor: 'white', color: '#374151' }}>5</div>
+              
+              <div className="p-1 text-center" style={{ backgroundColor: '#fefefe', color: '#374151' }}>Major</div>
+              <div className="p-1 text-center" style={{ backgroundColor: '#fefefe', color: '#374151' }}>Amputation, $15,000-$50,000</div>
+              <div className="p-1 text-center font-semibold" style={{ backgroundColor: '#fefefe', color: '#374151' }}>4</div>
+              
+              <div className="p-1 text-center" style={{ backgroundColor: 'white', color: '#374151' }}>Moderate</div>
+              <div className="p-1 text-center" style={{ backgroundColor: 'white', color: '#374151' }}>LTI/MTI, $1,000-$15,000</div>
+              <div className="p-1 text-center font-semibold" style={{ backgroundColor: 'white', color: '#374151' }}>3</div>
+              
+              <div className="p-1 text-center" style={{ backgroundColor: '#fefefe', color: '#374151' }}>Minor</div>
+              <div className="p-1 text-center" style={{ backgroundColor: '#fefefe', color: '#374151' }}>First Aid, $100-$1,000</div>
+              <div className="p-1 text-center font-semibold" style={{ backgroundColor: '#fefefe', color: '#374151' }}>2</div>
+              
+              <div className="p-1 text-center" style={{ backgroundColor: 'white', color: '#374151' }}>Insignificant</div>
+              <div className="p-1 text-center" style={{ backgroundColor: 'white', color: '#374151' }}>No treatment, $0-$100</div>
+              <div className="p-1 text-center font-semibold" style={{ backgroundColor: 'white', color: '#374151' }}>1</div>
+            </div>
+          </div>
+
+          {/* Risk Assessment Matrix */}
+          <div>
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(6, 1fr)', 
+              gap: '1px',
+              fontSize: '9px',
+              backgroundColor: '#e5e7eb',
+              
+            }}>
+              {/* Headers */}
+              <div className="p-1 text-center font-semibold" style={{ backgroundColor: '#f8fafc', color: '#374151', fontSize: '8px' }}>
+                L→<br/>C↓
+              </div>
+              <div className="p-1 text-center font-semibold" style={{ backgroundColor: '#f8fafc', color: '#374151' }}>5</div>
+              <div className="p-1 text-center font-semibold" style={{ backgroundColor: '#f8fafc', color: '#374151' }}>4</div>
+              <div className="p-1 text-center font-semibold" style={{ backgroundColor: '#f8fafc', color: '#374151' }}>3</div>
+              <div className="p-1 text-center font-semibold" style={{ backgroundColor: '#f8fafc', color: '#374151' }}>2</div>
+              <div className="p-1 text-center font-semibold" style={{ backgroundColor: '#f8fafc', color: '#374151' }}>1</div>
+
+              {/* Matrix rows */}
+              <div className="p-1 text-center font-semibold" style={{ backgroundColor: '#f8fafc', color: '#374151' }}>5</div>
+              <div className="p-1 text-center font-bold text-white" style={{ backgroundColor: '#fca5a5' }}>25</div>
+              <div className="p-1 text-center font-bold text-white" style={{ backgroundColor: '#fca5a5' }}>20</div>
+              <div className="p-1 text-center font-bold text-white" style={{ backgroundColor: '#fed7aa' }}>15</div>
+              <div className="p-1 text-center font-bold text-white" style={{ backgroundColor: '#fed7aa' }}>10</div>
+              <div className="p-1 text-center font-bold text-gray-700" style={{ backgroundColor: '#fef3c7' }}>5</div>
+
+              <div className="p-1 text-center font-semibold" style={{ backgroundColor: '#f8fafc', color: '#374151' }}>4</div>
+              <div className="p-1 text-center font-bold text-white" style={{ backgroundColor: '#fca5a5' }}>20</div>
+              <div className="p-1 text-center font-bold text-white" style={{ backgroundColor: '#fed7aa' }}>16</div>
+              <div className="p-1 text-center font-bold text-white" style={{ backgroundColor: '#fed7aa' }}>12</div>
+              <div className="p-1 text-center font-bold text-gray-700" style={{ backgroundColor: '#fef3c7' }}>8</div>
+              <div className="p-1 text-center font-bold text-white" style={{ backgroundColor: '#bbf7d0' }}>4</div>
+
+              <div className="p-1 text-center font-semibold" style={{ backgroundColor: '#f8fafc', color: '#374151' }}>3</div>
+              <div className="p-1 text-center font-bold text-white" style={{ backgroundColor: '#fed7aa' }}>15</div>
+              <div className="p-1 text-center font-bold text-white" style={{ backgroundColor: '#fed7aa' }}>12</div>
+              <div className="p-1 text-center font-bold text-gray-700" style={{ backgroundColor: '#fef3c7' }}>9</div>
+              <div className="p-1 text-center font-bold text-gray-700" style={{ backgroundColor: '#fef3c7' }}>6</div>
+              <div className="p-1 text-center font-bold text-white" style={{ backgroundColor: '#bbf7d0' }}>3</div>
+
+              <div className="p-1 text-center font-semibold" style={{ backgroundColor: '#f8fafc', color: '#374151' }}>2</div>
+              <div className="p-1 text-center font-bold text-white" style={{ backgroundColor: '#fed7aa' }}>10</div>
+              <div className="p-1 text-center font-bold text-gray-700" style={{ backgroundColor: '#fef3c7' }}>8</div>
+              <div className="p-1 text-center font-bold text-gray-700" style={{ backgroundColor: '#fef3c7' }}>6</div>
+              <div className="p-1 text-center font-bold text-white" style={{ backgroundColor: '#bbf7d0' }}>4</div>
+              <div className="p-1 text-center font-bold text-white" style={{ backgroundColor: '#bbf7d0' }}>2</div>
+
+              <div className="p-1 text-center font-semibold" style={{ backgroundColor: '#f8fafc', color: '#374151' }}>1</div>
+              <div className="p-1 text-center font-bold text-gray-700" style={{ backgroundColor: '#fef3c7' }}>5</div>
+              <div className="p-1 text-center font-bold text-white" style={{ backgroundColor: '#bbf7d0' }}>4</div>
+              <div className="p-1 text-center font-bold text-white" style={{ backgroundColor: '#bbf7d0' }}>3</div>
+              <div className="p-1 text-center font-bold text-white" style={{ backgroundColor: '#bbf7d0' }}>2</div>
+              <div className="p-1 text-center font-bold text-white" style={{ backgroundColor: '#bbf7d0' }}>1</div>
+            </div>
+          </div>
+
+          {/* Risk Rating Guide */}
+          <div>
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: '1fr 1fr 2fr 1fr', 
+              gap: '1px',
+              fontSize: '10px',
+              backgroundColor: '#e5e7eb',
+              
+            }}>
+              {/* Headers */}
+              <div className="p-1 text-center font-semibold" style={{ backgroundColor: '#f8fafc', color: '#374151' }}>Range</div>
+              <div className="p-1 text-center font-semibold" style={{ backgroundColor: '#f8fafc', color: '#374151' }}>Risk</div>
+              <div className="p-1 text-center font-semibold" style={{ backgroundColor: '#f8fafc', color: '#374151' }}>Action Required</div>
+              <div className="p-1 text-center font-semibold" style={{ backgroundColor: '#f8fafc', color: '#374151' }}>Timeline</div>
+              
+              {/* Rows */}
+              <div className="p-1 text-center font-semibold" style={{ backgroundColor: '#fca5a5', color: '#7f1d1d' }}>20-25</div>
+              <div className="p-1 text-center font-semibold" style={{ backgroundColor: '#fca5a5', color: '#7f1d1d' }}>EXTREME</div>
+              <div className="p-1 text-center" style={{ backgroundColor: '#fca5a5', color: '#7f1d1d' }}>Stop immediately</div>
+              <div className="p-1 text-center" style={{ backgroundColor: '#fca5a5', color: '#7f1d1d' }}>Now</div>
+              
+              <div className="p-1 text-center font-semibold" style={{ backgroundColor: '#fed7aa', color: '#9a3412' }}>10-16</div>
+              <div className="p-1 text-center font-semibold" style={{ backgroundColor: '#fed7aa', color: '#9a3412' }}>HIGH</div>
+              <div className="p-1 text-center" style={{ backgroundColor: '#fed7aa', color: '#9a3412' }}>Senior management</div>
+              <div className="p-1 text-center" style={{ backgroundColor: '#fed7aa', color: '#9a3412' }}>24hrs</div>
+              
+              <div className="p-1 text-center font-semibold" style={{ backgroundColor: '#fef3c7', color: '#92400e' }}>5-9</div>
+              <div className="p-1 text-center font-semibold" style={{ backgroundColor: '#fef3c7', color: '#92400e' }}>MEDIUM</div>
+              <div className="p-1 text-center" style={{ backgroundColor: '#fef3c7', color: '#92400e' }}>Management action</div>
+              <div className="p-1 text-center" style={{ backgroundColor: '#fef3c7', color: '#92400e' }}>48hrs</div>
+              
+              <div className="p-1 text-center font-semibold" style={{ backgroundColor: '#bbf7d0', color: '#166534' }}>1-4</div>
+              <div className="p-1 text-center font-semibold" style={{ backgroundColor: '#bbf7d0', color: '#166534' }}>LOW</div>
+              <div className="p-1 text-center" style={{ backgroundColor: '#bbf7d0', color: '#166534' }}>Routine procedures</div>
+              <div className="p-1 text-center" style={{ backgroundColor: '#bbf7d0', color: '#166534' }}>5 days</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  );
+
+  // Helper function to chunk activities into pages
+  const chunkActivitiesIntoPages = () => {
+    const maxRowsPerPage = 5; // Adjusted for better fit with A4 landscape format
+    const pages = [];
+    const activities = formData.workActivities || [];
+    
+    for (let i = 0; i < activities.length; i += maxRowsPerPage) {
+      pages.push(activities.slice(i, i + maxRowsPerPage));
+    }
+    
+    return pages.length > 0 ? pages : [[]]; // Return at least one empty page
+  };
+
+  const renderWorkActivitiesPages = () => {
+    const activityPages = chunkActivitiesIntoPages();
+    
+    return (
+      <div className="space-y-8">
+        {activityPages.map((pageActivities, pageIndex) => (
+          <div key={pageIndex} className="bg-white shadow-lg mx-auto print-page relative page-break" style={{ width: '1123px', minHeight: '794px' }}>
+            {/* Watermark */}
+            <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
+              <div className="grid grid-cols-3 grid-rows-2 h-full w-full gap-4">
+                {Array.from({ length: 6 }).map((_, index) => (
+                  <div key={index} className="flex items-center justify-center">
+                    <div 
+                      className="text-gray-200 font-bold select-none opacity-30"
+                      style={{ 
+                        fontSize: '20px',
+                        transform: 'rotate(-45deg)',
+                        whiteSpace: 'nowrap',
+                        lineHeight: '24px',
+                        textAlign: 'center'
+                      }}
+                    >
+                      <div>{formData.companyName}</div>
+                      <div>{formData.projectName}</div>
+                      <div>{formData.projectNumber}</div>
+                      <div>{formData.projectAddress}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div style={{ padding: '48px 40px', position: 'relative', zIndex: 1 }}>
+              
+              {/* Header Section */}
+              <div className="flex items-start justify-between mb-10">
+                <div className="flex-shrink-0">
+                  <img 
+                    src={riskifyLogo} 
+                    alt="Riskify Logo" 
+                    style={{ height: '78px', width: 'auto' }}
+                  />
+                </div>
+                
+                <div className="text-center mx-8 flex-1">
+                  <div className="space-y-0" style={{ 
+                    fontSize: '13px', 
+                    lineHeight: '18px',
+                    color: '#6b7280',
+                    fontFamily: 'Inter, system-ui, sans-serif',
+              lineHeight: '1.2'
+                  }}>
+                    <div className="font-medium" style={{ color: '#374151' }}>{formData.companyName}</div>
+                    <div>{formData.projectName}</div>
+                    <div>{formData.projectNumber}</div>
+                    <div>{formData.projectAddress}</div>
+                  </div>
+                </div>
+                
+                <div className="flex-shrink-0">
+                  <div 
+                    className="border-2 border-dashed flex items-center justify-center text-center"
+                    style={{ 
+                      width: '140px', 
+                      height: '88px',
+                      borderColor: '#d1d5db',
+                      fontSize: '11px',
+                      color: '#9ca3af',
+                      lineHeight: '14px'
+                    }}
+                  >
+                    Insert company logo here
+                  </div>
+                </div>
+              </div>
+
+              {/* Document Title */}
+              <div className="mb-8">
+                <h1 className="font-bold" style={{ 
+                  fontSize: '24px', 
+                  color: '#1f2937',
+                  fontFamily: 'Inter, system-ui, sans-serif',
+              lineHeight: '1.2',
+                  lineHeight: '1.2'
+                }}>
+                  Work Activities & Risk Assessment
+                </h1>
+              </div>
+
+              {/* Work Activities Table */}
+              <div className="mb-8">
+                <table className="w-full border-collapse" style={{ fontSize: '11px', border: '1px solid #e5e7eb', fontFamily: 'Inter, system-ui, sans-serif',
+              lineHeight: '1.2' }}>
+                  <thead>
+                    <tr>
+                      <th className="border p-2 text-center font-semibold" style={{ backgroundColor: '#f9fafb', color: '#1f2937', borderColor: '#e5e7eb', width: '5%' }}>#</th>
+                      <th className="border p-2 text-center font-semibold" style={{ backgroundColor: '#f9fafb', color: '#1f2937', borderColor: '#e5e7eb', width: '12%' }}>Activity</th>
+                      <th className="border p-2 text-center font-semibold" style={{ backgroundColor: '#f9fafb', color: '#1f2937', borderColor: '#e5e7eb', width: '22%' }}>Hazards</th>
+                      <th className="border p-2 text-center font-semibold" style={{ backgroundColor: '#f9fafb', color: '#1f2937', borderColor: '#e5e7eb', width: '10%' }}>Initial Risk</th>
+                      <th className="border p-2 text-center font-semibold" style={{ backgroundColor: '#f9fafb', color: '#1f2937', borderColor: '#e5e7eb', width: '26%' }}>Control Measures</th>
+                      <th className="border p-2 text-center font-semibold" style={{ backgroundColor: '#f9fafb', color: '#1f2937', borderColor: '#e5e7eb', width: '10%' }}>Residual Risk</th>
+                      <th className="border p-2 text-center font-semibold" style={{ backgroundColor: '#f9fafb', color: '#1f2937', borderColor: '#e5e7eb', width: '15%' }}>Legislation</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {pageActivities.map((activity, index) => (
+                      <tr key={`activity-${pageIndex}-${activity.id}`}>
+                        <td className="border p-2 align-top text-center font-semibold" style={{ borderColor: '#e5e7eb', color: '#111827' }}>
+                          {pageIndex * 5 + index + 1}
+                        </td>
+                        <td className="border p-2 align-top" style={{ borderColor: '#e5e7eb', color: '#111827' }}>
+                          {activity.activity}
+                        </td>
+                        <td className="border p-2 align-top" style={{ borderColor: '#e5e7eb', color: '#111827' }}>
+                          <ul className="list-disc list-inside space-y-1">
+                            {activity.hazards.map((hazard, hIndex) => (
+                              <li key={`hazard-${pageIndex}-${activity.id}-${hIndex}`}>{hazard}</li>
+                            ))}
+                          </ul>
+                        </td>
+                        <td className="border p-2 align-top text-center" style={{ borderColor: '#e5e7eb' }}>
+                          <div className="px-2 py-1 rounded text-xs font-semibold text-white" style={{
+                            backgroundColor: 
+                              typeof activity.initialRisk === 'string' && activity.initialRisk.includes('Extreme') ? '#ef4444' :
+                              typeof activity.initialRisk === 'string' && activity.initialRisk.includes('High') ? '#f97316' :
+                              typeof activity.initialRisk === 'string' && activity.initialRisk.includes('Medium') ? '#eab308' :
+                              '#22c55e'
+                          }}>
+                            {typeof activity.initialRisk === 'string' ? activity.initialRisk : 'Low (1)'}
+                          </div>
+                        </td>
+                        <td className="border p-2 align-top" style={{ borderColor: '#e5e7eb', color: '#111827' }}>
+                          <ul className="list-disc list-inside space-y-1">
+                            {activity.controlMeasures.map((measure, mIndex) => (
+                              <li key={`measure-${pageIndex}-${activity.id}-${mIndex}`}>{measure}</li>
+                            ))}
+                          </ul>
+                        </td>
+                        <td className="border p-2 align-top text-center" style={{ borderColor: '#e5e7eb' }}>
+                          <div className="px-2 py-1 rounded text-xs font-semibold text-white" style={{
+                            backgroundColor: 
+                              typeof activity.residualRisk === 'string' && activity.residualRisk.includes('Extreme') ? '#ef4444' :
+                              typeof activity.residualRisk === 'string' && activity.residualRisk.includes('High') ? '#f97316' :
+                              typeof activity.residualRisk === 'string' && activity.residualRisk.includes('Medium') ? '#eab308' :
+                              '#22c55e'
+                          }}>
+                            {typeof activity.residualRisk === 'string' ? activity.residualRisk : 'Low (1)'}
+                          </div>
+                        </td>
+                        <td className="border p-2 align-top" style={{ borderColor: '#e5e7eb', color: '#111827' }}>
+                          <ul className="list-disc list-inside space-y-1">
+                            {activity.legislation.map((leg, lIndex) => (
+                              <li key={`legislation-${pageIndex}-${activity.id}-${lIndex}`}>{leg}</li>
+                            ))}
+                          </ul>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  const renderWorkActivitiesPageOld = () => (
+    <div className="bg-white shadow-lg mx-auto print-page relative" style={{ width: '1123px', minHeight: '794px' }}>
+      {/* Watermark */}
+      <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
+        <div className="grid grid-cols-3 grid-rows-2 h-full w-full gap-4">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <div key={index} className="flex items-center justify-center">
+              <div 
+                className="text-gray-200 font-bold select-none opacity-30"
+                style={{ 
+                  fontSize: '20px',
+                  transform: 'rotate(-45deg)',
+                  whiteSpace: 'nowrap',
+                  lineHeight: '24px',
+                  textAlign: 'center'
+                }}
+              >
+                <div>{formData.companyName}</div>
+                <div>{formData.projectName}</div>
+                <div>{formData.projectNumber}</div>
+                <div>{formData.projectAddress}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div style={{ padding: '48px 40px', position: 'relative', zIndex: 1 }}>
+        
+        {/* Header Section */}
+        <div className="flex items-start justify-between mb-10">
+          <div className="flex items-center space-x-4">
+            <img 
+              src={riskifyLogo} 
+              alt="Riskify Logo" 
+              style={{ height: '86px', width: 'auto' }}
+            />
+            <div style={{ 
+              fontSize: '24px', 
+              fontWeight: 'bold',
+              color: '#1f2937',
+              fontFamily: 'Inter, system-ui, sans-serif',
+              lineHeight: '1.2'
+            }}>
+              Safe Work Method Statement
+            </div>
+          </div>
+          
+          <div className="flex items-center space-x-8">
+            <div className="text-right" style={{ 
+              fontSize: '13px', 
+              lineHeight: '18px',
+              color: '#6b7280',
+              fontFamily: 'Inter, system-ui, sans-serif',
+              lineHeight: '1.2'
+            }}>
+              <div className="font-medium" style={{ color: '#374151' }}>{formData.companyName}</div>
+              <div>{formData.projectName}</div>
+              <div>{formData.projectNumber}</div>
+              <div>{formData.projectAddress}</div>
+            </div>
+            
+            <div className="flex-shrink-0">
+              {formData.companyLogo ? (
+                <img 
+                  src={formData.companyLogo} 
+                  alt="Company Logo" 
+                  style={{ 
+                    height: '86px', 
+                    width: 'auto',
+                    objectFit: 'contain'
+                  }}
+                />
+              ) : (
+                <div 
+                  className="border-2 border-dashed flex items-center justify-center text-center"
+                  style={{ 
+                    height: '86px', 
+                    width: '120px',
+                    borderColor: '#d1d5db',
+                    fontSize: '11px',
+                    color: '#9ca3af',
+                    lineHeight: '14px'
+                  }}
+                >
+                  Company Logo
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Document Title */}
+        <div className="mb-8">
+          <h1 className="font-bold" style={{ 
+            fontSize: '24px', 
+            color: '#1f2937',
+            fontFamily: 'Inter, system-ui, sans-serif',
+              lineHeight: '1.2',
+            lineHeight: '1.2'
+          }}>
+            Work Activities & Risk Assessment
+          </h1>
+        </div>
+
+        {/* Work Activities Table */}
+        <div className="mb-8">
+          <table className="w-full border-collapse" style={{ fontSize: '11px', border: '1px solid #e5e7eb' }}>
+            <thead>
+              <tr>
+                <th className="border p-2 text-center font-semibold" style={{ backgroundColor: '#f9fafb', color: '#1f2937', borderColor: '#e5e7eb', width: '3%' }}>#</th>
+                <th className="border p-2 text-center font-semibold" style={{ backgroundColor: '#f9fafb', color: '#1f2937', borderColor: '#e5e7eb', width: '14%' }}>Activity</th>
+                <th className="border p-2 text-center font-semibold" style={{ backgroundColor: '#f9fafb', color: '#1f2937', borderColor: '#e5e7eb', width: '23%' }}>Hazards</th>
+                <th className="border p-2 text-center font-semibold" style={{ backgroundColor: '#f9fafb', color: '#1f2937', borderColor: '#e5e7eb', width: '11%' }}>Initial Risk</th>
+                <th className="border p-2 text-center font-semibold" style={{ backgroundColor: '#f9fafb', color: '#1f2937', borderColor: '#e5e7eb', width: '27%' }}>Control Measures</th>
+                <th className="border p-2 text-center font-semibold" style={{ backgroundColor: '#f9fafb', color: '#1f2937', borderColor: '#e5e7eb', width: '11%' }}>Residual Risk</th>
+                <th className="border p-2 text-center font-semibold" style={{ backgroundColor: '#f9fafb', color: '#1f2937', borderColor: '#e5e7eb', width: '11%' }}>Legislation</th>
+              </tr>
+            </thead>
+            <tbody>
+              {formData.workActivities.map((activity, index) => (
+                <tr key={activity.id}>
+                  <td className="border p-2 align-top text-center" style={{ borderColor: '#e5e7eb', color: '#111827' }}>{index + 1}</td>
+                  <td className="border p-2 align-top" style={{ borderColor: '#e5e7eb', color: '#111827' }}>{activity.activity}</td>
+                  <td className="border p-2 align-top" style={{ borderColor: '#e5e7eb', color: '#111827' }}>
+                    {activity.hazards?.join(', ') || 'No hazards specified'}
+                  </td>
+                  <td className="border p-2 align-top text-center" style={{ borderColor: '#e5e7eb' }}>
+                    <div className={`px-2 py-1 rounded font-semibold text-white`} style={{
+                      backgroundColor: 
+                        activity.initialRisk?.level === 'extreme' ? '#ef4444' :
+                        activity.initialRisk?.level === 'high' ? '#f97316' :
+                        activity.initialRisk?.level === 'medium' ? '#eab308' :
+                        '#22c55e',
+                      fontSize: '11px'
+                    }}>
+                      {activity.initialRisk?.level || 'Low'} ({activity.initialRisk?.score || 1})
+                    </div>
+                  </td>
+                  <td className="border p-2 align-top" style={{ borderColor: '#e5e7eb', color: '#111827' }}>
+                    {activity.controlMeasures?.join(', ') || 'No control measures specified'}
+                  </td>
+                  <td className="border p-2 align-top text-center" style={{ borderColor: '#e5e7eb' }}>
+                    <div className={`px-2 py-1 rounded font-semibold text-white`} style={{
+                      backgroundColor: 
+                        activity.residualRisk?.level === 'extreme' ? '#ef4444' :
+                        activity.residualRisk?.level === 'high' ? '#f97316' :
+                        activity.residualRisk?.level === 'medium' ? '#eab308' :
+                        '#22c55e',
+                      fontSize: '11px'
+                    }}>
+                      {activity.residualRisk?.level || 'Low'} ({activity.residualRisk?.score || 1})
+                    </div>
+                  </td>
+                  <td className="border p-2 align-top" style={{ borderColor: '#e5e7eb', color: '#111827' }}>
+                    {activity.legislation?.join(', ') || 'No legislation specified'}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+  );
+
+  const renderPPEPage = () => (
+    <div className="bg-white shadow-lg mx-auto print-page relative" style={{ width: '1123px', minHeight: '794px' }}>
+      {/* Watermark */}
+      <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
+        <div className="grid grid-cols-3 grid-rows-2 h-full w-full gap-4">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <div key={index} className="flex items-center justify-center">
+              <div 
+                className="text-gray-200 font-bold select-none opacity-30"
+                style={{ 
+                  fontSize: '20px',
+                  transform: 'rotate(-45deg)',
+                  whiteSpace: 'nowrap',
+                  lineHeight: '24px',
+                  textAlign: 'center'
+                }}
+              >
+                <div>{formData.companyName}</div>
+                <div>{formData.projectName}</div>
+                <div>{formData.projectNumber}</div>
+                <div>{formData.projectAddress}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div style={{ padding: '48px 40px', position: 'relative', zIndex: 1 }}>
+        
+        {/* Header Section */}
+        <div className="flex items-start justify-between mb-10">
+          <div className="flex items-center space-x-4">
+            <img 
+              src={riskifyLogo} 
+              alt="Riskify Logo" 
+              style={{ height: '86px', width: 'auto' }}
+            />
+            <div style={{ 
+              fontSize: '24px', 
+              fontWeight: 'bold',
+              color: '#1f2937',
+              fontFamily: 'Inter, system-ui, sans-serif',
+              lineHeight: '1.2'
+            }}>
+              Safe Work Method Statement
+            </div>
+          </div>
+          
+          <div className="flex items-center space-x-8">
+            <div className="text-right" style={{ 
+              fontSize: '13px', 
+              lineHeight: '18px',
+              color: '#6b7280',
+              fontFamily: 'Inter, system-ui, sans-serif',
+              lineHeight: '1.2'
+            }}>
+              <div className="font-medium" style={{ color: '#374151' }}>{formData.companyName}</div>
+              <div>{formData.projectName}</div>
+              <div>{formData.projectNumber}</div>
+              <div>{formData.projectAddress}</div>
+            </div>
+            
+            <div className="flex-shrink-0">
+              {formData.companyLogo ? (
+                <img 
+                  src={formData.companyLogo} 
+                  alt="Company Logo" 
+                  style={{ 
+                    height: '86px', 
+                    width: 'auto',
+                    objectFit: 'contain'
+                  }}
+                />
+              ) : (
+                <div 
+                  className="border-2 border-dashed flex items-center justify-center text-center"
+                  style={{ 
+                    height: '86px', 
+                    width: '120px',
+                    borderColor: '#d1d5db',
+                    fontSize: '11px',
+                    color: '#9ca3af',
+                    lineHeight: '14px'
+                  }}
+                >
+                  Company Logo
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Document Title */}
+        <div className="mb-8">
+          <h1 className="font-bold" style={{ 
+            fontSize: '24px', 
+            color: '#1f2937',
+            fontFamily: 'Inter, system-ui, sans-serif',
+              lineHeight: '1.2',
+            lineHeight: '1.2'
+          }}>
+            Personal Protective Equipment (PPE)
+          </h1>
+        </div>
+
+        {/* PPE Grid */}
+        <div className="grid grid-cols-5 gap-4">
+          {formData.ppeItems.map((ppe, index) => (
+            <div 
+              key={ppe.id}
+              className={`border rounded p-4 text-center flex items-center justify-center ${
+                ppe.selected 
+                  ? 'bg-green-50 border-green-300' 
+                  : 'bg-white border-gray-200'
+              }`}
+              style={{ 
+                fontSize: '11px',
+                color: ppe.selected ? '#16a34a' : '#111827',
+                minHeight: '80px'
+              }}
+            >
+              <div className="font-semibold">{ppe.name}</div>
+            </div>
+          ))}
+        </div>
+
+      </div>
+    </div>
+  );
+
+  const renderPlantEquipmentPage = () => (
+    <div className="bg-white shadow-lg mx-auto print-page relative" style={{ width: '1123px', minHeight: '794px' }}>
+      {/* Watermark */}
+      <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
+        <div className="grid grid-cols-3 grid-rows-2 h-full w-full gap-4">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <div key={index} className="flex items-center justify-center">
+              <div 
+                className="text-gray-200 font-bold select-none opacity-30"
+                style={{ 
+                  fontSize: '20px',
+                  transform: 'rotate(-45deg)',
+                  whiteSpace: 'nowrap',
+                  lineHeight: '24px',
+                  textAlign: 'center'
+                }}
+              >
+                <div>{formData.companyName}</div>
+                <div>{formData.projectName}</div>
+                <div>{formData.projectNumber}</div>
+                <div>{formData.projectAddress}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div style={{ padding: '48px 40px', position: 'relative', zIndex: 1 }}>
+        
+        {/* Header Section */}
+        <div className="flex items-start justify-between mb-10">
+          <div className="flex items-center space-x-4">
+            <img 
+              src={riskifyLogo} 
+              alt="Riskify Logo" 
+              style={{ height: '86px', width: 'auto' }}
+            />
+            <div style={{ 
+              fontSize: '24px', 
+              fontWeight: 'bold',
+              color: '#1f2937',
+              fontFamily: 'Inter, system-ui, sans-serif',
+              lineHeight: '1.2'
+            }}>
+              Safe Work Method Statement
+            </div>
+          </div>
+          
+          <div className="flex items-center space-x-8">
+            <div className="text-right" style={{ 
+              fontSize: '13px', 
+              lineHeight: '18px',
+              color: '#6b7280',
+              fontFamily: 'Inter, system-ui, sans-serif',
+              lineHeight: '1.2'
+            }}>
+              <div className="font-medium" style={{ color: '#374151' }}>{formData.companyName}</div>
+              <div>{formData.projectName}</div>
+              <div>{formData.projectNumber}</div>
+              <div>{formData.projectAddress}</div>
+            </div>
+            
+            <div className="flex-shrink-0">
+              {formData.companyLogo ? (
+                <img 
+                  src={formData.companyLogo} 
+                  alt="Company Logo" 
+                  style={{ 
+                    height: '86px', 
+                    width: 'auto',
+                    objectFit: 'contain'
+                  }}
+                />
+              ) : (
+                <div 
+                  className="border-2 border-dashed flex items-center justify-center text-center"
+                  style={{ 
+                    height: '86px', 
+                    width: '120px',
+                    borderColor: '#d1d5db',
+                    fontSize: '11px',
+                    color: '#9ca3af',
+                    lineHeight: '14px'
+                  }}
+                >
+                  Company Logo
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Document Title */}
+        <div className="mb-8">
+          <h1 className="font-bold" style={{ 
+            fontSize: '24px', 
+            color: '#1f2937',
+            fontFamily: 'Inter, system-ui, sans-serif',
+              lineHeight: '1.2',
+            lineHeight: '1.2'
+          }}>
+            Plant & Equipment
+          </h1>
+        </div>
+
+        {/* Plant & Equipment Table */}
+        <div className="mb-8">
+          <table className="w-full border-collapse" style={{ fontSize: '11px', border: '1px solid #e5e7eb', fontFamily: 'Inter, system-ui, sans-serif',
+              lineHeight: '1.2' }}>
+            <thead>
+              <tr>
+                <th className="border p-2 text-center font-semibold" style={{ backgroundColor: '#f9fafb', color: '#1f2937', borderColor: '#e5e7eb', width: '15%' }}>Equipment</th>
+                <th className="border p-2 text-center font-semibold" style={{ backgroundColor: '#f9fafb', color: '#1f2937', borderColor: '#e5e7eb', width: '25%' }}>Hazards</th>
+                <th className="border p-2 text-center font-semibold" style={{ backgroundColor: '#f9fafb', color: '#1f2937', borderColor: '#e5e7eb', width: '10%' }}>Initial Risk</th>
+                <th className="border p-2 text-center font-semibold" style={{ backgroundColor: '#f9fafb', color: '#1f2937', borderColor: '#e5e7eb', width: '30%' }}>Control Measures</th>
+                <th className="border p-2 text-center font-semibold" style={{ backgroundColor: '#f9fafb', color: '#1f2937', borderColor: '#e5e7eb', width: '10%' }}>Residual Risk</th>
+                <th className="border p-2 text-center font-semibold" style={{ backgroundColor: '#f9fafb', color: '#1f2937', borderColor: '#e5e7eb', width: '10%' }}>Operator</th>
+              </tr>
+            </thead>
+            <tbody>
+              {(formData.plantEquipment || []).map((equipment, index) => (
+                <tr key={index}>
+                  <td className="border p-2 align-top" style={{ borderColor: '#e5e7eb', color: '#111827' }}>{equipment.equipment || 'Not specified'}</td>
+                  <td className="border p-2 align-top" style={{ borderColor: '#e5e7eb', color: '#111827' }}>
+                    {equipment.hazards?.join(', ') || 'No hazards specified'}
+                  </td>
+                  <td className="border p-2 align-top text-center" style={{ borderColor: '#e5e7eb' }}>
+                    <div className={`px-2 py-1 rounded text-xs font-semibold text-white`} style={{
+                      backgroundColor: 
+                        equipment.initialRisk?.level === 'extreme' ? '#ef4444' :
+                        equipment.initialRisk?.level === 'high' ? '#f97316' :
+                        equipment.initialRisk?.level === 'medium' ? '#eab308' :
+                        '#22c55e'
+                    }}>
+                      {equipment.initialRisk?.level || 'Low'} ({equipment.initialRisk?.score || 1})
+                    </div>
+                  </td>
+                  <td className="border p-2 align-top" style={{ borderColor: '#e5e7eb', color: '#111827' }}>
+                    {equipment.controlMeasures?.join(', ') || 'No control measures specified'}
+                  </td>
+                  <td className="border p-2 align-top text-center" style={{ borderColor: '#e5e7eb' }}>
+                    <div className={`px-2 py-1 rounded text-xs font-semibold text-white`} style={{
+                      backgroundColor: 
+                        equipment.residualRisk?.level === 'extreme' ? '#ef4444' :
+                        equipment.residualRisk?.level === 'high' ? '#f97316' :
+                        equipment.residualRisk?.level === 'medium' ? '#eab308' :
+                        '#22c55e'
+                    }}>
+                      {equipment.residualRisk?.level || 'Low'} ({equipment.residualRisk?.score || 1})
+                    </div>
+                  </td>
+                  <td className="border p-2 align-top" style={{ borderColor: '#e5e7eb', color: '#111827' }}>{equipment.operator || 'Not specified'}</td>
+                </tr>
+              ))}
+              <tr>
+                <td className="border p-2 align-top" style={{ borderColor: '#e5e7eb', color: '#111827' }}>Excavator</td>
+                <td className="border p-2 align-top" style={{ borderColor: '#e5e7eb', color: '#111827' }}>
+                  Struck by equipment, Rollover, Hydraulic failure, Noise exposure
+                </td>
+                <td className="border p-2 align-top text-center" style={{ borderColor: '#e5e7eb' }}>
+                  <div className="px-2 py-1 rounded text-xs font-semibold text-white" style={{ backgroundColor: '#f97316' }}>
+                    High (4)
+                  </div>
+                </td>
+                <td className="border p-2 align-top" style={{ borderColor: '#e5e7eb', color: '#111827' }}>
+                  Licensed operator only, Pre-start inspection, Exclusion zones, PPE required
+                </td>
+                <td className="border p-2 align-top text-center" style={{ borderColor: '#e5e7eb' }}>
+                  <div className="px-2 py-1 rounded text-xs font-semibold text-white" style={{ backgroundColor: '#eab308' }}>
+                    Medium (2)
+                  </div>
+                </td>
+                <td className="border p-2 align-top" style={{ borderColor: '#e5e7eb', color: '#111827' }}>John Smith</td>
+              </tr>
+              <tr>
+                <td className="border p-2 align-top" style={{ borderColor: '#e5e7eb', color: '#111827' }}>Crane</td>
+                <td className="border p-2 align-top" style={{ borderColor: '#e5e7eb', color: '#111827' }}>
+                  Load drop, Electrocution, Struck by load, Crane overturn
+                </td>
+                <td className="border p-2 align-top text-center" style={{ borderColor: '#e5e7eb' }}>
+                  <div className="px-2 py-1 rounded text-xs font-semibold text-white" style={{ backgroundColor: '#ef4444' }}>
+                    Extreme (5)
+                  </div>
+                </td>
+                <td className="border p-2 align-top" style={{ borderColor: '#e5e7eb', color: '#111827' }}>
+                  Certified operator, Daily inspection, Load limits, Rigging inspection
+                </td>
+                <td className="border p-2 align-top text-center" style={{ borderColor: '#e5e7eb' }}>
+                  <div className="px-2 py-1 rounded text-xs font-semibold text-white" style={{ backgroundColor: '#f97316' }}>
+                    High (3)
+                  </div>
+                </td>
+                <td className="border p-2 align-top" style={{ borderColor: '#e5e7eb', color: '#111827' }}>Mike Johnson</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+  );
+
+  const renderSignInPage = () => (
+    <div className="bg-white shadow-lg mx-auto print-page relative" style={{ width: '1123px', minHeight: '794px' }}>
+      {/* Watermark */}
+      <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
+        <div className="grid grid-cols-3 grid-rows-2 h-full w-full gap-4">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <div key={index} className="flex items-center justify-center">
+              <div 
+                className="text-gray-200 font-bold select-none opacity-30"
+                style={{ 
+                  fontSize: '20px',
+                  transform: 'rotate(-45deg)',
+                  whiteSpace: 'nowrap',
+                  lineHeight: '24px',
+                  textAlign: 'center'
+                }}
+              >
+                <div>{formData.companyName}</div>
+                <div>{formData.projectName}</div>
+                <div>{formData.projectNumber}</div>
+                <div>{formData.projectAddress}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div style={{ padding: '48px 40px', position: 'relative', zIndex: 1 }}>
+        
+        {/* Header Section */}
+        <div className="flex items-start justify-between mb-10">
+          <div className="flex items-center space-x-4">
+            <img 
+              src={riskifyLogo} 
+              alt="Riskify Logo" 
+              style={{ height: '86px', width: 'auto' }}
+            />
+            <div style={{ 
+              fontSize: '24px', 
+              fontWeight: 'bold',
+              color: '#1f2937',
+              fontFamily: 'Inter, system-ui, sans-serif',
+              lineHeight: '1.2'
+            }}>
+              Safe Work Method Statement
+            </div>
+          </div>
+          
+          <div className="flex items-center space-x-8">
+            <div className="text-right" style={{ 
+              fontSize: '13px', 
+              lineHeight: '18px',
+              color: '#6b7280',
+              fontFamily: 'Inter, system-ui, sans-serif',
+              lineHeight: '1.2'
+            }}>
+              <div className="font-medium" style={{ color: '#374151' }}>{formData.companyName}</div>
+              <div>{formData.projectName}</div>
+              <div>{formData.projectNumber}</div>
+              <div>{formData.projectAddress}</div>
+            </div>
+            
+            <div className="flex-shrink-0">
+              {formData.companyLogo ? (
+                <img 
+                  src={formData.companyLogo} 
+                  alt="Company Logo" 
+                  style={{ 
+                    height: '86px', 
+                    width: 'auto',
+                    objectFit: 'contain'
+                  }}
+                />
+              ) : (
+                <div 
+                  className="border-2 border-dashed flex items-center justify-center text-center"
+                  style={{ 
+                    height: '86px', 
+                    width: '120px',
+                    borderColor: '#d1d5db',
+                    fontSize: '11px',
+                    color: '#9ca3af',
+                    lineHeight: '14px'
+                  }}
+                >
+                  Company Logo
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Document Title */}
+        <div className="mb-8">
+          <h1 className="font-bold" style={{ 
+            fontSize: '24px', 
+            color: '#1f2937',
+            fontFamily: 'Inter, system-ui, sans-serif',
+              lineHeight: '1.2',
+            lineHeight: '1.2'
+          }}>
+            Sign In Register
+          </h1>
+        </div>
+
+        {/* Sign In Table */}
+        <div className="mb-8">
+          <table className="w-full border-collapse" style={{ fontSize: '11px', border: '1px solid #e5e7eb' }}>
+            <thead>
+              <tr>
+                <th className="border p-2 text-center font-semibold" style={{ backgroundColor: '#f9fafb', color: '#1f2937', borderColor: '#e5e7eb' }}>Name</th>
+                <th className="border p-2 text-center font-semibold" style={{ backgroundColor: '#f9fafb', color: '#1f2937', borderColor: '#e5e7eb' }}>Number</th>
+                <th className="border p-2 text-center font-semibold" style={{ backgroundColor: '#f9fafb', color: '#1f2937', borderColor: '#e5e7eb' }}>Signature</th>
+                <th className="border p-2 text-center font-semibold" style={{ backgroundColor: '#f9fafb', color: '#1f2937', borderColor: '#e5e7eb' }}>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {Array.from({ length: 10 }, (_, i) => (
+                <tr key={i}>
+                  <td className="border p-2 align-top" style={{ borderColor: '#e5e7eb', color: '#111827' }}>Sample Name {i + 1}</td>
+                  <td className="border p-2 align-top" style={{ borderColor: '#e5e7eb', color: '#111827' }}>0499 999 99{i}</td>
+                  <td className="border p-2 align-top italic" style={{ borderColor: '#e5e7eb', color: '#6b7280' }}>Signature written here</td>
+                  <td className="border p-2 align-top" style={{ borderColor: '#e5e7eb', color: '#111827' }}>19/05/2025</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+  );
+
+  const renderCurrentPage = () => {
+    switch (currentPage) {
+      case 'project-info':
+        return renderProjectInfoPage();
+      case 'emergency-info':
+        return renderEmergencyInfoPage();
+      case 'high-risk-activities':
+        return renderHighRiskActivitiesPage();
+      case 'risk-matrix':
+        return renderRiskMatrixPage();
+      case 'work-activities':
+        return renderWorkActivitiesPages();
+      case 'ppe':
+        return renderPPEPage();
+      case 'plant-equipment':
+        return renderPlantEquipmentPage();
+      case 'sign-in':
+        return renderSignInPage();
+      default:
+        return renderProjectInfoPage();
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 flex">
+      {/* Form Panel */}
+      <div className="w-1/3 bg-white p-8 overflow-auto">
+        <h1 className="text-2xl font-bold mb-6 text-gray-900">SWMS Generator</h1>
+        
+        {/* Page Navigation */}
+        <div className="mb-6">
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => setCurrentPage('project-info')}
+              className={`px-3 py-2 text-xs font-medium rounded ${
+                currentPage === 'project-info' 
+                  ? 'bg-green-600 text-white' 
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+            >
+              Project Info
+            </button>
+            <button
+              onClick={() => setCurrentPage('emergency-info')}
+              className={`px-3 py-2 text-xs font-medium rounded ${
+                currentPage === 'emergency-info' 
+                  ? 'bg-green-600 text-white' 
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+            >
+              Emergency Info
+            </button>
+            <button
+              onClick={() => setCurrentPage('high-risk-activities')}
+              className={`px-3 py-2 text-xs font-medium rounded ${
+                currentPage === 'high-risk-activities' 
+                  ? 'bg-green-600 text-white' 
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+            >
+              High Risk Activities
+            </button>
+            <button
+              onClick={() => setCurrentPage('risk-matrix')}
+              className={`px-3 py-2 text-xs font-medium rounded ${
+                currentPage === 'risk-matrix' 
+                  ? 'bg-green-600 text-white' 
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+            >
+              Risk Matrix
+            </button>
+            <button
+              onClick={() => setCurrentPage('work-activities')}
+              className={`px-3 py-2 text-xs font-medium rounded ${
+                currentPage === 'work-activities' 
+                  ? 'bg-green-600 text-white' 
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+            >
+              Work Activities
+            </button>
+            <button
+              onClick={() => setCurrentPage('ppe')}
+              className={`px-3 py-2 text-xs font-medium rounded ${
+                currentPage === 'ppe' 
+                  ? 'bg-green-600 text-white' 
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+            >
+              PPE
+            </button>
+            <button
+              onClick={() => setCurrentPage('plant-equipment')}
+              className={`px-3 py-2 text-xs font-medium rounded ${
+                currentPage === 'plant-equipment' 
+                  ? 'bg-green-600 text-white' 
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+            >
+              Plant & Equipment
+            </button>
+            <button
+              onClick={() => setCurrentPage('sign-in')}
+              className={`px-3 py-2 text-xs font-medium rounded ${
+                currentPage === 'sign-in' 
+                  ? 'bg-green-600 text-white' 
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+            >
+              Sign In Register
+            </button>
+          
+          <div className="ml-auto flex space-x-2">
+            <button
+              onClick={handlePrintPDF}
+              className="px-4 py-2 bg-blue-600 text-white rounded text-sm hover:bg-blue-700"
+            >
+              Download PDF
+            </button>
+          </div>
+          </div>
+        </div>
+        
+        {/* Form inputs for the current page */}
+        {currentPage === 'project-info' && (
+          <div className="space-y-4">
+            <h2 className="text-lg font-semibold mb-4">Project Information</h2>
+            
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Company Logo</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                      const result = event.target?.result as string;
+                      setFormData({ ...formData, companyLogo: result });
+                    };
+                    reader.readAsDataURL(file);
+                  }
+                }}
+                className="w-full p-2 border border-gray-300 rounded-md text-sm"
+              />
+              {formData.companyLogo && (
+                <div className="mt-2">
+                  <img 
+                    src={formData.companyLogo} 
+                    alt="Company Logo Preview" 
+                    className="h-20 w-auto border border-gray-300 rounded"
+                  />
+                </div>
+              )}
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Company Name</label>
+              <input
+                type="text"
+                value={formData.companyName}
+                onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
+                className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Project Name</label>
+              <input
+                type="text"
+                value={formData.projectName}
+                onChange={(e) => setFormData({ ...formData, projectName: e.target.value })}
+                className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Project Number</label>
+              <input
+                type="text"
+                value={formData.projectNumber}
+                onChange={(e) => setFormData({ ...formData, projectNumber: e.target.value })}
+                className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Project Address</label>
+              <input
+                type="text"
+                value={formData.projectAddress}
+                onChange={(e) => setFormData({ ...formData, projectAddress: e.target.value })}
+                className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Job Name</label>
+              <input
+                type="text"
+                value={formData.jobName}
+                onChange={(e) => setFormData({ ...formData, jobName: e.target.value })}
+                className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Job Number</label>
+              <input
+                type="text"
+                value={formData.jobNumber}
+                onChange={(e) => setFormData({ ...formData, jobNumber: e.target.value })}
+                className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+              <input
+                type="text"
+                value={formData.startDate}
+                onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+                className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Duration</label>
+              <input
+                type="text"
+                value={formData.duration}
+                onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
+                className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Date Created</label>
+              <input
+                type="text"
+                value={formData.dateCreated}
+                onChange={(e) => setFormData({ ...formData, dateCreated: e.target.value })}
+                className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Principal Contractor</label>
+              <input
+                type="text"
+                value={formData.principalContractor}
+                onChange={(e) => setFormData({ ...formData, principalContractor: e.target.value })}
+                className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Project Manager</label>
+              <input
+                type="text"
+                value={formData.projectManager}
+                onChange={(e) => setFormData({ ...formData, projectManager: e.target.value })}
+                className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Site Supervisor</label>
+              <input
+                type="text"
+                value={formData.siteSupervisor}
+                onChange={(e) => setFormData({ ...formData, siteSupervisor: e.target.value })}
+                className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Authorising Person Name</label>
+              <input
+                type="text"
+                value={formData.authorisingPerson}
+                onChange={(e) => setFormData({ ...formData, authorisingPerson: e.target.value })}
+                className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Authorising Person Position</label>
+              <input
+                type="text"
+                value={formData.authorisingPosition}
+                onChange={(e) => setFormData({ ...formData, authorisingPosition: e.target.value })}
+                className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Scope of Works</label>
+              <textarea
+                value={formData.scopeOfWorks}
+                onChange={(e) => setFormData({ ...formData, scopeOfWorks: e.target.value })}
+                rows={4}
+                className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Review and Monitoring</label>
+              <textarea
+                value={formData.reviewAndMonitoring}
+                onChange={(e) => setFormData({ ...formData, reviewAndMonitoring: e.target.value })}
+                rows={4}
+                className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
+              />
+            </div>
+          </div>
+        )}
+
+        {currentPage === 'emergency-info' && (
+          <div className="space-y-4">
+            <h2 className="text-lg font-semibold mb-4">Emergency Information</h2>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Emergency Contacts</label>
+              {formData.emergencyContacts.map((contact, index) => (
+                <div key={index} className="grid grid-cols-2 gap-2 mb-2">
+                  <input
+                    type="text"
+                    placeholder="Contact Name"
+                    value={contact.name}
+                    onChange={(e) => {
+                      const newContacts = [...formData.emergencyContacts];
+                      newContacts[index].name = e.target.value;
+                      setFormData({ ...formData, emergencyContacts: newContacts });
+                    }}
+                    className="p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Phone Number"
+                    value={contact.phone}
+                    onChange={(e) => {
+                      const newContacts = [...formData.emergencyContacts];
+                      newContacts[index].phone = e.target.value;
+                      setFormData({ ...formData, emergencyContacts: newContacts });
+                    }}
+                    className="p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                  />
+                </div>
+              ))}
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Emergency Procedures</label>
+              <textarea
+                value={formData.emergencyProcedures}
+                onChange={(e) => setFormData({ ...formData, emergencyProcedures: e.target.value })}
+                rows={6}
+                className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
+              />
+            </div>
+          </div>
+        )}
+
+        {currentPage === 'high-risk-activities' && (
+          <div className="space-y-4">
+            <h2 className="text-lg font-semibold mb-4">High Risk Activities</h2>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Select High Risk Activities</label>
+            <div className="space-y-2 max-h-96 overflow-y-auto">
+              {formData.highRiskActivities.map((activity, index) => (
+                <div key={activity.id} className="flex items-start space-x-3 p-2 border rounded">
+                  <input
+                    type="checkbox"
+                    checked={activity.selected}
+                    onChange={(e) => {
+                      const newActivities = [...formData.highRiskActivities];
+                      newActivities[index].selected = e.target.checked;
+                      setFormData({ ...formData, highRiskActivities: newActivities });
+                    }}
+                    className="mt-1"
+                  />
+                  <div className="flex-1 text-sm">{activity.title}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {currentPage === 'ppe' && (
+          <div className="space-y-4">
+            <h2 className="text-lg font-semibold mb-4">Personal Protective Equipment</h2>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Select Required PPE</label>
+            <div className="grid grid-cols-2 gap-4 max-h-96 overflow-y-auto">
+              {formData.ppeItems.map((ppe, index) => (
+                <div key={ppe.id} className="flex items-start space-x-3 p-3 border rounded bg-gray-50">
+                  <input
+                    type="checkbox"
+                    checked={ppe.selected}
+                    onChange={(e) => {
+                      const newPpe = [...formData.ppeItems];
+                      newPpe[index].selected = e.target.checked;
+                      setFormData({ ...formData, ppeItems: newPpe });
+                    }}
+                    className="mt-1"
+                  />
+                  <div className="flex-1">
+                    <div className="text-sm font-medium">{ppe.name}</div>
+                    <div className="text-xs text-gray-600 mt-1">{ppe.description}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <button
+              onClick={() => {
+                const newPpe = {
+                  id: Date.now().toString(),
+                  name: 'New PPE Item',
+                  description: 'Description',
+                  category: 'General',
+                  selected: false
+                };
+                setFormData({ ...formData, ppeItems: [...formData.ppeItems, newPpe] });
+              }}
+              className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 text-sm"
+            >
+              Add PPE Item
+            </button>
+          </div>
+        )}
+
+        {currentPage === 'work-activities' && (
+          <div className="space-y-4">
+            <h2 className="text-lg font-semibold mb-4">Work Activities Risk Assessment</h2>
+            <div className="space-y-4 max-h-96 overflow-y-auto">
+              {formData.workActivities.map((activity, index) => (
+                <div key={activity.id} className="border rounded p-4 bg-gray-50">
+                  <div className="grid grid-cols-2 gap-4 mb-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Activity</label>
+                      <input
+                        type="text"
+                        value={activity.activity}
+                        onChange={(e) => {
+                          const newActivities = [...formData.workActivities];
+                          newActivities[index] = {
+                            ...newActivities[index],
+                            activity: e.target.value
+                          };
+                          setFormData({ ...formData, workActivities: newActivities });
+                        }}
+                        className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Initial Risk Level</label>
+                      <select
+                        value={activity.initialRisk.level}
+                        onChange={(e) => {
+                          const newActivities = [...formData.workActivities];
+                          newActivities[index] = {
+                            ...newActivities[index],
+                            initialRisk: {
+                              ...newActivities[index].initialRisk,
+                              level: e.target.value as any
+                            }
+                          };
+                          setFormData({ ...formData, workActivities: newActivities });
+                        }}
+                        className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                      >
+                        <option value="low">Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
+                        <option value="extreme">Extreme</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Initial Risk Score</label>
+                      <input
+                        type="number"
+                        value={activity.initialRisk.score}
+                        onChange={(e) => {
+                          const newActivities = [...formData.workActivities];
+                          newActivities[index] = {
+                            ...newActivities[index],
+                            initialRisk: {
+                              ...newActivities[index].initialRisk,
+                              score: parseInt(e.target.value) || 0
+                            }
+                          };
+                          setFormData({ ...formData, workActivities: newActivities });
+                        }}
+                        className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                        min="1"
+                        max="25"
+                      />
+                    </div>
+                  </div>
+                  <div className="mb-3">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Hazards (comma separated)</label>
+                    <input
+                      type="text"
+                      value={activity.hazards.join(', ')}
+                      onChange={(e) => {
+                        const newActivities = [...formData.workActivities];
+                        newActivities[index] = {
+                          ...newActivities[index],
+                          hazards: e.target.value.split(', ').filter(h => h.trim())
+                        };
+                        setFormData({ ...formData, workActivities: newActivities });
+                      }}
+                      className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Control Measures (comma separated)</label>
+                    <input
+                      type="text"
+                      value={activity.controlMeasures.join(', ')}
+                      onChange={(e) => {
+                        const newActivities = [...formData.workActivities];
+                        newActivities[index] = {
+                          ...newActivities[index],
+                          controlMeasures: e.target.value.split(', ').filter(m => m.trim())
+                        };
+                        setFormData({ ...formData, workActivities: newActivities });
+                      }}
+                      className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4 mb-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Residual Risk Level</label>
+                      <select
+                        value={activity.residualRisk.level}
+                        onChange={(e) => {
+                          const newActivities = [...formData.workActivities];
+                          newActivities[index] = {
+                            ...newActivities[index],
+                            residualRisk: {
+                              ...newActivities[index].residualRisk,
+                              level: e.target.value as any
+                            }
+                          };
+                          setFormData({ ...formData, workActivities: newActivities });
+                        }}
+                        className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                      >
+                        <option value="low">Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
+                        <option value="extreme">Extreme</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Residual Risk Score</label>
+                      <input
+                        type="number"
+                        value={activity.residualRisk.score}
+                        onChange={(e) => {
+                          const newActivities = [...formData.workActivities];
+                          newActivities[index] = {
+                            ...newActivities[index],
+                            residualRisk: {
+                              ...newActivities[index].residualRisk,
+                              score: parseInt(e.target.value) || 0
+                            }
+                          };
+                          setFormData({ ...formData, workActivities: newActivities });
+                        }}
+                        className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                        min="1"
+                        max="25"
+                      />
+                    </div>
+                  </div>
+                  <div className="mb-3">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Legislation (comma separated)</label>
+                    <input
+                      type="text"
+                      value={activity.legislation.join(', ')}
+                      onChange={(e) => {
+                        const newActivities = [...formData.workActivities];
+                        newActivities[index] = {
+                          ...newActivities[index],
+                          legislation: e.target.value.split(', ').filter(l => l.trim())
+                        };
+                        setFormData({ ...formData, workActivities: newActivities });
+                      }}
+                      className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                      placeholder="e.g., Work Health and Safety Act 2011, Construction Work Code of Practice"
+                    />
+                  </div>
+                  <button
+                    onClick={() => {
+                      const newActivities = formData.workActivities.filter((_, i) => i !== index);
+                      setFormData({ ...formData, workActivities: newActivities });
+                    }}
+                    className="text-red-600 text-sm hover:text-red-800"
+                  >
+                    Remove Activity
+                  </button>
+                </div>
+              ))}
+              <button
+                onClick={() => {
+                  const newActivity = {
+                    id: Date.now().toString(),
+                    activity: 'New Activity',
+                    hazards: ['New hazard'],
+                    initialRisk: { level: 'medium' as const, score: 10 },
+                    controlMeasures: ['Control measure'],
+                    residualRisk: { level: 'low' as const, score: 5 },
+                    legislation: ['Relevant legislation']
+                  };
+                  setFormData({ ...formData, workActivities: [...formData.workActivities, newActivity] });
+                }}
+                className="w-full p-2 border-2 border-dashed border-gray-300 rounded-md text-gray-600 hover:border-green-300 hover:text-green-600"
+              >
+                + Add New Activity
+              </button>
+            </div>
+          </div>
+        )}
+
+        {currentPage === 'plant-equipment' && (
+          <div className="space-y-4">
+            <h2 className="text-lg font-semibold mb-4">Plant & Equipment Register</h2>
+            <div className="space-y-4 max-h-96 overflow-y-auto">
+              {(formData.plantEquipment || formData.equipmentItems || []).map((equipment, index) => (
+                <div key={equipment.id} className="border rounded p-4 bg-gray-50">
+                  <div className="grid grid-cols-3 gap-4 mb-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Equipment</label>
+                      <input
+                        type="text"
+                        value={equipment.equipment}
+                        onChange={(e) => {
+                          const currentEquipment = formData.plantEquipment || formData.equipmentItems || [];
+                          const newEquipment = [...currentEquipment];
+                          newEquipment[index].equipment = e.target.value;
+                          setFormData({ 
+                            ...formData, 
+                            plantEquipment: newEquipment,
+                            equipmentItems: newEquipment 
+                          });
+                        }}
+                        className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Model</label>
+                      <input
+                        type="text"
+                        value={equipment.model || ''}
+                        onChange={(e) => {
+                          const currentEquipment = formData.plantEquipment || formData.equipmentItems || [];
+                          const newEquipment = [...currentEquipment];
+                          newEquipment[index].model = e.target.value;
+                          setFormData({ 
+                            ...formData, 
+                            plantEquipment: newEquipment,
+                            equipmentItems: newEquipment 
+                          });
+                        }}
+                        className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Serial Number</label>
+                      <input
+                        type="text"
+                        value={equipment.serialNumber || ''}
+                        onChange={(e) => {
+                          const currentEquipment = formData.plantEquipment || formData.equipmentItems || [];
+                          const newEquipment = [...currentEquipment];
+                          newEquipment[index].serialNumber = e.target.value;
+                          setFormData({ 
+                            ...formData, 
+                            plantEquipment: newEquipment,
+                            equipmentItems: newEquipment 
+                          });
+                        }}
+                        className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-4 mb-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Risk Level</label>
+                      <select
+                        value={equipment.riskLevel || 'low'}
+                        onChange={(e) => {
+                          const currentEquipment = formData.plantEquipment || formData.equipmentItems || [];
+                          const newEquipment = [...currentEquipment];
+                          newEquipment[index].riskLevel = e.target.value as 'low' | 'medium' | 'high';
+                          setFormData({ 
+                            ...formData, 
+                            plantEquipment: newEquipment,
+                            equipmentItems: newEquipment 
+                          });
+                        }}
+                        className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                      >
+                        <option value="low">Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Next Inspection</label>
+                      <input
+                        type="text"
+                        value={equipment.nextInspection || ''}
+                        onChange={(e) => {
+                          const currentEquipment = formData.plantEquipment || formData.equipmentItems || [];
+                          const newEquipment = [...currentEquipment];
+                          newEquipment[index].nextInspection = e.target.value;
+                          setFormData({ 
+                            ...formData, 
+                            plantEquipment: newEquipment,
+                            equipmentItems: newEquipment 
+                          });
+                        }}
+                        className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Certification Required</label>
+                      <select
+                        value={equipment.certificationRequired ? 'true' : 'false'}
+                        onChange={(e) => {
+                          const currentEquipment = formData.plantEquipment || formData.equipmentItems || [];
+                          const newEquipment = [...currentEquipment];
+                          newEquipment[index].certificationRequired = e.target.value === 'true';
+                          setFormData({ 
+                            ...formData, 
+                            plantEquipment: newEquipment,
+                            equipmentItems: newEquipment 
+                          });
+                        }}
+                        className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                      >
+                        <option value="false">No</option>
+                        <option value="true">Yes</option>
+                      </select>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      const currentEquipment = formData.plantEquipment || formData.equipmentItems || [];
+                      const newEquipment = currentEquipment.filter((_, i) => i !== index);
+                      setFormData({ 
+                        ...formData, 
+                        plantEquipment: newEquipment,
+                        equipmentItems: newEquipment 
+                      });
+                    }}
+                    className="text-red-600 text-sm hover:text-red-800"
+                  >
+                    Remove Equipment
+                  </button>
+                </div>
+              ))}
+              <button
+                onClick={() => {
+                  const newEquipment = {
+                    id: Date.now().toString(),
+                    equipment: '',
+                    model: '',
+                    serialNumber: '',
+                    riskLevel: 'low' as const,
+                    nextInspection: '',
+                    certificationRequired: false
+                  };
+                  const currentEquipment = formData.plantEquipment || formData.equipmentItems || [];
+                  setFormData({ 
+                    ...formData, 
+                    plantEquipment: [...currentEquipment, newEquipment],
+                    equipmentItems: [...currentEquipment, newEquipment]
+                  });
+                }}
+                className="w-full p-2 border-2 border-dashed border-gray-300 rounded-md text-gray-600 hover:border-green-300 hover:text-green-600"
+              >
+                + Add New Equipment
+              </button>
+            </div>
+          </div>
+        )}
+
+        {currentPage === 'sign-in' && (
+          <div className="space-y-4">
+            <h2 className="text-lg font-semibold mb-4">Site Personnel Sign In Register</h2>
+            <div className="space-y-4 max-h-96 overflow-y-auto">
+              {formData.signInEntries.map((entry, index) => (
+                <div key={entry.id} className="border rounded p-4 bg-gray-50">
+                  <div className="grid grid-cols-4 gap-4 mb-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                      <input
+                        type="text"
+                        value={entry.name}
+                        onChange={(e) => {
+                          const newEntries = [...formData.signInEntries];
+                          newEntries[index].name = e.target.value;
+                          setFormData({ ...formData, signInEntries: newEntries });
+                        }}
+                        className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Number</label>
+                      <input
+                        type="text"
+                        value={entry.number}
+                        onChange={(e) => {
+                          const newEntries = [...formData.signInEntries];
+                          newEntries[index].number = e.target.value;
+                          setFormData({ ...formData, signInEntries: newEntries });
+                        }}
+                        className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Signature</label>
+                      <input
+                        type="text"
+                        value={entry.signature}
+                        onChange={(e) => {
+                          const newEntries = [...formData.signInEntries];
+                          newEntries[index].signature = e.target.value;
+                          setFormData({ ...formData, signInEntries: newEntries });
+                        }}
+                        className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
+                      <input
+                        type="text"
+                        value={entry.date}
+                        onChange={(e) => {
+                          const newEntries = [...formData.signInEntries];
+                          newEntries[index].date = e.target.value;
+                          setFormData({ ...formData, signInEntries: newEntries });
+                        }}
+                        className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                      />
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      const newEntries = formData.signInEntries.filter((_, i) => i !== index);
+                      setFormData({ ...formData, signInEntries: newEntries });
+                    }}
+                    className="text-red-600 text-sm hover:text-red-800"
+                  >
+                    Remove Entry
+                  </button>
+                </div>
+              ))}
+              <button
+                onClick={() => {
+                  const newEntry = {
+                    id: Date.now().toString(),
+                    name: '',
+                    company: '',
+                    position: '',
+                    date: new Date().toLocaleDateString('en-AU'),
+                    timeIn: '',
+                    timeOut: '',
+                    signature: '',
+                    inductionComplete: false
+                  };
+                  setFormData({ ...formData, signInEntries: [...formData.signInEntries, newEntry] });
+                }}
+                className="w-full p-2 border-2 border-dashed border-gray-300 rounded-md text-gray-600 hover:border-green-300 hover:text-green-600"
+              >
+                + Add New Sign In Entry
+              </button>
+            </div>
+          </div>
+        )}
+
+        {currentPage === 'risk-matrix' && (
+          <div className="text-gray-600">
+            <h2 className="text-lg font-semibold mb-4">Risk Matrix</h2>
+            <p>Form controls for editing risk matrix data will be implemented based on user feedback.</p>
+          </div>
+        )}
+      </div>
+
+      {/* Preview Panel */}
+      <div className="w-2/3 overflow-auto" style={{ backgroundColor: '#f3f4f6' }}>
+        <div className="p-6">
+          {renderCurrentPage()}
+        </div>
+      </div>
+    </div>
+  );
+}

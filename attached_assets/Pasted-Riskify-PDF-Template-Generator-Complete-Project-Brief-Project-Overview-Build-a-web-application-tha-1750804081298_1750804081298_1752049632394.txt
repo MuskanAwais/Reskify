@@ -1,0 +1,84 @@
+Riskify PDF Template Generator - Complete Project Brief
+Project Overview
+Build a web application that generates pixel-perfect PDFs matching Figma designs for safety documents. Focus on creating ONE template that works 100% - the Safe Work Method Statement (SWMS) with live preview functionality.
+
+Core Requirements
+1. SWMS Template with Live Preview
+Single-page web application with split-screen interface
+Left panel: Form inputs for all SWMS data fields
+Right panel: Live preview that updates instantly as user types
+Must match Figma design exactly - zero deviation allowed
+Mobile responsive: stacked layout (form top 40%, preview bottom 60%)
+2. Required Form Fields
+Company Name
+Project Name, Number, Address
+Job Name and Number
+Start Date and Duration
+Date Created
+Principal Contractor
+Project Manager
+Site Supervisor
+Authorising Person Name and Position
+Scope of Works (large textarea)
+3. Technical Stack
+Simple HTML/CSS/JavaScript - no complex frameworks
+Node.js server (Express) OR Python HTTP server
+Server must bind to 0.0.0.0:3000 for Replit preview
+Mobile-first responsive design
+4. Design Specifications
+Riskify branding with green color scheme (#2c5530)
+Professional document layout matching safety standards
+Form styling: clean inputs with proper labels
+Preview styling: A4 document format with proper spacing
+Live preview scaling: 80% on desktop, 90% on mobile
+5. Preview Document Structure
+Header Section:
+- Riskify logo (left)
+- Company info (center) 
+- Company logo placeholder (right)
+Title: "Safe Work Method Statement" (large, centered, bordered)
+Project Information Section:
+- Two-column grid layout
+- Left column: Job details (name, number, address, dates)
+- Right column: Personnel (company, contractor, manager, supervisor, authorising person)
+Scope of Works Section:
+- Large text box with proper formatting
+- Support for bullet points and line breaks
+6. Live Preview Functionality
+Real-time updates: preview changes as user types
+No submit button needed for preview updates
+Use JavaScript event listeners (input, keyup, change)
+Update all preview elements that match form field IDs
+7. Sample Data (Pre-filled)
+Company Name: Riskify Construction
+Project Name: Office Building Construction  
+Project Number: PRJ-2025-001
+Project Address: 123 Construction Ave, Sydney NSW
+Job Name: Foundation & Concrete Works
+Job Number: JOB-001
+Start Date: 1st July 2025
+Duration: 6 weeks
+Date Created: 24th June 2025
+Principal Contractor: BuildCorp Construction Ltd
+Project Manager: John Smith
+Site Supervisor: Jane Doe
+Authorising Person: Sarah Wilson (WHS Manager)
+Scope of Works: Foundation excavation and concrete pouring works including:
+• Site preparation and excavation to specified depths
+• Installation of formwork and reinforcement steel
+• Concrete pouring and finishing
+• Quality control and testing procedures
+• Site safety measures and emergency procedures
+8. Critical Success Factors
+Preview must update instantly (no delays)
+Design must match Figma exactly
+Mobile layout must be fully functional
+Server must be accessible via Replit preview system
+Application must load properly in Replit's preview panel
+9. Server Requirements
+Serve index.html on root route (/)
+Health check endpoint (/health)
+Port 3000 bound to 0.0.0.0
+Proper error handling
+Instructions for the new Replit agent:
+"Build this Safe Work Method Statement editor exactly as specified. The previous implementation failed to work with Replit's preview system. Create a simple, working solution that displays properly in Replit's preview panel with live preview functionality that updates as users type."

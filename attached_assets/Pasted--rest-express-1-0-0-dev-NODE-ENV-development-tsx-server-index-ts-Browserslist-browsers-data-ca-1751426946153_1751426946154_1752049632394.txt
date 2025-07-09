@@ -1,0 +1,206 @@
+> rest-express@1.0.0 dev
+> NODE_ENV=development tsx server/index.ts
+
+Browserslist: browsers data (caniuse-lite) is 9 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+3:22:22 AM [vite] warning: Duplicate key "lineHeight" in object literal
+629|              color: '#6b7280',
+630|              fontFamily: 'Inter, system-ui, sans-serif',
+631|              lineHeight: '1.2'
+   |              ^
+632|            }}>
+633|                <div data-replit-metadata="client/src/pages/swms-complete.tsx:633:14" data-component-name="div" className="font-medium" style={{ color: '#374151' }}>{formData.companyName}</div>
+
+  Plugin: vite:esbuild
+  File: /home/runner/workspace/client/src/pages/swms-complete.tsx
+3:22:22 AM [vite] warning: Duplicate key "lineHeight" in object literal
+674|            fontFamily: 'Inter, system-ui, sans-serif',
+675|            lineHeight: '1.2',
+676|            lineHeight: '1.2'
+   |            ^
+677|          }}>
+678|              Project Information
+
+  Plugin: vite:esbuild
+  File: /home/runner/workspace/client/src/pages/swms-complete.tsx
+3:22:22 AM [vite] warning: Duplicate key "lineHeight" in object literal
+752|            fontFamily: 'Inter, system-ui, sans-serif',
+753|            lineHeight: '1.2',
+754|            lineHeight: '1.2'
+   |            ^
+755|          }}>
+756|              Scope of Works
+
+  Plugin: vite:esbuild
+  File: /home/runner/workspace/client/src/pages/swms-complete.tsx
+3:22:22 AM [vite] warning: Duplicate key "lineHeight" in object literal
+777|            fontFamily: 'Inter, system-ui, sans-serif',
+778|            lineHeight: '1.2',
+779|            lineHeight: '1.2'
+   |            ^
+780|          }}>
+781|              Review and Monitoring
+
+  Plugin: vite:esbuild
+  File: /home/runner/workspace/client/src/pages/swms-complete.tsx
+3:22:22 AM [vite] warning: Duplicate key "lineHeight" in object literal
+852|              color: '#6b7280',
+853|              fontFamily: 'Inter, system-ui, sans-serif',
+854|              lineHeight: '1.2'
+   |              ^
+855|            }}>
+856|                <div data-replit-metadata="client/src/pages/swms-complete.tsx:856:14" data-component-name="div" className="font-medium" style={{ color: '#374151' }}>{formData.companyName}</div>
+
+  Plugin: vite:esbuild
+  File: /home/runner/workspace/client/src/pages/swms-complete.tsx
+3:22:22 AM [vite] warning: Duplicate key "lineHeight" in object literal
+897|            fontFamily: 'Inter, system-ui, sans-serif',
+898|            lineHeight: '1.2',
+899|            lineHeight: '1.2'
+   |            ^
+900|          }}>
+901|              Emergency Information
+
+  Plugin: vite:esbuild
+  File: /home/runner/workspace/client/src/pages/swms-complete.tsx
+3:22:22 AM [vite] warning: Duplicate key "lineHeight" in object literal
+1008|              color: '#6b7280',
+1009|              fontFamily: 'Inter, system-ui, sans-serif',
+1010|              lineHeight: '1.2'
+   |              ^
+1011|            }}>
+1012|                <div data-replit-metadata="client/src/pages/swms-complete.tsx:1012:14" data-component-name="div" className="font-medium" style={{ color: '#374151' }}>{formData.companyName}</div>
+
+  Plugin: vite:esbuild
+  File: /home/runner/workspace/client/src/pages/swms-complete.tsx
+3:22:22 AM [vite] warning: Duplicate key "lineHeight" in object literal
+1053|            fontFamily: 'Inter, system-ui, sans-serif',
+1054|            lineHeight: '1.2',
+1055|            lineHeight: '1.2'
+   |            ^
+1056|          }}>
+1057|              High Risk Activities
+
+  Plugin: vite:esbuild
+  File: /home/runner/workspace/client/src/pages/swms-complete.tsx
+3:22:22 AM [vite] warning: Duplicate key "lineHeight" in object literal
+1140|              color: '#6b7280',
+1141|              fontFamily: 'Inter, system-ui, sans-serif',
+1142|              lineHeight: '1.2'
+   |              ^
+1143|            }}>
+1144|                <div data-replit-metadata="client/src/pages/swms-complete.tsx:1144:14" data-component-name="div" className="font-medium" style={{ color: '#374151' }}>{formData.companyName}</div>
+
+  Plugin: vite:esbuild
+  File: /home/runner/workspace/client/src/pages/swms-complete.tsx
+3:22:22 AM [vite] warning: Duplicate key "lineHeight" in object literal
+1185|            fontFamily: 'Inter, system-ui, sans-serif',
+1186|            lineHeight: '1.2',
+1187|            lineHeight: '1.2'
+   |            ^
+1188|          }}>
+1189|              Construction Control Risk Matrix
+
+  Plugin: vite:esbuild
+  File: /home/runner/workspace/client/src/pages/swms-complete.tsx
+3:22:22 AM [vite] warning: Duplicate key "lineHeight" in object literal
+1439|                    color: '#6b7280',
+1440|                    fontFamily: 'Inter, system-ui, sans-serif',
+1441|                    lineHeight: '1.2'
+   |                    ^
+1442|                  }}>
+1443|                      <div data-replit-metadata="client/src/pages/swms-complete.tsx:1443:20" data-component-name="div" className="font-medium" style={{ color: '#374151' }}>{formData.companyName}</div>
+
+  Plugin: vite:esbuild
+  File: /home/runner/workspace/client/src/pages/swms-complete.tsx
+3:22:22 AM [vite] warning: Duplicate key "lineHeight" in object literal
+1472|                  fontFamily: 'Inter, system-ui, sans-serif',
+1473|                  lineHeight: '1.2',
+1474|                  lineHeight: '1.2'
+   |                  ^
+1475|                }}>
+1476|                    Work Activities & Risk Assessment
+
+  Plugin: vite:esbuild
+  File: /home/runner/workspace/client/src/pages/swms-complete.tsx
+3:22:22 AM [vite] warning: Duplicate key "lineHeight" in object literal
+1611|              color: '#6b7280',
+1612|              fontFamily: 'Inter, system-ui, sans-serif',
+1613|              lineHeight: '1.2'
+   |              ^
+1614|            }}>
+1615|                <div data-replit-metadata="client/src/pages/swms-complete.tsx:1615:14" data-component-name="div" className="font-medium" style={{ color: '#374151' }}>{formData.companyName}</div>
+
+  Plugin: vite:esbuild
+  File: /home/runner/workspace/client/src/pages/swms-complete.tsx
+3:22:22 AM [vite] warning: Duplicate key "lineHeight" in object literal
+1656|            fontFamily: 'Inter, system-ui, sans-serif',
+1657|            lineHeight: '1.2',
+1658|            lineHeight: '1.2'
+   |            ^
+1659|          }}>
+1660|              Work Activities & Risk Assessment
+
+  Plugin: vite:esbuild
+  File: /home/runner/workspace/client/src/pages/swms-complete.tsx
+3:22:22 AM [vite] warning: Duplicate key "lineHeight" in object literal
+1777|              color: '#6b7280',
+1778|              fontFamily: 'Inter, system-ui, sans-serif',
+1779|              lineHeight: '1.2'
+   |              ^
+1780|            }}>
+1781|                <div data-replit-metadata="client/src/pages/swms-complete.tsx:1781:14" data-component-name="div" className="font-medium" style={{ color: '#374151' }}>{formData.companyName}</div>
+
+  Plugin: vite:esbuild
+  File: /home/runner/workspace/client/src/pages/swms-complete.tsx
+3:22:22 AM [vite] warning: Duplicate key "lineHeight" in object literal
+1822|            fontFamily: 'Inter, system-ui, sans-serif',
+1823|            lineHeight: '1.2',
+1824|            lineHeight: '1.2'
+   |            ^
+1825|          }}>
+1826|              Personal Protective Equipment (PPE)
+
+  Plugin: vite:esbuild
+  File: /home/runner/workspace/client/src/pages/swms-complete.tsx
+3:22:22 AM [vite] warning: Duplicate key "lineHeight" in object literal
+1906|              color: '#6b7280',
+1907|              fontFamily: 'Inter, system-ui, sans-serif',
+1908|              lineHeight: '1.2'
+   |              ^
+1909|            }}>
+1910|                <div data-replit-metadata="client/src/pages/swms-complete.tsx:1910:14" data-component-name="div" className="font-medium" style={{ color: '#374151' }}>{formData.companyName}</div>
+
+  Plugin: vite:esbuild
+  File: /home/runner/workspace/client/src/pages/swms-complete.tsx
+3:22:22 AM [vite] warning: Duplicate key "lineHeight" in object literal
+1951|            fontFamily: 'Inter, system-ui, sans-serif',
+1952|            lineHeight: '1.2',
+1953|            lineHeight: '1.2'
+   |            ^
+1954|          }}>
+1955|              Plant & Equipment
+
+  Plugin: vite:esbuild
+  File: /home/runner/workspace/client/src/pages/swms-complete.tsx
+3:22:22 AM [vite] warning: Duplicate key "lineHeight" in object literal
+2107|              color: '#6b7280',
+2108|              fontFamily: 'Inter, system-ui, sans-serif',
+2109|              lineHeight: '1.2'
+   |              ^
+2110|            }}>
+2111|                <div data-replit-metadata="client/src/pages/swms-complete.tsx:2111:14" data-component-name="div" className="font-medium" style={{ color: '#374151' }}>{formData.companyName}</div>
+
+  Plugin: vite:esbuild
+  File: /home/runner/workspace/client/src/pages/swms-complete.tsx
+3:22:22 AM [vite] warning: Duplicate key "lineHeight" in object literal
+2152|            fontFamily: 'Inter, system-ui, sans-serif',
+2153|            lineHeight: '1.2',
+2154|            lineHeight: '1.2'
+   |            ^
+2155|          }}>
+2156|              Sign In Register
+
+  Plugin: vite:esbuild
+  File: /home/runner/workspace/client/src/pages/swms-complete.tsx
