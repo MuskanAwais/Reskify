@@ -1,4 +1,4 @@
-import { RiskBadgeNew } from "./RiskBadgeNew";
+import RiskBadgeNew from "./RiskBadgeNew";
 
 interface DocumentPreviewProps {
   formData: any;

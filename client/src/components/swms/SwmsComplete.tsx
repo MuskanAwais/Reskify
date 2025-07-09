@@ -6,12 +6,16 @@ import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { PDFDocument } from 'pdf-lib';
 import { Document, Page, Text, View, StyleSheet, PDFDownloadLink, pdf as reactPdf, Image } from '@react-pdf/renderer';
-import { RiskBadgeNew } from "./RiskBadgeNew";
+import RiskBadgeNew from "./RiskBadgeNew";
 
 type DocumentPage = 'project-info' | 'emergency-info' | 'high-risk-activities' | 'risk-matrix' | 'work-activities' | 'ppe' | 'plant-equipment' | 'msds' | 'sign-in';
 
-export default function SwmsComplete() {
-  const [formData, setFormData] = useState<SwmsFormData>(defaultSwmsData);
+interface SwmsCompleteProps {
+  initialData?: SwmsFormData;
+}
+
+export default function SwmsComplete({ initialData }: SwmsCompleteProps) {
+  const [formData, setFormData] = useState<SwmsFormData>(initialData || defaultSwmsData);
   const [currentPage, setCurrentPage] = useState<DocumentPage>('project-info');
   const [currentWorkActivitiesPageIndex, setCurrentWorkActivitiesPageIndex] = useState(0);
   const [currentSignInPageIndex, setCurrentSignInPageIndex] = useState(0);
@@ -148,7 +152,7 @@ export default function SwmsComplete() {
 
   const generatePdf = async () => {
     try {
-      const doc = <PDFDocument formData={formData} />;
+      const doc = <PDFDocumentComponent formData={formData} />;
       const pdfBlob = await reactPdf(doc).toBlob();
       const url = URL.createObjectURL(pdfBlob);
       const a = document.createElement('a');
@@ -165,7 +169,7 @@ export default function SwmsComplete() {
     try {
       console.log('Starting final PDF generation...');
       
-      const doc = <PDFDocument formData={formData} />;
+      const doc = <PDFDocumentComponent formData={formData} />;
       const pdfBlob = await reactPdf(doc).toBlob();
       
       const url = URL.createObjectURL(pdfBlob);
@@ -547,7 +551,7 @@ export default function SwmsComplete() {
 }
 
 // PDF Document Component
-const PDFDocument: React.FC<{ formData: SwmsFormData }> = ({ formData }) => (
+const PDFDocumentComponent: React.FC<{ formData: SwmsFormData }> = ({ formData }) => (
   <Document>
     <Page size="A4" orientation="landscape" style={styles.page}>
       <View style={styles.header}>
