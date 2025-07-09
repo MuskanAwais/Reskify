@@ -1,0 +1,564 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Force override for risk badges - use flexbox for perfect centering */
+.risk-badge-override,
+span[style*="background-color"]:not([class]) {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 10px !important;
+  color: #ffffff !important;
+  font-weight: 500 !important;
+  width: 70px !important;
+  height: 24px !important;
+  border-radius: 4px !important;
+  font-family: 'Inter', Arial, sans-serif !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+  box-sizing: border-box !important;
+  text-align: center !important;
+}
+
+/* Center all text in risk matrix tables - FORCE FOR PDF CAPTURE */
+table td,
+table th {
+  text-align: center !important;
+}
+
+/* Extra strong centering for PDF capture */
+.print-page table td,
+.print-page table th {
+  text-align: center !important;
+  vertical-align: middle !important;
+}
+
+/* Force center for all table content during PDF capture */
+[data-component-name="risk-matrix"] td,
+[data-component-name="risk-matrix"] th,
+.risk-matrix td,
+.risk-matrix th {
+  text-align: center !important;
+  vertical-align: middle !important;
+}
+
+/* PDF-specific table centering */
+.page-break table td,
+.page-break table th {
+  text-align: center !important;
+  vertical-align: middle !important;
+}
+
+/* Ultra-strong PDF centering for risk matrix cells */
+div[style*="backgroundColor"] {
+  text-align: center !important;
+  vertical-align: middle !important;
+  line-height: 1 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Risk matrix specific PDF centering */
+.risk-matrix-table div {
+  text-align: center !important;
+  vertical-align: middle !important;
+  line-height: 1 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Specific centering for risk matrix content */
+[data-component-name="risk-matrix"] table td,
+[data-component-name="risk-matrix"] table th,
+.risk-matrix table td,
+.risk-matrix table th {
+  text-align: center !important;
+  vertical-align: middle !important;
+}
+
+/* Force center for all badge content regardless of container */
+.bg-red-500,
+.bg-orange-500,
+.bg-yellow-500,
+.bg-green-500,
+span[style*="background-color: #dc2626"],
+span[style*="background-color: #ea580c"],
+span[style*="background-color: #eab308"],
+span[style*="background-color: #22c55e"] {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+}
+
+/* Ultra-specific badge text centering with highest priority */
+.risk-badge-override *,
+span[style*="background-color"]:not([class]) * {
+  text-align: center !important;
+  vertical-align: middle !important;
+  line-height: 1 !important;
+}
+
+/* Enhanced centering for all risk badge variations */
+div[style*="background-color: #dc2626"],
+div[style*="background-color: #ea580c"], 
+div[style*="background-color: #eab308"],
+div[style*="background-color: #22c55e"] {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  vertical-align: middle !important;
+  line-height: 1 !important;
+}
+
+/* PDF capture badge centering - ultra-high priority */
+.page-content span[style*="background-color"],
+.page-content div[style*="background-color"] {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  vertical-align: middle !important;
+  line-height: 1 !important;
+}
+
+/* Work activities table specific styling */
+.work-activities-table td,
+.work-activities-table th {
+  vertical-align: top !important;
+  padding-top: 6px !important;
+}
+
+/* Plant equipment table specific styling */
+.plant-equipment-table td,
+.plant-equipment-table th {
+  vertical-align: top !important;
+  padding-top: 6px !important;
+}
+
+/* Badge alignment fix for all tables */
+table td span[style*="background-color"],
+table td div[style*="background-color"] {
+  vertical-align: top !important;
+  margin-top: 0 !important;
+  display: inline-block !important;
+  text-align: center !important;
+}
+
+/* Risk matrix color cell centering */
+.risk-matrix-table td[style*="background-color"] {
+  text-align: center !important;
+  vertical-align: middle !important;
+}
+
+.risk-matrix-table td[style*="background-color"] div {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 100% !important;
+  text-align: center !important;
+}
+
+/* Comprehensive badge styling for all variations */
+span.risk-badge-override,
+div.risk-badge-override,
+[class*="risk-badge"],
+span[style*="background-color: #dc2626"],
+span[style*="background-color: #ea580c"],
+span[style*="background-color: #eab308"],
+span[style*="background-color: #22c55e"],
+div[style*="background-color: #dc2626"],
+div[style*="background-color: #ea580c"],
+div[style*="background-color: #eab308"],
+div[style*="background-color: #22c55e"] {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  vertical-align: top !important;
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  color: #ffffff !important;
+  border-radius: 4px !important;
+  font-family: 'Inter', Arial, sans-serif !important;
+  white-space: nowrap !important;
+  box-sizing: border-box !important;
+  line-height: 1 !important;
+  width: 70px !important;
+  height: 24px !important;
+}
+
+/* Table cell background override for PDF capture */
+table td {
+  background-color: white !important;
+}
+
+table th {
+  background-color: #f9fafb !important;
+}
+
+/* Page content styling */
+.page-content {
+  background-color: white;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+/* Watermark styling */
+.page-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 50px,
+    rgba(0,0,0,0.02) 50px,
+    rgba(0,0,0,0.02) 100px
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Enhanced table styling for professional appearance */
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 11px;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+table td,
+table th {
+  border: 1px solid #e5e7eb;
+  padding: 8px;
+  text-align: left;
+  vertical-align: top;
+}
+
+table th {
+  background-color: #f9fafb;
+  font-weight: 600;
+  color: #1f2937;
+  text-align: center;
+}
+
+/* Signature styling */
+.signature-field {
+  font-family: 'Dancing Script', cursive;
+  font-size: 18px;
+  font-weight: 600;
+  border-bottom: 2px solid #374151;
+  min-height: 40px;
+  padding: 8px 12px;
+  color: #1f2937;
+}
+
+/* Company logo placeholder */
+.logo-placeholder {
+  border: 2px dashed #d1d5db;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 11px;
+  color: #9ca3af;
+  background-color: #f9fafb;
+}
+
+/* Header styling consistency */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 40px;
+  position: relative;
+  z-index: 10;
+}
+
+.page-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #1f2937;
+  font-family: 'Inter', system-ui, sans-serif;
+  line-height: 1.2;
+}
+
+.company-info {
+  font-size: 13px;
+  line-height: 18px;
+  color: #6b7280;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.company-info .company-name {
+  font-weight: 500;
+  color: #374151;
+}
+
+/* Card styling */
+.info-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.info-card h2,
+.info-card h3 {
+  color: #1f2937;
+  margin-bottom: 16px;
+}
+
+.info-card h2 {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.info-card h3 {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* Grid layouts */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.info-grid-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.info-grid-item label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 4px;
+}
+
+.info-grid-item .value {
+  font-size: 14px;
+  color: #1f2937;
+}
+
+/* Alert styling */
+.alert {
+  padding: 16px;
+  border-radius: 8px;
+  margin: 16px 0;
+}
+
+.alert-warning {
+  background-color: #fef3c7;
+  border: 1px solid #f59e0b;
+  color: #92400e;
+}
+
+.alert-info {
+  background-color: #dbeafe;
+  border: 1px solid #3b82f6;
+  color: #1e40af;
+}
+
+.alert-success {
+  background-color: #d1fae5;
+  border: 1px solid #10b981;
+  color: #047857;
+}
+
+/* Print-specific styles */
+@media print {
+  .page-content {
+    margin: 0;
+    padding: 0;
+    box-shadow: none;
+  }
+  
+  .no-print {
+    display: none !important;
+  }
+  
+  table {
+    page-break-inside: avoid;
+  }
+  
+  tr {
+    page-break-inside: avoid;
+  }
+  
+  .page-break {
+    page-break-before: always;
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .page-title {
+    font-size: 20px;
+  }
+  
+  table {
+    font-size: 10px;
+  }
+  
+  table td,
+  table th {
+    padding: 4px;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .page-content {
+    background-color: #1f2937;
+    color: #f9fafb;
+  }
+  
+  .info-card {
+    background-color: #374151;
+    border-color: #4b5563;
+  }
+  
+  table th {
+    background-color: #374151;
+    color: #f9fafb;
+  }
+  
+  table td {
+    background-color: #1f2937 !important;
+    color: #f9fafb;
+    border-color: #4b5563;
+  }
+}
+
+/* Animation for smooth transitions */
+.page-transition {
+  transition: all 0.3s ease-in-out;
+}
+
+/* Focus states for accessibility */
+button:focus,
+input:focus,
+select:focus,
+textarea:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Loading states */
+.loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid #3b82f6;
+  border-radius: 50%;
+  border-top-color: transparent;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Status indicators */
+.status-required {
+  background-color: #fef2f2;
+  color: #dc2626;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.status-optional {
+  background-color: #fef3c7;
+  color: #d97706;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.status-completed {
+  background-color: #d1fae5;
+  color: #065f46;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Final PDF optimization styles */
+.pdf-optimized {
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+  color-adjust: exact;
+}
+
+.pdf-optimized table td,
+.pdf-optimized table th {
+  background-color: white !important;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.pdf-optimized .risk-badge-override,
+.pdf-optimized span[style*="background-color"],
+.pdf-optimized div[style*="background-color"] {
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+  color-adjust: exact;
+}

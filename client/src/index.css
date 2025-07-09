@@ -30,6 +30,251 @@ table th {
   text-align: center !important;
 }
 
+/* Extra strong centering for PDF capture */
+.print-page table td,
+.print-page table th {
+  text-align: center !important;
+  vertical-align: middle !important;
+}
+
+/* Force center for all table content during PDF capture */
+[data-component-name="risk-matrix"] td,
+[data-component-name="risk-matrix"] th,
+.risk-matrix td,
+.risk-matrix th {
+  text-align: center !important;
+  vertical-align: middle !important;
+}
+
+/* PDF-specific table centering */
+.page-break table td,
+.page-break table th {
+  text-align: center !important;
+  vertical-align: middle !important;
+}
+
+/* Ultra-strong PDF centering for risk matrix cells */
+div[style*="backgroundColor"] {
+  text-align: center !important;
+  vertical-align: middle !important;
+  line-height: 1 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Work activities table specific styling */
+.work-activities-table td,
+.work-activities-table th {
+  vertical-align: top !important;
+  padding-top: 6px !important;
+}
+
+/* Plant equipment table specific styling */
+.plant-equipment-table td,
+.plant-equipment-table th {
+  vertical-align: top !important;
+  padding-top: 6px !important;
+}
+
+/* Badge alignment fix for all tables */
+table td span[style*="background-color"],
+table td div[style*="background-color"] {
+  vertical-align: top !important;
+  margin-top: 0 !important;
+  display: inline-block !important;
+  text-align: center !important;
+}
+
+/* Risk matrix color cell centering */
+.risk-matrix-table td[style*="background-color"] {
+  text-align: center !important;
+  vertical-align: middle !important;
+}
+
+.risk-matrix-table td[style*="background-color"] div {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 100% !important;
+  text-align: center !important;
+}
+
+/* Page content styling */
+.page-content {
+  background-color: white;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+/* Watermark styling */
+.page-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 50px,
+    rgba(0,0,0,0.02) 50px,
+    rgba(0,0,0,0.02) 100px
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Enhanced table styling for professional appearance */
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 11px;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+table td,
+table th {
+  border: 1px solid #e5e7eb;
+  padding: 8px;
+  text-align: left;
+  vertical-align: top;
+}
+
+table th {
+  background-color: #f9fafb;
+  font-weight: 600;
+  color: #1f2937;
+  text-align: center;
+}
+
+/* Signature styling */
+.signature-field {
+  font-family: 'Dancing Script', cursive;
+  font-size: 18px;
+  font-weight: 600;
+  border-bottom: 2px solid #374151;
+  min-height: 40px;
+  padding: 8px 12px;
+  color: #1f2937;
+}
+
+/* Company logo placeholder */
+.logo-placeholder {
+  border: 2px dashed #d1d5db;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 11px;
+  color: #9ca3af;
+  background-color: #f9fafb;
+}
+
+/* Header styling consistency */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 40px;
+  position: relative;
+  z-index: 10;
+}
+
+.page-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #1f2937;
+  font-family: 'Inter', system-ui, sans-serif;
+  line-height: 1.2;
+}
+
+.company-info {
+  font-size: 13px;
+  line-height: 18px;
+  color: #6b7280;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.company-info .company-name {
+  font-weight: 500;
+  color: #374151;
+}
+
+/* Card styling */
+.info-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.info-card h2,
+.info-card h3 {
+  color: #1f2937;
+  margin-bottom: 16px;
+}
+
+.info-card h2 {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.info-card h3 {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* Grid layouts */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.info-grid-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.info-grid-item label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 4px;
+}
+
+.info-grid-item .value {
+  font-size: 14px;
+  color: #1f2937;
+}
+
+/* Force override for risk badges - use flexbox for perfect centering */
+.risk-badge-override,
+span[style*="background-color"]:not([class]) {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 10px !important;
+  color: #ffffff !important;
+  font-weight: 500 !important;
+  width: 70px !important;
+  height: 24px !important;
+  border-radius: 4px !important;
+  font-family: 'Inter', Arial, sans-serif !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+  box-sizing: border-box !important;
+  text-align: center !important;
+}
+
+/* Center all text in risk matrix tables - FORCE FOR PDF CAPTURE */
+table td,
+table th {
+  text-align: center !important;
+}
+
 /* Custom cursive font for signatures */
 .font-cursive {
   font-family: 'Dancing Script', cursive;

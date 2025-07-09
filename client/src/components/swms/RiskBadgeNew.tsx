@@ -1,52 +1,46 @@
 import React from 'react';
 
 interface RiskBadgeProps {
-  level: 'extreme' | 'high' | 'medium' | 'low';
-  score?: number;
-  className?: string;
+  level: string;
+  score: number;
 }
 
-export const RiskBadgeNew: React.FC<RiskBadgeProps> = ({ 
-  level, 
-  score, 
-  className = "" 
-}) => {
-  const getBackgroundColor = () => {
-    switch (level) {
-      case 'extreme':
-        return '#dc2626'; // red-600
-      case 'high':
-        return '#ea580c'; // orange-600
-      case 'medium':
-        return '#eab308'; // yellow-500
-      case 'low':
-        return '#22c55e'; // green-500
-      default:
-        return '#6b7280'; // gray-500
+export const RiskBadgeNew: React.FC<RiskBadgeProps> = ({ level, score }) => {
+  const getBackgroundColor = (riskLevel: string) => {
+    switch (riskLevel?.toLowerCase()) {
+      case 'extreme': return '#ef4444';
+      case 'high': return '#f97316';
+      case 'medium': return '#eab308';
+      case 'low': return '#22c55e';
+      default: return '#22c55e';
     }
   };
 
-  const getText = () => {
-    const baseText = level.charAt(0).toUpperCase() + level.slice(1);
-    return score ? `${baseText} (${score})` : baseText;
-  };
+  const capitalizedLevel = level ? level.charAt(0).toUpperCase() + level.slice(1) : 'Low';
 
   return (
-    <span
-      className={`risk-badge-override inline-flex items-center justify-center text-white font-medium text-xs px-2 py-1 rounded ${className}`}
+    <span 
+      className="risk-badge-override"
       style={{
-        backgroundColor: getBackgroundColor(),
-        minWidth: '70px',
+        backgroundColor: getBackgroundColor(level),
+        color: '#ffffff',
         height: '24px',
+        width: '70px',
         fontSize: '10px',
-        fontWeight: '500',
+        display: 'inline-block',
+        textAlign: 'center',
+        verticalAlign: 'top',
+        borderRadius: '4px',
+        fontWeight: '600',
         fontFamily: 'Inter, Arial, sans-serif',
-        lineHeight: '1',
         whiteSpace: 'nowrap',
-        textAlign: 'center'
+        boxSizing: 'border-box',
+        lineHeight: 1,
+        paddingTop: '3px'
       }}
+      key={`badge-${Date.now()}-${Math.random()}`}
     >
-      {getText()}
+      {capitalizedLevel} ({score})
     </span>
   );
 };
