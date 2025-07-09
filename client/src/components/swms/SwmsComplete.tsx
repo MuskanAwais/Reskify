@@ -6,14 +6,20 @@ import { RiskBadgeNew } from './RiskBadgeNew';
 
 type DocumentPage = 'project-info' | 'emergency-info' | 'high-risk-activities' | 'risk-matrix' | 'work-activities' | 'ppe' | 'plant-equipment' | 'sign-in';
 
-// Riskify Logo - Using high-resolution PNG from attachment
+// Riskify Logo - Recreated based on attachment 2
 const RiskifyLogo = () => (
   <div className="flex items-center space-x-3">
-    <img 
-      src="/attached_assets/Screenshot 2025-07-09 at 6.06.07 pm_1752048370478.png" 
-      alt="Riskify Logo" 
-      className="h-12 w-auto object-contain"
-    />
+    <div className="flex items-center space-x-2">
+      <div className="w-8 h-8 bg-emerald-600 rounded flex items-center justify-center">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M10 4L16 14H4L10 4Z" fill="white"/>
+        </svg>
+      </div>
+      <div>
+        <div className="text-xl font-bold text-gray-900">Riskify</div>
+        <div className="text-xs text-gray-600">AI SWMS Generator</div>
+      </div>
+    </div>
   </div>
 );
 
