@@ -1,1483 +1,925 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from "react";
+import type { SwmsFormData } from "@shared/schema";
+import { defaultSwmsData } from "@shared/schema";
+import riskifyLogo from '@assets/slogan-6_1750823980552_1752049795839.png';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
-import { pdf, Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
-import { RiskBadgeNew } from './RiskBadgeNew';
+import { PDFDocument } from 'pdf-lib';
+import { Document, Page, Text, View, StyleSheet, PDFDownloadLink, pdf as reactPdf, Image } from '@react-pdf/renderer';
+import { RiskBadgeNew } from "./RiskBadgeNew";
 
-type DocumentPage = 'project-info' | 'emergency-info' | 'high-risk-activities' | 'risk-matrix' | 'work-activities' | 'ppe' | 'plant-equipment' | 'sign-in';
+type DocumentPage = 'project-info' | 'emergency-info' | 'high-risk-activities' | 'risk-matrix' | 'work-activities' | 'ppe' | 'plant-equipment' | 'msds' | 'sign-in';
 
-// Riskify Logo - Recreated based on attachment 2
-const RiskifyLogo = () => (
-  <div className="flex items-center space-x-3">
-    <div className="flex items-center space-x-2">
-      <div className="w-8 h-8 bg-emerald-600 rounded flex items-center justify-center">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M10 4L16 14H4L10 4Z" fill="white"/>
-        </svg>
-      </div>
-      <div>
-        <div className="text-xl font-bold text-gray-900">Riskify</div>
-        <div className="text-xs text-gray-600">AI SWMS Generator</div>
-      </div>
-    </div>
-  </div>
-);
-
-// Page Watermark Component
-const PageWatermark = ({ formData }: { formData: any }) => (
-  <div className="absolute inset-0 pointer-events-none z-0 opacity-[0.08] overflow-hidden">
-    {/* Main center watermark */}
-    <div className="absolute inset-0 flex flex-col justify-center items-center text-gray-600 text-2xl font-bold transform rotate-[-25deg] select-none">
-      <div className="text-center space-y-3">
-        <div>{formData.projectName || formData.jobName || 'Project Name'}</div>
-        <div>{formData.projectNumber || formData.jobNumber || 'Project Number'}</div>
-        <div>{formData.projectAddress || 'Project Address'}</div>
-      </div>
-    </div>
-    {/* Repeated watermark pattern covering entire page */}
-    <div className="absolute inset-0">
-      {Array.from({ length: 12 }).map((_, i) => (
-        <div 
-          key={i} 
-          className="absolute text-gray-500 text-lg font-semibold transform rotate-[-25deg] select-none"
-          style={{
-            top: `${(i % 4) * 25}%`,
-            left: `${Math.floor(i / 4) * 33}%`,
-            transform: 'rotate(-25deg) translate(-50%, -50%)'
-          }}
-        >
-          <div className="text-center space-y-1">
-            <div>{formData.projectName || formData.jobName || 'Project Name'}</div>
-            <div>{formData.projectNumber || formData.jobNumber || 'Project Number'}</div>
-            <div>{formData.projectAddress || 'Project Address'}</div>
-          </div>
-        </div>
-      ))}
-    </div>
-  </div>
-);
-
-// Default form data
-const defaultFormData = {
-  companyName: 'Test Company Name',
-  projectName: 'Test Project Name',
-  projectNumber: '123 456',
-  projectAddress: '123 Sample Job Address',
-  jobName: 'Test Project Name',
-  jobNumber: '123 456',
-  startDate: '12th July 2025',
-  duration: '8 Weeks',
-  dateCreated: '23rd June 2025',
-  principalContractor: 'Test Principal Contractor',
-  projectManager: 'Test Project Manager Name',
-  siteSupervisor: 'Test Project Supervisor',
-  authorisingPerson: 'Test authorising person name',
-  authorisingPosition: 'Test authorising person position',
-  authorisingSignature: null,
-  scopeOfWorks: 'Sample scope of works description',
-  reviewAndMonitoring: 'This SWMS will be reviewed and updated whenever changes occur to scope, method, or risk levels. The site supervisor is responsible for initiating this review. All workers will be consulted on this SWMS during the pre-start meeting. Updates will be communicated verbally and via toolbox talks.',
-  companyLogo: null,
-  
-  // Emergency Information
-  emergencyContacts: [
-    'Emergency Contact 01 Name - 0499 999 999',
-    'Emergency Contact 02 Name - 0499 999 999',
-    'Emergency Contact 03 Name - 0499 999 999'
-  ],
-  emergencyProcedures: 'Sample procedure information here',
-  emergencyMonitoring: 'Emergency procedures will be reviewed monthly and updated as needed. Site supervisor will conduct weekly checks of emergency equipment and contact details. All personnel will be trained on emergency procedures during induction and refresher training every 6 months.',
-  
-  // High Risk Activities
-  highRiskActivities: [
-    { name: 'Work on a telecommunication tower', selected: false },
-    { name: 'Risk of a person falling more than 2 metres (e.g. work on ladders, scaffolding, roofs, etc.)', selected: true },
-    { name: 'Work involving demolition of an element that is load-bearing or otherwise related to the physical integrity of the structure', selected: true },
-    { name: 'Work involving the disturbance of asbestos', selected: true },
-    { name: 'Work involving structural alterations or repairs that require temporary support to prevent collapse', selected: false },
-    { name: 'Work carried out in or near a confined space', selected: false },
-    { name: 'Work carried out in or near a shaft or trench deeper than 1.5 metres or a tunnel', selected: false },
-    { name: 'Work involving the use of explosives', selected: false },
-    { name: 'Work on or near pressurised gas distribution mains or piping', selected: false },
-    { name: 'Work on or near chemical, fuel or refrigerant lines', selected: false },
-    { name: 'Work on or near energised electrical installations or services (includes live electrical work)', selected: false },
-    { name: 'Work in an area that may have a contaminated or flammable atmosphere', selected: false },
-    { name: 'Work involving tilt-up or precast concrete elements', selected: false },
-    { name: 'Work carried out, in or adjacent to a road, railway, or other traffic corridor that is in use', selected: false },
-    { name: 'Work in an area at a workplace in which there is any movement of powered mobile plant (e.g. forklifts, excavators, cranes)', selected: false },
-    { name: 'Work in areas where there are artificial extremes of temperature (e.g. cold rooms, furnace areas)', selected: false },
-    { name: 'Work carries out in or near water or other liquid that involves a risk of drowning', selected: false },
-    { name: 'Work carried out on or near live electrical conductors', selected: false }
-  ],
-  
-  // Work Activities
-  workActivities: [
-    {
-      id: 1,
-      activity: 'Activity description in detail sample 01',
-      hazards: [
-        'Hazard description 01',
-        'Hazard description 02 this is an extended description',
-        'Hazard description 03',
-        'Hazard description 04',
-        'Hazard description 05',
-        'Hazard description 06 this is an extended description',
-        'Hazard description 07',
-        'Hazard description 08'
-      ],
-      initialRisk: 'Extreme (16)',
-      controlMeasures: [
-        'Hazard description 01',
-        'Hazard description 02 this is an extended description',
-        'Hazard description 03',
-        'Hazard description 04',
-        'Hazard description 05',
-        'Hazard description 06 this is an extended description',
-        'Hazard description 07',
-        'Hazard description 08'
-      ],
-      residualRisk: 'Medium (6)',
-      legislation: [
-        'Legislation description 01',
-        'Legislation description 02 this is an extended description'
-      ]
-    },
-    {
-      id: 2,
-      activity: 'Activity description in detail sample 02',
-      hazards: [
-        'Hazard description 01',
-        'Hazard description 02 this is an extended description',
-        'Hazard description 03',
-        'Hazard description 04',
-        'Hazard description 05',
-        'Hazard description 06 this is an extended description',
-        'Hazard description 07',
-        'Hazard description 08'
-      ],
-      initialRisk: 'High (12)',
-      controlMeasures: [
-        'Hazard description 01',
-        'Hazard description 02 this is an extended description',
-        'Hazard description 03',
-        'Hazard description 04',
-        'Hazard description 05',
-        'Hazard description 06 this is an extended description',
-        'Hazard description 07',
-        'Hazard description 08'
-      ],
-      residualRisk: 'Low (4)',
-      legislation: [
-        'Legislation description 01',
-        'Legislation description 02 this is an extended description'
-      ]
-    }
-  ],
-  
-  // PPE Items
-  ppeItems: [
-    { name: 'Hard Hat', description: 'Head protection from falling objects', selected: false },
-    { name: 'Hi-Vis Vest/Shirt', description: 'Visibility on site', selected: true },
-    { name: 'Steel Cap Boots', description: 'Foot protection from impact or puncture', selected: false },
-    { name: 'Safety Glasses', description: 'Eye protection', selected: true },
-    { name: 'Gloves', description: 'General hand protection', selected: false },
-    { name: 'Hearing Protection', description: 'Earplugs or earmuffs', selected: false },
-    { name: 'Long Pants', description: 'Protection from abrasions and minor cuts', selected: false },
-    { name: 'Long Sleeve Shirt', description: 'Arm protection from scratches and UV', selected: true },
-    { name: 'Safety Harness', description: 'Fall protection for work at heights', selected: false },
-    { name: 'Sun Protection (Hat, Sunscreen)', description: 'UV exposure control', selected: false },
-    { name: 'Fall Arrest Harness', description: 'Working at heights', selected: false },
-    { name: 'Confined Space Breathing Apparatus', description: 'Confined spaces or poor air quality', selected: true },
-    { name: 'Welding Helmet & Gloves', description: 'Welding tasks', selected: false },
-    { name: 'Cut-Resistant Gloves', description: 'Blade or glass handling', selected: false },
-    { name: 'Face Shield', description: 'High-impact or chemical splash risk', selected: false },
-    { name: 'Respirator (Half/Full Face)', description: 'Hazardous fumes, chemicals, or dust', selected: true },
-    { name: 'Chemical-Resistant Apron', description: 'Handling corrosive substances', selected: false },
-    { name: 'Anti-Static Clothing', description: 'Electrical or explosive environments', selected: false },
-    { name: 'Insulated Gloves', description: 'Live electrical work', selected: false },
-    { name: 'Emergency Eyewash', description: 'First aid for chemical exposure', selected: false }
-  ],
-  
-  // Plant Equipment
-  plantEquipment: [
-    {
-      equipment: 'Excavator',
-      model: 'CAT 320D',
-      serialNumber: '12345',
-      riskLevel: 'High',
-      nextInspection: '2024-12-01',
-      certification: 'Yes'
-    },
-    {
-      equipment: 'Forklift',
-      model: 'Toyota 8FBU25',
-      serialNumber: '67890',
-      riskLevel: 'Medium',
-      nextInspection: '2024-11-15',
-      certification: 'Yes'
-    },
-    {
-      equipment: 'Scaffolding',
-      model: 'Layher Allround',
-      serialNumber: 'ABC123',
-      riskLevel: 'High',
-      nextInspection: '2024-10-30',
-      certification: 'Yes'
-    }
-  ],
-  
-  // Sign In Register
-  signInEntries: []
-};
-
-// Header component with updated layout as requested
-const SWMSHeader = ({ formData, onUpdate }: { formData: any, onUpdate: (field: string, value: any) => void }) => (
-  <div className="flex justify-between items-start mb-8 border-b border-gray-200 pb-4">
-    {/* Left side - Riskify logo */}
-    <div className="flex items-center space-x-4">
-      <RiskifyLogo />
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Safe Work Method Statement</h1>
-        <p className="text-sm text-gray-600">AI SWMS Generator</p>
-      </div>
-    </div>
-    
-    {/* Right side - Project details and company logo */}
-    <div className="flex items-start space-x-4">
-      {/* Project details */}
-      <div className="text-right">
-        <div className="text-sm text-gray-800 font-medium">{formData.companyName}</div>
-        <div className="text-sm text-gray-600">{formData.projectName}</div>
-        <div className="text-sm text-gray-600">{formData.projectNumber}</div>
-        <div className="text-sm text-gray-600">{formData.projectAddress}</div>
-      </div>
-      
-      {/* Company logo upload */}
-      <div className="w-24 h-24 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center bg-gray-50 relative">
-        {formData.companyLogo ? (
-          <img 
-            src={formData.companyLogo} 
-            alt="Company Logo" 
-            className="w-full h-full object-contain rounded-lg"
-          />
-        ) : (
-          <div className="text-center">
-            <svg className="w-8 h-8 text-gray-400 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-            </svg>
-            <p className="text-xs text-gray-500">Company Logo</p>
-          </div>
-        )}
-        <input
-          type="file"
-          accept="image/*"
-          onChange={(e) => {
-            const file = e.target.files?.[0];
-            if (file) {
-              const reader = new FileReader();
-              reader.onload = (e) => {
-                onUpdate('companyLogo', e.target?.result);
-              };
-              reader.readAsDataURL(file);
-            }
-          }}
-          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-        />
-      </div>
-    </div>
-  </div>
-);
-
-// Project Information Page
-const ProjectInfoPage = ({ formData, onUpdate }: { formData: any, onUpdate: (field: string, value: any) => void }) => (
-  <div className="relative space-y-6">
-    <PageWatermark formData={formData} />
-    <div className="relative z-10">
-      <SWMSHeader formData={formData} onUpdate={onUpdate} />
-      
-      <h2 className="text-xl font-bold text-gray-900 mb-6">Project Information</h2>
-    
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div className="bg-gray-50 p-4 rounded-lg border">
-        <div className="space-y-3">
-          <div>
-            <span className="font-medium text-gray-700">Company Name: </span>
-            <input
-              type="text"
-              value={formData.companyName}
-              onChange={(e) => onUpdate('companyName', e.target.value)}
-              className="bg-transparent border-none outline-none text-gray-900"
-            />
-          </div>
-          <div>
-            <span className="font-medium text-gray-700">Job Name: </span>
-            <input
-              type="text"
-              value={formData.jobName}
-              onChange={(e) => onUpdate('jobName', e.target.value)}
-              className="bg-transparent border-none outline-none text-gray-900"
-            />
-          </div>
-          <div>
-            <span className="font-medium text-gray-700">Job Number: </span>
-            <input
-              type="text"
-              value={formData.jobNumber}
-              onChange={(e) => onUpdate('jobNumber', e.target.value)}
-              className="bg-transparent border-none outline-none text-gray-900"
-            />
-          </div>
-          <div>
-            <span className="font-medium text-gray-700">Project Address: </span>
-            <input
-              type="text"
-              value={formData.projectAddress}
-              onChange={(e) => onUpdate('projectAddress', e.target.value)}
-              className="bg-transparent border-none outline-none text-gray-900"
-            />
-          </div>
-          <div>
-            <span className="font-medium text-gray-700">Start Date: </span>
-            <input
-              type="text"
-              value={formData.startDate}
-              onChange={(e) => onUpdate('startDate', e.target.value)}
-              className="bg-transparent border-none outline-none text-gray-900"
-            />
-          </div>
-          <div>
-            <span className="font-medium text-gray-700">Duration: </span>
-            <input
-              type="text"
-              value={formData.duration}
-              onChange={(e) => onUpdate('duration', e.target.value)}
-              className="bg-transparent border-none outline-none text-gray-900"
-            />
-          </div>
-          <div>
-            <span className="font-medium text-gray-700">Date Created: </span>
-            <input
-              type="text"
-              value={formData.dateCreated}
-              onChange={(e) => onUpdate('dateCreated', e.target.value)}
-              className="bg-transparent border-none outline-none text-gray-900"
-            />
-          </div>
-          <div>
-            <span className="font-medium text-gray-700">Principal Contractor: </span>
-            <input
-              type="text"
-              value={formData.principalContractor}
-              onChange={(e) => onUpdate('principalContractor', e.target.value)}
-              className="bg-transparent border-none outline-none text-gray-900"
-            />
-          </div>
-        </div>
-      </div>
-      
-      <div className="bg-gray-50 p-4 rounded-lg border">
-        <div className="space-y-3">
-          <div>
-            <span className="font-medium text-gray-700">Project Manager: </span>
-            <input
-              type="text"
-              value={formData.projectManager}
-              onChange={(e) => onUpdate('projectManager', e.target.value)}
-              className="bg-transparent border-none outline-none text-gray-900 italic"
-            />
-          </div>
-          <div>
-            <span className="font-medium text-gray-700">Site Supervisor: </span>
-            <input
-              type="text"
-              value={formData.siteSupervisor}
-              onChange={(e) => onUpdate('siteSupervisor', e.target.value)}
-              className="bg-transparent border-none outline-none text-gray-900 italic"
-            />
-          </div>
-          <div className="mt-4">
-            <div className="font-medium text-gray-700 underline">Person Authorising SWMS</div>
-            <div className="mt-2 space-y-2">
-              <div>
-                <span className="font-medium text-gray-700">Name: </span>
-                <input
-                  type="text"
-                  value={formData.authorisingPerson}
-                  onChange={(e) => onUpdate('authorisingPerson', e.target.value)}
-                  className="bg-transparent border-none outline-none text-gray-900 italic"
-                />
-              </div>
-              <div>
-                <span className="font-medium text-gray-700">Position: </span>
-                <input
-                  type="text"
-                  value={formData.authorisingPosition}
-                  onChange={(e) => onUpdate('authorisingPosition', e.target.value)}
-                  className="bg-transparent border-none outline-none text-gray-900 italic"
-                />
-              </div>
-              <div>
-                <span className="font-medium text-gray-700">Signature:</span>
-                <div className="mt-2 border-b-2 border-gray-400 h-8 flex items-center">
-                  <span className="text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded">📝</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    <div className="space-y-4">
-      <div className="bg-gray-50 p-4 rounded-lg border">
-        <h3 className="font-medium text-gray-700 mb-2">Scope of Works</h3>
-        <textarea
-          value={formData.scopeOfWorks}
-          onChange={(e) => onUpdate('scopeOfWorks', e.target.value)}
-          className="w-full bg-transparent border-none outline-none text-gray-900 resize-none"
-          rows={2}
-        />
-      </div>
-      
-      <div className="bg-gray-50 p-4 rounded-lg border">
-        <h3 className="font-medium text-gray-700 mb-2">Review and Monitoring</h3>
-        <textarea
-          value={formData.reviewAndMonitoring}
-          onChange={(e) => onUpdate('reviewAndMonitoring', e.target.value)}
-          className="w-full bg-transparent border-none outline-none text-gray-900 resize-none"
-          rows={3}
-        />
-      </div>
-    </div>
-    </div>
-  </div>
-);
-
-// Emergency Information Page
-const EmergencyInfoPage = ({ formData, onUpdate }: { formData: any, onUpdate: (field: string, value: any) => void }) => (
-  <div className="relative space-y-6">
-    <PageWatermark formData={formData} />
-    <div className="relative z-10">
-      <SWMSHeader formData={formData} onUpdate={onUpdate} />
-      
-      <h2 className="text-xl font-bold text-gray-900 mb-6">Emergency Information</h2>
-    
-    <div className="space-y-6">
-      <div className="bg-gray-50 p-4 rounded-lg border">
-        <h3 className="font-medium text-gray-700 mb-3">Emergency Contacts</h3>
-        <div className="space-y-2">
-          {formData.emergencyContacts.map((contact: string, index: number) => (
-            <div key={index} className="text-gray-900">
-              <input
-                type="text"
-                value={contact}
-                onChange={(e) => {
-                  const newContacts = [...formData.emergencyContacts];
-                  newContacts[index] = e.target.value;
-                  onUpdate('emergencyContacts', newContacts);
-                }}
-                className="w-full bg-transparent border-none outline-none"
-              />
-            </div>
-          ))}
-        </div>
-      </div>
-      
-      <div className="bg-gray-50 p-4 rounded-lg border">
-        <h3 className="font-medium text-gray-700 mb-3">Emergency Response Procedures</h3>
-        <textarea
-          value={formData.emergencyProcedures}
-          onChange={(e) => onUpdate('emergencyProcedures', e.target.value)}
-          className="w-full bg-transparent border-none outline-none text-gray-900 resize-none"
-          rows={2}
-        />
-      </div>
-      
-      <div className="bg-gray-50 p-4 rounded-lg border">
-        <h3 className="font-medium text-gray-700 mb-3">Monitoring & Review Requirements</h3>
-        <div className="text-gray-900">
-          <textarea
-            value={formData.emergencyMonitoring}
-            onChange={(e) => onUpdate('emergencyMonitoring', e.target.value)}
-            className="w-full bg-transparent border-none outline-none resize-none"
-            rows={3}
-          />
-        </div>
-      </div>
-    </div>
-    </div>
-  </div>
-);
-
-// High Risk Activities Page
-const HighRiskActivitiesPage = ({ formData, onUpdate }: { formData: any, onUpdate: (field: string, value: any) => void }) => (
-  <div className="relative space-y-6">
-    <PageWatermark formData={formData} />
-    <div className="relative z-10">
-      <SWMSHeader formData={formData} onUpdate={onUpdate} />
-      
-      <h2 className="text-xl font-bold text-gray-900 mb-6">High Risk Activities</h2>
-    
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      {formData.highRiskActivities.map((activity: any, index: number) => (
-        <div 
-          key={`hrcw-${index}`} 
-          className={`border rounded-lg p-4 cursor-pointer transition-all select-none ${
-            activity.selected ? 'bg-orange-50 border-orange-500 shadow-md' : 'bg-white border-gray-200 hover:border-gray-300'
-          }`}
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            const newActivities = [...formData.highRiskActivities];
-            newActivities[index].selected = !newActivities[index].selected;
-            onUpdate('highRiskActivities', newActivities);
-          }}
-        >
-          <div className="flex items-start space-x-3">
-            <div className={`w-5 h-5 rounded border-2 flex items-center justify-center mt-1 flex-shrink-0 ${
-              activity.selected ? 'bg-orange-500 border-orange-500' : 'border-gray-300'
-            }`}>
-              {activity.selected && <span className="text-white text-xs font-bold">✓</span>}
-            </div>
-            <div className="flex-1">
-              <div className="text-sm text-gray-800 leading-relaxed">
-                {activity.name}
-              </div>
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
-    </div>
-  </div>
-);
-
-// Risk Matrix Page
-const RiskMatrixPage = ({ formData, onUpdate }: { formData: any, onUpdate: (field: string, value: any) => void }) => (
-  <div className="relative space-y-6">
-    <PageWatermark formData={formData} />
-    <div className="relative z-10">
-      <SWMSHeader formData={formData} onUpdate={onUpdate} />
-      
-      <h2 className="text-xl font-bold text-gray-900 mb-6">Construction Control Risk Matrix</h2>
-    
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-      {/* Left side - Risk definitions */}
-      <div className="space-y-4">
-        <div className="bg-gray-50 border rounded-lg overflow-hidden">
-          <table className="w-full">
-            <thead>
-              <tr className="bg-gray-200">
-                <th className="text-left p-3 font-medium text-gray-700">Likelihood</th>
-                <th className="text-left p-3 font-medium text-gray-700">Frequency</th>
-                <th className="text-left p-3 font-medium text-gray-700">Probability</th>
-                <th className="text-left p-3 font-medium text-gray-700">Value</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="border-b">
-                <td className="p-3 text-gray-800">Almost Certain</td>
-                <td className="p-3 text-gray-800">Weekly</td>
-                <td className="p-3 text-gray-800">Very high</td>
-                <td className="p-3 text-gray-800">5</td>
-              </tr>
-              <tr className="border-b">
-                <td className="p-3 text-gray-800">Likely</td>
-                <td className="p-3 text-gray-800">Monthly</td>
-                <td className="p-3 text-gray-800">Good</td>
-                <td className="p-3 text-gray-800">4</td>
-              </tr>
-              <tr className="border-b">
-                <td className="p-3 text-gray-800">Possible</td>
-                <td className="p-3 text-gray-800">Yearly</td>
-                <td className="p-3 text-gray-800">Even</td>
-                <td className="p-3 text-gray-800">3</td>
-              </tr>
-              <tr className="border-b">
-                <td className="p-3 text-gray-800">Unlikely</td>
-                <td className="p-3 text-gray-800">10 years</td>
-                <td className="p-3 text-gray-800">Low</td>
-                <td className="p-3 text-gray-800">2</td>
-              </tr>
-              <tr>
-                <td className="p-3 text-gray-800">Rare</td>
-                <td className="p-3 text-gray-800">Lifetime</td>
-                <td className="p-3 text-gray-800">No chance</td>
-                <td className="p-3 text-gray-800">1</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        
-        <div className="bg-gray-50 border rounded-lg overflow-hidden">
-          <table className="w-full">
-            <thead>
-              <tr className="bg-gray-200">
-                <th className="text-left p-3 font-medium text-gray-700">Consequence</th>
-                <th className="text-left p-3 font-medium text-gray-700">Description</th>
-                <th className="text-left p-3 font-medium text-gray-700">Value</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="border-b">
-                <td className="p-3 text-gray-800">Catastrophic</td>
-                <td className="p-3 text-gray-800">Fatality, disability, $50,000+</td>
-                <td className="p-3 text-gray-800">5</td>
-              </tr>
-              <tr className="border-b">
-                <td className="p-3 text-gray-800">Major</td>
-                <td className="p-3 text-gray-800">Amputation, $15,000-$50,000</td>
-                <td className="p-3 text-gray-800">4</td>
-              </tr>
-              <tr className="border-b">
-                <td className="p-3 text-gray-800">Moderate</td>
-                <td className="p-3 text-gray-800">LTI/MTI, $1,000-$15,000</td>
-                <td className="p-3 text-gray-800">3</td>
-              </tr>
-              <tr className="border-b">
-                <td className="p-3 text-gray-800">Minor</td>
-                <td className="p-3 text-gray-800">First Aid, $100-$1,000</td>
-                <td className="p-3 text-gray-800">2</td>
-              </tr>
-              <tr>
-                <td className="p-3 text-gray-800">Insignificant</td>
-                <td className="p-3 text-gray-800">No treatment, $0-$100</td>
-                <td className="p-3 text-gray-800">1</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-      
-      {/* Right side - Risk matrix and action table */}
-      <div className="space-y-4">
-        <div className="bg-gray-50 border rounded-lg p-4">
-          <div className="text-sm text-gray-700 mb-2">Likelihood → Consequence ↓</div>
-          <table className="w-full">
-            <thead>
-              <tr>
-                <th className="text-center p-2 font-medium text-gray-700">5</th>
-                <th className="text-center p-2 font-medium text-gray-700">4</th>
-                <th className="text-center p-2 font-medium text-gray-700">3</th>
-                <th className="text-center p-2 font-medium text-gray-700">2</th>
-                <th className="text-center p-2 font-medium text-gray-700">1</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className="text-center p-2 bg-red-400 text-white font-bold">25</td>
-                <td className="text-center p-2 bg-red-400 text-white font-bold">20</td>
-                <td className="text-center p-2 bg-orange-400 text-white font-bold">15</td>
-                <td className="text-center p-2 bg-orange-400 text-white font-bold">10</td>
-                <td className="text-center p-2 bg-yellow-400 text-white font-bold">5</td>
-              </tr>
-              <tr>
-                <td className="text-center p-2 bg-red-400 text-white font-bold">20</td>
-                <td className="text-center p-2 bg-orange-400 text-white font-bold">16</td>
-                <td className="text-center p-2 bg-orange-400 text-white font-bold">12</td>
-                <td className="text-center p-2 bg-yellow-400 text-white font-bold">8</td>
-                <td className="text-center p-2 bg-yellow-400 text-white font-bold">4</td>
-              </tr>
-              <tr>
-                <td className="text-center p-2 bg-orange-400 text-white font-bold">15</td>
-                <td className="text-center p-2 bg-orange-400 text-white font-bold">12</td>
-                <td className="text-center p-2 bg-yellow-400 text-white font-bold">9</td>
-                <td className="text-center p-2 bg-yellow-400 text-white font-bold">6</td>
-                <td className="text-center p-2 bg-green-400 text-white font-bold">3</td>
-              </tr>
-              <tr>
-                <td className="text-center p-2 bg-orange-400 text-white font-bold">10</td>
-                <td className="text-center p-2 bg-yellow-400 text-white font-bold">8</td>
-                <td className="text-center p-2 bg-yellow-400 text-white font-bold">6</td>
-                <td className="text-center p-2 bg-green-400 text-white font-bold">4</td>
-                <td className="text-center p-2 bg-green-400 text-white font-bold">2</td>
-              </tr>
-              <tr>
-                <td className="text-center p-2 bg-yellow-400 text-white font-bold">5</td>
-                <td className="text-center p-2 bg-yellow-400 text-white font-bold">4</td>
-                <td className="text-center p-2 bg-green-400 text-white font-bold">3</td>
-                <td className="text-center p-2 bg-green-400 text-white font-bold">2</td>
-                <td className="text-center p-2 bg-green-400 text-white font-bold">1</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        
-        <div className="bg-gray-50 border rounded-lg overflow-hidden">
-          <table className="w-full">
-            <thead>
-              <tr className="bg-gray-200">
-                <th className="text-left p-3 font-medium text-gray-700">Range</th>
-                <th className="text-left p-3 font-medium text-gray-700">Risk</th>
-                <th className="text-left p-3 font-medium text-gray-700">Action Required</th>
-                <th className="text-left p-3 font-medium text-gray-700">Timeline</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="border-b bg-red-100">
-                <td className="p-3 text-gray-800">20-25</td>
-                <td className="p-3 text-gray-800 font-bold">EXTREME</td>
-                <td className="p-3 text-gray-800">Stop immediately</td>
-                <td className="p-3 text-gray-800">Now</td>
-              </tr>
-              <tr className="border-b bg-orange-100">
-                <td className="p-3 text-gray-800">10-16</td>
-                <td className="p-3 text-gray-800 font-bold">HIGH</td>
-                <td className="p-3 text-gray-800">Senior management</td>
-                <td className="p-3 text-gray-800">24hrs</td>
-              </tr>
-              <tr className="border-b bg-yellow-100">
-                <td className="p-3 text-gray-800">5-9</td>
-                <td className="p-3 text-gray-800 font-bold">MEDIUM</td>
-                <td className="p-3 text-gray-800">Management action</td>
-                <td className="p-3 text-gray-800">48hrs</td>
-              </tr>
-              <tr className="bg-green-100">
-                <td className="p-3 text-gray-800">1-4</td>
-                <td className="p-3 text-gray-800 font-bold">LOW</td>
-                <td className="p-3 text-gray-800">Routine procedures</td>
-                <td className="p-3 text-gray-800">5 days</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-    </div>
-  </div>
-);
-
-// Work Activities Page
-const WorkActivitiesPage = ({ formData, onUpdate }: { formData: any, onUpdate: (field: string, value: any) => void }) => (
-  <div className="relative space-y-6">
-    <PageWatermark formData={formData} />
-    <div className="relative z-10">
-      <SWMSHeader formData={formData} onUpdate={onUpdate} />
-      
-      <h2 className="text-xl font-bold text-gray-900 mb-6">Work Activities & Risk Assessment</h2>
-    
-    <div className="bg-gray-50 border rounded-lg overflow-hidden">
-      <table className="w-full">
-        <thead>
-          <tr className="bg-gray-200">
-            <th className="text-left p-3 font-medium text-gray-700 w-8">#</th>
-            <th className="text-left p-3 font-medium text-gray-700 w-1/6">Activity</th>
-            <th className="text-left p-3 font-medium text-gray-700 w-1/4">Hazards</th>
-            <th className="text-left p-3 font-medium text-gray-700 w-20">Initial Risk</th>
-            <th className="text-left p-3 font-medium text-gray-700 w-1/4">Control Measures</th>
-            <th className="text-left p-3 font-medium text-gray-700 w-20">Residual Risk</th>
-            <th className="text-left p-3 font-medium text-gray-700 w-1/6">Legislation</th>
-          </tr>
-        </thead>
-        <tbody>
-          {formData.workActivities.map((activity: any, index: number) => (
-            <tr key={activity.id} className="border-b">
-              <td className="p-3 text-gray-800 align-top">{activity.id}</td>
-              <td className="p-3 text-gray-800 align-top">
-                <textarea
-                  value={activity.activity}
-                  onChange={(e) => {
-                    const newActivities = [...formData.workActivities];
-                    newActivities[index].activity = e.target.value;
-                    onUpdate('workActivities', newActivities);
-                  }}
-                  className="w-full bg-transparent border-none outline-none resize-none"
-                  rows={3}
-                />
-              </td>
-              <td className="p-3 text-gray-800 align-top">
-                <ul className="text-sm space-y-1">
-                  {activity.hazards.map((hazard: string, hIndex: number) => (
-                    <li key={hIndex} className="flex items-start">
-                      <span className="mr-2">•</span>
-                      <textarea
-                        value={hazard}
-                        onChange={(e) => {
-                          const newActivities = [...formData.workActivities];
-                          newActivities[index].hazards[hIndex] = e.target.value;
-                          onUpdate('workActivities', newActivities);
-                        }}
-                        className="w-full bg-transparent border-none outline-none resize-none text-sm"
-                        rows={1}
-                      />
-                    </li>
-                  ))}
-                </ul>
-              </td>
-              <td className="p-3 text-gray-800 align-top">
-                <RiskBadgeNew 
-                  level={activity.initialRisk.toLowerCase().includes('extreme') ? 'extreme' : 
-                         activity.initialRisk.toLowerCase().includes('high') ? 'high' : 
-                         activity.initialRisk.toLowerCase().includes('medium') ? 'medium' : 'low'} 
-                  score={parseInt(activity.initialRisk.match(/\d+/)?.[0] || '6')}
-                />
-              </td>
-              <td className="p-3 text-gray-800 align-top">
-                <ul className="text-sm space-y-1">
-                  {activity.controlMeasures.map((measure: string, mIndex: number) => (
-                    <li key={mIndex} className="flex items-start">
-                      <span className="mr-2">•</span>
-                      <textarea
-                        value={measure}
-                        onChange={(e) => {
-                          const newActivities = [...formData.workActivities];
-                          newActivities[index].controlMeasures[mIndex] = e.target.value;
-                          onUpdate('workActivities', newActivities);
-                        }}
-                        className="w-full bg-transparent border-none outline-none resize-none text-sm"
-                        rows={1}
-                      />
-                    </li>
-                  ))}
-                </ul>
-              </td>
-              <td className="p-3 text-gray-800 align-top">
-                <RiskBadgeNew 
-                  level={activity.residualRisk.toLowerCase().includes('extreme') ? 'extreme' : 
-                         activity.residualRisk.toLowerCase().includes('high') ? 'high' : 
-                         activity.residualRisk.toLowerCase().includes('medium') ? 'medium' : 'low'} 
-                  score={parseInt(activity.residualRisk.match(/\d+/)?.[0] || '3')}
-                />
-              </td>
-              <td className="p-3 text-gray-800 align-top">
-                <ul className="text-sm space-y-1">
-                  {activity.legislation.map((law: string, lIndex: number) => (
-                    <li key={lIndex} className="flex items-start">
-                      <span className="mr-2">•</span>
-                      <textarea
-                        value={law}
-                        onChange={(e) => {
-                          const newActivities = [...formData.workActivities];
-                          newActivities[index].legislation[lIndex] = e.target.value;
-                          onUpdate('workActivities', newActivities);
-                        }}
-                        className="w-full bg-transparent border-none outline-none resize-none text-sm"
-                        rows={1}
-                      />
-                    </li>
-                  ))}
-                </ul>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-    </div>
-  </div>
-);
-
-// PPE Page
-const PPEPage = ({ formData, onUpdate }: { formData: any, onUpdate: (field: string, value: any) => void }) => (
-  <div className="relative space-y-6">
-    <PageWatermark formData={formData} />
-    <div className="relative z-10">
-      <SWMSHeader formData={formData} onUpdate={onUpdate} />
-      
-      <h2 className="text-xl font-bold text-gray-900 mb-6">Personal Protective Equipment (PPE)</h2>
-    
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-      {formData.ppeItems.map((item: any, index: number) => (
-        <div 
-          key={`ppe-${index}`} 
-          className={`border rounded-lg p-4 cursor-pointer transition-all select-none ${
-            item.selected ? 'bg-green-50 border-green-500 shadow-md' : 'bg-white border-gray-200 hover:border-gray-300'
-          }`}
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            const newItems = [...formData.ppeItems];
-            newItems[index].selected = !newItems[index].selected;
-            onUpdate('ppeItems', newItems);
-          }}
-        >
-          <div className="flex items-start space-x-3">
-            <div className={`w-5 h-5 rounded border-2 flex items-center justify-center mt-1 flex-shrink-0 ${
-              item.selected ? 'bg-green-500 border-green-500' : 'border-gray-300'
-            }`}>
-              {item.selected && <span className="text-white text-xs font-bold">✓</span>}
-            </div>
-            <div className="flex-1">
-              <div className="text-sm font-medium text-gray-800 mb-2">
-                {item.name}
-              </div>
-              <div className="text-xs text-gray-600">
-                {item.description}
-              </div>
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
-    </div>
-  </div>
-);
-
-// Plant Equipment Page
-const PlantEquipmentPage = ({ formData, onUpdate }: { formData: any, onUpdate: (field: string, value: any) => void }) => (
-  <div className="relative space-y-6">
-    <PageWatermark formData={formData} />
-    <div className="relative z-10">
-      <SWMSHeader formData={formData} onUpdate={onUpdate} />
-      
-      <h2 className="text-xl font-bold text-gray-900 mb-6">Plant & Equipment</h2>
-    
-    <div className="bg-gray-50 border rounded-lg overflow-hidden">
-      <table className="w-full">
-        <thead>
-          <tr className="bg-gray-200">
-            <th className="text-left p-3 font-medium text-gray-700">Equipment</th>
-            <th className="text-left p-3 font-medium text-gray-700">Model</th>
-            <th className="text-left p-3 font-medium text-gray-700">Serial Number</th>
-            <th className="text-left p-3 font-medium text-gray-700">Risk Level</th>
-            <th className="text-left p-3 font-medium text-gray-700">Next Inspection</th>
-            <th className="text-left p-3 font-medium text-gray-700">Certification</th>
-          </tr>
-        </thead>
-        <tbody>
-          {formData.plantEquipment.map((equipment: any, index: number) => (
-            <tr key={index} className="border-b">
-              <td className="p-3 text-gray-800">
-                <input
-                  type="text"
-                  value={equipment.equipment}
-                  onChange={(e) => {
-                    const newEquipment = [...formData.plantEquipment];
-                    newEquipment[index].equipment = e.target.value;
-                    onUpdate('plantEquipment', newEquipment);
-                  }}
-                  className="w-full bg-transparent border-none outline-none"
-                />
-              </td>
-              <td className="p-3 text-gray-800">
-                <input
-                  type="text"
-                  value={equipment.model}
-                  onChange={(e) => {
-                    const newEquipment = [...formData.plantEquipment];
-                    newEquipment[index].model = e.target.value;
-                    onUpdate('plantEquipment', newEquipment);
-                  }}
-                  className="w-full bg-transparent border-none outline-none"
-                />
-              </td>
-              <td className="p-3 text-gray-800">
-                <input
-                  type="text"
-                  value={equipment.serialNumber}
-                  onChange={(e) => {
-                    const newEquipment = [...formData.plantEquipment];
-                    newEquipment[index].serialNumber = e.target.value;
-                    onUpdate('plantEquipment', newEquipment);
-                  }}
-                  className="w-full bg-transparent border-none outline-none"
-                />
-              </td>
-              <td className="p-3 text-gray-800">
-                <select
-                  value={equipment.riskLevel}
-                  onChange={(e) => {
-                    const newEquipment = [...formData.plantEquipment];
-                    newEquipment[index].riskLevel = e.target.value;
-                    onUpdate('plantEquipment', newEquipment);
-                  }}
-                  className="w-full bg-transparent border-none outline-none"
-                >
-                  <option value="Low">Low</option>
-                  <option value="Medium">Medium</option>
-                  <option value="High">High</option>
-                  <option value="Extreme">Extreme</option>
-                </select>
-              </td>
-              <td className="p-3 text-gray-800">
-                <input
-                  type="text"
-                  value={equipment.nextInspection}
-                  onChange={(e) => {
-                    const newEquipment = [...formData.plantEquipment];
-                    newEquipment[index].nextInspection = e.target.value;
-                    onUpdate('plantEquipment', newEquipment);
-                  }}
-                  className="w-full bg-transparent border-none outline-none"
-                />
-              </td>
-              <td className="p-3 text-gray-800">
-                <select
-                  value={equipment.certification}
-                  onChange={(e) => {
-                    const newEquipment = [...formData.plantEquipment];
-                    newEquipment[index].certification = e.target.value;
-                    onUpdate('plantEquipment', newEquipment);
-                  }}
-                  className="w-full bg-transparent border-none outline-none"
-                >
-                  <option value="Yes">Yes</option>
-                  <option value="No">No</option>
-                </select>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-    </div>
-  </div>
-);
-
-// Sign In Register Page
-const SignInRegisterPage = ({ formData, onUpdate }: { formData: any, onUpdate: (field: string, value: any) => void }) => {
-  // Get signature data from SWMS builder
-  const signatureData = [
-    {
-      name: formData.swmsCreatorName || formData.authorisingPerson || '',
-      number: formData.jobNumber || '',
-      signature: formData.signatureText || 'Signed',
-      date: formData.startDate || new Date().toLocaleDateString()
-    },
-    {
-      name: formData.principalContractor || '',
-      number: formData.phone || '',
-      signature: 'Signed',
-      date: formData.startDate || new Date().toLocaleDateString()
-    },
-    {
-      name: formData.projectManager || '',
-      number: formData.phone || '',
-      signature: 'Signed',
-      date: formData.startDate || new Date().toLocaleDateString()
-    },
-    {
-      name: formData.siteSupervisor || '',
-      number: formData.phone || '',
-      signature: 'Signed',
-      date: formData.startDate || new Date().toLocaleDateString()
-    }
-  ];
-
-  return (
-    <div className="relative space-y-6">
-      <PageWatermark formData={formData} />
-      <div className="relative z-10">
-        <SWMSHeader formData={formData} onUpdate={onUpdate} />
-        
-        <h2 className="text-xl font-bold text-gray-900 mb-6">Sign In Register</h2>
-      
-      <div className="bg-gray-50 border rounded-lg overflow-hidden">
-        <table className="w-full">
-          <thead>
-            <tr className="bg-gray-200">
-              <th className="text-left p-3 font-medium text-gray-700 w-1/4">Name</th>
-              <th className="text-left p-3 font-medium text-gray-700 w-1/4">Number</th>
-              <th className="text-left p-3 font-medium text-gray-700 w-1/4">Signature</th>
-              <th className="text-left p-3 font-medium text-gray-700 w-1/4">Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            {/* Pre-populated signature data from SWMS builder */}
-            {signatureData.map((sig, index) => (
-              <tr key={index} className="border-b">
-                <td className="p-3 h-16 border-r border-gray-300">
-                  <input
-                    type="text"
-                    value={sig.name}
-                    onChange={(e) => {
-                      const newSignatures = [...signatureData];
-                      newSignatures[index].name = e.target.value;
-                      onUpdate('signatureData', newSignatures);
-                    }}
-                    className="w-full bg-transparent border-none outline-none text-gray-900"
-                    placeholder="Enter name"
-                  />
-                </td>
-                <td className="p-3 h-16 border-r border-gray-300">
-                  <input
-                    type="text"
-                    value={sig.number}
-                    onChange={(e) => {
-                      const newSignatures = [...signatureData];
-                      newSignatures[index].number = e.target.value;
-                      onUpdate('signatureData', newSignatures);
-                    }}
-                    className="w-full bg-transparent border-none outline-none text-gray-900"
-                    placeholder="Enter number"
-                  />
-                </td>
-                <td className="p-3 h-16 border-r border-gray-300">
-                  <input
-                    type="text"
-                    value={sig.signature}
-                    onChange={(e) => {
-                      const newSignatures = [...signatureData];
-                      newSignatures[index].signature = e.target.value;
-                      onUpdate('signatureData', newSignatures);
-                    }}
-                    className="w-full bg-transparent border-none outline-none text-gray-900"
-                    placeholder="Signature"
-                  />
-                </td>
-                <td className="p-3 h-16">
-                  <input
-                    type="text"
-                    value={sig.date}
-                    onChange={(e) => {
-                      const newSignatures = [...signatureData];
-                      newSignatures[index].date = e.target.value;
-                      onUpdate('signatureData', newSignatures);
-                    }}
-                    className="w-full bg-transparent border-none outline-none text-gray-900"
-                    placeholder="Date"
-                  />
-                </td>
-              </tr>
-            ))}
-            {/* Additional empty rows */}
-            {Array.from({ length: 4 }).map((_, index) => (
-              <tr key={index + 4} className="border-b">
-                <td className="p-3 h-16 border-r border-gray-300">
-                  <input
-                    type="text"
-                    className="w-full bg-transparent border-none outline-none text-gray-900"
-                    placeholder="Enter name"
-                  />
-                </td>
-                <td className="p-3 h-16 border-r border-gray-300">
-                  <input
-                    type="text"
-                    className="w-full bg-transparent border-none outline-none text-gray-900"
-                    placeholder="Enter number"
-                  />
-                </td>
-                <td className="p-3 h-16 border-r border-gray-300">
-                  <input
-                    type="text"
-                    className="w-full bg-transparent border-none outline-none text-gray-900"
-                    placeholder="Signature"
-                  />
-                </td>
-                <td className="p-3 h-16">
-                  <input
-                    type="text"
-                    className="w-full bg-transparent border-none outline-none text-gray-900"
-                    placeholder="Date"
-                  />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      </div>
-    </div>
-  );
-};
-
-function SwmsComplete({ initialData }: { initialData?: any } = {}) {
-  const [formData, setFormData] = useState(() => {
-    // If initialData is provided, merge it with defaults
-    if (initialData) {
-      return {
-        ...defaultFormData,
-        ...initialData,
-        // Map SWMS builder fields to SwmsComplete fields
-        projectName: initialData.jobName || initialData.projectName || defaultFormData.projectName,
-        projectNumber: initialData.jobNumber || initialData.projectNumber || defaultFormData.projectNumber,
-        projectAddress: initialData.projectAddress || defaultFormData.projectAddress,
-        companyName: initialData.companyName || defaultFormData.companyName,
-        principalContractor: initialData.principalContractor || defaultFormData.principalContractor,
-        projectManager: initialData.projectManager || defaultFormData.projectManager,
-        siteSupervisor: initialData.siteSupervisor || defaultFormData.siteSupervisor,
-        startDate: initialData.startDate || defaultFormData.startDate,
-        workActivities: initialData.workActivities ? 
-          initialData.workActivities.map((activity: any, index: number) => ({
-            id: index + 1,
-            activity: activity.activity || activity.name || activity.taskName || 'Activity description',
-            hazards: activity.hazards || activity.hazardList || [
-              'Hazard description 01',
-              'Hazard description 02',
-              'Hazard description 03'
-            ],
-            initialRisk: activity.initialRisk || activity.riskLevel || 'Medium (6)',
-            controlMeasures: activity.controlMeasures || activity.controls || [
-              'Control measure 01',
-              'Control measure 02',
-              'Control measure 03'
-            ],
-            residualRisk: activity.residualRisk || activity.finalRisk || 'Low (3)',
-            legislation: activity.legislation || activity.referencedLegislation || [
-              'NSW WHS Regulation 2017',
-              'AS/NZS 1891.1:2007'
-            ]
-          })) : 
-          initialData.selectedTasks ?
-          initialData.selectedTasks.map((task: any, index: number) => ({
-            id: index + 1,
-            activity: task.activity || task.name || task.taskName || 'Activity description',
-            hazards: task.hazards || task.hazardList || [
-              'Hazard description 01',
-              'Hazard description 02',
-              'Hazard description 03'
-            ],
-            initialRisk: task.initialRisk || task.riskLevel || 'Medium (6)',
-            controlMeasures: task.controlMeasures || task.controls || [
-              'Control measure 01',
-              'Control measure 02',
-              'Control measure 03'
-            ],
-            residualRisk: task.residualRisk || task.finalRisk || 'Low (3)',
-            legislation: task.legislation || task.referencedLegislation || [
-              'NSW WHS Regulation 2017',
-              'AS/NZS 1891.1:2007'
-            ]
-          })) : defaultFormData.workActivities,
-        emergencyContacts: initialData.emergencyContacts || defaultFormData.emergencyContacts,
-        emergencyProcedures: initialData.emergencyProcedures || defaultFormData.emergencyProcedures,
-        highRiskActivities: initialData.hrcwCategories ? 
-          defaultFormData.highRiskActivities.map(activity => ({
-            ...activity,
-            selected: initialData.hrcwCategories?.includes(activity.name) || false
-          })) : defaultFormData.highRiskActivities,
-        ppeItems: initialData.ppeRequirements ? 
-          defaultFormData.ppeItems.map(item => ({
-            ...item,
-            selected: initialData.ppeRequirements?.includes(item.name) || false
-          })) : defaultFormData.ppeItems,
-        plantEquipment: initialData.plantEquipment || defaultFormData.plantEquipment,
-        companyLogo: initialData.companyLogo || defaultFormData.companyLogo,
-        // Map signature data from SWMS builder
-        swmsCreatorName: initialData.swmsCreatorName || initialData.authorisingPerson || defaultFormData.authorisingPerson,
-        signatureText: initialData.signatureText || defaultFormData.signatureText,
-        signatureImage: initialData.signatureImage || defaultFormData.signatureImage
-      };
-    }
-    return defaultFormData;
-  });
+export default function SwmsComplete() {
+  const [formData, setFormData] = useState<SwmsFormData>(defaultSwmsData);
   const [currentPage, setCurrentPage] = useState<DocumentPage>('project-info');
-  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const [currentWorkActivitiesPageIndex, setCurrentWorkActivitiesPageIndex] = useState(0);
+  const [currentSignInPageIndex, setCurrentSignInPageIndex] = useState(0);
 
-  // Handle input changes
-  const handleInputChange = (field: string, value: any) => {
+  const handleInputChange = (field: keyof SwmsFormData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  // Navigation tabs
-  const navItems = [
-    { id: 'project-info', title: 'Project Information', component: ProjectInfoPage },
-    { id: 'emergency-info', title: 'Emergency Info', component: EmergencyInfoPage },
-    { id: 'high-risk-activities', title: 'High Risk Activities', component: HighRiskActivitiesPage },
-    { id: 'risk-matrix', title: 'Risk Matrix', component: RiskMatrixPage },
-    { id: 'work-activities', title: 'Work Activities', component: WorkActivitiesPage },
-    { id: 'ppe', title: 'PPE', component: PPEPage },
-    { id: 'plant-equipment', title: 'Plant & Equipment', component: PlantEquipmentPage },
-    { id: 'sign-in', title: 'Sign In Register', component: SignInRegisterPage }
-  ];
+  // Risk badge styles and levels
+  const riskLevels = {
+    extreme: { color: '#dc2626', text: '#ffffff' },
+    high: { color: '#f97316', text: '#ffffff' },
+    medium: { color: '#eab308', text: '#ffffff' },
+    low: { color: '#22c55e', text: '#ffffff' }
+  };
 
-  // PDF Generation functions using SWMSprint integration
-  const generateSWMSprintPDF = async () => {
-    setIsGeneratingPDF(true);
+  const getRiskBadgeHTML = (level: string, score: number) => {
+    const risk = riskLevels[level as keyof typeof riskLevels] || riskLevels.medium;
+    
+    return `<div style="display: table-cell; vertical-align: middle; text-align: center; background-color: ${risk.color}; color: #ffffff; border-radius: 4px; font-size: 10px; font-weight: 600; width: 70px; height: 24px; box-sizing: border-box; white-space: nowrap; font-family: Inter, Arial, sans-serif;">${level.charAt(0).toUpperCase() + level.slice(1)} (${score})</div>`;
+  };
+
+  const getRiskBadgeTextOnly = (level: string) => {
+    const risk = riskLevels[level as keyof typeof riskLevels] || riskLevels.medium;
+    
+    return `<div style="display: inline-flex; align-items: flex-start; justify-content: center; background-color: ${risk.color}; color: #ffffff; border-radius: 4px; font-size: 10px; font-weight: 600; width: 70px; height: 24px; box-sizing: border-box; white-space: nowrap; font-family: Inter, Arial, sans-serif; line-height: 1; padding-top: 6px;">${level.charAt(0).toUpperCase() + level.slice(1)}</div>`;
+  };
+
+  const handlePrintPDF = async () => {
     try {
-      console.log('🏗️ Connecting to your working SWMSprint app for PDF generation');
+      console.log('Starting browser print PDF generation...');
       
-      // Prepare comprehensive data for SWMSprint
-      const swmsprintData = {
-        // Project Information
-        projectName: formData.jobName || formData.projectName || 'SWMS Document',
-        projectNumber: formData.jobNumber || formData.projectNumber || '',
-        projectAddress: formData.projectAddress || formData.address || '',
-        startDate: formData.startDate || '',
-        duration: formData.duration || '',
-        dateCreated: new Date().toLocaleDateString(),
-        
-        // Personnel
-        principalContractor: formData.principalContractor || '',
-        projectManager: formData.projectManager || '',
-        siteSupervisor: formData.siteSupervisor || '',
-        swmsCreatorName: formData.swmsCreatorName || formData.authorisingPerson || '',
-        authorisingPerson: formData.authorisingPerson || '',
-        authorisingPosition: formData.authorisingPosition || '',
-        companyName: formData.companyName || '',
-        companyLogo: formData.companyLogo || null,
-        
-        // Work Activities
-        workActivities: formData.workActivities || [],
-        
-        // High Risk Construction Work
-        highRiskActivities: formData.highRiskActivities || [],
-        
-        // PPE Requirements
-        ppeRequirements: formData.ppeItems?.filter(item => item.selected).map(item => item.name) || [],
-        
-        // Plant & Equipment
-        plantEquipment: formData.plantEquipment || [],
-        
-        // Emergency Procedures
-        emergencyProcedures: formData.emergencyProcedures || '',
-        emergencyContacts: formData.emergencyContacts || [],
-        emergencyMonitoring: formData.emergencyMonitoring || '',
-        
-        // Additional fields
-        tradeType: formData.tradeType || 'General',
-        scopeOfWorks: formData.scopeOfWorks || '',
-        reviewAndMonitoring: formData.reviewAndMonitoring || '',
-        
-        // Signature data
-        signatureText: formData.signatureText || '',
-        signatureImage: formData.signatureImage || null
-      };
+      // Store current page to restore later
+      const originalPage = currentPage;
       
-      console.log('📤 Sending data to SWMSprint:', {
-        projectName: swmsprintData.projectName,
-        workActivitiesCount: swmsprintData.workActivities.length,
-        ppeCount: swmsprintData.ppeRequirements.length,
-        plantEquipmentCount: swmsprintData.plantEquipment.length
+      // Create PDF with A4 landscape dimensions and maximum quality
+      const pdf = new jsPDF({
+        orientation: 'landscape',
+        unit: 'mm',
+        format: 'a4',
+        compress: false, // Disable compression for maximum quality
+        precision: 16 // High precision for better quality
       });
       
-      // Use the same endpoint as your working app
-      const response = await fetch('/api/swms/pdf-download', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(swmsprintData)
-      });
+      const pageNames = ['project-info', 'emergency-info', 'high-risk-activities', 'risk-matrix', 'work-activities', 'ppe', 'plant-equipment', 'sign-in', 'msds'] as const;
       
-      if (response.ok) {
-        console.log('✅ PDF generated successfully from SWMSprint');
-        const pdfBlob = await response.blob();
+      for (let i = 0; i < pageNames.length; i++) {
+        const pageName = pageNames[i];
+        console.log(`Capturing page ${i + 1}: ${pageName}`);
         
-        // Create download link
-        const url = URL.createObjectURL(pdfBlob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `${formData.projectName || 'SWMS'}-${Date.now()}.pdf`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-      } else {
-        throw new Error('PDF generation failed - please try again');
+        // Switch to the page
+        setCurrentPage(pageName);
+        
+        // Wait for React to render
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Ensure all fonts are loaded before capture
+        try {
+          await document.fonts.ready;
+        } catch (e) {
+          // Fallback if fonts.ready fails
+          await new Promise(resolve => setTimeout(resolve, 500));
+        }
+        
+        // Wait for the page content to render
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+        // Find the actual document preview container - it's in the right panel
+        let previewElement = document.querySelector('.w-2\\/3 .p-6 > div') as HTMLElement;
+        
+        if (!previewElement) {
+          // Try alternative selectors for the document container
+          previewElement = document.querySelector('.w-2\\/3 > div > div') as HTMLElement ||
+                          document.querySelector('.overflow-auto > div > div') as HTMLElement ||
+                          document.querySelector('[style*="A4"]') as HTMLElement;
+        }
+        
+        // Debug: log what we found
+        console.log(`Capturing page ${i + 1}: ${pageName}`);
+        console.log('Preview element found:', previewElement?.tagName || 'none');
+        console.log('Element classes:', previewElement?.className || 'none');
+        console.log('Element dimensions:', previewElement?.offsetWidth || 0, 'x', previewElement?.offsetHeight || 0);
+        console.log('Element has content:', previewElement?.innerHTML?.length > 100 || false);
+        
+        if (!previewElement || previewElement.offsetWidth === 0 || previewElement.offsetHeight === 0) {
+          console.error(`Could not find valid preview element for page: ${pageName}`);
+          continue;
+        }
+        
+        // Capture the page
+        const canvas = await html2canvas(previewElement, {
+          scale: 2,
+          useCORS: true,
+          allowTaint: false,
+          backgroundColor: '#ffffff',
+          logging: false,
+          width: previewElement.offsetWidth,
+          height: previewElement.offsetHeight
+        });
+        
+        // Add page to PDF
+        if (i > 0) {
+          pdf.addPage();
+        }
+        
+        // Calculate dimensions to fit A4 landscape
+        const imgWidth = 297; // A4 width in mm
+        const imgHeight = 210; // A4 height in mm
+        
+        const imgData = canvas.toDataURL('image/png', 1.0);
+        pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+        
+        console.log(`Page ${i + 1} captured successfully`);
       }
       
+      // Restore original page
+      setCurrentPage(originalPage);
+      
+      // Save PDF
+      const pdfBlob = pdf.output('blob');
+      const url = URL.createObjectURL(pdfBlob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `swms-${formData.projectName || 'document'}.pdf`;
+      a.click();
+      
+      URL.revokeObjectURL(url);
+      
+      console.log('PDF generated successfully');
     } catch (error) {
-      console.error('PDF generation error:', error);
-      alert('PDF generation failed. Please try again.');
-    } finally {
-      setIsGeneratingPDF(false);
+      console.error('Error generating PDF:', error);
     }
   };
 
-  const generateVectorPDF = async () => {
-    setIsGeneratingPDF(true);
+  const generatePdf = async () => {
     try {
-      // This would use @react-pdf/renderer for vector PDF generation
-      // Implementation depends on specific requirements
-      console.log('Vector PDF generation not implemented yet');
+      const doc = <PDFDocument formData={formData} />;
+      const pdfBlob = await reactPdf(doc).toBlob();
+      const url = URL.createObjectURL(pdfBlob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `swms-${formData.projectName || 'document'}.pdf`;
+      a.click();
+      URL.revokeObjectURL(url);
     } catch (error) {
-      console.error('Vector PDF generation error:', error);
-    } finally {
-      setIsGeneratingPDF(false);
+      console.error('Error generating PDF:', error);
     }
   };
 
-  const CurrentPageComponent = navItems.find(item => item.id === currentPage)?.component || ProjectInfoPage;
+  const handleFinalPDF = async () => {
+    try {
+      console.log('Starting final PDF generation...');
+      
+      const doc = <PDFDocument formData={formData} />;
+      const pdfBlob = await reactPdf(doc).toBlob();
+      
+      const url = URL.createObjectURL(pdfBlob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `swms-${formData.projectName || 'document'}.pdf`;
+      a.click();
+      
+      URL.revokeObjectURL(url);
+      
+      console.log('Final PDF generated successfully');
+    } catch (error) {
+      console.error('Error generating final PDF:', error);
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex">
-      {/* Left Sidebar */}
-      <div className="w-80 bg-white shadow-lg border-r border-gray-200 flex flex-col">
-        <div className="p-4 border-b border-gray-200">
-          <h1 className="text-xl font-bold text-gray-900">SWMS Generator</h1>
-        </div>
-        
-        <nav className="flex-1 overflow-y-auto">
-          <div className="p-2 space-y-1">
-            {navItems.map((item) => (
+    <div className="min-h-screen bg-gray-50 flex">
+      {/* Left Panel - Controls */}
+      <div className="w-1/3 bg-white p-6 shadow-lg">
+        <div className="space-y-6">
+          <div className="text-center">
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <img src={riskifyLogo} alt="Riskify" className="h-8" />
+              <h1 className="text-2xl font-bold text-gray-900">SWMS Generator</h1>
+            </div>
+            <p className="text-gray-600">Edit your SWMS document and preview in real-time</p>
+          </div>
+
+          {/* Navigation Tabs */}
+          <div className="border-b border-gray-200">
+            <nav className="flex flex-wrap gap-2">
               <button
-                key={item.id}
-                onClick={() => setCurrentPage(item.id as DocumentPage)}
-                className={`w-full text-left px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                  currentPage === item.id
-                    ? 'bg-blue-100 text-blue-700'
-                    : 'text-gray-700 hover:bg-gray-100'
+                onClick={() => setCurrentPage('project-info')}
+                className={`px-3 py-2 text-sm font-medium rounded-t-lg ${
+                  currentPage === 'project-info' 
+                    ? 'text-blue-600 bg-blue-50 border-b-2 border-blue-600' 
+                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
                 }`}
               >
-                {item.title}
+                Project Information
               </button>
-            ))}
+              <button
+                onClick={() => setCurrentPage('emergency-info')}
+                className={`px-3 py-2 text-sm font-medium rounded-t-lg ${
+                  currentPage === 'emergency-info' 
+                    ? 'text-blue-600 bg-blue-50 border-b-2 border-blue-600' 
+                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                Emergency Info
+              </button>
+              <button
+                onClick={() => setCurrentPage('high-risk-activities')}
+                className={`px-3 py-2 text-sm font-medium rounded-t-lg ${
+                  currentPage === 'high-risk-activities' 
+                    ? 'text-blue-600 bg-blue-50 border-b-2 border-blue-600' 
+                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                High Risk Activities
+              </button>
+              <button
+                onClick={() => setCurrentPage('risk-matrix')}
+                className={`px-3 py-2 text-sm font-medium rounded-t-lg ${
+                  currentPage === 'risk-matrix' 
+                    ? 'text-blue-600 bg-blue-50 border-b-2 border-blue-600' 
+                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                Risk Matrix
+              </button>
+              <button
+                onClick={() => setCurrentPage('work-activities')}
+                className={`px-3 py-2 text-sm font-medium rounded-t-lg ${
+                  currentPage === 'work-activities' 
+                    ? 'text-blue-600 bg-blue-50 border-b-2 border-blue-600' 
+                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                Work Activities
+              </button>
+              <button
+                onClick={() => setCurrentPage('ppe')}
+                className={`px-3 py-2 text-sm font-medium rounded-t-lg ${
+                  currentPage === 'ppe' 
+                    ? 'text-blue-600 bg-blue-50 border-b-2 border-blue-600' 
+                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                PPE
+              </button>
+              <button
+                onClick={() => setCurrentPage('plant-equipment')}
+                className={`px-3 py-2 text-sm font-medium rounded-t-lg ${
+                  currentPage === 'plant-equipment' 
+                    ? 'text-blue-600 bg-blue-50 border-b-2 border-blue-600' 
+                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                Plant & Equipment
+              </button>
+              <button
+                onClick={() => setCurrentPage('sign-in')}
+                className={`px-3 py-2 text-sm font-medium rounded-t-lg ${
+                  currentPage === 'sign-in' 
+                    ? 'text-blue-600 bg-blue-50 border-b-2 border-blue-600' 
+                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                Sign In Register
+              </button>
+              <button
+                onClick={() => setCurrentPage('msds')}
+                className={`px-3 py-2 text-sm font-medium rounded-t-lg ${
+                  currentPage === 'msds' 
+                    ? 'text-blue-600 bg-blue-50 border-b-2 border-blue-600' 
+                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                MSDS
+              </button>
+            </nav>
           </div>
-        </nav>
-        
-        <div className="p-4 border-t border-gray-200 space-y-2">
-          <button
-            onClick={generateSWMSprintPDF}
-            disabled={isGeneratingPDF}
-            className="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50"
-          >
-            {isGeneratingPDF ? 'Generating...' : 'Print'}
-          </button>
-          <button
-            onClick={generateSWMSprintPDF}
-            disabled={isGeneratingPDF}
-            className="w-full bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 disabled:opacity-50"
-          >
-            {isGeneratingPDF ? 'Generating...' : 'Download'}
-          </button>
-          <button
-            onClick={generateSWMSprintPDF}
-            disabled={isGeneratingPDF}
-            className="w-full bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 disabled:opacity-50"
-          >
-            {isGeneratingPDF ? 'Generating...' : 'Vector'}
-          </button>
-          <button
-            onClick={generateSWMSprintPDF}
-            disabled={isGeneratingPDF}
-            className="w-full bg-orange-600 text-white px-4 py-2 rounded-md hover:bg-orange-700 disabled:opacity-50"
-          >
-            {isGeneratingPDF ? 'Generating...' : 'Final'}
-          </button>
-        </div>
-      </div>
-      
-      {/* Main Content */}
-      <div className="flex-1 overflow-auto">
-        <div className="bg-gray-100 min-h-full relative py-8">
-          {/* Background Watermark */}
-          <div className="absolute inset-0 pointer-events-none opacity-5 z-0">
-            <div className="grid grid-cols-4 gap-20 h-full p-8">
-              {Array.from({ length: 20 }).map((_, i) => (
-                <div key={i} className="flex items-center justify-center">
-                  <div className="transform rotate-45 text-4xl font-bold text-gray-400 text-center">
-                    <div>{formData.projectName}</div>
-                    <div className="text-2xl">{formData.projectNumber}</div>
-                    <div className="text-2xl">{formData.projectAddress}</div>
+
+          {/* PDF Generation Buttons */}
+          <div className="flex gap-2">
+            <button
+              onClick={handlePrintPDF}
+              className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Print PDF
+            </button>
+            <button
+              onClick={generatePdf}
+              className="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+            >
+              Download PDF
+            </button>
+            <button
+              onClick={handleFinalPDF}
+              className="flex-1 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors"
+            >
+              Final PDF
+            </button>
+          </div>
+
+          {/* Form Content */}
+          <div className="space-y-4">
+            {currentPage === 'project-info' && (
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Project Information</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Project Name
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.projectName}
+                      onChange={(e) => handleInputChange('projectName', e.target.value)}
+                      className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Project Number
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.projectNumber}
+                      onChange={(e) => handleInputChange('projectNumber', e.target.value)}
+                      className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div className="col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Project Address
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.projectAddress}
+                      onChange={(e) => handleInputChange('projectAddress', e.target.value)}
+                      className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Project Manager
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.projectManager}
+                      onChange={(e) => handleInputChange('projectManager', e.target.value)}
+                      className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Site Supervisor
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.siteSupervisor}
+                      onChange={(e) => handleInputChange('siteSupervisor', e.target.value)}
+                      className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
                   </div>
                 </div>
-              ))}
-            </div>
+              </div>
+            )}
+
+            {currentPage === 'emergency-info' && (
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Emergency Information</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Emergency Contact
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.emergencyContact}
+                      onChange={(e) => handleInputChange('emergencyContact', e.target.value)}
+                      className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Emergency Phone
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.emergencyPhone}
+                      onChange={(e) => handleInputChange('emergencyPhone', e.target.value)}
+                      className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {currentPage === 'high-risk-activities' && (
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">High Risk Activities</h3>
+                <div className="grid grid-cols-2 gap-2">
+                  {[
+                    'Work at Heights',
+                    'Confined Spaces',
+                    'Hot Work',
+                    'Electrical Work',
+                    'Excavation',
+                    'Crane Operations',
+                    'Demolition',
+                    'Hazardous Chemicals'
+                  ].map((activity, index) => (
+                    <div key={index} className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id={`activity-${index}`}
+                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      />
+                      <label htmlFor={`activity-${index}`} className="text-sm text-gray-700">
+                        {activity}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {currentPage === 'risk-matrix' && (
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Risk Matrix</h3>
+                <div className="text-center">
+                  <p className="text-gray-600">Risk assessment matrix configuration</p>
+                </div>
+              </div>
+            )}
+
+            {currentPage === 'work-activities' && (
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Work Activities</h3>
+                <div className="space-y-3">
+                  {formData.workActivities.map((activity, index) => (
+                    <div key={index} className="border border-gray-200 rounded-lg p-3">
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="font-medium text-gray-900">{activity.activity}</h4>
+                        <RiskBadgeNew risk={activity.residualRisk} />
+                      </div>
+                      <p className="text-sm text-gray-600">{activity.hazards[0]?.hazard}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {currentPage === 'ppe' && (
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Personal Protective Equipment</h3>
+                <div className="grid grid-cols-2 gap-2">
+                  {[
+                    'Safety Helmet',
+                    'Safety Glasses',
+                    'High-Vis Vest',
+                    'Safety Boots',
+                    'Gloves',
+                    'Hearing Protection',
+                    'Respirator',
+                    'Fall Arrest Harness'
+                  ].map((ppe, index) => (
+                    <div key={index} className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id={`ppe-${index}`}
+                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      />
+                      <label htmlFor={`ppe-${index}`} className="text-sm text-gray-700">
+                        {ppe}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {currentPage === 'plant-equipment' && (
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Plant & Equipment</h3>
+                <div className="space-y-3">
+                  {formData.plantEquipment.map((equipment, index) => (
+                    <div key={index} className="border border-gray-200 rounded-lg p-3">
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="font-medium text-gray-900">{equipment.item}</h4>
+                        <RiskBadgeNew risk={equipment.riskLevel} />
+                      </div>
+                      <p className="text-sm text-gray-600">{equipment.description}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {currentPage === 'sign-in' && (
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Sign In Register</h3>
+                <div className="text-center">
+                  <p className="text-gray-600">Personnel sign-in management</p>
+                </div>
+              </div>
+            )}
+
+            {currentPage === 'msds' && (
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Material Safety Data Sheets</h3>
+                <div className="space-y-3">
+                  {formData.msdsRegister.map((msds, index) => (
+                    <div key={index} className="border border-gray-200 rounded-lg p-3">
+                      <h4 className="font-medium text-gray-900">{msds.product}</h4>
+                      <p className="text-sm text-gray-600">{msds.supplier}</p>
+                      <p className="text-sm text-gray-500">{msds.hazardClass}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
-          
-          {/* Content with A4 landscape dimensions */}
-          <div 
-            id="swms-content" 
-            className="relative z-10 p-6"
-            style={{
-              width: '1400px',
-              height: '990px',
-              maxWidth: '1400px',
-              margin: '0 auto',
-              backgroundColor: 'white',
-              transform: 'scale(0.7)',
-              transformOrigin: 'top center',
-              border: '1px solid #e5e7eb',
-              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-              aspectRatio: '1.414/1'
-            }}
-          >
-            <CurrentPageComponent formData={formData} onUpdate={handleInputChange} />
-          </div>
+        </div>
+      </div>
+
+      {/* Right Panel - Preview */}
+      <div className="w-2/3 bg-gray-100 p-6 overflow-auto">
+        <div className="bg-white rounded-lg shadow-lg p-6" style={{ width: '1123px', height: '794px' }}>
+          <DocumentPreview formData={formData} currentPage={currentPage} />
         </div>
       </div>
     </div>
   );
 }
 
-export default SwmsComplete;
+// PDF Document Component
+const PDFDocument: React.FC<{ formData: SwmsFormData }> = ({ formData }) => (
+  <Document>
+    <Page size="A4" orientation="landscape" style={styles.page}>
+      <View style={styles.header}>
+        <Text style={styles.title}>Safe Work Method Statement</Text>
+        <Text style={styles.subtitle}>Project: {formData.projectName}</Text>
+      </View>
+      
+      <View style={styles.content}>
+        <Text style={styles.sectionTitle}>Project Information</Text>
+        <Text>Project Number: {formData.projectNumber}</Text>
+        <Text>Project Address: {formData.projectAddress}</Text>
+        <Text>Project Manager: {formData.projectManager}</Text>
+        <Text>Site Supervisor: {formData.siteSupervisor}</Text>
+      </View>
+      
+      <View style={styles.content}>
+        <Text style={styles.sectionTitle}>Work Activities</Text>
+        {formData.workActivities.map((activity, index) => (
+          <View key={index} style={styles.activityItem}>
+            <Text style={styles.activityTitle}>{activity.activity}</Text>
+            <Text>Risk Level: {activity.residualRisk}</Text>
+            {activity.hazards.map((hazard, hIndex) => (
+              <Text key={hIndex} style={styles.hazardText}>
+                • {hazard.hazard}
+              </Text>
+            ))}
+          </View>
+        ))}
+      </View>
+    </Page>
+  </Document>
+);
+
+// Document Preview Component
+const DocumentPreview: React.FC<{ formData: SwmsFormData; currentPage: DocumentPage }> = ({ formData, currentPage }) => {
+  const renderPage = () => {
+    switch (currentPage) {
+      case 'project-info':
+        return (
+          <div className="space-y-6">
+            <div className="text-center border-b pb-4">
+              <h1 className="text-2xl font-bold text-gray-900">Safe Work Method Statement</h1>
+              <p className="text-lg text-gray-600 mt-2">Project Information</p>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-6">
+              <div>
+                <div className="space-y-3">
+                  <div className="flex justify-between py-2 border-b">
+                    <span className="font-medium">Project Name:</span>
+                    <span>{formData.projectName || 'Not specified'}</span>
+                  </div>
+                  <div className="flex justify-between py-2 border-b">
+                    <span className="font-medium">Project Number:</span>
+                    <span>{formData.projectNumber || 'Not specified'}</span>
+                  </div>
+                  <div className="flex justify-between py-2 border-b">
+                    <span className="font-medium">Project Manager:</span>
+                    <span>{formData.projectManager || 'Not specified'}</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div>
+                <div className="space-y-3">
+                  <div className="flex justify-between py-2 border-b">
+                    <span className="font-medium">Site Supervisor:</span>
+                    <span>{formData.siteSupervisor || 'Not specified'}</span>
+                  </div>
+                  <div className="flex justify-between py-2 border-b">
+                    <span className="font-medium">Emergency Contact:</span>
+                    <span>{formData.emergencyContact || 'Not specified'}</span>
+                  </div>
+                  <div className="flex justify-between py-2 border-b">
+                    <span className="font-medium">Emergency Phone:</span>
+                    <span>{formData.emergencyPhone || 'Not specified'}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="border-t pt-4">
+              <div className="flex justify-between py-2">
+                <span className="font-medium">Project Address:</span>
+                <span>{formData.projectAddress || 'Not specified'}</span>
+              </div>
+            </div>
+          </div>
+        );
+        
+      case 'work-activities':
+        return (
+          <div className="space-y-6">
+            <div className="text-center border-b pb-4">
+              <h1 className="text-2xl font-bold text-gray-900">Work Activities</h1>
+              <p className="text-lg text-gray-600 mt-2">Risk Assessment & Control Measures</p>
+            </div>
+            
+            <div className="space-y-4">
+              {formData.workActivities.map((activity, index) => (
+                <div key={index} className="border border-gray-200 rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-lg font-semibold text-gray-900">{activity.activity}</h3>
+                    <RiskBadgeNew risk={activity.residualRisk} />
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <h4 className="font-medium text-gray-700 mb-2">Hazards:</h4>
+                      <ul className="space-y-1">
+                        {activity.hazards.map((hazard, hIndex) => (
+                          <li key={hIndex} className="text-sm text-gray-600">
+                            • {hazard.hazard}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    
+                    <div>
+                      <h4 className="font-medium text-gray-700 mb-2">Control Measures:</h4>
+                      <ul className="space-y-1">
+                        {activity.controlMeasures.map((measure, mIndex) => (
+                          <li key={mIndex} className="text-sm text-gray-600">
+                            • {measure.measure}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+        
+      case 'ppe':
+        return (
+          <div className="space-y-6">
+            <div className="text-center border-b pb-4">
+              <h1 className="text-2xl font-bold text-gray-900">Personal Protective Equipment</h1>
+              <p className="text-lg text-gray-600 mt-2">Required Safety Equipment</p>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-6">
+              {formData.ppeRequirements.map((ppe, index) => (
+                <div key={index} className="border border-gray-200 rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="font-medium text-gray-900">{ppe.item}</h3>
+                    <span className={`px-2 py-1 text-xs rounded ${
+                      ppe.selected ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'
+                    }`}>
+                      {ppe.selected ? 'Required' : 'Optional'}
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-600 mb-2">{ppe.description}</p>
+                  <p className="text-xs text-gray-500">{ppe.standard}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+        
+      case 'plant-equipment':
+        return (
+          <div className="space-y-6">
+            <div className="text-center border-b pb-4">
+              <h1 className="text-2xl font-bold text-gray-900">Plant & Equipment</h1>
+              <p className="text-lg text-gray-600 mt-2">Equipment Register & Inspection</p>
+            </div>
+            
+            <div className="space-y-4">
+              {formData.plantEquipment.map((equipment, index) => (
+                <div key={index} className="border border-gray-200 rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-lg font-semibold text-gray-900">{equipment.item}</h3>
+                    <RiskBadgeNew risk={equipment.riskLevel} />
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-sm text-gray-600 mb-2">{equipment.description}</p>
+                      <p className="text-xs text-gray-500">
+                        <span className="font-medium">Inspection:</span> {equipment.inspection}
+                      </p>
+                    </div>
+                    
+                    <div>
+                      <p className="text-xs text-gray-500">
+                        <span className="font-medium">Certification:</span> {equipment.certification}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+        
+      case 'sign-in':
+        return (
+          <div className="space-y-6">
+            <div className="text-center border-b pb-4">
+              <h1 className="text-2xl font-bold text-gray-900">Sign In Register</h1>
+              <p className="text-lg text-gray-600 mt-2">Personnel Management</p>
+            </div>
+            
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Name
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Company
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Position
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Time In
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Time Out
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Signature
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {formData.signInRegister.map((person, index) => (
+                    <tr key={index}>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {person.name}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {person.company}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {person.position}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {person.timeIn}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {person.timeOut}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {person.signature}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        );
+        
+      case 'msds':
+        return (
+          <div className="space-y-6">
+            <div className="text-center border-b pb-4">
+              <h1 className="text-2xl font-bold text-gray-900">Material Safety Data Sheets</h1>
+              <p className="text-lg text-gray-600 mt-2">Chemical & Hazardous Materials</p>
+            </div>
+            
+            <div className="space-y-4">
+              {formData.msdsRegister.map((msds, index) => (
+                <div key={index} className="border border-gray-200 rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-lg font-semibold text-gray-900">{msds.product}</h3>
+                    <span className="px-2 py-1 text-xs rounded bg-yellow-100 text-yellow-800">
+                      {msds.hazardClass}
+                    </span>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-sm text-gray-600 mb-2">
+                        <span className="font-medium">Supplier:</span> {msds.supplier}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        <span className="font-medium">Storage:</span> {msds.storageRequirements}
+                      </p>
+                    </div>
+                    
+                    <div>
+                      <p className="text-sm text-gray-600 mb-2">
+                        <span className="font-medium">Emergency:</span> {msds.emergencyProcedures}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        <span className="font-medium">MSDS Location:</span> {msds.msdsLocation}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+        
+      default:
+        return (
+          <div className="space-y-6">
+            <div className="text-center border-b pb-4">
+              <h1 className="text-2xl font-bold text-gray-900">Safe Work Method Statement</h1>
+              <p className="text-lg text-gray-600 mt-2">Document Preview</p>
+            </div>
+            
+            <div className="text-center">
+              <p className="text-gray-600">Select a tab to view document content</p>
+            </div>
+          </div>
+        );
+    }
+  };
+  
+  return (
+    <div className="h-full overflow-auto">
+      {renderPage()}
+    </div>
+  );
+};
+
+const styles = StyleSheet.create({
+  page: {
+    flexDirection: 'column',
+    backgroundColor: '#ffffff',
+    padding: 20,
+  },
+  header: {
+    marginBottom: 20,
+    paddingBottom: 10,
+    borderBottomWidth: 2,
+    borderBottomColor: '#000000',
+    borderBottomStyle: 'solid',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 5,
+  },
+  subtitle: {
+    fontSize: 16,
+    textAlign: 'center',
+    color: '#666666',
+  },
+  content: {
+    marginBottom: 20,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    color: '#000000',
+  },
+  activityItem: {
+    marginBottom: 15,
+    padding: 10,
+    backgroundColor: '#f8f9fa',
+    borderRadius: 5,
+  },
+  activityTitle: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  hazardText: {
+    fontSize: 12,
+    marginLeft: 10,
+    marginBottom: 3,
+  },
+});

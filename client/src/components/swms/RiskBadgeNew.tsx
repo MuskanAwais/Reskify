@@ -1,46 +1,34 @@
 import React from 'react';
+import { Badge } from '@/components/ui/badge';
 
-interface RiskBadgeProps {
-  level: string;
-  score: number;
+interface RiskBadgeNewProps {
+  risk: string;
+  className?: string;
 }
 
-export const RiskBadgeNew: React.FC<RiskBadgeProps> = ({ level, score }) => {
-  const getBackgroundColor = (riskLevel: string) => {
-    switch (riskLevel?.toLowerCase()) {
-      case 'extreme': return '#ef4444';
-      case 'high': return '#f97316';
-      case 'medium': return '#eab308';
-      case 'low': return '#22c55e';
-      default: return '#22c55e';
+const RiskBadgeNew: React.FC<RiskBadgeNewProps> = ({ risk, className = '' }) => {
+  const getRiskColor = (riskLevel: string) => {
+    const level = riskLevel.toLowerCase();
+    
+    switch (level) {
+      case 'extreme':
+        return 'bg-red-500 text-white hover:bg-red-600';
+      case 'high':
+        return 'bg-orange-500 text-white hover:bg-orange-600';
+      case 'medium':
+        return 'bg-yellow-500 text-black hover:bg-yellow-600';
+      case 'low':
+        return 'bg-green-500 text-white hover:bg-green-600';
+      default:
+        return 'bg-gray-500 text-white hover:bg-gray-600';
     }
   };
 
-  const capitalizedLevel = level ? level.charAt(0).toUpperCase() + level.slice(1) : 'Low';
-
   return (
-    <span 
-      className="risk-badge-override"
-      style={{
-        backgroundColor: getBackgroundColor(level),
-        color: '#ffffff',
-        height: '24px',
-        width: '70px',
-        fontSize: '10px',
-        display: 'inline-block',
-        textAlign: 'center',
-        verticalAlign: 'top',
-        borderRadius: '4px',
-        fontWeight: '600',
-        fontFamily: 'Inter, Arial, sans-serif',
-        whiteSpace: 'nowrap',
-        boxSizing: 'border-box',
-        lineHeight: 1,
-        paddingTop: '6px'
-      }}
-      key={`badge-${Date.now()}-${Math.random()}`}
-    >
-      {capitalizedLevel} ({score})
-    </span>
+    <Badge className={`${getRiskColor(risk)} ${className}`}>
+      {risk}
+    </Badge>
   );
 };
+
+export default RiskBadgeNew;
