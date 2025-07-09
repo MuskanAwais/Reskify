@@ -19,6 +19,31 @@ const RiskifyLogo = () => (
   </svg>
 );
 
+// Page Watermark Component
+const PageWatermark = ({ formData }: { formData: any }) => (
+  <div className="absolute inset-0 pointer-events-none z-0 opacity-10">
+    <div className="absolute inset-0 flex flex-col justify-center items-center text-gray-400 text-lg font-bold transform rotate-[-30deg] select-none">
+      <div className="text-center space-y-2">
+        <div>{formData.projectName || 'Project Name'}</div>
+        <div>{formData.projectNumber || 'Project Number'}</div>
+        <div>{formData.projectAddress || 'Project Address'}</div>
+      </div>
+    </div>
+    {/* Repeated watermark pattern */}
+    <div className="absolute inset-0 grid grid-cols-3 gap-8 p-8">
+      {Array.from({ length: 9 }).map((_, i) => (
+        <div key={i} className="flex flex-col justify-center items-center text-gray-300 text-sm font-medium transform rotate-[-30deg] select-none">
+          <div className="text-center space-y-1">
+            <div>{formData.projectName || 'Project Name'}</div>
+            <div>{formData.projectNumber || 'Project Number'}</div>
+            <div>{formData.projectAddress || 'Project Address'}</div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
 // Default form data
 const defaultFormData = {
   companyName: 'Test Company Name',
@@ -251,10 +276,12 @@ const SWMSHeader = ({ formData, onUpdate }: { formData: any, onUpdate: (field: s
 
 // Project Information Page
 const ProjectInfoPage = ({ formData, onUpdate }: { formData: any, onUpdate: (field: string, value: any) => void }) => (
-  <div className="space-y-6">
-    <SWMSHeader formData={formData} onUpdate={onUpdate} />
-    
-    <h2 className="text-xl font-bold text-gray-900 mb-6">Project Information</h2>
+  <div className="relative space-y-6">
+    <PageWatermark formData={formData} />
+    <div className="relative z-10">
+      <SWMSHeader formData={formData} onUpdate={onUpdate} />
+      
+      <h2 className="text-xl font-bold text-gray-900 mb-6">Project Information</h2>
     
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div className="bg-gray-50 p-4 rounded-lg border">
@@ -408,15 +435,18 @@ const ProjectInfoPage = ({ formData, onUpdate }: { formData: any, onUpdate: (fie
         />
       </div>
     </div>
+    </div>
   </div>
 );
 
 // Emergency Information Page
 const EmergencyInfoPage = ({ formData, onUpdate }: { formData: any, onUpdate: (field: string, value: any) => void }) => (
-  <div className="space-y-6">
-    <SWMSHeader formData={formData} onUpdate={onUpdate} />
-    
-    <h2 className="text-xl font-bold text-gray-900 mb-6">Emergency Information</h2>
+  <div className="relative space-y-6">
+    <PageWatermark formData={formData} />
+    <div className="relative z-10">
+      <SWMSHeader formData={formData} onUpdate={onUpdate} />
+      
+      <h2 className="text-xl font-bold text-gray-900 mb-6">Emergency Information</h2>
     
     <div className="space-y-6">
       <div className="bg-gray-50 p-4 rounded-lg border">
@@ -461,15 +491,18 @@ const EmergencyInfoPage = ({ formData, onUpdate }: { formData: any, onUpdate: (f
         </div>
       </div>
     </div>
+    </div>
   </div>
 );
 
 // High Risk Activities Page
 const HighRiskActivitiesPage = ({ formData, onUpdate }: { formData: any, onUpdate: (field: string, value: any) => void }) => (
-  <div className="space-y-6">
-    <SWMSHeader formData={formData} onUpdate={onUpdate} />
-    
-    <h2 className="text-xl font-bold text-gray-900 mb-6">High Risk Activities</h2>
+  <div className="relative space-y-6">
+    <PageWatermark formData={formData} />
+    <div className="relative z-10">
+      <SWMSHeader formData={formData} onUpdate={onUpdate} />
+      
+      <h2 className="text-xl font-bold text-gray-900 mb-6">High Risk Activities</h2>
     
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {formData.highRiskActivities.map((activity: any, index: number) => (
@@ -490,15 +523,18 @@ const HighRiskActivitiesPage = ({ formData, onUpdate }: { formData: any, onUpdat
         </div>
       ))}
     </div>
+    </div>
   </div>
 );
 
 // Risk Matrix Page
 const RiskMatrixPage = ({ formData, onUpdate }: { formData: any, onUpdate: (field: string, value: any) => void }) => (
-  <div className="space-y-6">
-    <SWMSHeader formData={formData} onUpdate={onUpdate} />
-    
-    <h2 className="text-xl font-bold text-gray-900 mb-6">Construction Control Risk Matrix</h2>
+  <div className="relative space-y-6">
+    <PageWatermark formData={formData} />
+    <div className="relative z-10">
+      <SWMSHeader formData={formData} onUpdate={onUpdate} />
+      
+      <h2 className="text-xl font-bold text-gray-900 mb-6">Construction Control Risk Matrix</h2>
     
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
       {/* Left side - Risk definitions */}
@@ -682,15 +718,18 @@ const RiskMatrixPage = ({ formData, onUpdate }: { formData: any, onUpdate: (fiel
         </div>
       </div>
     </div>
+    </div>
   </div>
 );
 
 // Work Activities Page
 const WorkActivitiesPage = ({ formData, onUpdate }: { formData: any, onUpdate: (field: string, value: any) => void }) => (
-  <div className="space-y-6">
-    <SWMSHeader formData={formData} onUpdate={onUpdate} />
-    
-    <h2 className="text-xl font-bold text-gray-900 mb-6">Work Activities & Risk Assessment</h2>
+  <div className="relative space-y-6">
+    <PageWatermark formData={formData} />
+    <div className="relative z-10">
+      <SWMSHeader formData={formData} onUpdate={onUpdate} />
+      
+      <h2 className="text-xl font-bold text-gray-900 mb-6">Work Activities & Risk Assessment</h2>
     
     <div className="bg-gray-50 border rounded-lg overflow-hidden">
       <table className="w-full">
@@ -793,15 +832,18 @@ const WorkActivitiesPage = ({ formData, onUpdate }: { formData: any, onUpdate: (
         </tbody>
       </table>
     </div>
+    </div>
   </div>
 );
 
 // PPE Page
 const PPEPage = ({ formData, onUpdate }: { formData: any, onUpdate: (field: string, value: any) => void }) => (
-  <div className="space-y-6">
-    <SWMSHeader formData={formData} onUpdate={onUpdate} />
-    
-    <h2 className="text-xl font-bold text-gray-900 mb-6">Personal Protective Equipment (PPE)</h2>
+  <div className="relative space-y-6">
+    <PageWatermark formData={formData} />
+    <div className="relative z-10">
+      <SWMSHeader formData={formData} onUpdate={onUpdate} />
+      
+      <h2 className="text-xl font-bold text-gray-900 mb-6">Personal Protective Equipment (PPE)</h2>
     
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
       {formData.ppeItems.map((item: any, index: number) => (
@@ -825,15 +867,18 @@ const PPEPage = ({ formData, onUpdate }: { formData: any, onUpdate: (field: stri
         </div>
       ))}
     </div>
+    </div>
   </div>
 );
 
 // Plant Equipment Page
 const PlantEquipmentPage = ({ formData, onUpdate }: { formData: any, onUpdate: (field: string, value: any) => void }) => (
-  <div className="space-y-6">
-    <SWMSHeader formData={formData} onUpdate={onUpdate} />
-    
-    <h2 className="text-xl font-bold text-gray-900 mb-6">Plant & Equipment</h2>
+  <div className="relative space-y-6">
+    <PageWatermark formData={formData} />
+    <div className="relative z-10">
+      <SWMSHeader formData={formData} onUpdate={onUpdate} />
+      
+      <h2 className="text-xl font-bold text-gray-900 mb-6">Plant & Equipment</h2>
     
     <div className="bg-gray-50 border rounded-lg overflow-hidden">
       <table className="w-full">
@@ -933,40 +978,156 @@ const PlantEquipmentPage = ({ formData, onUpdate }: { formData: any, onUpdate: (
         </tbody>
       </table>
     </div>
+    </div>
   </div>
 );
 
 // Sign In Register Page
-const SignInRegisterPage = ({ formData, onUpdate }: { formData: any, onUpdate: (field: string, value: any) => void }) => (
-  <div className="space-y-6">
-    <SWMSHeader formData={formData} onUpdate={onUpdate} />
-    
-    <h2 className="text-xl font-bold text-gray-900 mb-6">Sign In Register</h2>
-    
-    <div className="bg-gray-50 border rounded-lg overflow-hidden">
-      <table className="w-full">
-        <thead>
-          <tr className="bg-gray-200">
-            <th className="text-left p-3 font-medium text-gray-700 w-1/4">Name</th>
-            <th className="text-left p-3 font-medium text-gray-700 w-1/4">Number</th>
-            <th className="text-left p-3 font-medium text-gray-700 w-1/4">Signature</th>
-            <th className="text-left p-3 font-medium text-gray-700 w-1/4">Date</th>
-          </tr>
-        </thead>
-        <tbody>
-          {Array.from({ length: 8 }).map((_, index) => (
-            <tr key={index} className="border-b">
-              <td className="p-3 h-16 border-r border-gray-300"></td>
-              <td className="p-3 h-16 border-r border-gray-300"></td>
-              <td className="p-3 h-16 border-r border-gray-300"></td>
-              <td className="p-3 h-16"></td>
+const SignInRegisterPage = ({ formData, onUpdate }: { formData: any, onUpdate: (field: string, value: any) => void }) => {
+  // Get signature data from SWMS builder
+  const signatureData = [
+    {
+      name: formData.swmsCreatorName || formData.authorisingPerson || '',
+      number: formData.jobNumber || '',
+      signature: formData.signatureText || 'Signed',
+      date: formData.startDate || new Date().toLocaleDateString()
+    },
+    {
+      name: formData.principalContractor || '',
+      number: formData.phone || '',
+      signature: 'Signed',
+      date: formData.startDate || new Date().toLocaleDateString()
+    },
+    {
+      name: formData.projectManager || '',
+      number: formData.phone || '',
+      signature: 'Signed',
+      date: formData.startDate || new Date().toLocaleDateString()
+    },
+    {
+      name: formData.siteSupervisor || '',
+      number: formData.phone || '',
+      signature: 'Signed',
+      date: formData.startDate || new Date().toLocaleDateString()
+    }
+  ];
+
+  return (
+    <div className="relative space-y-6">
+      <PageWatermark formData={formData} />
+      <div className="relative z-10">
+        <SWMSHeader formData={formData} onUpdate={onUpdate} />
+        
+        <h2 className="text-xl font-bold text-gray-900 mb-6">Sign In Register</h2>
+      
+      <div className="bg-gray-50 border rounded-lg overflow-hidden">
+        <table className="w-full">
+          <thead>
+            <tr className="bg-gray-200">
+              <th className="text-left p-3 font-medium text-gray-700 w-1/4">Name</th>
+              <th className="text-left p-3 font-medium text-gray-700 w-1/4">Number</th>
+              <th className="text-left p-3 font-medium text-gray-700 w-1/4">Signature</th>
+              <th className="text-left p-3 font-medium text-gray-700 w-1/4">Date</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {/* Pre-populated signature data from SWMS builder */}
+            {signatureData.map((sig, index) => (
+              <tr key={index} className="border-b">
+                <td className="p-3 h-16 border-r border-gray-300">
+                  <input
+                    type="text"
+                    value={sig.name}
+                    onChange={(e) => {
+                      const newSignatures = [...signatureData];
+                      newSignatures[index].name = e.target.value;
+                      onUpdate('signatureData', newSignatures);
+                    }}
+                    className="w-full bg-transparent border-none outline-none text-gray-900"
+                    placeholder="Enter name"
+                  />
+                </td>
+                <td className="p-3 h-16 border-r border-gray-300">
+                  <input
+                    type="text"
+                    value={sig.number}
+                    onChange={(e) => {
+                      const newSignatures = [...signatureData];
+                      newSignatures[index].number = e.target.value;
+                      onUpdate('signatureData', newSignatures);
+                    }}
+                    className="w-full bg-transparent border-none outline-none text-gray-900"
+                    placeholder="Enter number"
+                  />
+                </td>
+                <td className="p-3 h-16 border-r border-gray-300">
+                  <input
+                    type="text"
+                    value={sig.signature}
+                    onChange={(e) => {
+                      const newSignatures = [...signatureData];
+                      newSignatures[index].signature = e.target.value;
+                      onUpdate('signatureData', newSignatures);
+                    }}
+                    className="w-full bg-transparent border-none outline-none text-gray-900"
+                    placeholder="Signature"
+                  />
+                </td>
+                <td className="p-3 h-16">
+                  <input
+                    type="text"
+                    value={sig.date}
+                    onChange={(e) => {
+                      const newSignatures = [...signatureData];
+                      newSignatures[index].date = e.target.value;
+                      onUpdate('signatureData', newSignatures);
+                    }}
+                    className="w-full bg-transparent border-none outline-none text-gray-900"
+                    placeholder="Date"
+                  />
+                </td>
+              </tr>
+            ))}
+            {/* Additional empty rows */}
+            {Array.from({ length: 4 }).map((_, index) => (
+              <tr key={index + 4} className="border-b">
+                <td className="p-3 h-16 border-r border-gray-300">
+                  <input
+                    type="text"
+                    className="w-full bg-transparent border-none outline-none text-gray-900"
+                    placeholder="Enter name"
+                  />
+                </td>
+                <td className="p-3 h-16 border-r border-gray-300">
+                  <input
+                    type="text"
+                    className="w-full bg-transparent border-none outline-none text-gray-900"
+                    placeholder="Enter number"
+                  />
+                </td>
+                <td className="p-3 h-16 border-r border-gray-300">
+                  <input
+                    type="text"
+                    className="w-full bg-transparent border-none outline-none text-gray-900"
+                    placeholder="Signature"
+                  />
+                </td>
+                <td className="p-3 h-16">
+                  <input
+                    type="text"
+                    className="w-full bg-transparent border-none outline-none text-gray-900"
+                    placeholder="Date"
+                  />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 export default function SwmsComplete({ initialData }: { initialData?: any } = {}) {
   const [formData, setFormData] = useState(() => {
@@ -994,7 +1155,11 @@ export default function SwmsComplete({ initialData }: { initialData?: any } = {}
           })) : defaultFormData.highRiskActivities,
         ppeRequirements: initialData.ppeRequirements || defaultFormData.ppeRequirements,
         plantEquipment: initialData.plantEquipment || defaultFormData.plantEquipment,
-        companyLogo: initialData.companyLogo || defaultFormData.companyLogo
+        companyLogo: initialData.companyLogo || defaultFormData.companyLogo,
+        // Map signature data from SWMS builder
+        swmsCreatorName: initialData.swmsCreatorName || initialData.authorisingPerson || defaultFormData.authorisingPerson,
+        signatureText: initialData.signatureText || defaultFormData.signatureText,
+        signatureImage: initialData.signatureImage || defaultFormData.signatureImage
       };
     }
     return defaultFormData;
