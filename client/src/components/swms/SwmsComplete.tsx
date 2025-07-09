@@ -6,17 +6,21 @@ import { RiskBadgeNew } from './RiskBadgeNew';
 
 type DocumentPage = 'project-info' | 'emergency-info' | 'high-risk-activities' | 'risk-matrix' | 'work-activities' | 'ppe' | 'plant-equipment' | 'sign-in';
 
-// Riskify Logo as colored PNG-style SVG
+// Riskify Logo - Updated to match attachment 2
 const RiskifyLogo = () => (
-  <svg width="86" height="86" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect width="100" height="100" rx="10" fill="#2c5530"/>
-    <circle cx="50" cy="40" r="20" fill="#4CAF50"/>
-    <text x="50" y="35" textAnchor="middle" fill="white" fontSize="12" fontWeight="bold">RISKIFY</text>
-    <text x="50" y="55" textAnchor="middle" fill="white" fontSize="6">CONSTRUCTION</text>
-    <text x="50" y="65" textAnchor="middle" fill="white" fontSize="6">SAFETY</text>
-    <rect x="30" y="75" width="40" height="3" fill="#FF9800"/>
-    <rect x="35" y="80" width="30" height="3" fill="#2196F3"/>
-  </svg>
+  <div className="flex items-center space-x-2">
+    <div className="w-12 h-12 bg-emerald-800 rounded-lg flex items-center justify-center">
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="32" height="32" rx="6" fill="#065f46"/>
+        <path d="M16 8L24 20H8L16 8Z" fill="#10b981"/>
+        <circle cx="16" cy="14" r="2" fill="white"/>
+      </svg>
+    </div>
+    <div>
+      <div className="text-2xl font-bold text-gray-800">Riskify</div>
+      <div className="text-sm text-gray-600">AI SWMS Generator</div>
+    </div>
+  </div>
 );
 
 // Page Watermark Component
@@ -859,7 +863,7 @@ const PPEPage = ({ formData, onUpdate }: { formData: any, onUpdate: (field: stri
         <div 
           key={index} 
           className={`border rounded-lg p-4 cursor-pointer transition-all ${
-            item.selected ? 'bg-green-50 border-green-200' : 'bg-white border-gray-200'
+            item.selected ? 'bg-green-50 border-green-500 shadow-md' : 'bg-white border-gray-200 hover:border-gray-300'
           }`}
           onClick={() => {
             const newItems = [...formData.ppeItems];
@@ -867,11 +871,20 @@ const PPEPage = ({ formData, onUpdate }: { formData: any, onUpdate: (field: stri
             onUpdate('ppeItems', newItems);
           }}
         >
-          <div className="text-sm font-medium text-gray-800 mb-2">
-            {item.name}
-          </div>
-          <div className="text-xs text-gray-600">
-            {item.description}
+          <div className="flex items-start space-x-3">
+            <div className={`w-5 h-5 rounded border-2 flex items-center justify-center mt-1 ${
+              item.selected ? 'bg-green-500 border-green-500' : 'border-gray-300'
+            }`}>
+              {item.selected && <span className="text-white text-xs">✓</span>}
+            </div>
+            <div className="flex-1">
+              <div className="text-sm font-medium text-gray-800 mb-2">
+                {item.name}
+              </div>
+              <div className="text-xs text-gray-600">
+                {item.description}
+              </div>
+            </div>
           </div>
         </div>
       ))}
@@ -1154,7 +1167,48 @@ export default function SwmsComplete({ initialData }: { initialData?: any } = {}
         projectManager: initialData.projectManager || defaultFormData.projectManager,
         siteSupervisor: initialData.siteSupervisor || defaultFormData.siteSupervisor,
         startDate: initialData.startDate || defaultFormData.startDate,
-        workActivities: initialData.workActivities || initialData.selectedTasks || defaultFormData.workActivities,
+        workActivities: initialData.workActivities ? 
+          initialData.workActivities.map((activity: any, index: number) => ({
+            id: index + 1,
+            activity: activity.activity || activity.name || activity.taskName || 'Activity description',
+            hazards: activity.hazards || activity.hazardList || [
+              'Hazard description 01',
+              'Hazard description 02',
+              'Hazard description 03'
+            ],
+            initialRisk: activity.initialRisk || activity.riskLevel || 'Medium (6)',
+            controlMeasures: activity.controlMeasures || activity.controls || [
+              'Control measure 01',
+              'Control measure 02',
+              'Control measure 03'
+            ],
+            residualRisk: activity.residualRisk || activity.finalRisk || 'Low (3)',
+            legislation: activity.legislation || activity.referencedLegislation || [
+              'NSW WHS Regulation 2017',
+              'AS/NZS 1891.1:2007'
+            ]
+          })) : 
+          initialData.selectedTasks ?
+          initialData.selectedTasks.map((task: any, index: number) => ({
+            id: index + 1,
+            activity: task.activity || task.name || task.taskName || 'Activity description',
+            hazards: task.hazards || task.hazardList || [
+              'Hazard description 01',
+              'Hazard description 02',
+              'Hazard description 03'
+            ],
+            initialRisk: task.initialRisk || task.riskLevel || 'Medium (6)',
+            controlMeasures: task.controlMeasures || task.controls || [
+              'Control measure 01',
+              'Control measure 02',
+              'Control measure 03'
+            ],
+            residualRisk: task.residualRisk || task.finalRisk || 'Low (3)',
+            legislation: task.legislation || task.referencedLegislation || [
+              'NSW WHS Regulation 2017',
+              'AS/NZS 1891.1:2007'
+            ]
+          })) : defaultFormData.workActivities,
         emergencyContacts: initialData.emergencyContacts || defaultFormData.emergencyContacts,
         emergencyProcedures: initialData.emergencyProcedures || defaultFormData.emergencyProcedures,
         highRiskActivities: initialData.hrcwCategories ? 
@@ -1162,7 +1216,11 @@ export default function SwmsComplete({ initialData }: { initialData?: any } = {}
             ...activity,
             selected: initialData.hrcwCategories?.includes(activity.name) || false
           })) : defaultFormData.highRiskActivities,
-        ppeRequirements: initialData.ppeRequirements || defaultFormData.ppeRequirements,
+        ppeItems: initialData.ppeRequirements ? 
+          defaultFormData.ppeItems.map(item => ({
+            ...item,
+            selected: initialData.ppeRequirements?.includes(item.name) || false
+          })) : defaultFormData.ppeItems,
         plantEquipment: initialData.plantEquipment || defaultFormData.plantEquipment,
         companyLogo: initialData.companyLogo || defaultFormData.companyLogo,
         // Map signature data from SWMS builder
