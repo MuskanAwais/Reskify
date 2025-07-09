@@ -252,7 +252,7 @@ const SWMSHeader = ({ formData, onUpdate }: { formData: any, onUpdate: (field: s
       </div>
       
       {/* Company logo upload */}
-      <div className="w-24 h-24 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center bg-gray-50">
+      <div className="w-24 h-24 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center bg-gray-50 relative">
         {formData.companyLogo ? (
           <img 
             src={formData.companyLogo} 
@@ -520,18 +520,29 @@ const HighRiskActivitiesPage = ({ formData, onUpdate }: { formData: any, onUpdat
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {formData.highRiskActivities.map((activity: any, index: number) => (
         <div 
-          key={index} 
-          className={`border rounded-lg p-4 cursor-pointer transition-all ${
-            activity.selected ? 'bg-orange-50 border-orange-200' : 'bg-white border-gray-200'
+          key={`hrcw-${index}`} 
+          className={`border rounded-lg p-4 cursor-pointer transition-all select-none ${
+            activity.selected ? 'bg-orange-50 border-orange-500 shadow-md' : 'bg-white border-gray-200 hover:border-gray-300'
           }`}
-          onClick={() => {
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
             const newActivities = [...formData.highRiskActivities];
             newActivities[index].selected = !newActivities[index].selected;
             onUpdate('highRiskActivities', newActivities);
           }}
         >
-          <div className="text-sm text-gray-800 leading-relaxed">
-            {activity.name}
+          <div className="flex items-start space-x-3">
+            <div className={`w-5 h-5 rounded border-2 flex items-center justify-center mt-1 flex-shrink-0 ${
+              activity.selected ? 'bg-orange-500 border-orange-500' : 'border-gray-300'
+            }`}>
+              {activity.selected && <span className="text-white text-xs font-bold">✓</span>}
+            </div>
+            <div className="flex-1">
+              <div className="text-sm text-gray-800 leading-relaxed">
+                {activity.name}
+              </div>
+            </div>
           </div>
         </div>
       ))}
@@ -793,9 +804,12 @@ const WorkActivitiesPage = ({ formData, onUpdate }: { formData: any, onUpdate: (
                 </ul>
               </td>
               <td className="p-3 text-gray-800 align-top">
-                <RiskBadgeNew level={activity.initialRisk.toLowerCase().includes('extreme') ? 'extreme' : 
-                                    activity.initialRisk.toLowerCase().includes('high') ? 'high' : 
-                                    activity.initialRisk.toLowerCase().includes('medium') ? 'medium' : 'low'} />
+                <RiskBadgeNew 
+                  level={activity.initialRisk.toLowerCase().includes('extreme') ? 'extreme' : 
+                         activity.initialRisk.toLowerCase().includes('high') ? 'high' : 
+                         activity.initialRisk.toLowerCase().includes('medium') ? 'medium' : 'low'} 
+                  score={parseInt(activity.initialRisk.match(/\d+/)?.[0] || '6')}
+                />
               </td>
               <td className="p-3 text-gray-800 align-top">
                 <ul className="text-sm space-y-1">
@@ -817,9 +831,12 @@ const WorkActivitiesPage = ({ formData, onUpdate }: { formData: any, onUpdate: (
                 </ul>
               </td>
               <td className="p-3 text-gray-800 align-top">
-                <RiskBadgeNew level={activity.residualRisk.toLowerCase().includes('extreme') ? 'extreme' : 
-                                    activity.residualRisk.toLowerCase().includes('high') ? 'high' : 
-                                    activity.residualRisk.toLowerCase().includes('medium') ? 'medium' : 'low'} />
+                <RiskBadgeNew 
+                  level={activity.residualRisk.toLowerCase().includes('extreme') ? 'extreme' : 
+                         activity.residualRisk.toLowerCase().includes('high') ? 'high' : 
+                         activity.residualRisk.toLowerCase().includes('medium') ? 'medium' : 'low'} 
+                  score={parseInt(activity.residualRisk.match(/\d+/)?.[0] || '3')}
+                />
               </td>
               <td className="p-3 text-gray-800 align-top">
                 <ul className="text-sm space-y-1">
@@ -861,21 +878,23 @@ const PPEPage = ({ formData, onUpdate }: { formData: any, onUpdate: (field: stri
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
       {formData.ppeItems.map((item: any, index: number) => (
         <div 
-          key={index} 
-          className={`border rounded-lg p-4 cursor-pointer transition-all ${
+          key={`ppe-${index}`} 
+          className={`border rounded-lg p-4 cursor-pointer transition-all select-none ${
             item.selected ? 'bg-green-50 border-green-500 shadow-md' : 'bg-white border-gray-200 hover:border-gray-300'
           }`}
-          onClick={() => {
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
             const newItems = [...formData.ppeItems];
             newItems[index].selected = !newItems[index].selected;
             onUpdate('ppeItems', newItems);
           }}
         >
           <div className="flex items-start space-x-3">
-            <div className={`w-5 h-5 rounded border-2 flex items-center justify-center mt-1 ${
+            <div className={`w-5 h-5 rounded border-2 flex items-center justify-center mt-1 flex-shrink-0 ${
               item.selected ? 'bg-green-500 border-green-500' : 'border-gray-300'
             }`}>
-              {item.selected && <span className="text-white text-xs">✓</span>}
+              {item.selected && <span className="text-white text-xs font-bold">✓</span>}
             </div>
             <div className="flex-1">
               <div className="text-sm font-medium text-gray-800 mb-2">

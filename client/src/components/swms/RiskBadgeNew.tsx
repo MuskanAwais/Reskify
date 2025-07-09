@@ -36,7 +36,7 @@ export const RiskBadgeNew: React.FC<RiskBadgeProps> = ({ level, score }) => {
         whiteSpace: 'nowrap',
         boxSizing: 'border-box',
         lineHeight: 1,
-        paddingTop: '3px'
+        paddingTop: '6px'
       }}
       key={`badge-${Date.now()}-${Math.random()}`}
     >
