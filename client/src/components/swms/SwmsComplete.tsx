@@ -21,21 +21,30 @@ const RiskifyLogo = () => (
 
 // Page Watermark Component
 const PageWatermark = ({ formData }: { formData: any }) => (
-  <div className="absolute inset-0 pointer-events-none z-0 opacity-10">
-    <div className="absolute inset-0 flex flex-col justify-center items-center text-gray-400 text-lg font-bold transform rotate-[-30deg] select-none">
-      <div className="text-center space-y-2">
-        <div>{formData.projectName || 'Project Name'}</div>
-        <div>{formData.projectNumber || 'Project Number'}</div>
+  <div className="absolute inset-0 pointer-events-none z-0 opacity-[0.08] overflow-hidden">
+    {/* Main center watermark */}
+    <div className="absolute inset-0 flex flex-col justify-center items-center text-gray-600 text-2xl font-bold transform rotate-[-25deg] select-none">
+      <div className="text-center space-y-3">
+        <div>{formData.projectName || formData.jobName || 'Project Name'}</div>
+        <div>{formData.projectNumber || formData.jobNumber || 'Project Number'}</div>
         <div>{formData.projectAddress || 'Project Address'}</div>
       </div>
     </div>
-    {/* Repeated watermark pattern */}
-    <div className="absolute inset-0 grid grid-cols-3 gap-8 p-8">
-      {Array.from({ length: 9 }).map((_, i) => (
-        <div key={i} className="flex flex-col justify-center items-center text-gray-300 text-sm font-medium transform rotate-[-30deg] select-none">
+    {/* Repeated watermark pattern covering entire page */}
+    <div className="absolute inset-0">
+      {Array.from({ length: 12 }).map((_, i) => (
+        <div 
+          key={i} 
+          className="absolute text-gray-500 text-lg font-semibold transform rotate-[-25deg] select-none"
+          style={{
+            top: `${(i % 4) * 25}%`,
+            left: `${Math.floor(i / 4) * 33}%`,
+            transform: 'rotate(-25deg) translate(-50%, -50%)'
+          }}
+        >
           <div className="text-center space-y-1">
-            <div>{formData.projectName || 'Project Name'}</div>
-            <div>{formData.projectNumber || 'Project Number'}</div>
+            <div>{formData.projectName || formData.jobName || 'Project Name'}</div>
+            <div>{formData.projectNumber || formData.jobNumber || 'Project Number'}</div>
             <div>{formData.projectAddress || 'Project Address'}</div>
           </div>
         </div>
