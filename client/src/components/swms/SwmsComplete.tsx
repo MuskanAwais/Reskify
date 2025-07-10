@@ -738,11 +738,11 @@ const SwmsComplete: React.FC = () => {
           {/* Add other form sections as needed */}
         </div>
 
-        {/* Preview Section */}
+        {/* Preview Section - Figma Design Implementation */}
         {showPreview && (
           <div className="preview-section" style={{
             width: '50%',
-            backgroundColor: '#f1f5f9',
+            backgroundColor: '#f8fafc',
             overflow: 'auto',
             position: 'relative'
           }}>
@@ -776,147 +776,319 @@ const SwmsComplete: React.FC = () => {
               <div id="swms-preview" style={{
                 backgroundColor: '#ffffff',
                 padding: '40px',
-                borderRadius: '8px',
-                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                maxWidth: '210mm',
+                borderRadius: '12px',
+                boxShadow: '0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+                maxWidth: '794px', // A4 landscape width
+                minHeight: '1123px', // A4 landscape height
                 margin: '0 auto',
                 fontSize: '12px',
-                lineHeight: '1.4'
+                lineHeight: '1.5',
+                fontFamily: 'Inter, system-ui, -apple-system, sans-serif'
               }}>
-                {/* Document Header */}
-                <div className="document-header" style={{
+                {/* Figma Header - Top Navigation Bar */}
+                <div className="figma-header" style={{
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  marginBottom: '30px',
-                  paddingBottom: '20px',
-                  borderBottom: '2px solid #3b82f6'
+                  padding: '12px 20px',
+                  backgroundColor: '#f8fafc',
+                  borderRadius: '8px',
+                  marginBottom: '24px',
+                  border: '1px solid #e2e8f0'
                 }}>
-                  <div>
-                    <RiskifyLogo />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px', fontSize: '11px', color: '#64748b' }}>
+                    <span>Resources</span>
+                    <span>Contact</span>
+                    <span style={{ fontWeight: '600', color: '#1e293b' }}>User Company Name</span>
+                    <span>Project Name</span>
+                    <span>Project Number</span>
+                    <span>Project Address</span>
                   </div>
-                  <div style={{ textAlign: 'right' }}>
-                    <h1 style={{ margin: 0, fontSize: '24px', fontWeight: '700', color: '#1e293b' }}>
-                      Safe Work Method Statement
-                    </h1>
-                    <p style={{ margin: '8px 0 0 0', fontSize: '14px', color: '#6b7280' }}>
-                      Document ID: {formData.projectNumber}
-                    </p>
+                  <div style={{ 
+                    padding: '6px 12px', 
+                    backgroundColor: '#e5e7eb', 
+                    borderRadius: '4px', 
+                    fontSize: '10px', 
+                    color: '#6b7280',
+                    border: '1px dashed #9ca3af'
+                  }}>
+                    Insert company logo here
                   </div>
                 </div>
 
-                {/* Project Information Preview */}
+                {/* Project Information Page - Figma Style */}
                 {activeTab === 'project-info' && (
-                  <div className="project-info-preview">
-                    <h2 style={{ marginBottom: '20px', color: '#1e293b', fontSize: '18px' }}>Project Information</h2>
-                    
-                    <div className="info-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-                      <div>
-                        <div className="info-item" style={{ marginBottom: '12px' }}>
-                          <strong style={{ color: '#374151' }}>Company Name:</strong>
-                          <br />
-                          {formData.companyName}
-                        </div>
-                        <div className="info-item" style={{ marginBottom: '12px' }}>
-                          <strong style={{ color: '#374151' }}>Project Name:</strong>
-                          <br />
-                          {formData.projectName}
-                        </div>
-                        <div className="info-item" style={{ marginBottom: '12px' }}>
-                          <strong style={{ color: '#374151' }}>Project Number:</strong>
-                          <br />
-                          {formData.projectNumber}
-                        </div>
-                        <div className="info-item" style={{ marginBottom: '12px' }}>
-                          <strong style={{ color: '#374151' }}>Start Date:</strong>
-                          <br />
-                          {formData.startDate}
-                        </div>
+                  <div className="figma-project-info">
+                    <div style={{
+                      textAlign: 'center',
+                      marginBottom: '32px',
+                      paddingBottom: '20px',
+                      borderBottom: '2px solid #e2e8f0'
+                    }}>
+                      <h1 style={{ 
+                        margin: 0, 
+                        fontSize: '28px', 
+                        fontWeight: '700', 
+                        color: '#1e293b',
+                        marginBottom: '8px'
+                      }}>
+                        Safe Work Method Statement
+                      </h1>
+                      <h2 style={{ 
+                        margin: 0, 
+                        fontSize: '20px', 
+                        fontWeight: '600', 
+                        color: '#3b82f6'
+                      }}>
+                        Project Information
+                      </h2>
+                    </div>
+
+                    <div className="figma-info-grid" style={{
+                      display: 'grid',
+                      gridTemplateColumns: '1fr 1fr 1fr',
+                      gap: '24px',
+                      marginBottom: '32px'
+                    }}>
+                      <div className="figma-info-card" style={{
+                        backgroundColor: '#f8fafc',
+                        padding: '16px',
+                        borderRadius: '8px',
+                        border: '1px solid #e2e8f0'
+                      }}>
+                        <div style={{ fontWeight: '600', color: '#374151', marginBottom: '8px' }}>Job Name:</div>
+                        <div style={{ color: '#1e293b' }}>{formData.projectName || 'Test Project Name'}</div>
                       </div>
-                      <div>
-                        <div className="info-item" style={{ marginBottom: '12px' }}>
-                          <strong style={{ color: '#374151' }}>Principal Contractor:</strong>
-                          <br />
-                          {formData.principalContractor}
+
+                      <div className="figma-info-card" style={{
+                        backgroundColor: '#f8fafc',
+                        padding: '16px',
+                        borderRadius: '8px',
+                        border: '1px solid #e2e8f0'
+                      }}>
+                        <div style={{ fontWeight: '600', color: '#374151', marginBottom: '8px' }}>Company Name:</div>
+                        <div style={{ color: '#1e293b' }}>{formData.companyName || 'Test Company Name'}</div>
+                      </div>
+
+                      <div className="figma-info-card" style={{
+                        backgroundColor: '#f8fafc',
+                        padding: '16px',
+                        borderRadius: '8px',
+                        border: '1px solid #e2e8f0'
+                      }}>
+                        <div style={{ fontWeight: '600', color: '#374151', marginBottom: '8px' }}>Job Number:</div>
+                        <div style={{ color: '#1e293b' }}>{formData.projectNumber || '123 456'}</div>
+                      </div>
+
+                      <div className="figma-info-card" style={{
+                        backgroundColor: '#f8fafc',
+                        padding: '16px',
+                        borderRadius: '8px',
+                        border: '1px solid #e2e8f0'
+                      }}>
+                        <div style={{ fontWeight: '600', color: '#374151', marginBottom: '8px' }}>Project Address:</div>
+                        <div style={{ color: '#1e293b' }}>{formData.projectAddress || '123 Sample Job Address'}</div>
+                      </div>
+
+                      <div className="figma-info-card" style={{
+                        backgroundColor: '#f8fafc',
+                        padding: '16px',
+                        borderRadius: '8px',
+                        border: '1px solid #e2e8f0'
+                      }}>
+                        <div style={{ fontWeight: '600', color: '#374151', marginBottom: '8px' }}>Start Date:</div>
+                        <div style={{ color: '#1e293b' }}>{new Date(formData.startDate).toLocaleDateString() || '12th July 2025'}</div>
+                      </div>
+
+                      <div className="figma-info-card" style={{
+                        backgroundColor: '#f8fafc',
+                        padding: '16px',
+                        borderRadius: '8px',
+                        border: '1px solid #e2e8f0'
+                      }}>
+                        <div style={{ fontWeight: '600', color: '#374151', marginBottom: '8px' }}>Duration:</div>
+                        <div style={{ color: '#1e293b' }}>{formData.duration || '8 Weeks'}</div>
+                      </div>
+                    </div>
+
+                    <div className="figma-personnel-section" style={{ marginBottom: '32px' }}>
+                      <div className="figma-info-grid" style={{
+                        display: 'grid',
+                        gridTemplateColumns: '1fr 1fr 1fr',
+                        gap: '16px'
+                      }}>
+                        <div className="figma-info-card" style={{
+                          backgroundColor: '#fef3c7',
+                          padding: '16px',
+                          borderRadius: '8px',
+                          border: '1px solid #fbbf24'
+                        }}>
+                          <div style={{ fontWeight: '600', color: '#92400e', marginBottom: '8px' }}>Principal Contractor's Name:</div>
+                          <div style={{ color: '#1e293b' }}>{formData.principalContractor || 'Test Principal Contractor'}</div>
                         </div>
-                        <div className="info-item" style={{ marginBottom: '12px' }}>
-                          <strong style={{ color: '#374151' }}>Project Manager:</strong>
-                          <br />
-                          {formData.projectManager}
+
+                        <div className="figma-info-card" style={{
+                          backgroundColor: '#fef3c7',
+                          padding: '16px',
+                          borderRadius: '8px',
+                          border: '1px solid #fbbf24'
+                        }}>
+                          <div style={{ fontWeight: '600', color: '#92400e', marginBottom: '8px' }}>Project Manager:</div>
+                          <div style={{ color: '#1e293b' }}>{formData.projectManager || 'Test Project Manager Name'}</div>
                         </div>
-                        <div className="info-item" style={{ marginBottom: '12px' }}>
-                          <strong style={{ color: '#374151' }}>Site Supervisor:</strong>
-                          <br />
-                          {formData.siteSupervisor}
-                        </div>
-                        <div className="info-item" style={{ marginBottom: '12px' }}>
-                          <strong style={{ color: '#374151' }}>Duration:</strong>
-                          <br />
-                          {formData.duration}
+
+                        <div className="figma-info-card" style={{
+                          backgroundColor: '#fef3c7',
+                          padding: '16px',
+                          borderRadius: '8px',
+                          border: '1px solid #fbbf24'
+                        }}>
+                          <div style={{ fontWeight: '600', color: '#92400e', marginBottom: '8px' }}>Site Supervisor:</div>
+                          <div style={{ color: '#1e293b' }}>{formData.siteSupervisor || 'Test Project Supervisor'}</div>
                         </div>
                       </div>
                     </div>
 
-                    <div className="info-item" style={{ marginTop: '20px' }}>
-                      <strong style={{ color: '#374151' }}>Project Address:</strong>
-                      <br />
-                      {formData.projectAddress}
+                    <div className="figma-auth-section" style={{
+                      backgroundColor: '#ecfdf5',
+                      padding: '20px',
+                      borderRadius: '8px',
+                      border: '1px solid #10b981',
+                      marginBottom: '24px'
+                    }}>
+                      <h3 style={{ margin: '0 0 16px 0', color: '#065f46', fontSize: '16px', fontWeight: '600' }}>
+                        Person Authorising SWMS
+                      </h3>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                        <div>
+                          <div style={{ fontWeight: '600', color: '#065f46', marginBottom: '4px' }}>Name:</div>
+                          <div style={{ color: '#1e293b' }}>{formData.authorisingPerson || 'Test authorising person name'}</div>
+                        </div>
+                        <div>
+                          <div style={{ fontWeight: '600', color: '#065f46', marginBottom: '4px' }}>Position:</div>
+                          <div style={{ color: '#1e293b' }}>{formData.authorisingPosition || 'Test authorising person position'}</div>
+                        </div>
+                      </div>
                     </div>
 
-                    <div className="info-item" style={{ marginTop: '20px' }}>
-                      <strong style={{ color: '#374151' }}>Scope of Works:</strong>
-                      <br />
-                      {formData.scopeOfWorks}
+                    <div className="figma-scope-section" style={{
+                      backgroundColor: '#f1f5f9',
+                      padding: '20px',
+                      borderRadius: '8px',
+                      border: '1px solid #3b82f6'
+                    }}>
+                      <h3 style={{ margin: '0 0 12px 0', color: '#1e40af', fontSize: '16px', fontWeight: '600' }}>
+                        Scope of Works
+                      </h3>
+                      <p style={{ margin: 0, color: '#1e293b', lineHeight: '1.6' }}>
+                        {formData.scopeOfWorks || 'Sample scope of works description'}
+                      </p>
                     </div>
                   </div>
                 )}
 
-                {/* Work Activities Preview */}
+                {/* Work Activities Page - Figma Table Style */}
                 {activeTab === 'work-activities' && (
-                  <div className="work-activities-preview">
-                    <h2 style={{ marginBottom: '20px', color: '#1e293b', fontSize: '18px' }}>Work Activities</h2>
-                    
-                    <div className="activities-table" style={{ 
-                      border: '1px solid #e2e8f0',
+                  <div className="figma-work-activities">
+                    <div style={{
+                      textAlign: 'center',
+                      marginBottom: '32px',
+                      paddingBottom: '20px',
+                      borderBottom: '2px solid #e2e8f0'
+                    }}>
+                      <h1 style={{ 
+                        margin: 0, 
+                        fontSize: '24px', 
+                        fontWeight: '700', 
+                        color: '#1e293b'
+                      }}>
+                        Work Activities & Risk Assessment
+                      </h1>
+                    </div>
+
+                    <div className="figma-activities-table" style={{
+                      border: '2px solid #e2e8f0',
                       borderRadius: '8px',
                       overflow: 'hidden'
                     }}>
-                      <div className="table-header" style={{
-                        backgroundColor: '#f8fafc',
-                        padding: '12px',
+                      {/* Table Header */}
+                      <div className="figma-table-header" style={{
                         display: 'grid',
-                        gridTemplateColumns: '2fr 1fr 1fr 1fr',
-                        gap: '12px',
-                        borderBottom: '1px solid #e2e8f0',
+                        gridTemplateColumns: '2fr 2fr 1fr 2fr 1fr 2fr',
+                        backgroundColor: '#1e293b',
+                        color: '#ffffff',
                         fontWeight: '600',
                         fontSize: '11px'
                       }}>
-                        <div>Activity</div>
-                        <div>Hazards</div>
-                        <div>Initial Risk</div>
-                        <div>Residual Risk</div>
+                        <div style={{ padding: '12px 8px', borderRight: '1px solid #374151' }}>Activity</div>
+                        <div style={{ padding: '12px 8px', borderRight: '1px solid #374151' }}>Hazards</div>
+                        <div style={{ padding: '12px 8px', borderRight: '1px solid #374151' }}>Initial Risk</div>
+                        <div style={{ padding: '12px 8px', borderRight: '1px solid #374151' }}>Control Measures</div>
+                        <div style={{ padding: '12px 8px', borderRight: '1px solid #374151' }}>Residual Risk</div>
+                        <div style={{ padding: '12px 8px' }}>Legislation</div>
                       </div>
-                      
+
+                      {/* Table Rows */}
                       {formData.workActivities.map((activity, index) => (
-                        <div key={activity.id} className="table-row" style={{
-                          padding: '12px',
+                        <div key={activity.id} className="figma-table-row" style={{
                           display: 'grid',
-                          gridTemplateColumns: '2fr 1fr 1fr 1fr',
-                          gap: '12px',
-                          borderBottom: index < formData.workActivities.length - 1 ? '1px solid #e2e8f0' : 'none',
-                          alignItems: 'start'
+                          gridTemplateColumns: '2fr 2fr 1fr 2fr 1fr 2fr',
+                          backgroundColor: index % 2 === 0 ? '#ffffff' : '#f8fafc',
+                          borderBottom: index < formData.workActivities.length - 1 ? '1px solid #e2e8f0' : 'none'
                         }}>
-                          <div style={{ fontSize: '11px' }}>
-                            <strong>{activity.activity}</strong>
+                          <div style={{ 
+                            padding: '16px 8px', 
+                            borderRight: '1px solid #e2e8f0',
+                            fontSize: '11px',
+                            fontWeight: '600'
+                          }}>
+                            {activity.activity}
                           </div>
-                          <div style={{ fontSize: '10px' }}>
-                            {activity.hazards.join(', ')}
+                          <div style={{ 
+                            padding: '16px 8px', 
+                            borderRight: '1px solid #e2e8f0',
+                            fontSize: '10px'
+                          }}>
+                            {activity.hazards.map((hazard, idx) => (
+                              <div key={idx} style={{ marginBottom: '4px' }}>
+                                {hazard}
+                              </div>
+                            ))}
                           </div>
-                          <div style={{ display: 'flex', alignItems: 'center' }}>
+                          <div style={{ 
+                            padding: '16px 8px', 
+                            borderRight: '1px solid #e2e8f0',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                          }}>
                             <RiskBadgeNew level={activity.initialRisk} score={activity.initialRiskScore} />
                           </div>
-                          <div style={{ display: 'flex', alignItems: 'center' }}>
+                          <div style={{ 
+                            padding: '16px 8px', 
+                            borderRight: '1px solid #e2e8f0',
+                            fontSize: '10px'
+                          }}>
+                            {activity.controlMeasures?.map((measure, idx) => (
+                              <div key={idx} style={{ marginBottom: '4px' }}>
+                                {measure}
+                              </div>
+                            )) || 'Control measures to be defined'}
+                          </div>
+                          <div style={{ 
+                            padding: '16px 8px', 
+                            borderRight: '1px solid #e2e8f0',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                          }}>
                             <RiskBadgeNew level={activity.residualRisk} score={activity.residualRiskScore} />
+                          </div>
+                          <div style={{ 
+                            padding: '16px 8px',
+                            fontSize: '10px'
+                          }}>
+                            {activity.legislation || 'Legislation description 01\nLegislation description 02 this is an extended description'}
                           </div>
                         </div>
                       ))}
@@ -924,30 +1096,140 @@ const SwmsComplete: React.FC = () => {
                   </div>
                 )}
 
-                {/* High Risk Activities Preview */}
+                {/* High Risk Activities - Figma Grid Style */}
                 {activeTab === 'high-risk' && (
-                  <div className="high-risk-preview">
-                    <h2 style={{ marginBottom: '20px', color: '#1e293b', fontSize: '18px' }}>High Risk Construction Work</h2>
-                    
-                    <div className="selected-activities">
-                      {formData.highRiskActivities.filter(activity => activity.selected).map((activity, index) => (
-                        <div key={activity.id} className="selected-activity" style={{
-                          backgroundColor: '#fef3c7',
-                          border: '1px solid #f59e0b',
-                          borderRadius: '6px',
+                  <div className="figma-high-risk">
+                    <div style={{
+                      textAlign: 'center',
+                      marginBottom: '32px',
+                      paddingBottom: '20px',
+                      borderBottom: '2px solid #e2e8f0'
+                    }}>
+                      <h1 style={{ 
+                        margin: 0, 
+                        fontSize: '24px', 
+                        fontWeight: '700', 
+                        color: '#1e293b'
+                      }}>
+                        High Risk Activities
+                      </h1>
+                    </div>
+
+                    <div className="figma-risk-grid" style={{
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(3, 1fr)',
+                      gap: '16px'
+                    }}>
+                      {[
+                        'Work on a telecommunication tower',
+                        'Risk of a person failing more than 2 metres (e.g. work on ladders, scaffolding, roofs, etc.)',
+                        'Work involving demolition of an element that is load-bearing or otherwise related to the physical integrity of the structure',
+                        'Work involving the disturbance of asbestos',
+                        'Work involving structural alterations or repairs that require temporary support to prevent collapse',
+                        'Work carried out in or near a confined space',
+                        'Work carried our in or near a shaft or trench deeper than 1.5 metres or a tunnel',
+                        'Work involving the use of explosives',
+                        'Work on or near pressurised gas distribution mains or piping',
+                        'Work on or near chemical, fuel or refrigerant lines',
+                        'Work on or near energised electrical installations or services (includes live electrical work)',
+                        'Work in an area that may have a contaminated or flammable atmosphere',
+                        'Work involving tilt-up or precast concrete elements',
+                        'Work carried on, in or adjacent to a road, railway, or other traffic corridor that is in use',
+                        'Work in an area at a workplace in which there is any movement of powered mobile plant (e.g. forklifts, excavators, cranes)',
+                        'Work in areas where there are artificial extremes of temperature (e.g. cold rooms, furnace areas)',
+                        'Work carries out in or near water or other liquid that involves a risk of drowning',
+                        'Work carried out on or near live electrical conductors'
+                      ].map((risk, index) => (
+                        <div key={index} className="figma-risk-card" style={{
+                          backgroundColor: formData.highRiskActivities.some(activity => 
+                            activity.selected && activity.title.toLowerCase().includes(risk.split(' ')[2]?.toLowerCase() || '')
+                          ) ? '#fef3c7' : '#f8fafc',
+                          border: formData.highRiskActivities.some(activity => 
+                            activity.selected && activity.title.toLowerCase().includes(risk.split(' ')[2]?.toLowerCase() || '')
+                          ) ? '2px solid #f59e0b' : '1px solid #e2e8f0',
+                          borderRadius: '8px',
                           padding: '12px',
-                          marginBottom: '12px',
+                          fontSize: '10px',
+                          lineHeight: '1.4',
+                          minHeight: '80px',
+                          display: 'flex',
+                          alignItems: 'center'
+                        }}>
+                          {risk}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* PPE Section - Figma Grid Style */}
+                {activeTab === 'ppe' && (
+                  <div className="figma-ppe">
+                    <div style={{
+                      textAlign: 'center',
+                      marginBottom: '32px',
+                      paddingBottom: '20px',
+                      borderBottom: '2px solid #e2e8f0'
+                    }}>
+                      <h1 style={{ 
+                        margin: 0, 
+                        fontSize: '24px', 
+                        fontWeight: '700', 
+                        color: '#1e293b'
+                      }}>
+                        Personal Protective Equipment
+                      </h1>
+                    </div>
+
+                    <div className="figma-ppe-grid" style={{
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(4, 1fr)',
+                      gap: '12px'
+                    }}>
+                      {[
+                        'Hard Hat – Head protection from falling objects',
+                        'Hi-Vis Vest/Shirt – Visibility on site',
+                        'Steel Cap Boots – Foot protection from impact or puncture',
+                        'Safety Glasses – Eye protection',
+                        'Gloves – General hand protection',
+                        'Hearing Protection – Earplugs or earmuffs',
+                        'Long Pants – Protection from abrasions and minor cuts',
+                        'Long Sleeve Shirt – General body protection',
+                        'Dust Mask – Basic airborne dust protection',
+                        'Sun Protection (Hat, Sunscreen) – UV exposure control',
+                        'Fall Arrest Harness – Working at heights',
+                        'Confined Space Breathing Apparatus – Confined spaces or poor air quality',
+                        'Welding Helmet & Gloves – Welding tasks',
+                        'Cut-Resistant Gloves – Blade or glass handling',
+                        'Face Shield – High-impact or chemical splash risk',
+                        'Respirator (Half/Full Face) – Hazardous fumes, chemicals, or dust',
+                        'Chemical-Resistant Apron – Handling corrosive substances',
+                        'Anti-Static Clothing – Electrical or explosive environments',
+                        'Insulated Gloves – Live electrical work',
+                        'Fire-Retardant Clothing – Hot works / fire risk areas',
+                        'Knee Pads – Prolonged kneeling (e.g. flooring work)',
+                        'Non-slip Footwear – Wet/slippery environments',
+                        'Safety Harness & Lanyard – Elevated work or boom lift',
+                        'Ear Canal Protectors – High-decibel machinery use',
+                        'Impact Goggles – Demolition or grinding tasks'
+                      ].map((ppe, index) => (
+                        <div key={index} className="figma-ppe-card" style={{
+                          backgroundColor: formData.ppeItems?.some(item => 
+                            item.required && ppe.toLowerCase().includes(item.item.toLowerCase())
+                          ) ? '#dcfce7' : '#f8fafc',
+                          border: formData.ppeItems?.some(item => 
+                            item.required && ppe.toLowerCase().includes(item.item.toLowerCase())
+                          ) ? '2px solid #22c55e' : '1px solid #e2e8f0',
+                          borderRadius: '6px',
+                          padding: '10px',
+                          fontSize: '9px',
+                          lineHeight: '1.3',
+                          minHeight: '60px',
                           display: 'flex',
                           alignItems: 'center',
-                          justifyContent: 'space-between'
+                          textAlign: 'center'
                         }}>
-                          <div>
-                            <strong style={{ fontSize: '12px' }}>{activity.title}</strong>
-                            <p style={{ margin: '4px 0 0 0', fontSize: '10px', color: '#6b7280' }}>
-                              {activity.description}
-                            </p>
-                          </div>
-                          <RiskBadgeNew level={activity.riskLevel} score={activity.riskLevel === 'high' ? 12 : activity.riskLevel === 'medium' ? 8 : 16} />
+                          {ppe}
                         </div>
                       ))}
                     </div>
