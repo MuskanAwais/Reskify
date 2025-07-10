@@ -585,8 +585,32 @@ const PDFDocumentComponent: React.FC<{ formData: SwmsFormData }> = ({ formData }
   </Document>
 );
 
-// Document Preview Component
+// Document Preview Component - Direct SWMSprint Integration
 const DocumentPreview: React.FC<{ formData: SwmsFormData; currentPage: DocumentPage }> = ({ formData, currentPage }) => {
+  const [swmsprintUrl, setSwmsprintUrl] = useState<string>('');
+  const [isEmbedded, setIsEmbedded] = useState<boolean>(false);
+  const [useDirectApp, setUseDirectApp] = useState<boolean>(true);
+
+  // Direct SWMSprint app integration
+  const connectToSWMSprint = () => {
+    const baseUrl = 'https://79937ff1-cac5-4736-b2b2-1df5354fb4b3-00-1bbtav2oqagxg.spock.replit.dev';
+    const queryParams = new URLSearchParams({
+      // Pass form data as URL parameters
+      projectName: formData.projectName || '',
+      projectNumber: formData.projectNumber || '',
+      projectAddress: formData.projectAddress || '',
+      projectManager: formData.projectManager || '',
+      siteSupervisor: formData.siteSupervisor || '',
+      // Add more fields as needed
+      embedded: 'true',
+      source: 'riskify'
+    });
+    
+    const fullUrl = `${baseUrl}?${queryParams.toString()}`;
+    setSwmsprintUrl(fullUrl);
+    setIsEmbedded(true);
+  };
+
   const renderPage = () => {
     switch (currentPage) {
       case 'project-info':
@@ -902,9 +926,62 @@ const DocumentPreview: React.FC<{ formData: SwmsFormData; currentPage: DocumentP
     }
   };
   
+  // If user wants to use direct SWMSprint app
+  if (useDirectApp && isEmbedded) {
+    return (
+      <div className="h-full flex flex-col">
+        <div className="flex items-center justify-between p-4 bg-gray-100 border-b">
+          <div className="flex items-center space-x-2">
+            <span className="text-sm font-medium">Live SWMSprint Preview</span>
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+          </div>
+          <button
+            onClick={() => setIsEmbedded(false)}
+            className="px-3 py-1 text-xs bg-gray-600 text-white rounded hover:bg-gray-700"
+          >
+            Back to Static Preview
+          </button>
+        </div>
+        <iframe
+          src={swmsprintUrl}
+          className="flex-1 w-full border-0"
+          title="SWMSprint Live Preview"
+          onLoad={() => console.log('SWMSprint loaded successfully')}
+          onError={() => console.log('Failed to load SWMSprint')}
+        />
+      </div>
+    );
+  }
+
   return (
-    <div className="h-full overflow-auto">
-      {renderPage()}
+    <div className="h-full flex flex-col">
+      {/* Control Panel */}
+      <div className="flex items-center justify-between p-4 bg-gray-100 border-b">
+        <div className="flex items-center space-x-2">
+          <span className="text-sm font-medium">Document Preview</span>
+        </div>
+        <div className="flex space-x-2">
+          <button
+            onClick={connectToSWMSprint}
+            className="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+            Use Live SWMSprint App
+          </button>
+          <a
+            href="https://79937ff1-cac5-4736-b2b2-1df5354fb4b3-00-1bbtav2oqagxg.spock.replit.dev"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-3 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700"
+          >
+            Open Full SWMSprint
+          </a>
+        </div>
+      </div>
+      
+      {/* Static Preview */}
+      <div className="flex-1 overflow-auto">
+        {renderPage()}
+      </div>
     </div>
   );
 };

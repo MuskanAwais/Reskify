@@ -18,7 +18,7 @@ const RiskBadgeNew: React.FC<RiskBadgeNewProps> = ({ risk, level, score, classNa
     }
   };
 
-  const riskLevel = level || risk || 'low';
+  const riskLevel = String(level || risk || 'low');
   const capitalizedLevel = riskLevel ? riskLevel.charAt(0).toUpperCase() + riskLevel.slice(1) : 'Low';
   const displayText = score ? `${capitalizedLevel} (${score})` : capitalizedLevel;
 
