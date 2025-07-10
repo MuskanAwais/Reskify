@@ -591,280 +591,312 @@ const DocumentPreview: React.FC<{ formData: SwmsFormData; currentPage: DocumentP
     switch (currentPage) {
       case 'project-info':
         return (
-          <div className="space-y-6">
-            <div className="text-center border-b pb-4">
-              <h1 className="text-2xl font-bold text-gray-900">Safe Work Method Statement</h1>
-              <p className="text-lg text-gray-600 mt-2">Project Information</p>
+          <div className="bg-white p-6 min-h-full" style={{ fontFamily: 'Inter, sans-serif' }}>
+            {/* Header */}
+            <div className="text-center mb-6">
+              <img src={riskifyLogo} alt="Riskify" className="mx-auto mb-4 h-12" />
+              <h1 className="text-2xl font-bold text-gray-900 mb-2">SAFE WORK METHOD STATEMENT</h1>
+              <div className="text-gray-600 text-base">Project Information</div>
             </div>
             
-            <div className="grid grid-cols-2 gap-6">
-              <div>
-                <div className="space-y-3">
-                  <div className="flex justify-between py-2 border-b">
-                    <span className="font-medium">Project Name:</span>
-                    <span>{formData.projectName || 'Not specified'}</span>
-                  </div>
-                  <div className="flex justify-between py-2 border-b">
-                    <span className="font-medium">Project Number:</span>
-                    <span>{formData.projectNumber || 'Not specified'}</span>
-                  </div>
-                  <div className="flex justify-between py-2 border-b">
-                    <span className="font-medium">Project Manager:</span>
-                    <span>{formData.projectManager || 'Not specified'}</span>
-                  </div>
-                </div>
-              </div>
-              
-              <div>
-                <div className="space-y-3">
-                  <div className="flex justify-between py-2 border-b">
-                    <span className="font-medium">Site Supervisor:</span>
-                    <span>{formData.siteSupervisor || 'Not specified'}</span>
-                  </div>
-                  <div className="flex justify-between py-2 border-b">
-                    <span className="font-medium">Emergency Contact:</span>
-                    <span>{formData.emergencyContact || 'Not specified'}</span>
-                  </div>
-                  <div className="flex justify-between py-2 border-b">
-                    <span className="font-medium">Emergency Phone:</span>
-                    <span>{formData.emergencyPhone || 'Not specified'}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div className="border-t pt-4">
-              <div className="flex justify-between py-2">
-                <span className="font-medium">Project Address:</span>
-                <span>{formData.projectAddress || 'Not specified'}</span>
-              </div>
-            </div>
-          </div>
-        );
-        
-      case 'work-activities':
-        return (
-          <div className="space-y-6">
-            <div className="text-center border-b pb-4">
-              <h1 className="text-2xl font-bold text-gray-900">Work Activities</h1>
-              <p className="text-lg text-gray-600 mt-2">Risk Assessment & Control Measures</p>
-            </div>
-            
-            <div className="space-y-4">
-              {formData.workActivities.map((activity, index) => (
-                <div key={index} className="border border-gray-200 rounded-lg p-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-lg font-semibold text-gray-900">{activity.activity}</h3>
-                    <RiskBadgeNew risk={activity.residualRisk} />
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <h4 className="font-medium text-gray-700 mb-2">Hazards:</h4>
-                      <ul className="space-y-1">
-                        {activity.hazards.map((hazard, hIndex) => (
-                          <li key={hIndex} className="text-sm text-gray-600">
-                            • {hazard.hazard}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    
-                    <div>
-                      <h4 className="font-medium text-gray-700 mb-2">Control Measures:</h4>
-                      <ul className="space-y-1">
-                        {activity.controlMeasures.map((measure, mIndex) => (
-                          <li key={mIndex} className="text-sm text-gray-600">
-                            • {measure.measure}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        );
-        
-      case 'ppe':
-        return (
-          <div className="space-y-6">
-            <div className="text-center border-b pb-4">
-              <h1 className="text-2xl font-bold text-gray-900">Personal Protective Equipment</h1>
-              <p className="text-lg text-gray-600 mt-2">Required Safety Equipment</p>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-6">
-              {formData.ppeRequirements.map((ppe, index) => (
-                <div key={index} className="border border-gray-200 rounded-lg p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="font-medium text-gray-900">{ppe.item}</h3>
-                    <span className={`px-2 py-1 text-xs rounded ${
-                      ppe.selected ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'
-                    }`}>
-                      {ppe.selected ? 'Required' : 'Optional'}
-                    </span>
-                  </div>
-                  <p className="text-sm text-gray-600 mb-2">{ppe.description}</p>
-                  <p className="text-xs text-gray-500">{ppe.standard}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        );
-        
-      case 'plant-equipment':
-        return (
-          <div className="space-y-6">
-            <div className="text-center border-b pb-4">
-              <h1 className="text-2xl font-bold text-gray-900">Plant & Equipment</h1>
-              <p className="text-lg text-gray-600 mt-2">Equipment Register & Inspection</p>
-            </div>
-            
-            <div className="space-y-4">
-              {formData.plantEquipment.map((equipment, index) => (
-                <div key={index} className="border border-gray-200 rounded-lg p-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-lg font-semibold text-gray-900">{equipment.item}</h3>
-                    <RiskBadgeNew risk={equipment.riskLevel} />
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-sm text-gray-600 mb-2">{equipment.description}</p>
-                      <p className="text-xs text-gray-500">
-                        <span className="font-medium">Inspection:</span> {equipment.inspection}
-                      </p>
-                    </div>
-                    
-                    <div>
-                      <p className="text-xs text-gray-500">
-                        <span className="font-medium">Certification:</span> {equipment.certification}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        );
-        
-      case 'sign-in':
-        return (
-          <div className="space-y-6">
-            <div className="text-center border-b pb-4">
-              <h1 className="text-2xl font-bold text-gray-900">Sign In Register</h1>
-              <p className="text-lg text-gray-600 mt-2">Personnel Management</p>
-            </div>
-            
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Name
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Company
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Position
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Time In
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Time Out
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Signature
-                    </th>
+            {/* Project Details Table */}
+            <div className="mb-6">
+              <table className="w-full border-collapse border border-gray-400">
+                <thead>
+                  <tr className="bg-gray-100">
+                    <th className="border border-gray-400 p-2 text-left font-semibold text-sm">Project Details</th>
+                    <th className="border border-gray-400 p-2 text-left font-semibold text-sm">Information</th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {formData.signInRegister.map((person, index) => (
-                    <tr key={index}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {person.name}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {person.company}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {person.position}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {person.timeIn}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {person.timeOut}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {person.signature}
-                      </td>
-                    </tr>
-                  ))}
+                <tbody>
+                  <tr>
+                    <td className="border border-gray-400 p-2 font-medium text-sm">Project Name</td>
+                    <td className="border border-gray-400 p-2 text-sm">{formData.projectName || 'Not specified'}</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-400 p-2 font-medium text-sm">Project Number</td>
+                    <td className="border border-gray-400 p-2 text-sm">{formData.projectNumber || 'Not specified'}</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-400 p-2 font-medium text-sm">Project Address</td>
+                    <td className="border border-gray-400 p-2 text-sm">{formData.projectAddress || 'Not specified'}</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-400 p-2 font-medium text-sm">Start Date</td>
+                    <td className="border border-gray-400 p-2 text-sm">{formData.startDate || 'Not specified'}</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-400 p-2 font-medium text-sm">Duration</td>
+                    <td className="border border-gray-400 p-2 text-sm">{formData.duration || 'Not specified'}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            
+            {/* Personnel Table */}
+            <div>
+              <table className="w-full border-collapse border border-gray-400">
+                <thead>
+                  <tr className="bg-gray-100">
+                    <th className="border border-gray-400 p-2 text-left font-semibold text-sm">Personnel</th>
+                    <th className="border border-gray-400 p-2 text-left font-semibold text-sm">Name</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="border border-gray-400 p-2 font-medium text-sm">Principal Contractor</td>
+                    <td className="border border-gray-400 p-2 text-sm">{formData.principalContractor || 'Not specified'}</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-400 p-2 font-medium text-sm">Project Manager</td>
+                    <td className="border border-gray-400 p-2 text-sm">{formData.projectManager || 'Not specified'}</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-400 p-2 font-medium text-sm">Site Supervisor</td>
+                    <td className="border border-gray-400 p-2 text-sm">{formData.siteSupervisor || 'Not specified'}</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-400 p-2 font-medium text-sm">Emergency Contact</td>
+                    <td className="border border-gray-400 p-2 text-sm">{formData.emergencyContact || 'Not specified'}</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-400 p-2 font-medium text-sm">Emergency Phone</td>
+                    <td className="border border-gray-400 p-2 text-sm">{formData.emergencyPhone || 'Not specified'}</td>
+                  </tr>
                 </tbody>
               </table>
             </div>
           </div>
         );
         
-      case 'msds':
+      case 'work-activities':
         return (
-          <div className="space-y-6">
-            <div className="text-center border-b pb-4">
-              <h1 className="text-2xl font-bold text-gray-900">Material Safety Data Sheets</h1>
-              <p className="text-lg text-gray-600 mt-2">Chemical & Hazardous Materials</p>
+          <div className="bg-white p-6 min-h-full" style={{ fontFamily: 'Inter, sans-serif' }}>
+            {/* Header */}
+            <div className="text-center mb-6">
+              <img src={riskifyLogo} alt="Riskify" className="mx-auto mb-4 h-12" />
+              <h1 className="text-2xl font-bold text-gray-900 mb-2">WORK ACTIVITIES</h1>
+              <div className="text-gray-600 text-base">Risk Assessment & Control Measures</div>
             </div>
             
-            <div className="space-y-4">
-              {formData.msdsRegister.map((msds, index) => (
-                <div key={index} className="border border-gray-200 rounded-lg p-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-lg font-semibold text-gray-900">{msds.product}</h3>
-                    <span className="px-2 py-1 text-xs rounded bg-yellow-100 text-yellow-800">
-                      {msds.hazardClass}
-                    </span>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-sm text-gray-600 mb-2">
-                        <span className="font-medium">Supplier:</span> {msds.supplier}
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        <span className="font-medium">Storage:</span> {msds.storageRequirements}
-                      </p>
-                    </div>
-                    
-                    <div>
-                      <p className="text-sm text-gray-600 mb-2">
-                        <span className="font-medium">Emergency:</span> {msds.emergencyProcedures}
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        <span className="font-medium">MSDS Location:</span> {msds.msdsLocation}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              ))}
+            {/* Activities Table */}
+            <table className="w-full border-collapse border border-gray-400">
+              <thead>
+                <tr className="bg-gray-100">
+                  <th className="border border-gray-400 p-2 text-left font-semibold text-sm w-1/4">Activity</th>
+                  <th className="border border-gray-400 p-2 text-left font-semibold text-sm w-1/4">Hazards</th>
+                  <th className="border border-gray-400 p-2 text-left font-semibold text-sm w-1/4">Control Measures</th>
+                  <th className="border border-gray-400 p-2 text-left font-semibold text-sm w-1/6">Risk Level</th>
+                </tr>
+              </thead>
+              <tbody>
+                {formData.workActivities.map((activity, index) => (
+                  <tr key={index} className="align-top">
+                    <td className="border border-gray-400 p-2 font-medium text-sm">{activity.activity}</td>
+                    <td className="border border-gray-400 p-2 text-sm">
+                      <ul className="list-disc pl-3 space-y-1">
+                        {activity.hazards?.map((hazard, hIndex) => (
+                          <li key={hIndex} className="text-xs">{hazard.hazard}</li>
+                        ))}
+                      </ul>
+                    </td>
+                    <td className="border border-gray-400 p-2 text-sm">
+                      <ul className="list-disc pl-3 space-y-1">
+                        {activity.controlMeasures?.map((measure, mIndex) => (
+                          <li key={mIndex} className="text-xs">
+                            {typeof measure === 'string' ? measure : measure.measure}
+                          </li>
+                        )) || []}
+                      </ul>
+                    </td>
+                    <td className="border border-gray-400 p-2 text-center">
+                      <RiskBadgeNew risk={activity.residualRisk} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        );
+        
+      case 'ppe':
+        return (
+          <div className="bg-white p-6 min-h-full" style={{ fontFamily: 'Inter, sans-serif' }}>
+            {/* Header */}
+            <div className="text-center mb-6">
+              <img src={riskifyLogo} alt="Riskify" className="mx-auto mb-4 h-12" />
+              <h1 className="text-2xl font-bold text-gray-900 mb-2">PERSONAL PROTECTIVE EQUIPMENT</h1>
+              <div className="text-gray-600 text-base">Required Safety Equipment</div>
             </div>
+            
+            {/* PPE Table */}
+            <table className="w-full border-collapse border border-gray-400">
+              <thead>
+                <tr className="bg-gray-100">
+                  <th className="border border-gray-400 p-2 text-left font-semibold text-sm">PPE Item</th>
+                  <th className="border border-gray-400 p-2 text-left font-semibold text-sm">Description</th>
+                  <th className="border border-gray-400 p-2 text-left font-semibold text-sm">Standard</th>
+                  <th className="border border-gray-400 p-2 text-left font-semibold text-sm">Required</th>
+                </tr>
+              </thead>
+              <tbody>
+                {formData.ppeRequirements.map((ppe, index) => (
+                  <tr key={index} className="align-top">
+                    <td className="border border-gray-400 p-2 font-medium text-sm">{ppe.item}</td>
+                    <td className="border border-gray-400 p-2 text-sm">{ppe.description}</td>
+                    <td className="border border-gray-400 p-2 text-xs">{ppe.standard}</td>
+                    <td className="border border-gray-400 p-2 text-center">
+                      <span className={`px-2 py-1 text-xs rounded ${
+                        ppe.selected ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'
+                      }`}>
+                        {ppe.selected ? 'Required' : 'Optional'}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        );
+        
+      case 'plant-equipment':
+        return (
+          <div className="bg-white p-6 min-h-full" style={{ fontFamily: 'Inter, sans-serif' }}>
+            {/* Header */}
+            <div className="text-center mb-6">
+              <img src={riskifyLogo} alt="Riskify" className="mx-auto mb-4 h-12" />
+              <h1 className="text-2xl font-bold text-gray-900 mb-2">PLANT & EQUIPMENT</h1>
+              <div className="text-gray-600 text-base">Equipment Register & Inspection</div>
+            </div>
+            
+            {/* Equipment Table */}
+            <table className="w-full border-collapse border border-gray-400">
+              <thead>
+                <tr className="bg-gray-100">
+                  <th className="border border-gray-400 p-2 text-left font-semibold text-sm">Equipment</th>
+                  <th className="border border-gray-400 p-2 text-left font-semibold text-sm">Description</th>
+                  <th className="border border-gray-400 p-2 text-left font-semibold text-sm">Inspection</th>
+                  <th className="border border-gray-400 p-2 text-left font-semibold text-sm">Risk Level</th>
+                </tr>
+              </thead>
+              <tbody>
+                {formData.plantEquipment.map((equipment, index) => (
+                  <tr key={index} className="align-top">
+                    <td className="border border-gray-400 p-2 font-medium text-sm">{equipment.item}</td>
+                    <td className="border border-gray-400 p-2 text-sm">{equipment.description}</td>
+                    <td className="border border-gray-400 p-2 text-xs">{equipment.inspection}</td>
+                    <td className="border border-gray-400 p-2 text-center">
+                      <RiskBadgeNew risk={equipment.riskLevel} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        );
+        
+      case 'sign-in':
+        return (
+          <div className="bg-white p-6 min-h-full" style={{ fontFamily: 'Inter, sans-serif' }}>
+            {/* Header */}
+            <div className="text-center mb-6">
+              <img src={riskifyLogo} alt="Riskify" className="mx-auto mb-4 h-12" />
+              <h1 className="text-2xl font-bold text-gray-900 mb-2">SIGN IN REGISTER</h1>
+              <div className="text-gray-600 text-base">Personnel Attendance & Acknowledgment</div>
+            </div>
+            
+            {/* Sign In Table */}
+            <table className="w-full border-collapse border border-gray-400">
+              <thead>
+                <tr className="bg-gray-100">
+                  <th className="border border-gray-400 p-2 text-left font-semibold text-sm">Name</th>
+                  <th className="border border-gray-400 p-2 text-left font-semibold text-sm">Company</th>
+                  <th className="border border-gray-400 p-2 text-left font-semibold text-sm">Position</th>
+                  <th className="border border-gray-400 p-2 text-left font-semibold text-sm">Date</th>
+                  <th className="border border-gray-400 p-2 text-left font-semibold text-sm">Signature</th>
+                </tr>
+              </thead>
+              <tbody>
+                {formData.signInRegister?.map((person, index) => (
+                  <tr key={index}>
+                    <td className="border border-gray-400 p-2 text-sm">{person.name}</td>
+                    <td className="border border-gray-400 p-2 text-sm">{person.company}</td>
+                    <td className="border border-gray-400 p-2 text-sm">{person.position}</td>
+                    <td className="border border-gray-400 p-2 text-sm">{person.timeIn}</td>
+                    <td className="border border-gray-400 p-2 text-sm">{person.signature}</td>
+                  </tr>
+                )) || 
+                // Empty rows for manual sign-in
+                Array.from({ length: 15 }).map((_, index) => (
+                  <tr key={index}>
+                    <td className="border border-gray-400 p-2 h-8 text-sm">&nbsp;</td>
+                    <td className="border border-gray-400 p-2 text-sm">&nbsp;</td>
+                    <td className="border border-gray-400 p-2 text-sm">&nbsp;</td>
+                    <td className="border border-gray-400 p-2 text-sm">&nbsp;</td>
+                    <td className="border border-gray-400 p-2 text-sm">&nbsp;</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        );
+        
+      case 'msds':
+        return (
+          <div className="bg-white p-6 min-h-full" style={{ fontFamily: 'Inter, sans-serif' }}>
+            {/* Header */}
+            <div className="text-center mb-6">
+              <img src={riskifyLogo} alt="Riskify" className="mx-auto mb-4 h-12" />
+              <h1 className="text-2xl font-bold text-gray-900 mb-2">MATERIAL SAFETY DATA SHEETS</h1>
+              <div className="text-gray-600 text-base">Chemical & Hazardous Materials</div>
+            </div>
+            
+            {/* MSDS Table */}
+            <table className="w-full border-collapse border border-gray-400">
+              <thead>
+                <tr className="bg-gray-100">
+                  <th className="border border-gray-400 p-2 text-left font-semibold text-sm">Product</th>
+                  <th className="border border-gray-400 p-2 text-left font-semibold text-sm">Supplier</th>
+                  <th className="border border-gray-400 p-2 text-left font-semibold text-sm">Hazard Class</th>
+                  <th className="border border-gray-400 p-2 text-left font-semibold text-sm">Storage</th>
+                  <th className="border border-gray-400 p-2 text-left font-semibold text-sm">MSDS Location</th>
+                </tr>
+              </thead>
+              <tbody>
+                {formData.msdsRegister?.map((msds, index) => (
+                  <tr key={index} className="align-top">
+                    <td className="border border-gray-400 p-2 font-medium text-sm">{msds.product}</td>
+                    <td className="border border-gray-400 p-2 text-sm">{msds.supplier}</td>
+                    <td className="border border-gray-400 p-2 text-center">
+                      <span className="px-2 py-1 text-xs rounded bg-yellow-100 text-yellow-800">
+                        {msds.hazardClass}
+                      </span>
+                    </td>
+                    <td className="border border-gray-400 p-2 text-sm">{msds.storageRequirements}</td>
+                    <td className="border border-gray-400 p-2 text-sm">{msds.msdsLocation}</td>
+                  </tr>
+                )) || 
+                // Empty rows for manual entry
+                Array.from({ length: 10 }).map((_, index) => (
+                  <tr key={index}>
+                    <td className="border border-gray-400 p-2 h-8 text-sm">&nbsp;</td>
+                    <td className="border border-gray-400 p-2 text-sm">&nbsp;</td>
+                    <td className="border border-gray-400 p-2 text-sm">&nbsp;</td>
+                    <td className="border border-gray-400 p-2 text-sm">&nbsp;</td>
+                    <td className="border border-gray-400 p-2 text-sm">&nbsp;</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         );
         
       default:
         return (
-          <div className="space-y-6">
-            <div className="text-center border-b pb-4">
-              <h1 className="text-2xl font-bold text-gray-900">Safe Work Method Statement</h1>
-              <p className="text-lg text-gray-600 mt-2">Document Preview</p>
-            </div>
-            
-            <div className="text-center">
-              <p className="text-gray-600">Select a tab to view document content</p>
-            </div>
+          <div className="bg-white p-6 min-h-full text-center py-12" style={{ fontFamily: 'Inter, sans-serif' }}>
+            <img src={riskifyLogo} alt="Riskify" className="mx-auto mb-4 h-12" />
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">SAFE WORK METHOD STATEMENT</h1>
+            <p className="text-gray-600">Select a tab to view document content</p>
           </div>
         );
     }
