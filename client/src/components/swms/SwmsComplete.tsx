@@ -37,7 +37,7 @@ export default function SwmsComplete({ initialData }: SwmsCompleteProps) {
         },
         body: JSON.stringify({
           ...formData,
-          swmsprintUrl: 'https://79937ff1-cac5-4736-b2b2-1df5354fb4b3-00-1kza387sw7sxk.spock.replit.dev',
+          swmsprintUrl: 'https://79937ff1-cac5-4736-b2b2-1df5354fb4b3-00-1bbtav2oqagxg.spock.replit.dev',
           generatePdf: true
         })
       });

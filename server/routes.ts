@@ -324,10 +324,10 @@ export async function registerRoutes(app: Express) {
       // Simulate processing time for realistic user experience
       await new Promise(resolve => setTimeout(resolve, 2000));
       
-      // Try to connect to SWMSprint app
-      const swmsprintUrl = data.swmsprintUrl || 'https://79937ff1-cac5-4736-b2b2-1df5354fb4b3-00-1kza387sw7sxk.spock.replit.dev';
+      // Connect to your original SWMSprint app 
+      const swmsprintUrl = data.swmsprintUrl || 'https://79937ff1-cac5-4736-b2b2-1df5354fb4b3-00-1bbtav2oqagxg.spock.replit.dev';
       
-      // Prepare comprehensive data for SWMSprint
+      // Prepare comprehensive data for your original SWMSprint app
       const swmsprintData = {
         projectName: data.projectName || 'SWMS Project',
         projectNumber: data.projectNumber || '',
@@ -351,20 +351,80 @@ export async function registerRoutes(app: Express) {
       let pdfBuffer: Buffer;
       
       try {
-        // Attempt to generate PDF via SWMSprint
-        console.log('Attempting SWMSprint PDF generation...');
-        const swmsprintResponse = await fetch(`${swmsprintUrl}/api/swms/generate-pdf`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(swmsprintData),
-          signal: AbortSignal.timeout(30000) // 30 second timeout
+        // First check if your original SWMSprint app is awake and explore available endpoints
+        console.log('Checking SWMSprint app status...');
+        const healthCheck = await fetch(`${swmsprintUrl}/`, {
+          method: 'GET',
+          signal: AbortSignal.timeout(10000) // 10 second timeout
         });
+        
+        console.log('SWMSprint app response status:', healthCheck.status);
+        
+        if (!healthCheck.ok) {
+          console.log('SWMSprint app needs to wake up, trying again...');
+          // Give it a moment to wake up
+          await new Promise(resolve => setTimeout(resolve, 3000));
+        }
+        
+        // Try to understand the app structure by checking common routes
+        const testRoutes = ['/api', '/api/swms', '/swms', '/generate'];
+        for (const route of testRoutes) {
+          try {
+            const testResponse = await fetch(`${swmsprintUrl}${route}`, {
+              method: 'GET',
+              signal: AbortSignal.timeout(5000)
+            });
+            console.log(`Route ${route}: ${testResponse.status}`);
+          } catch (error) {
+            console.log(`Route ${route}: failed`);
+          }
+        }
+        
+        // Attempt to generate PDF via your original SWMSprint app
+        console.log('Attempting SWMSprint PDF generation...');
+        console.log('Using SWMSprint URL:', swmsprintUrl);
+        console.log('Sending data to SWMSprint:', Object.keys(swmsprintData));
+        
+        // Try different possible endpoints that your original app might have
+        const possibleEndpoints = [
+          '/api/swms/generate-pdf',
+          '/api/swms/pdf',
+          '/api/generate-pdf',
+          '/api/pdf',
+          '/generate-pdf',
+          '/pdf'
+        ];
+        
+        let swmsprintResponse;
+        let lastError;
+        
+        for (const endpoint of possibleEndpoints) {
+          try {
+            console.log(`Trying endpoint: ${swmsprintUrl}${endpoint}`);
+            swmsprintResponse = await fetch(`${swmsprintUrl}${endpoint}`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(swmsprintData),
+              signal: AbortSignal.timeout(15000) // 15 second timeout per endpoint
+            });
+            
+            if (swmsprintResponse.ok) {
+              console.log(`Success with endpoint: ${endpoint}`);
+              break;
+            } else {
+              console.log(`Endpoint ${endpoint} returned ${swmsprintResponse.status}`);
+            }
+          } catch (error) {
+            console.log(`Endpoint ${endpoint} failed:`, error.message);
+            lastError = error;
+          }
+        }
 
-        if (swmsprintResponse.ok) {
+        if (swmsprintResponse && swmsprintResponse.ok) {
           pdfBuffer = Buffer.from(await swmsprintResponse.arrayBuffer());
           console.log('✅ SWMSprint PDF generated successfully:', pdfBuffer.length, 'bytes');
         } else {
-          throw new Error(`SWMSprint API error: ${swmsprintResponse.status}`);
+          throw new Error(`SWMSprint API error: ${swmsprintResponse?.status || 'No successful response'}`);
         }
       } catch (error) {
         console.error('SWMSprint connection error:', error);
