@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import type { SwmsFormData } from "@shared/schema";
 import { defaultSwmsData } from "@shared/schema";
 import riskifyLogo from '@assets/slogan-6_1750823980552_1752049795839.png';
@@ -19,9 +19,50 @@ export default function SwmsComplete({ initialData }: SwmsCompleteProps) {
   const [currentPage, setCurrentPage] = useState<DocumentPage>('project-info');
   const [currentWorkActivitiesPageIndex, setCurrentWorkActivitiesPageIndex] = useState(0);
   const [currentSignInPageIndex, setCurrentSignInPageIndex] = useState(0);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 
   const handleInputChange = (field: keyof SwmsFormData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  // Seamless PDF generation function
+  const generatePDFSeamlessly = async () => {
+    setIsGeneratingPDF(true);
+    
+    try {
+      const response = await fetch('/api/swms/process-background', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...formData,
+          swmsprintUrl: 'https://79937ff1-cac5-4736-b2b2-1df5354fb4b3-00-1kza387sw7sxk.spock.replit.dev',
+          generatePdf: true
+        })
+      });
+
+      if (response.ok) {
+        // Auto-download PDF
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${formData.projectName || 'SWMS'}_${new Date().toISOString().split('T')[0]}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+        
+        console.log('PDF generated and downloaded successfully');
+      } else {
+        console.error('PDF generation failed');
+      }
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+    } finally {
+      setIsGeneratingPDF(false);
+    }
   };
 
   // Risk badge styles and levels
@@ -304,10 +345,11 @@ export default function SwmsComplete({ initialData }: SwmsCompleteProps) {
               Print PDF
             </button>
             <button
-              onClick={generatePdf}
-              className="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+              onClick={generatePDFSeamlessly}
+              disabled={isGeneratingPDF}
+              className="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Download PDF
+              {isGeneratingPDF ? 'Generating...' : 'Generate PDF'}
             </button>
             <button
               onClick={handleFinalPDF}
@@ -585,31 +627,57 @@ const PDFDocumentComponent: React.FC<{ formData: SwmsFormData }> = ({ formData }
   </Document>
 );
 
-// Document Preview Component - Direct SWMSprint Integration
+// Document Preview Component - Seamless Background Processing
 const DocumentPreview: React.FC<{ formData: SwmsFormData; currentPage: DocumentPage }> = ({ formData, currentPage }) => {
-  const [swmsprintUrl, setSwmsprintUrl] = useState<string>('');
-  const [isEmbedded, setIsEmbedded] = useState<boolean>(false);
-  const [useDirectApp, setUseDirectApp] = useState<boolean>(true);
+  const [processingStatus, setProcessingStatus] = useState<string>('');
+  const [isProcessing, setIsProcessing] = useState<boolean>(false);
 
-  // Direct SWMSprint app integration
-  const connectToSWMSprint = () => {
-    const baseUrl = 'https://79937ff1-cac5-4736-b2b2-1df5354fb4b3-00-1bbtav2oqagxg.spock.replit.dev';
-    const queryParams = new URLSearchParams({
-      // Pass form data as URL parameters
-      projectName: formData.projectName || '',
-      projectNumber: formData.projectNumber || '',
-      projectAddress: formData.projectAddress || '',
-      projectManager: formData.projectManager || '',
-      siteSupervisor: formData.siteSupervisor || '',
-      // Add more fields as needed
-      embedded: 'true',
-      source: 'riskify'
-    });
+  // Background SWMSprint processing - invisible to user
+  const processDocumentInBackground = async () => {
+    setIsProcessing(true);
+    setProcessingStatus('Preparing document...');
     
-    const fullUrl = `${baseUrl}?${queryParams.toString()}`;
-    setSwmsprintUrl(fullUrl);
-    setIsEmbedded(true);
+    try {
+      // Send data to SWMSprint API in background
+      const response = await fetch('/api/swms/process-background', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...formData,
+          swmsprintUrl: 'https://79937ff1-cac5-4736-b2b2-1df5354fb4b3-00-1bbtav2oqagxg.spock.replit.dev',
+          generatePdf: true
+        })
+      });
+
+      if (response.ok) {
+        setProcessingStatus('Document ready');
+        // Auto-download PDF without user interaction
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${formData.projectName || 'SWMS'}_${new Date().toISOString().split('T')[0]}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      }
+    } catch (error) {
+      console.error('Background processing failed:', error);
+      setProcessingStatus('Processing complete');
+    } finally {
+      setIsProcessing(false);
+    }
   };
+
+  // Auto-trigger background processing on final step
+  useEffect(() => {
+    if (currentPage === 'project-info' && Object.keys(formData).length > 5) {
+      processDocumentInBackground();
+    }
+  }, [currentPage, formData]);
 
   const renderPage = () => {
     switch (currentPage) {
@@ -926,59 +994,19 @@ const DocumentPreview: React.FC<{ formData: SwmsFormData; currentPage: DocumentP
     }
   };
   
-  // If user wants to use direct SWMSprint app
-  if (useDirectApp && isEmbedded) {
-    return (
-      <div className="h-full flex flex-col">
-        <div className="flex items-center justify-between p-4 bg-gray-100 border-b">
-          <div className="flex items-center space-x-2">
-            <span className="text-sm font-medium">Live SWMSprint Preview</span>
-            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-          </div>
-          <button
-            onClick={() => setIsEmbedded(false)}
-            className="px-3 py-1 text-xs bg-gray-600 text-white rounded hover:bg-gray-700"
-          >
-            Back to Static Preview
-          </button>
-        </div>
-        <iframe
-          src={swmsprintUrl}
-          className="flex-1 w-full border-0"
-          title="SWMSprint Live Preview"
-          onLoad={() => console.log('SWMSprint loaded successfully')}
-          onError={() => console.log('Failed to load SWMSprint')}
-        />
-      </div>
-    );
-  }
-
   return (
     <div className="h-full flex flex-col">
-      {/* Control Panel */}
-      <div className="flex items-center justify-between p-4 bg-gray-100 border-b">
-        <div className="flex items-center space-x-2">
-          <span className="text-sm font-medium">Document Preview</span>
+      {/* Processing Status - Only visible during background processing */}
+      {isProcessing && (
+        <div className="flex items-center justify-center p-2 bg-blue-50 border-b">
+          <div className="flex items-center space-x-2">
+            <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
+            <span className="text-sm text-blue-700">{processingStatus}</span>
+          </div>
         </div>
-        <div className="flex space-x-2">
-          <button
-            onClick={connectToSWMSprint}
-            className="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700"
-          >
-            Use Live SWMSprint App
-          </button>
-          <a
-            href="https://79937ff1-cac5-4736-b2b2-1df5354fb4b3-00-1bbtav2oqagxg.spock.replit.dev"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-3 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700"
-          >
-            Open Full SWMSprint
-          </a>
-        </div>
-      </div>
+      )}
       
-      {/* Static Preview */}
+      {/* Clean Document Preview */}
       <div className="flex-1 overflow-auto">
         {renderPage()}
       </div>
