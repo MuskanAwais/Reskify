@@ -244,13 +244,8 @@ export default function Sidebar() {
 
   const adminNavigationItems = [
     { icon: Contact, label: "All Contacts", href: "/admin/all-contacts" },
-    { icon: Archive, label: "All SWMS", href: "/admin/all-swms" },
     { icon: DollarSign, label: "Billing Analytics", href: "/admin/billing-analytics" },
-    { icon: TrendingUp, label: "Usage Analytics", href: "/admin/usage-analytics" },
-    { icon: Database, label: "Data Management", href: "/admin/data" },
-    { icon: Shield, label: "Security Monitoring", href: "/admin/security" },
-    { icon: Activity, label: "System Health", href: "/admin/health" },
-    { icon: Settings, label: "System Testing", href: "/admin/system-testing" }
+    { icon: TrendingUp, label: "Usage Analytics", href: "/admin/usage-analytics" }
   ];
 
   return (
