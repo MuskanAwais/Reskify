@@ -56,7 +56,7 @@ export default function AiAssistant() {
       }
 
       const data = await response.json();
-
+      
       const assistantMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         type: 'assistant',
@@ -143,10 +143,11 @@ export default function AiAssistant() {
                     className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
                   >
                     <div
-                      className={`max-w-[80%] p-3 rounded-lg ${message.type === 'user'
+                      className={`max-w-[80%] p-3 rounded-lg ${
+                        message.type === 'user'
                           ? 'bg-primary text-primary-foreground'
                           : 'bg-muted text-muted-foreground'
-                        }`}
+                      }`}
                     >
                       <p className="text-sm">{message.content}</p>
                       <p className="text-xs opacity-70 mt-1">
@@ -173,8 +174,8 @@ export default function AiAssistant() {
                   onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
                   disabled={isLoading}
                 />
-                <Button
-                  onClick={handleSendMessage}
+                <Button 
+                  onClick={handleSendMessage} 
                   disabled={isLoading || !inputMessage.trim()}
                   size="icon"
                 >
@@ -237,7 +238,7 @@ export default function AiAssistant() {
                     <p className="text-xs text-primary/700 dark:text-primary/300">Identify and assess workplace hazards</p>
                   </div>
                 </div>
-
+                
                 <div className="flex items-center space-x-3 p-3 rounded-lg bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800">
                   <div className="flex-shrink-0">
                     <FileText className="w-5 h-5 text-green-600" />
@@ -247,7 +248,7 @@ export default function AiAssistant() {
                     <p className="text-xs text-green-700 dark:text-green-300">Ensure Australian safety standards</p>
                   </div>
                 </div>
-
+                
                 <div className="flex items-center space-x-3 p-3 rounded-lg bg-orange-50 dark:bg-orange-950/20 border border-orange-200 dark:border-orange-800">
                   <div className="flex-shrink-0">
                     <AlertTriangle className="w-5 h-5 text-orange-600" />
