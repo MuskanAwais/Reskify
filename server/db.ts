@@ -3,9 +3,6 @@ import { drizzle } from 'drizzle-orm/neon-serverless';
 import ws from "ws";
 import * as schema from "@shared/schema";
 
-import dotenv from 'dotenv';
-dotenv.config();
-
 // Configure WebSocket with timeout settings and error handling
 neonConfig.webSocketConstructor = ws;
 neonConfig.fetchConnectionCache = true;
